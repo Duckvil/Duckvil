@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 
     memory->m_fnBasicAllocate(&memoryChunk, 1024);
 
-    Duckvil::Memory::__linear_allocator* otherLinear = memory->m_fnAllocateLinearAllocator(&memoryChunk, 64);
+    Duckvil::Memory::__linear_allocator* otherLinear = memory->m_fnAllocateLinearAllocator(&memoryChunk, 16);
     Duckvil::Memory::__linear_allocator* otherLinear2 = memory->m_fnAllocateLinearAllocator(&memoryChunk, 64);
 
     Duckvil::Memory::linear_allocate(memory, otherLinear, true);
@@ -41,6 +41,8 @@ int main(int argc, char* argv[])
     Duckvil::Memory::linear_allocate(memory, otherLinear, true);
     int* res = (int*)memory->m_fnLinearAllocate_(otherLinear, &a, sizeof(int), alignof(int));
     memory->m_fnLinearAllocate_(otherLinear, &a, sizeof(int), alignof(int));
+    memory->m_fnLinearAllocate_(otherLinear, &a, sizeof(int), alignof(int));
+    res = (int*)memory->m_fnLinearAllocate_(otherLinear, &a, sizeof(int), alignof(int));
     int* res4 = (int*)memory->m_fnLinearAllocate_(otherLinear2, &a, sizeof(int), alignof(int));
     const char* res3 = Duckvil::Memory::linear_allocate(memory, memoryChunk, "aaaa");
     int* res2 = Duckvil::Memory::linear_allocate(memory, memoryChunk, 20);
