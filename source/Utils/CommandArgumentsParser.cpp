@@ -2,8 +2,6 @@
 
 #include <string>
 
-#include "Utils/Utils.h"
-
 namespace Duckvil { namespace Utils {
 
     CommandArgumentsParser::CommandArgumentsParser(int _iArgc, char* _sarrArgv[], CommandArgumentsParser::Descriptor* _pDescriptors, size_t _ullDescriptorsCount) :
