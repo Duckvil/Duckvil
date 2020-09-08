@@ -4,32 +4,47 @@
 
 namespace Duckvil { namespace Utils {
 
-    CommandArgumentsParser::CommandArgumentsParser(int _iArgc, char* _sarrArgv[], CommandArgumentsParser::Descriptor* _pDescriptors, size_t _ullDescriptorsCount) :
-        m_pDescriptors(_pDescriptors),
-        m_ullDescriptorsCount(_ullDescriptorsCount)
+    CommandArgumentsParser::CommandArgumentsParser(int _iArgc, char* _spArgv[]) :
+        m_iArgc(_iArgc),
+        m_spArgv(_spArgv)
     {
-        _iArgc -= (_iArgc > 0);
-        _sarrArgv += (_sarrArgv > 0);
 
-        for(uint32_t i = 0; i < _iArgc; i++)
+    }
+
+    CommandArgumentsParser::~CommandArgumentsParser()
+    {
+
+    }
+
+    bool CommandArgumentsParser::Parse(CommandArgumentsParser::Descriptor* _pDescriptors, size_t _ullDescriptorsCount)
+    {
+        if(_pDescriptors == 0 || _ullDescriptorsCount == 0)
         {
-            char* argv = _sarrArgv[i];
+            return true;
+        }
+
+        m_iArgc -= (m_iArgc > 0);
+        m_spArgv += (m_spArgv > 0);
+
+        for(uint32_t i = 0; i < m_iArgc; i++)
+        {
+            char* argv = m_spArgv[i];
 
             if(strlen(argv) > 0 && argv[0] == '-')
             {
                 argv++;
 
-                for(uint32_t j = 0; j < m_ullDescriptorsCount; j++)
+                for(uint32_t j = 0; j < _ullDescriptorsCount; j++)
                 {
-                    Descriptor& desc = m_pDescriptors[j];
+                    Descriptor& desc = _pDescriptors[j];
 
                     if(strcmp(desc.m_sOption, argv) == 0)
                     {
                         desc.m_bIsSet = true;
 
-                        if(i + 1 < _iArgc)
+                        if(i + 1 < m_iArgc)
                         {
-                            char* next = _sarrArgv[i + 1];
+                            char* next = m_spArgv[i + 1];
 
                             if(strlen(next) > 0 && next[0] != '-')
                             {
@@ -41,12 +56,13 @@ namespace Duckvil { namespace Utils {
                     }
                 }
             }
+            else
+            {
+                return false;
+            }
         }
-    }
 
-    CommandArgumentsParser::~CommandArgumentsParser()
-    {
-
+        return true;
     }
 
 }}
