@@ -7,6 +7,8 @@ list(APPEND INCLUDES
     "${CMAKE_SOURCE_DIR}/__generated_reflection__"
 )
 
+list(APPEND STATIC_LIBRARIES "")
+
 FOREACH(child ${children})
     get_filename_component(PARENT_DIR ${child} DIRECTORY)
     add_subdirectory(${PARENT_DIR})
@@ -31,4 +33,22 @@ FOREACH(child ${children})
         RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin"
         DEBUG_POSTFIX ""
     )
+    if(${TARGET_TYPE} STREQUAL "STATIC_LIBRARY")
+        list(APPEND STATIC_LIBRARIES ${PROJECT_ID})
+    endif()
+ENDFOREACH()
+
+FOREACH(child ${children})
+    get_filename_component(PARENT_DIR ${child} DIRECTORY)
+    get_filename_component(PROJECT_ID ${PARENT_DIR} NAME)
+    get_target_property(
+        TARGET_TYPE ${PROJECT_ID} TYPE
+    )
+    if(${TARGET_TYPE} STREQUAL "EXECUTABLE" OR ${TARGET_TYPE} STREQUAL "SHARED_LIBRARY")
+        target_link_libraries(
+            ${PROJECT_ID}
+            ${STATIC_LIBRARIES}
+            ${LIBS}
+        )
+    endif()
 ENDFOREACH()
