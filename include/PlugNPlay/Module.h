@@ -2,9 +2,9 @@
 
 namespace Duckvil { namespace PlugNPlay {
 
-    struct __module
+    struct __module_information
     {
-        __module(const char* _sName) :
+        __module_information(const char* _sName) :
             m_sName(_sName)
         {
 
@@ -14,8 +14,13 @@ namespace Duckvil { namespace PlugNPlay {
         void* m_pModule;
     };
 
-    bool load(__module* _pModule);
-    bool get(const __module& _pModule, const char* _sName, void** _pFunction);
-    bool free(__module* _pModule);
+    struct module
+    {
+        bool (*load)(__module_information* _pModule);
+        bool (*get)(const __module_information& _pModule, const char* _sName, void** _pFunction);
+        bool (*free)(__module_information* _pModule);
+    };
+
+    bool module_init(module* _pModule);
 
 }}

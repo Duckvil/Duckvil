@@ -19,11 +19,15 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    Duckvil::PlugNPlay::__module memoryModule("Memory.dll");
+    Duckvil::PlugNPlay::module module;
+
+    Duckvil::PlugNPlay::module_init(&module);
+
+    Duckvil::PlugNPlay::__module_information memoryModule("Memory.dll");
     Duckvil::Memory::IMemory* (*init)();
 
-    Duckvil::PlugNPlay::load(&memoryModule);
-    Duckvil::PlugNPlay::get(memoryModule, "duckvil_memory_init", (void**)&init);
+    module.load(&memoryModule);
+    module.get(memoryModule, "duckvil_memory_init", (void**)&init);
 
     Duckvil::Memory::IMemory* memory = init();
     Duckvil::Memory::__linear_allocator memoryChunk = { 0 };
@@ -59,7 +63,7 @@ int main(int argc, char* argv[])
 
     memory->m_fnLinearClear(memoryChunk);
 
-    Duckvil::PlugNPlay::free(&memoryModule);
+    module.free(&memoryModule);
 
     return 0;
 }
