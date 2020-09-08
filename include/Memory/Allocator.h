@@ -1,43 +1,29 @@
 #pragma once
 
-#include "Memory/Memory.h"
-
-#include <memory>
+#include "Memory/Internal/Allocator.h"
 
 namespace Duckvil { namespace Memory {
 
-    bool allocate(__memory* _pMemory, size_t _ullSize)
+    template <typename Type>
+    Type* linear_allocate(IMemory* _pMemory, __linear_allocator& _allocator, const Type& _pData)
     {
-        if(_pMemory->memory == NULL)
-        {
-            _pMemory->memory = (uint8_t*)malloc(_ullSize);
-            _pMemory->capacity = _ullSize;
-        }
-
-        return true;
+        return (Type*)_pMemory->m_fnLinearAllocate(_allocator, &_pData, sizeof(Type), alignof(Type));
     }
 
-    void* allocate_linear(__memory* _pMemory, const void* _pData, size_t _ullSize)
+    const char* linear_allocate(IMemory* _pMemory, __linear_allocator& _allocator, const char* _pData)
     {
-        void* _memory = (void*)(_pMemory->memory + _pMemory->used);
-
-        memcpy(_memory, _pData, _ullSize);
-
-        _pMemory->used += _ullSize;
-
-        return _memory;
+        return _pMemory->m_fnLinearAllocateCStr(_allocator, _pData);
     }
 
     template <typename Type>
-    bool allocate_linear(__memory* _pMemory, const Type& _data)
+    Type* linear_allocate(IMemory* _pMemory, __linear_allocator* _pAllocator, const Type& _pData)
     {
-        Type* _memory = (Type*)(_pMemory->memory + _pMemory->used);
+        return (Type*)_pMemory->m_fnLinearAllocate_(_pAllocator, &_pData, sizeof(Type), alignof(Type));
+    }
 
-        *_memory = _data;
-
-        _pMemory->used += sizeof(Type);
-
-        return true;
+    const char* linear_allocate(IMemory* _pMemory, __linear_allocator* _pAllocator, const char* _pData)
+    {
+        return _pMemory->m_fnLinearAllocateCStr_(_pAllocator, _pData);
     }
 
 }}
