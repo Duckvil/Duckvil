@@ -76,19 +76,28 @@ DUCKVIL_TEST(Memory)
     memory->m_fnFixedStackPop_(stackAllocator);
     top = (int*)memory->m_fnFixedStackTop_(stackAllocator);
 
-    Duckvil::Memory::__stack_allocator* stackAllocator2 = memory->m_fnAllocateStackAllocator(&memoryChunk, 64);
+    Duckvil::Memory::__stack_allocator* stackAllocator2 = memory->m_fnAllocateStackAllocator(&memoryChunk, 128);
 
-    memory->m_fnStackAllocateCStr_(stackAllocator2, "xd");
-    memory->m_fnStackAllocate_(stackAllocator2, &a, sizeof(int), alignof(int));
-    memory->m_fnStackAllocate_(stackAllocator2, &b, sizeof(int), alignof(int));
+    const char* check = (const char*)memory->m_fnStackAllocateCStr_(stackAllocator2, "xd");
+    top = (int*)memory->m_fnStackAllocate_(stackAllocator2, &a, sizeof(int), alignof(int));
+    check = (const char*)memory->m_fnStackAllocateCStr_(stackAllocator2, "aaaa");
+    top = (int*)memory->m_fnStackAllocate_(stackAllocator2, &b, sizeof(int), alignof(int));
 
     int* top2 = (int*)memory->m_fnStackTop_(stackAllocator2);
+
+    memory->m_fnStackPop_(stackAllocator2);
+    const char* top3 = (const char*)memory->m_fnStackTop_(stackAllocator2);
 
     memory->m_fnStackPop_(stackAllocator2);
     top = (int*)memory->m_fnStackTop_(stackAllocator2);
 
     memory->m_fnStackPop_(stackAllocator2);
-    const char* top3 = (const char*)memory->m_fnStackTop_(stackAllocator2);
+    top3 = (const char*)memory->m_fnStackTop_(stackAllocator2);
+
+    memory->m_fnStackPop_(stackAllocator2);
+    top = (int*)memory->m_fnStackAllocate_(stackAllocator2, &a, sizeof(int), alignof(int));
+
+    top = (int*)memory->m_fnStackTop_(stackAllocator2);
 
     for(uint32_t i = 0; i < 1024;)
     {

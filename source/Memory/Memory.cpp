@@ -3,6 +3,7 @@
 #include "Memory/Internal/Allocator.h"
 #include "Memory/Internal/LinearAllocator.h"
 #include "Memory/Internal/StackAllocator.h"
+#include "Memory/Internal/FixedStackAllocator.h"
 
 #include <memory>
 
