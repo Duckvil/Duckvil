@@ -4,17 +4,6 @@
 
 namespace Duckvil { namespace Memory {
 
-    void* calculate_aligned_pointer(void* _p, uint8_t _ucAlignment, uint8_t& _padded_offset)
-    {
-        uintptr_t _memory_address = reinterpret_cast<uintptr_t>(_p);
-        uint8_t _padding = _ucAlignment - 1;
-        uintptr_t _new_address = (_memory_address + _padding) & ~_padding;
-
-        _padded_offset = _new_address - _memory_address;
-
-        return reinterpret_cast<void*>(_new_address);
-    }
-
     void* linear_allocate(__linear_allocator& _allocator, const void* _pData, size_t _ullSize, uint8_t _ucAlignment)
     {
         if(_allocator.capacity < _allocator.used + _ullSize)

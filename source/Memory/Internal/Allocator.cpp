@@ -39,4 +39,37 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
+    __fixed_stack_allocator* allocate_fixed_stack_allocator(__allocator* _pAllocator, size_t _ullSize, size_t _ullTypeSize)
+    {
+         __fixed_stack_allocator* _memory = (__fixed_stack_allocator*)(_pAllocator->memory + _pAllocator->used);
+        size_t _size = sizeof(__fixed_stack_allocator);
+
+        _memory->capacity = _ullSize;
+        _memory->memory = (uint8_t*)_memory + _size;
+        _memory->used = 0;
+        _memory->m_ullBlockSize = _ullTypeSize;
+
+        memset(_memory->memory, 0, _ullSize);
+
+        _pAllocator->used += _size + _ullSize;
+
+        return _memory;
+    }
+
+    __stack_allocator* allocate_stack_allocator(__allocator* _pAllocator, size_t _ullSize)
+    {
+         __stack_allocator* _memory = (__stack_allocator*)(_pAllocator->memory + _pAllocator->used);
+        size_t _size = sizeof(__stack_allocator);
+
+        _memory->capacity = _ullSize;
+        _memory->memory = (uint8_t*)_memory + _size;
+        _memory->used = 0;
+
+        memset(_memory->memory, 0, _ullSize);
+
+        _pAllocator->used += _size + _ullSize;
+
+        return _memory;
+    }
+
 }}
