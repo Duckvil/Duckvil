@@ -1,6 +1,7 @@
 #include "Memory/Memory.h"
 
 #include "Memory/Internal/Allocator.h"
+#include "Memory/Internal/LinearAllocator.h"
 
 #include <memory>
 
