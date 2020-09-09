@@ -28,7 +28,7 @@ namespace Duckvil { namespace Memory {
 
     };
 
-    void* calculate_aligned_pointer(void* _p, uint8_t _ucAlignment, uint8_t& _padded_offset);
+    void* calculate_aligned_pointer(void* _p, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
 
     struct IMemory
     {

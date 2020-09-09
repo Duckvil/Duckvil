@@ -48,6 +48,11 @@ namespace Duckvil { namespace Memory {
 
     void fixed_stack_allocator_pop(__fixed_stack_allocator* _pAllocator)
     {
+        if(_pAllocator->used == 0)
+        {
+            return;
+        }
+
         uint8_t* _current_memory = _pAllocator->memory + _pAllocator->used;
 
         memset(_current_memory - _pAllocator->m_ullBlockSize, 0, _pAllocator->m_ullBlockSize);

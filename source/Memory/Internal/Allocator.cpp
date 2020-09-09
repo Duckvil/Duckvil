@@ -25,7 +25,8 @@ namespace Duckvil { namespace Memory {
 
     __linear_allocator* allocate_linear_allocator(__allocator* _pAllocator, size_t _ullSize)
     {
-         __linear_allocator* _memory = (__linear_allocator*)(_pAllocator->memory + _pAllocator->used);
+        uint8_t _padding = 0;
+        __linear_allocator* _memory = (__linear_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__linear_allocator), _padding);
         size_t _size = sizeof(__linear_allocator);
 
         _memory->capacity = _ullSize;
@@ -41,7 +42,8 @@ namespace Duckvil { namespace Memory {
 
     __fixed_stack_allocator* allocate_fixed_stack_allocator(__allocator* _pAllocator, size_t _ullSize, size_t _ullTypeSize)
     {
-         __fixed_stack_allocator* _memory = (__fixed_stack_allocator*)(_pAllocator->memory + _pAllocator->used);
+        uint8_t _padding = 0;
+        __fixed_stack_allocator* _memory = (__fixed_stack_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__fixed_stack_allocator), _padding);
         size_t _size = sizeof(__fixed_stack_allocator);
 
         _memory->capacity = _ullSize;
@@ -58,7 +60,8 @@ namespace Duckvil { namespace Memory {
 
     __stack_allocator* allocate_stack_allocator(__allocator* _pAllocator, size_t _ullSize)
     {
-         __stack_allocator* _memory = (__stack_allocator*)(_pAllocator->memory + _pAllocator->used);
+        uint8_t _padding = 0;
+        __stack_allocator* _memory = (__stack_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__stack_allocator), _padding);
         size_t _size = sizeof(__stack_allocator);
 
         _memory->capacity = _ullSize;

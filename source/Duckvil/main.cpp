@@ -4,7 +4,9 @@
 #include "Utils/Macro.h"
 
 #include "Memory/Memory.h"
-#include "Memory/Allocator.h"
+#include "Memory/LinearAllocator.h"
+#include "Memory/FixedStackAllocator.h"
+#include "Memory/StackAllocator.h"
 
 #include "PlugNPlay/Module.h"
 
@@ -60,44 +62,60 @@ DUCKVIL_TEST(Memory)
     res = (int*)memory->m_fnLinearAllocate_(otherLinear, &a, sizeof(int), alignof(int));
     DUCKVIL_TEST_IS_NULL(res, "Pointer should be NULL, overflow detected");
 
-    int* res4 = (int*)memory->m_fnLinearAllocate_(otherLinear2, &a, sizeof(int), alignof(int));
+    int* res4 = Duckvil::Memory::linear_allocate(memory, otherLinear2, a);
     const char* res3 = Duckvil::Memory::linear_allocate(memory, memoryChunk, "aaaa");
     int* res2 = Duckvil::Memory::linear_allocate(memory, memoryChunk, 20);
 
-    Duckvil::Memory::__fixed_stack_allocator* stackAllocator = memory->m_fnAllocateFixedStackAllocator(&memoryChunk, 64, sizeof(int));
+    {
+        Duckvil::Memory::__fixed_stack_allocator* stackAllocator = memory->m_fnAllocateFixedStackAllocator(&memoryChunk, 64, sizeof(int));
 
-    int b = 33;
+        Duckvil::Memory::fixed_stack_allocate(memory, stackAllocator, 10);
+        Duckvil::Memory::fixed_stack_allocate(memory, stackAllocator, 33);
 
-    memory->m_fnFixedStackAllocate_(stackAllocator, &a, sizeof(int), alignof(int));
-    memory->m_fnFixedStackAllocate_(stackAllocator, &b, sizeof(int), alignof(int));
+        int* top = (int*)memory->m_fnFixedStackTop_(stackAllocator);
 
-    int* top = (int*)memory->m_fnFixedStackTop_(stackAllocator);
+        DUCKVIL_TEST_IS_NOT_NULL(top, "Failed to allocate on stack");
+        DUCKVIL_TEST_EQUAL(*top, 33, "Wrong allocation");
 
-    memory->m_fnFixedStackPop_(stackAllocator);
-    top = (int*)memory->m_fnFixedStackTop_(stackAllocator);
+        memory->m_fnFixedStackPop_(stackAllocator);
+        top = (int*)memory->m_fnFixedStackTop_(stackAllocator);
 
-    Duckvil::Memory::__stack_allocator* stackAllocator2 = memory->m_fnAllocateStackAllocator(&memoryChunk, 128);
+        DUCKVIL_TEST_IS_NOT_NULL(top, "Failed to allocate on stack");
+        DUCKVIL_TEST_EQUAL(*top, 10, "Wrong allocation");
 
-    const char* check = (const char*)memory->m_fnStackAllocateCStr_(stackAllocator2, "xd");
-    top = (int*)memory->m_fnStackAllocate_(stackAllocator2, &a, sizeof(int), alignof(int));
-    check = (const char*)memory->m_fnStackAllocateCStr_(stackAllocator2, "aaaa");
-    top = (int*)memory->m_fnStackAllocate_(stackAllocator2, &b, sizeof(int), alignof(int));
+        memory->m_fnFixedStackPop_(stackAllocator);
+        top = (int*)memory->m_fnFixedStackTop_(stackAllocator);
+        memory->m_fnFixedStackPop_(stackAllocator);
 
-    int* top2 = (int*)memory->m_fnStackTop_(stackAllocator2);
+        DUCKVIL_TEST_EXP(stackAllocator->used == 0 && stackAllocator->memory[0] == 0, "Pop gone wrong");
+    }
 
-    memory->m_fnStackPop_(stackAllocator2);
-    const char* top3 = (const char*)memory->m_fnStackTop_(stackAllocator2);
+    {
+        Duckvil::Memory::__stack_allocator* stackAllocator2 = memory->m_fnAllocateStackAllocator(&memoryChunk, 128);
+        int b = 33;
 
-    memory->m_fnStackPop_(stackAllocator2);
-    top = (int*)memory->m_fnStackTop_(stackAllocator2);
+        const char* check = (const char*)memory->m_fnStackAllocateCStr_(stackAllocator2, "xd");
+        int* top = (int*)memory->m_fnStackAllocate_(stackAllocator2, &a, sizeof(int), alignof(int));
+        check = (const char*)memory->m_fnStackAllocateCStr_(stackAllocator2, "aaaa");
+        top = (int*)memory->m_fnStackAllocate_(stackAllocator2, &b, sizeof(int), alignof(int));
 
-    memory->m_fnStackPop_(stackAllocator2);
-    top3 = (const char*)memory->m_fnStackTop_(stackAllocator2);
+        int* top2 = (int*)memory->m_fnStackTop_(stackAllocator2);
 
-    memory->m_fnStackPop_(stackAllocator2);
-    top = (int*)memory->m_fnStackAllocate_(stackAllocator2, &a, sizeof(int), alignof(int));
+        memory->m_fnStackPop_(stackAllocator2);
+        const char* top3 = (const char*)memory->m_fnStackTop_(stackAllocator2);
 
-    top = (int*)memory->m_fnStackTop_(stackAllocator2);
+        memory->m_fnStackPop_(stackAllocator2);
+        top = (int*)memory->m_fnStackTop_(stackAllocator2);
+
+        memory->m_fnStackPop_(stackAllocator2);
+        top3 = (const char*)memory->m_fnStackTop_(stackAllocator2);
+
+        memory->m_fnStackPop_(stackAllocator2);
+        top = (int*)memory->m_fnStackAllocate_(stackAllocator2, &a, sizeof(int), alignof(int));
+
+        top = (int*)memory->m_fnStackTop_(stackAllocator2);
+        DUCKVIL_TEST_IS_NOT_NULL(top, "Stack allocation failed");
+    }
 
     for(uint32_t i = 0; i < 1024;)
     {

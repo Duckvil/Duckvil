@@ -6,7 +6,7 @@ namespace Duckvil { namespace Memory {
 
     void* stack_allocate(__stack_allocator* _pAllocator, const void* _pData, size_t _ullSize, uint8_t _ucAlignment)
     {
-        if(_pAllocator->capacity < _pAllocator->used + _ullSize + sizeof(__stack_node))
+        if(_pAllocator->capacity < _pAllocator->used + _ullSize + g_ullStackNodeSize)
         {
             return 0;
         }
@@ -21,7 +21,7 @@ namespace Duckvil { namespace Memory {
         _node->m_ullBlockSize = _ullSize;
         _node->m_ucPadding = _padding;
 
-        _pAllocator->used += _ullSize + _padding + sizeof(__stack_node);
+        _pAllocator->used += _ullSize + _padding + g_ullStackNodeSize;
 
         return _memory;
     }
@@ -30,7 +30,7 @@ namespace Duckvil { namespace Memory {
     {
         size_t _len = strlen(_pData);
 
-        if(_pAllocator->capacity < _pAllocator->used + _len + sizeof(__stack_node))
+        if(_pAllocator->capacity < _pAllocator->used + _len + g_ullStackNodeSize)
         {
             return 0;
         }
@@ -44,14 +44,14 @@ namespace Duckvil { namespace Memory {
         _node->m_ullBlockSize = _len + 1;
         _node->m_ucPadding = 0;
 
-        _pAllocator->used += _len + 1 + sizeof(__stack_node);
+        _pAllocator->used += _len + 1 + g_ullStackNodeSize;
 
         return (const char*)_memory;
     }
 
     void* stack_allocator_top(__stack_allocator* _pAllocator)
     {
-        uint8_t* _current_memory = _pAllocator->memory + _pAllocator->used - sizeof(__stack_node);
+        uint8_t* _current_memory = _pAllocator->memory + _pAllocator->used - g_ullStackNodeSize;
         __stack_node* _node = (__stack_node*)_current_memory;
 
         return _current_memory - _node->m_ullBlockSize;
@@ -59,14 +59,19 @@ namespace Duckvil { namespace Memory {
 
     void stack_allocator_pop(__stack_allocator* _pAllocator)
     {
-        uint8_t* _current_memory = _pAllocator->memory + _pAllocator->used - sizeof(__stack_node);
-        size_t _block_size = ((__stack_node*)_current_memory)->m_ullBlockSize;
-        size_t _padding = ((__stack_node*)_current_memory)->m_ucPadding;
+        if(_pAllocator->used == 0)
+        {
+            return;
+        }
 
-        memset(_current_memory - _block_size, 0, _block_size + sizeof(__stack_node));
+        __stack_node* _current_memory = (__stack_node*)(_pAllocator->memory + _pAllocator->used - g_ullStackNodeSize);
+        size_t _block_size = _current_memory->m_ullBlockSize;
+        size_t _padding = _current_memory->m_ucPadding;
+
+        memset(_current_memory, 0, _block_size + g_ullStackNodeSize);
 
         _pAllocator->used -= _block_size;
-        _pAllocator->used -= sizeof(__stack_node);
+        _pAllocator->used -= g_ullStackNodeSize;
         _pAllocator->used -= _padding;
     }
 
