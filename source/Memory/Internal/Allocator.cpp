@@ -75,4 +75,23 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
+    __fixed_queue_allocator* allocate_fixed_queue_allocator(__allocator* _pAllocator, size_t _ullSize, size_t _ullTypeSize)
+    {
+        uint8_t _padding = 0;
+        __fixed_queue_allocator* _memory = (__fixed_queue_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__fixed_queue_allocator), _padding);
+        size_t _size = sizeof(__fixed_queue_allocator);
+
+        _memory->capacity = _ullSize;
+        _memory->memory = (uint8_t*)_memory + _size;
+        _memory->used = 0;
+        _memory->m_ullBlockSize = _ullTypeSize;
+        _memory->m_ullTail = 0;
+
+        memset(_memory->memory, 0, _ullSize);
+
+        _pAllocator->used += _size + _ullSize;
+
+        return _memory;
+    }
+
 }}

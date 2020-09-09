@@ -1,10 +1,13 @@
 #pragma once
 
 #include <cstdint>
+#include <limits>
 
 #include "Utils/Macro.h"
 
 namespace Duckvil { namespace Memory {
+
+    static const size_t g_ullMax = std::numeric_limits<size_t>::max();
 
     struct __allocator
     {
@@ -26,6 +29,12 @@ namespace Duckvil { namespace Memory {
     struct __stack_allocator : public __allocator
     {
 
+    };
+
+    struct __fixed_queue_allocator : public __allocator
+    {
+        size_t m_ullBlockSize;
+        size_t m_ullTail;
     };
 
     void* calculate_aligned_pointer(void* _p, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
@@ -53,9 +62,15 @@ namespace Duckvil { namespace Memory {
         typedef void (*_stack_pop_)(__stack_allocator* _pAllocator);
         typedef void (*_stack_clear_)(__stack_allocator* _pAllocator);
 
+        typedef void* (*_fixed_queue_allocate_)(__fixed_queue_allocator* _pAllocator, const void* _pData, size_t _ullSize, uint8_t _ucAlignment);
+        typedef const char* (*_fixed_queue_allocate_cstr_)(__fixed_queue_allocator* _pAllocator, const char* _pData);
+        typedef void* (*_fixed_queue_begin_)(__fixed_queue_allocator* _pAllocator);
+        typedef void (*_fixed_queue_clear_)(__fixed_queue_allocator* _pAllocator);
+
         typedef __linear_allocator* (*_allocate_linear_allocator)(__allocator* _pAllocator, size_t _ullSize);
         typedef __fixed_stack_allocator* (*_allocate_fixed_stack_allocator)(__allocator* _pAllocator, size_t _ullSize, size_t _ullTypeSize);
         typedef __stack_allocator* (*_allocate_stack_allocator)(__allocator* _pAllocator, size_t _ullSize);
+        typedef __fixed_queue_allocator* (*_allocate_fixed_queue_allocator)(__allocator* _pAllocator, size_t _ullSize, size_t _ullTypeSize);
 
         _basic_allocate             m_fnBasicAllocate;
 
@@ -78,9 +93,15 @@ namespace Duckvil { namespace Memory {
         _stack_pop_           m_fnStackPop_;
         _stack_clear_         m_fnStackClear_;
 
+        _fixed_queue_allocate_      m_fnFixedQueueAllocate_;
+        _fixed_queue_allocate_cstr_ m_fnFixedQueueAllocateCStr_;
+        _fixed_queue_begin_         m_fnFixedQueueBegin_;
+        _fixed_queue_clear_         m_fnFixedQueueClear_;
+
         _allocate_linear_allocator      m_fnAllocateLinearAllocator;
         _allocate_fixed_stack_allocator m_fnAllocateFixedStackAllocator;
         _allocate_stack_allocator       m_fnAllocateStackAllocator;
+        _allocate_fixed_queue_allocator m_fnAllocateFixedQueueAllocator;
     };
 
 }}

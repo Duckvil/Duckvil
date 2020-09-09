@@ -117,6 +117,31 @@ DUCKVIL_TEST(Memory)
         DUCKVIL_TEST_IS_NOT_NULL(top, "Stack allocation failed");
     }
 
+    {
+        Duckvil::Memory::__fixed_queue_allocator* alloc = memory->m_fnAllocateFixedQueueAllocator(&memoryChunk, 8, sizeof(int));
+
+        int x = 10;
+        int xx = 20;
+        int xxx = 30;
+
+        int* res = (int*)memory->m_fnFixedQueueAllocate_(alloc, &x, sizeof(int), alignof(int));
+        res = (int*)memory->m_fnFixedQueueAllocate_(alloc, &xx, sizeof(int), alignof(int));
+
+        res = (int*)memory->m_fnFixedQueueBegin_(alloc);
+
+        res = (int*)memory->m_fnFixedQueueAllocate_(alloc, &xxx, sizeof(int), alignof(int));
+        res = (int*)memory->m_fnFixedQueueBegin_(alloc);
+        res = (int*)memory->m_fnFixedQueueBegin_(alloc);
+        res = (int*)memory->m_fnFixedQueueAllocate_(alloc, &xxx, sizeof(int), alignof(int));
+
+        printf("AAAA\n");
+
+        //int* res = (int*)memory->m_fnFixedQueueBegin_(alloc);
+        //res = (int*)memory->m_fnFixedQueueAllocate_(alloc, &x, sizeof(int), alignof(int));
+        //res = (int*)memory->m_fnFixedQueueBegin_(alloc);
+        //res = (int*)memory->m_fnFixedQueueAllocate_(alloc, &x, sizeof(int), alignof(int));
+    }
+
     for(uint32_t i = 0; i < 1024;)
     {
         for(uint32_t j = 0; j < 8; i++, j++)
