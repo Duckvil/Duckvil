@@ -8,28 +8,32 @@
 
 #include "PlugNPlay/Module.h"
 
-Duckvil::Utils::CommandArgumentsParser::Descriptor* g_pDescriptors = { 0 };
+#include "UniTestFramework/UniTestFramework.h"
 
-int main(int argc, char* argv[])
+Duckvil::PlugNPlay::module g_module;
+Duckvil::Memory::IMemory* (*g_fnInit)();
+Duckvil::PlugNPlay::__module_information g_memoryModule("Memory.dll");
+
+DUCKVIL_TEST(Module)
 {
-    Duckvil::Utils::CommandArgumentsParser _parser(argc, argv);
+    Duckvil::PlugNPlay::module_init(&g_module);
 
-    if(!_parser.Parse(g_pDescriptors, DUCKVIL_ARRAY_SIZE(g_pDescriptors)))
-    {
-        return 1;
-    }
+    DUCKVIL_TEST_IS_NOT_NULL((void*)g_module.load, "Module load function is not loaded");
+    DUCKVIL_TEST_IS_NOT_NULL((void*)g_module.get, "Module get function is not loaded");
+    DUCKVIL_TEST_IS_NOT_NULL((void*)g_module.free, "Module free function is not loaded");
 
-    Duckvil::PlugNPlay::module module;
+    g_module.load(&g_memoryModule);
+    DUCKVIL_TEST_IS_NOT_NULL(g_memoryModule.m_pModule, "Memory module is NULL");
 
-    Duckvil::PlugNPlay::module_init(&module);
+    g_module.get(g_memoryModule, "duckvil_memory_init", (void**)&g_fnInit);
+    DUCKVIL_TEST_IS_NOT_NULL((void*)g_fnInit, "Memory module is NULL");
 
-    Duckvil::PlugNPlay::__module_information memoryModule("Memory.dll");
-    Duckvil::Memory::IMemory* (*init)();
+    DUCKVIL_TEST_SUCCESS_PASS;
+}
 
-    module.load(&memoryModule);
-    module.get(memoryModule, "duckvil_memory_init", (void**)&init);
-
-    Duckvil::Memory::IMemory* memory = init();
+DUCKVIL_TEST(Memory)
+{
+    Duckvil::Memory::IMemory* memory = g_fnInit();
     Duckvil::Memory::__linear_allocator memoryChunk = { 0 };
 
     int a = 10;
@@ -37,16 +41,25 @@ int main(int argc, char* argv[])
     memory->m_fnBasicAllocate(&memoryChunk, 1024);
 
     Duckvil::Memory::__linear_allocator* otherLinear = memory->m_fnAllocateLinearAllocator(&memoryChunk, 16);
+    DUCKVIL_TEST_IS_NOT_NULL(otherLinear, "Failed to allocate linear allocator");
     Duckvil::Memory::__linear_allocator* otherLinear2 = memory->m_fnAllocateLinearAllocator(&memoryChunk, 64);
+    DUCKVIL_TEST_IS_NOT_NULL(otherLinear, "Failed to allocate linear allocator");
 
-    Duckvil::Memory::linear_allocate(memory, otherLinear, true);
-    Duckvil::Memory::linear_allocate(memory, otherLinear, true);
-    Duckvil::Memory::linear_allocate(memory, otherLinear, true);
-    Duckvil::Memory::linear_allocate(memory, otherLinear, true);
+    DUCKVIL_TEST_IS_NOT_NULL(Duckvil::Memory::linear_allocate(memory, otherLinear, true), "Failed to allocate bool");
+    DUCKVIL_TEST_IS_NOT_NULL(Duckvil::Memory::linear_allocate(memory, otherLinear, true), "Failed to allocate bool");
+    DUCKVIL_TEST_IS_NOT_NULL(Duckvil::Memory::linear_allocate(memory, otherLinear, true), "Failed to allocate bool");
+    DUCKVIL_TEST_IS_NOT_NULL(Duckvil::Memory::linear_allocate(memory, otherLinear, true), "Failed to allocate bool");
+
     int* res = (int*)memory->m_fnLinearAllocate_(otherLinear, &a, sizeof(int), alignof(int));
+    DUCKVIL_TEST_IS_NOT_NULL(res, "Failed to allocate memory");
+    DUCKVIL_TEST_EQUAL(res, a, "Wrong variable in memory");
+
     memory->m_fnLinearAllocate_(otherLinear, &a, sizeof(int), alignof(int));
     memory->m_fnLinearAllocate_(otherLinear, &a, sizeof(int), alignof(int));
+
     res = (int*)memory->m_fnLinearAllocate_(otherLinear, &a, sizeof(int), alignof(int));
+    DUCKVIL_TEST_IS_NULL(res, "Pointer should be NULL, overflow detected");
+
     int* res4 = (int*)memory->m_fnLinearAllocate_(otherLinear2, &a, sizeof(int), alignof(int));
     const char* res3 = Duckvil::Memory::linear_allocate(memory, memoryChunk, "aaaa");
     int* res2 = Duckvil::Memory::linear_allocate(memory, memoryChunk, 20);
@@ -62,8 +75,24 @@ int main(int argc, char* argv[])
     }
 
     memory->m_fnLinearClear(memoryChunk);
+    DUCKVIL_TEST_EXP(memoryChunk.used == 0 && memoryChunk.memory[0] == 0, "Failed to clear memory");
 
-    module.free(&memoryModule);
+    g_module.free(&g_memoryModule);
+    DUCKVIL_TEST_IS_NULL(g_memoryModule.m_pModule, "Failed to free loaded module");
+
+    DUCKVIL_TEST_SUCCESS_PASS;
+}
+
+Duckvil::Utils::CommandArgumentsParser::Descriptor* g_pDescriptors = { 0 };
+
+int main(int argc, char* argv[])
+{
+    Duckvil::Utils::CommandArgumentsParser _parser(argc, argv);
+
+    if(!_parser.Parse(g_pDescriptors, DUCKVIL_ARRAY_SIZE(g_pDescriptors)))
+    {
+        return 1;
+    }
 
     return 0;
 }
