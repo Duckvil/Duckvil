@@ -6,39 +6,22 @@ namespace Duckvil { namespace Memory {
 
     void* fixed_queue_allocate(__fixed_queue_allocator* _pAllocator, const void* _pData, size_t _ullSize, uint8_t _ucAlignment)
     {
-        void* _memory;
-
-        if(_pAllocator->m_ullTail == g_ullMax)
+        if(_pAllocator->used >= _pAllocator->capacity)
         {
-            _pAllocator->m_ullTail = 0;
-
-            uint8_t _padding = 0;
-            _memory = calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, _ucAlignment, _padding);
-
-            memcpy(_memory, _pData, _ullSize);
+            return 0;
         }
-        else if(_pAllocator->m_ullTail == 0 && _pAllocator->used == _pAllocator->capacity)
+        else if(_pAllocator->m_ullHead >= _pAllocator->capacity && _pAllocator->m_ullTail > 0)
         {
-            _memory = 0;
+            _pAllocator->m_ullHead = _pAllocator->m_ullTail - _pAllocator->m_ullBlockSize;
         }
-        else if(_pAllocator->used == _pAllocator->capacity && _pAllocator->m_ullTail != 0)
-        {
-            _pAllocator->used = 0;
 
-            uint8_t _padding = 0;
-            _memory = calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, _ucAlignment, _padding);
+        uint8_t _padding = 0;
+        void* _memory = calculate_aligned_pointer(_pAllocator->memory + _pAllocator->m_ullHead, _ucAlignment, _padding);
 
-            memcpy(_memory, _pData, _ullSize);
-        }
-        else
-        {
-            uint8_t _padding = 0;
-            _memory = calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, _ucAlignment, _padding);
+        memcpy(_memory, _pData, _ullSize);
 
-            memcpy(_memory, _pData, _ullSize);
-
-            _pAllocator->used += _pAllocator->m_ullBlockSize + _padding;
-        }
+        _pAllocator->m_ullHead += _pAllocator->m_ullBlockSize + _padding;
+        _pAllocator->used += _pAllocator->m_ullBlockSize + _padding;
 
         return _memory;
     }
@@ -52,51 +35,62 @@ namespace Duckvil { namespace Memory {
         //     return 0;
         // }
 
-        void* _memory = (void*)(_pAllocator->memory + _pAllocator->used);
+        void* _memory = (void*)(_pAllocator->memory + _pAllocator->m_ullHead);
 
         memcpy(_memory, _pData, _len);
 
-        _pAllocator->used += _len + 1;
+        _pAllocator->m_ullHead += _len + 1;
 
         return (const char*)_memory;
     }
 
     void* fixed_queue_begin(__fixed_queue_allocator* _pAllocator)
     {
-        // void* _memory = (void*)(_pAllocator->memory + _pAllocator->m_ullTail);
+        void* _memory = (void*)(_pAllocator->memory + _pAllocator->m_ullTail);
 
-        // _pAllocator->m_ullTail += _pAllocator->m_ullBlockSize;
+        return _memory;
+    }
 
-        void* _memory;
-
-        if(_pAllocator->m_ullTail == g_ullMax)
+    void fixed_queue_pop(__fixed_queue_allocator* _pAllocator)
+    {
+        if(_pAllocator->used == 0)
         {
-            _memory = 0;
+            // Underflow
+
+            return;
         }
 
-        _memory = (void*)(_pAllocator->memory + _pAllocator->m_ullTail);
+    // Maybe some macro for clearing memory
+        memset(_pAllocator->memory + _pAllocator->m_ullTail, 0, _pAllocator->m_ullBlockSize);
 
-        if(_pAllocator->m_ullTail == _pAllocator->used)
+        if(_pAllocator->m_ullTail >= _pAllocator->capacity - _pAllocator->m_ullBlockSize && _pAllocator->m_ullHead > 0)
         {
-            _pAllocator->m_ullTail = g_ullMax;
-            _pAllocator->used = g_ullMax;
-        }
-        else if(_pAllocator->m_ullTail == _pAllocator->capacity - _pAllocator->m_ullBlockSize)
-        {
-            _pAllocator->m_ullTail = 0;
+            _pAllocator->m_ullTail = _pAllocator->m_ullHead - _pAllocator->m_ullBlockSize;
         }
         else
         {
             _pAllocator->m_ullTail += _pAllocator->m_ullBlockSize;
         }
 
-        return _memory;
+        _pAllocator->used -= _pAllocator->m_ullBlockSize;
+    }
+
+    bool fixed_queue_empty(__fixed_queue_allocator* _pAllocator)
+    {
+        return _pAllocator->used == 0;
+    }
+
+    bool fixed_queue_full(__fixed_queue_allocator* _pAllocator)
+    {
+        return _pAllocator->used == _pAllocator->capacity;
     }
 
     void fixed_queue_clear(__fixed_queue_allocator* _pAllocator)
     {
         memset(_pAllocator->memory, 0, _pAllocator->capacity);
+        _pAllocator->m_ullHead = 0;
         _pAllocator->used = 0;
+        _pAllocator->m_ullTail = 0;
     }
 
 }}

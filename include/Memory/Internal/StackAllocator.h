@@ -17,6 +17,8 @@ namespace Duckvil { namespace Memory {
 
     void* stack_allocator_top(__stack_allocator* _pAllocator);
     void stack_allocator_pop(__stack_allocator* _pAllocator);
+    bool stack_allocator_empty(__stack_allocator* _pAllocator);
+    bool stack_allocator_full(__stack_allocator* _pAllocator);
 
     void stack_clear(__stack_allocator* _pAllocator);
 

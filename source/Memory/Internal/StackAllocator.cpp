@@ -75,6 +75,16 @@ namespace Duckvil { namespace Memory {
         _pAllocator->used -= _padding;
     }
 
+    bool stack_allocator_empty(__stack_allocator* _pAllocator)
+    {
+        return _pAllocator->used == 0;
+    }
+
+    bool stack_allocator_full(__stack_allocator* _pAllocator)
+    {
+        return _pAllocator->used == _pAllocator->capacity;
+    }
+
     void stack_clear(__stack_allocator* _pAllocator)
     {
         memset(_pAllocator->memory, 0, _pAllocator->capacity);

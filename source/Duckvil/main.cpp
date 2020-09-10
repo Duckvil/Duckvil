@@ -7,6 +7,7 @@
 #include "Memory/LinearAllocator.h"
 #include "Memory/FixedStackAllocator.h"
 #include "Memory/StackAllocator.h"
+#include "Memory/FixedQueueAllocator.h"
 
 #include "PlugNPlay/Module.h"
 
@@ -67,6 +68,14 @@ DUCKVIL_TEST(Memory)
     int* res2 = Duckvil::Memory::linear_allocate(memory, memoryChunk, 20);
 
     {
+        Duckvil::Memory::FixedStack<int> _stack_allocator(memory, &memoryChunk, 2);
+
+        bool res = _stack_allocator.Empty();
+        _stack_allocator.Allocate(10);
+        res = _stack_allocator.Empty();
+        _stack_allocator.Allocate(33);
+        res = _stack_allocator.Full();
+
         Duckvil::Memory::__fixed_stack_allocator* stackAllocator = memory->m_fnAllocateFixedStackAllocator(&memoryChunk, 64, sizeof(int));
 
         Duckvil::Memory::fixed_stack_allocate(memory, stackAllocator, 10);
@@ -118,28 +127,27 @@ DUCKVIL_TEST(Memory)
     }
 
     {
-        Duckvil::Memory::__fixed_queue_allocator* alloc = memory->m_fnAllocateFixedQueueAllocator(&memoryChunk, 8, sizeof(int));
+        Duckvil::Memory::FixedQueue<int> alloc(memory, &memoryChunk, 2);
 
         int x = 10;
         int xx = 20;
         int xxx = 30;
+        int xxxx = 40;
 
-        int* res = (int*)memory->m_fnFixedQueueAllocate_(alloc, &x, sizeof(int), alignof(int));
-        res = (int*)memory->m_fnFixedQueueAllocate_(alloc, &xx, sizeof(int), alignof(int));
+        bool xc = alloc.Empty();
 
-        res = (int*)memory->m_fnFixedQueueBegin_(alloc);
-
-        res = (int*)memory->m_fnFixedQueueAllocate_(alloc, &xxx, sizeof(int), alignof(int));
-        res = (int*)memory->m_fnFixedQueueBegin_(alloc);
-        res = (int*)memory->m_fnFixedQueueBegin_(alloc);
-        res = (int*)memory->m_fnFixedQueueAllocate_(alloc, &xxx, sizeof(int), alignof(int));
+        alloc.Allocate(10);
+        xc = alloc.Empty();
+        alloc.Allocate(20);
+        xc = alloc.Full();
+        int res = alloc.Begin();
+        alloc.Pop();
+        alloc.Allocate(30);
+        res = alloc.Begin();
+        alloc.Pop();
+        res = alloc.Begin();
 
         printf("AAAA\n");
-
-        //int* res = (int*)memory->m_fnFixedQueueBegin_(alloc);
-        //res = (int*)memory->m_fnFixedQueueAllocate_(alloc, &x, sizeof(int), alignof(int));
-        //res = (int*)memory->m_fnFixedQueueBegin_(alloc);
-        //res = (int*)memory->m_fnFixedQueueAllocate_(alloc, &x, sizeof(int), alignof(int));
     }
 
     for(uint32_t i = 0; i < 1024;)

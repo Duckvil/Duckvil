@@ -42,17 +42,24 @@ Duckvil::Memory::IMemory* duckvil_memory_init()
     memory->m_fnFixedStackAllocateCStr_ = &fixed_stack_allocate;
     memory->m_fnFixedStackTop_ = &fixed_stack_allocator_top;
     memory->m_fnFixedStackPop_ = &fixed_stack_allocator_pop;
+    memory->m_fnFixedStackEmpty_ = &fixed_stack_allocator_empty;
+    memory->m_fnFixedStackFull_ = &fixed_stack_allocator_full;
     memory->m_fnFixedStackClear_ = &fixed_stack_clear;
 
     memory->m_fnStackAllocate_ = &stack_allocate;
     memory->m_fnStackAllocateCStr_ = &stack_allocate;
     memory->m_fnStackTop_ = &stack_allocator_top;
     memory->m_fnStackPop_ = &stack_allocator_pop;
+    memory->m_fnStackEmpty_ = &stack_allocator_empty;
+    memory->m_fnStackFull_ = &stack_allocator_full;
     memory->m_fnStackClear_ = &stack_clear;
 
     memory->m_fnFixedQueueAllocate_ = &fixed_queue_allocate;
     memory->m_fnFixedQueueAllocateCStr_ = &fixed_queue_allocate;
     memory->m_fnFixedQueueBegin_ = &fixed_queue_begin;
+    memory->m_fnFixedQueuePop_ = &fixed_queue_pop;
+    memory->m_fnFixedQueueEmpty_ = &fixed_queue_empty;
+    memory->m_fnFixedQueueFull_ = &fixed_queue_full;
     memory->m_fnFixedQueueClear_ = &fixed_queue_clear;
 
     memory->m_fnAllocateLinearAllocator = &allocate_linear_allocator;

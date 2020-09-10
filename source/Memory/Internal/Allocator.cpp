@@ -86,6 +86,7 @@ namespace Duckvil { namespace Memory {
         _memory->used = 0;
         _memory->m_ullBlockSize = _ullTypeSize;
         _memory->m_ullTail = 0;
+        _memory->m_ullHead = 0;
 
         memset(_memory->memory, 0, _ullSize);
 

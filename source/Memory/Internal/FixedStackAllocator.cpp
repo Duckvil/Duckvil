@@ -60,6 +60,16 @@ namespace Duckvil { namespace Memory {
         _pAllocator->used -= _pAllocator->m_ullBlockSize;
     }
 
+    bool fixed_stack_allocator_empty(__fixed_stack_allocator* _pAlloctor)
+    {
+        return _pAlloctor->used == 0;
+    }
+
+    bool fixed_stack_allocator_full(__fixed_stack_allocator* _pAllocator)
+    {
+        return _pAllocator->used == _pAllocator->capacity;
+    }
+
     void fixed_stack_clear(__fixed_stack_allocator* _pAllocator)
     {
         memset(_pAllocator->memory, 0, _pAllocator->capacity);
