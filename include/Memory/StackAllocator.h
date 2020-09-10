@@ -71,22 +71,22 @@ namespace Duckvil { namespace Memory {
 
         void* Top() const
         {
-            return m_pMemoryInterface->m_fnStackTop_(m_pAllocator);
+            return stack_top(m_pMemoryInterface, m_pAllocator);
         }
 
         void Pop()
         {
-            m_pMemoryInterface->m_fnStackPop_(m_pAllocator);
+            stack_pop(m_pMemoryInterface, m_pAllocator);
         }
 
         bool Empty() const
         {
-            return m_pMemoryInterface->m_fnStackEmpty_(m_pAllocator);
+            return stack_empty(m_pAllocator);
         }
 
         bool Full() const
         {
-            return m_pMemoryInterface->m_fnStackFull_(m_pAllocator);
+            return stack_full(m_pAllocator);
         }
     };
 

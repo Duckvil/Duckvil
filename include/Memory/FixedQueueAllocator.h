@@ -15,6 +15,36 @@ namespace Duckvil { namespace Memory {
         return _pMemory->m_fnFixedQueueAllocateCStr_(_pAllocator, _pData);
     }
 
+    void* fixed_queue_begin(IMemory* _pMemory, __fixed_queue_allocator* _pAllocator)
+    {
+        return _pMemory->m_fnFixedQueueBegin_(_pAllocator);
+    }
+
+    void fixed_queue_pop(IMemory* _pMemory, __fixed_queue_allocator* _pAllocator)
+    {
+        _pMemory->m_fnFixedQueuePop_(_pAllocator);
+    }
+
+    bool fixed_queue_empty(__fixed_queue_allocator* _pAllocator)
+    {
+        return _pAllocator->used == 0;
+    }
+
+    bool fixed_queue_full(__fixed_queue_allocator* _pAllocator)
+    {
+        return _pAllocator->used == _pAllocator->capacity;
+    }
+
+    size_t fixed_queue_size(__fixed_queue_allocator* _pAllocator)
+    {
+        return _pAllocator->used;
+    }
+
+    size_t fixed_queue_capacity(__fixed_queue_allocator* _pAllocator)
+    {
+        return _pAllocator->capacity;
+    }
+
     template <typename Type>
     class FixedQueue
     {
@@ -41,24 +71,22 @@ namespace Duckvil { namespace Memory {
 
         const Type& Begin() const
         {
-            Type* _ptr = (Type*)m_pMemoryInterface->m_fnFixedQueueBegin_(m_pAllocator);
-
-            return *_ptr;
+            return *(Type*)fixed_queue_begin(m_pMemoryInterface, m_pAllocator);
         }
 
         bool Empty() const
         {
-            return m_pMemoryInterface->m_fnFixedQueueEmpty_(m_pAllocator);
+            return fixed_queue_empty(m_pAllocator);
         }
 
         bool Full() const
         {
-            return m_pMemoryInterface->m_fnFixedQueueFull_(m_pAllocator);
+            return fixed_queue_full(m_pAllocator);
         }
 
         void Pop()
         {
-            m_pMemoryInterface->m_fnFixedQueuePop_(m_pAllocator);
+            fixed_queue_pop(m_pMemoryInterface, m_pAllocator);
         }
     };
 

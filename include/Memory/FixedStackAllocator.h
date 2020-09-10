@@ -15,6 +15,36 @@ namespace Duckvil { namespace Memory {
         return _pMemory->m_fnFixedStackAllocateCStr_(_pAllocator, _pData);
     }
 
+    void* fixed_stack_top(IMemory* _pMemory, __fixed_stack_allocator* _pAllocator)
+    {
+        return _pMemory->m_fnFixedStackTop_(_pAllocator);
+    }
+
+    void fixed_stack_pop(IMemory* _pMemory, __fixed_stack_allocator* _pAllocator)
+    {
+        _pMemory->m_fnFixedStackPop_(_pAllocator);
+    }
+
+    bool fixed_stack_empty(__fixed_stack_allocator* _pAllocator)
+    {
+        return _pAllocator->used == 0;
+    }
+
+    bool fixed_stack_full(__fixed_stack_allocator* _pAllocator)
+    {
+        return _pAllocator->used == _pAllocator->capacity;
+    }
+
+    size_t fixed_stack_size(__fixed_stack_allocator* _pAllocator)
+    {
+        return _pAllocator->used;
+    }
+
+    size_t fixed_stack_capacity(__fixed_stack_allocator* _pAllocator)
+    {
+        return _pAllocator->capacity;
+    }
+
     template <typename Type>
     class FixedStack
     {
@@ -41,22 +71,22 @@ namespace Duckvil { namespace Memory {
 
         const Type& Top() const
         {
-            return *(Type*)m_pMemoryInterface->m_fnFixedStackTop_(m_pAllocator);
+            return *(Type*)fixed_stack_top(m_pMemoryInterface, m_pAllocator);
         }
 
         void Pop()
         {
-            m_pMemoryInterface->m_fnFixedStackPop_(m_pAllocator);
+            fixed_stack_pop(m_pMemoryInterface, m_pAllocator);
         }
 
         bool Empty() const
         {
-            return m_pMemoryInterface->m_fnFixedStackEmpty_(m_pAllocator);
+            return fixed_stack_empty(m_pAllocator);
         }
 
         bool Full() const
         {
-            return m_pMemoryInterface->m_fnFixedStackFull_(m_pAllocator);
+            return fixed_stack_full(m_pAllocator);
         }
     };
 
