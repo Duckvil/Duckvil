@@ -10,5 +10,6 @@ namespace Duckvil { namespace Memory {
     __fixed_stack_allocator* allocate_fixed_stack_allocator(__allocator* _pAllocator, size_t _ullSize, size_t _ullTypeSize);
     __stack_allocator* allocate_stack_allocator(__allocator* _pAllocator, size_t _ullSize);
     __fixed_queue_allocator* allocate_fixed_queue_allocator(__allocator* _pAllocator, size_t _ullSize, size_t _ullTypeSize);
+    __queue_allocator* allocate_queue_allocator(__allocator* _pAllocator, size_t _ullSize);
 
 }}

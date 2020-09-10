@@ -66,7 +66,7 @@ namespace Duckvil { namespace Memory {
 
         __stack_node* _current_memory = (__stack_node*)(_pAllocator->memory + _pAllocator->used - g_ullStackNodeSize);
         size_t _block_size = _current_memory->m_ullBlockSize;
-        size_t _padding = _current_memory->m_ucPadding;
+        uint8_t _padding = _current_memory->m_ucPadding;
 
         memset(_current_memory, 0, _block_size + g_ullStackNodeSize);
 

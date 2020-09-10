@@ -38,6 +38,12 @@ namespace Duckvil { namespace Memory {
         size_t m_ullHead;
     };
 
+    struct __queue_allocator : public __allocator
+    {
+        size_t m_ullTail;
+        size_t m_ullHead;
+    };
+
     void* calculate_aligned_pointer(void* _p, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
 
     struct IMemory
@@ -75,10 +81,19 @@ namespace Duckvil { namespace Memory {
         typedef bool (*_fixed_queue_full_)(__fixed_queue_allocator* _pAllocator);
         typedef void (*_fixed_queue_clear_)(__fixed_queue_allocator* _pAllocator);
 
+        typedef void* (*_queue_allocate_)(__queue_allocator* _pAllocator, const void* _pData, size_t _ullSize, uint8_t _ucAlignment);
+        typedef const char* (*_queue_allocate_cstr_)(__queue_allocator* _pAllocator, const char* _pData);
+        typedef void* (*_queue_begin_)(__queue_allocator* _pAllocator);
+        typedef void (*_queue_pop_)(__queue_allocator* _pAllocator);
+        typedef bool (*_queue_empty_)(__queue_allocator* _pAllocator);
+        typedef bool (*_queue_full_)(__queue_allocator* _pAllocator);
+        typedef void (*_queue_clear_)(__queue_allocator* _pAllocator);
+
         typedef __linear_allocator* (*_allocate_linear_allocator)(__allocator* _pAllocator, size_t _ullSize);
         typedef __fixed_stack_allocator* (*_allocate_fixed_stack_allocator)(__allocator* _pAllocator, size_t _ullSize, size_t _ullTypeSize);
         typedef __stack_allocator* (*_allocate_stack_allocator)(__allocator* _pAllocator, size_t _ullSize);
         typedef __fixed_queue_allocator* (*_allocate_fixed_queue_allocator)(__allocator* _pAllocator, size_t _ullSize, size_t _ullTypeSize);
+        typedef __queue_allocator* (*_allocate_queue_allocator)(__allocator* _pAllocator, size_t _ullSize);
 
         _basic_allocate             m_fnBasicAllocate;
 
@@ -113,10 +128,19 @@ namespace Duckvil { namespace Memory {
         _fixed_queue_full_          m_fnFixedQueueFull_;
         _fixed_queue_clear_         m_fnFixedQueueClear_;
 
+        _queue_allocate_      m_fnQueueAllocate_;
+        _queue_allocate_cstr_ m_fnQueueAllocateCStr_;
+        _queue_begin_         m_fnQueueBegin_;
+        _queue_pop_           m_fnQueuePop_;
+        _queue_empty_         m_fnQueueEmpty_;
+        _queue_full_          m_fnQueueFull_;
+        _queue_clear_         m_fnQueueClear_;
+
         _allocate_linear_allocator      m_fnAllocateLinearAllocator;
         _allocate_fixed_stack_allocator m_fnAllocateFixedStackAllocator;
         _allocate_stack_allocator       m_fnAllocateStackAllocator;
         _allocate_fixed_queue_allocator m_fnAllocateFixedQueueAllocator;
+        _allocate_queue_allocator       m_fnAllocateQueueAllocator;
     };
 
 }}

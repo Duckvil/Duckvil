@@ -150,6 +150,54 @@ DUCKVIL_TEST(Memory)
         printf("AAAA\n");
     }
 
+    {
+        Duckvil::Memory::__fixed_queue_allocator* _queueAllocator = memory->m_fnAllocateFixedQueueAllocator(&memoryChunk, 64, sizeof(int));
+
+        int x = 10;
+        int xx = 20;
+
+        memory->m_fnFixedQueueAllocate_(_queueAllocator, &x, sizeof(int), alignof(int));
+        memory->m_fnFixedQueueAllocate_(_queueAllocator, &xx, sizeof(int), alignof(int));
+        int* res = (int*)memory->m_fnFixedQueueBegin_(_queueAllocator);
+        memory->m_fnFixedQueuePop_(_queueAllocator);
+        res = (int*)memory->m_fnFixedQueueBegin_(_queueAllocator);
+        memory->m_fnFixedQueuePop_(_queueAllocator);
+        memory->m_fnFixedQueueAllocate_(_queueAllocator, &x, sizeof(int), alignof(int));
+        memory->m_fnFixedQueueAllocate_(_queueAllocator, &xx, sizeof(int), alignof(int));
+        res = (int*)memory->m_fnFixedQueueBegin_(_queueAllocator);
+        memory->m_fnFixedQueuePop_(_queueAllocator);
+        memory->m_fnFixedQueueAllocate_(_queueAllocator, &x, sizeof(int), alignof(int));
+        res = (int*)memory->m_fnFixedQueueBegin_(_queueAllocator);
+        memory->m_fnFixedQueuePop_(_queueAllocator);
+        res = (int*)memory->m_fnFixedQueueBegin_(_queueAllocator);
+
+        printf("AAAA\n");
+    }
+
+    {
+        Duckvil::Memory::__queue_allocator* _queueAllocator = memory->m_fnAllocateQueueAllocator(&memoryChunk, 64);
+
+        int x = 10;
+        double xx = 20.f;
+
+        memory->m_fnQueueAllocate_(_queueAllocator, &x, sizeof(int), alignof(int));
+        memory->m_fnQueueAllocate_(_queueAllocator, &xx, sizeof(double), alignof(double));
+        int* res = (int*)memory->m_fnQueueBegin_(_queueAllocator);
+        memory->m_fnQueuePop_(_queueAllocator);
+        double* res2 = (double*)memory->m_fnQueueBegin_(_queueAllocator);
+        memory->m_fnQueuePop_(_queueAllocator);
+        memory->m_fnQueueAllocate_(_queueAllocator, &x, sizeof(int), alignof(int));
+        memory->m_fnQueueAllocate_(_queueAllocator, &xx, sizeof(double), alignof(double));
+        res = (int*)memory->m_fnQueueBegin_(_queueAllocator);
+        memory->m_fnQueuePop_(_queueAllocator);
+        memory->m_fnQueueAllocate_(_queueAllocator, &x, sizeof(int), alignof(int));
+        res2 = (double*)memory->m_fnQueueBegin_(_queueAllocator);
+        memory->m_fnQueuePop_(_queueAllocator);
+        res = (int*)memory->m_fnQueueBegin_(_queueAllocator);
+
+        printf("AAAA\n");
+    }
+
     for(uint32_t i = 0; i < 1024;)
     {
         for(uint32_t j = 0; j < 8; i++, j++)

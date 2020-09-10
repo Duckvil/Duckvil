@@ -5,6 +5,7 @@
 #include "Memory/Internal/StackAllocator.h"
 #include "Memory/Internal/FixedStackAllocator.h"
 #include "Memory/Internal/FixedQueueAllocator.h"
+#include "Memory/Internal/QueueAllocator.h"
 
 #include <memory>
 
@@ -62,10 +63,19 @@ Duckvil::Memory::IMemory* duckvil_memory_init()
     memory->m_fnFixedQueueFull_ = &fixed_queue_full;
     memory->m_fnFixedQueueClear_ = &fixed_queue_clear;
 
+    memory->m_fnQueueAllocate_ = &queue_allocate;
+    memory->m_fnQueueAllocateCStr_ = &queue_allocate;
+    memory->m_fnQueueBegin_ = &queue_begin;
+    memory->m_fnQueuePop_ = &queue_pop;
+    memory->m_fnQueueEmpty_ = &queue_empty;
+    memory->m_fnQueueFull_ = &queue_full;
+    memory->m_fnQueueClear_ = &queue_clear;
+
     memory->m_fnAllocateLinearAllocator = &allocate_linear_allocator;
     memory->m_fnAllocateFixedStackAllocator = &allocate_fixed_stack_allocator;
     memory->m_fnAllocateStackAllocator = &allocate_stack_allocator;
     memory->m_fnAllocateFixedQueueAllocator = &allocate_fixed_queue_allocator;
+    memory->m_fnAllocateQueueAllocator = &allocate_queue_allocator;
 
     return memory;
 }

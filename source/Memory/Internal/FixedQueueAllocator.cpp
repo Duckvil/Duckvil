@@ -30,10 +30,14 @@ namespace Duckvil { namespace Memory {
     {
         size_t _len = strlen(_pData);
 
-        // if(_pAllocator->capacity < _pAllocator->used + _len)
-        // {
-        //     return 0;
-        // }
+        if(_pAllocator->used >= _pAllocator->capacity)
+        {
+            return 0;
+        }
+        else if(_pAllocator->m_ullHead >= _pAllocator->capacity && _pAllocator->m_ullTail > 0)
+        {
+            _pAllocator->m_ullHead = _pAllocator->m_ullTail - _pAllocator->m_ullBlockSize;
+        }
 
         void* _memory = (void*)(_pAllocator->memory + _pAllocator->m_ullHead);
 
