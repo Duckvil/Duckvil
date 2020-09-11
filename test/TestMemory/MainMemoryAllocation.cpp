@@ -32,5 +32,5 @@ DUCKVIL_TEST(MainMemoryAllocation)
 
 int main(int argc, char* argv[])
 {
-    return 0;
+    return DUCKVIL_TEST_FAILED;
 }

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.17)
 
 FILE(GLOB_RECURSE children */CMakeLists.txt)
 
@@ -11,7 +11,7 @@ list(APPEND INCLUDES
 FOREACH(child ${children})
     get_filename_component(PARENT_DIR ${child} DIRECTORY)
     add_subdirectory(${PARENT_DIR})
-    add_test(${PARENT_DIR} ${PARENT_DIR})
+    add_test(${PARENT_DIR} ${PARENT_DIR} COMMAND ${CMAKE_COMMAND} -E ENVIRONMENT CTEST_OUTPUT_ON_FAILURE=1)
     get_filename_component(PROJECT_ID ${PARENT_DIR} NAME)
     get_target_property(
         TARGET_TYPE ${PROJECT_ID} TYPE

@@ -4,10 +4,11 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <stdexcept>
 
 namespace Duckvil { namespace UniTestFramework {
 
-    static bool g_bTestsPassed = false;
+    static bool g_bTestsFailed = false;
 
     struct Assert
     {
@@ -61,6 +62,13 @@ namespace Duckvil { namespace UniTestFramework {
     static void test_failed(const char* _sTestName, const char* _sReason, const char* _sFile = "", uint32_t _uiLine = 0)
     {
         printf("TEST(%s:%u) '%s' failed! Reason: %s\n", _sFile, _uiLine, _sTestName, _sReason);
+
+        if(!g_bTestsFailed)
+        {
+            g_bTestsFailed = true;
+        }
+
+        // throw std::runtime_error("AAA");
     }
 
 }}
@@ -87,3 +95,4 @@ bool DUCKVIL_CAT(duckvil_unitest_, name)::unit_test()
 #define DUCKVIL_TEST_IS_NOT_NULL(a, msg) do { if(!Duckvil::UniTestFramework::Assert::IsNotNULL(a)) { test_failed_message = msg; test_failed_line = __LINE__; return false; } } while(0)
 #define DUCKVIL_TEST_EXP(exp, msg) do { if(!(exp)) { test_failed_message = msg; test_failed_line = __LINE__; return false; } } while(0)
 #define DUCKVIL_TEST_SUCCESS_PASS return true
+#define DUCKVIL_TEST_FAILED Duckvil::UniTestFramework::g_bTestsFailed
