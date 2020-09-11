@@ -38,6 +38,8 @@ FOREACH(child ${children})
     endif()
 ENDFOREACH()
 
+SET(GLOBAL_STATIC_LIBRARIES  ${STATIC_LIBRARIES} CACHE INTERNAL "Engine static libs" FORCE)
+
 FOREACH(child ${children})
     get_filename_component(PARENT_DIR ${child} DIRECTORY)
     get_filename_component(PROJECT_ID ${PARENT_DIR} NAME)

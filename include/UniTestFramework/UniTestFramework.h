@@ -2,6 +2,9 @@
 
 #include "Utils/Macro.h"
 
+#include <cstdint>
+#include <cstdio>
+
 namespace Duckvil { namespace UniTestFramework {
 
     static bool g_bTestsPassed = false;
@@ -55,7 +58,7 @@ namespace Duckvil { namespace UniTestFramework {
         }
     };
 
-    void test_failed(const char* _sTestName, const char* _sReason, const char* _sFile = "", uint32_t _uiLine = 0)
+    static void test_failed(const char* _sTestName, const char* _sReason, const char* _sFile = "", uint32_t _uiLine = 0)
     {
         printf("TEST(%s:%u) '%s' failed! Reason: %s\n", _sFile, _uiLine, _sTestName, _sReason);
     }
