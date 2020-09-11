@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef DUCKVIL_PLATFORM_WINDOWS
 #include "PlugNPlay/Module.h"
 
 namespace Duckvil { namespace PlugNPlay { namespace Platform {
@@ -9,3 +10,4 @@ namespace Duckvil { namespace PlugNPlay { namespace Platform {
     bool windows_free(__module_information* _pModule);
 
 }}}
+#endif

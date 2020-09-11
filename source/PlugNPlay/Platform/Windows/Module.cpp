@@ -1,5 +1,6 @@
 #include "PlugNPlay/Platform/Windows/Module.h"
 
+#ifdef DUCKVIL_PLATFORM_WINDOWS
 #include <Windows.h>
 
 namespace Duckvil { namespace PlugNPlay { namespace Platform {
@@ -41,3 +42,4 @@ namespace Duckvil { namespace PlugNPlay { namespace Platform {
     }
 
 }}}
+#endif

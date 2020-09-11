@@ -1,9 +1,13 @@
-#include "test/TestMemory/MainMemoryAllocation.h"
+#include "PlugNPlay/Module.h"
+
+#include "Memory/LinearAllocator.h"
+
+#include "UniTestFramework/UniTestFramework.h"
 
 DUCKVIL_TEST(MainMemoryAllocation)
 {
     Duckvil::PlugNPlay::module _module;
-    Duckvil::PlugNPlay::__module_information _memoryModule("Memory.dll");
+    Duckvil::PlugNPlay::__module_information _memoryModule("D:/Projects/C++/Duckvil/bin/Memory.dll");
     Duckvil::Memory::IMemory* (*_fnInit)();
 
     Duckvil::PlugNPlay::module_init(&_module);
