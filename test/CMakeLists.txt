@@ -11,7 +11,6 @@ list(APPEND INCLUDES
 FOREACH(child ${children})
     get_filename_component(PARENT_DIR ${child} DIRECTORY)
     add_subdirectory(${PARENT_DIR})
-    add_test(${PARENT_DIR} ${PARENT_DIR} COMMAND ${CMAKE_COMMAND} -E ENVIRONMENT CTEST_OUTPUT_ON_FAILURE=1)
     get_filename_component(PROJECT_ID ${PARENT_DIR} NAME)
     get_target_property(
         TARGET_TYPE ${PROJECT_ID} TYPE
@@ -22,6 +21,7 @@ FOREACH(child ${children})
         ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         DEBUG_POSTFIX ""
+        PREFIX "run"
     )
     target_include_directories(
         ${PROJECT_ID} PRIVATE
@@ -32,4 +32,5 @@ FOREACH(child ${children})
         ${GLOBAL_STATIC_LIBRARIES}
         ${LIBS}
     )
+    add_test(NAME ${PARENT_DIR} COMMAND ${CMAKE_COMMAND} -E ENVIRONMENT CTEST_OUTPUT_ON_FAILURE=1)
 ENDFOREACH()
