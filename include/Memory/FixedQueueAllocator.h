@@ -35,12 +35,12 @@ namespace Duckvil { namespace Memory {
         return _pAllocator->used == _pAllocator->capacity;
     }
 
-    size_t fixed_queue_size(__fixed_queue_allocator* _pAllocator)
+    std::size_t fixed_queue_size(__fixed_queue_allocator* _pAllocator)
     {
         return _pAllocator->used;
     }
 
-    size_t fixed_queue_capacity(__fixed_queue_allocator* _pAllocator)
+    std::size_t fixed_queue_capacity(__fixed_queue_allocator* _pAllocator)
     {
         return _pAllocator->capacity;
     }
@@ -53,7 +53,7 @@ namespace Duckvil { namespace Memory {
         IMemory* m_pMemoryInterface;
 
     public:
-        FixedQueue(IMemory* _pMemoryInterface, __allocator* _pAllocator, size_t _ullCount) :
+        FixedQueue(IMemory* _pMemoryInterface, __allocator* _pAllocator, std::size_t _ullCount) :
             m_pMemoryInterface(_pMemoryInterface)
         {
             m_pAllocator = m_pMemoryInterface->m_fnAllocateFixedQueueAllocator(_pAllocator, _ullCount * sizeof(Type), sizeof(Type));

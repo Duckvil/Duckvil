@@ -4,7 +4,7 @@
 
 namespace Duckvil { namespace Memory {
 
-    void* linear_allocate(__linear_allocator& _allocator, const void* _pData, size_t _ullSize, uint8_t _ucAlignment)
+    void* linear_allocate(__linear_allocator& _allocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
     {
         if(_allocator.capacity < _allocator.used + _ullSize)
         {
@@ -23,7 +23,7 @@ namespace Duckvil { namespace Memory {
 
     const char* linear_allocate(__linear_allocator& _allocator, const char* _pData)
     {
-        size_t _len = strlen(_pData);
+        std::size_t _len = strlen(_pData);
 
         if(_allocator.capacity < _allocator.used + _len)
         {
@@ -45,7 +45,7 @@ namespace Duckvil { namespace Memory {
         _allocator.used = 0;
     }
 
-    void* linear_allocate(__linear_allocator* _pAllocator, const void* _pData, size_t _ullSize, uint8_t _ucAlignment)
+    void* linear_allocate(__linear_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
     {
         if(_pAllocator->capacity < _pAllocator->used + _ullSize)
         {
@@ -64,7 +64,7 @@ namespace Duckvil { namespace Memory {
 
     const char* linear_allocate(__linear_allocator* _pAllocator, const char* _pData)
     {
-        size_t _len = strlen(_pData);
+        std::size_t _len = strlen(_pData);
 
         if(_pAllocator->capacity < _pAllocator->used + _len)
         {

@@ -16,7 +16,7 @@ namespace Duckvil { namespace Utils {
 
     }
 
-    bool CommandArgumentsParser::Parse(CommandArgumentsParser::Descriptor* _pDescriptors, size_t _ullDescriptorsCount)
+    bool CommandArgumentsParser::Parse(CommandArgumentsParser::Descriptor* _pDescriptors, std::size_t _ullDescriptorsCount)
     {
         if(_pDescriptors == 0 || _ullDescriptorsCount == 0)
         {

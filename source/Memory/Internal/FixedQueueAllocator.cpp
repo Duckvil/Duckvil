@@ -4,7 +4,7 @@
 
 namespace Duckvil { namespace Memory {
 
-    void* fixed_queue_allocate(__fixed_queue_allocator* _pAllocator, const void* _pData, size_t _ullSize, uint8_t _ucAlignment)
+    void* fixed_queue_allocate(__fixed_queue_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
     {
         if(_pAllocator->used >= _pAllocator->capacity)
         {
@@ -28,7 +28,7 @@ namespace Duckvil { namespace Memory {
 
     const char* fixed_queue_allocate(__fixed_queue_allocator* _pAllocator, const char* _pData)
     {
-        size_t _len = strlen(_pData);
+        std::size_t _len = strlen(_pData);
 
         if(_pAllocator->used >= _pAllocator->capacity)
         {

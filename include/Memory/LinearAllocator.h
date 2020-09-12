@@ -36,12 +36,12 @@ namespace Duckvil { namespace Memory {
         return _pAllocator->used == _pAllocator->capacity;
     }
 
-    size_t linear_size(__linear_allocator* _pAllocator)
+    std::size_t linear_size(__linear_allocator* _pAllocator)
     {
         return _pAllocator->used;
     }
 
-    size_t linear_capacity(__linear_allocator* _pAllocator)
+    std::size_t linear_capacity(__linear_allocator* _pAllocator)
     {
         return _pAllocator->capacity;
     }

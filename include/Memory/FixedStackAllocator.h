@@ -35,12 +35,12 @@ namespace Duckvil { namespace Memory {
         return _pAllocator->used == _pAllocator->capacity;
     }
 
-    size_t fixed_stack_size(__fixed_stack_allocator* _pAllocator)
+    std::size_t fixed_stack_size(__fixed_stack_allocator* _pAllocator)
     {
         return _pAllocator->used;
     }
 
-    size_t fixed_stack_capacity(__fixed_stack_allocator* _pAllocator)
+    std::size_t fixed_stack_capacity(__fixed_stack_allocator* _pAllocator)
     {
         return _pAllocator->capacity;
     }
@@ -53,7 +53,7 @@ namespace Duckvil { namespace Memory {
         IMemory* m_pMemoryInterface;
 
     public:
-        FixedStack(IMemory* _pMemoryInterface, __allocator* _pAllocator, size_t _ullCount) :
+        FixedStack(IMemory* _pMemoryInterface, __allocator* _pAllocator, std::size_t _ullCount) :
             m_pMemoryInterface(_pMemoryInterface)
         {
             m_pAllocator = m_pMemoryInterface->m_fnAllocateFixedStackAllocator(_pAllocator, _ullCount * sizeof(Type), sizeof(Type));

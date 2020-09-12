@@ -7,12 +7,12 @@
 
 namespace Duckvil { namespace Memory {
 
-    static const size_t g_ullMax = std::numeric_limits<size_t>::max();
+    static const std::size_t g_ullMax = std::numeric_limits<std::size_t>::max();
 
     struct __allocator
     {
-        size_t capacity = 0;
-        size_t used = 0;
+        std::size_t capacity = 0;
+        std::size_t used = 0;
         uint8_t* memory = 0;
     };
 
@@ -23,7 +23,7 @@ namespace Duckvil { namespace Memory {
 
     struct __fixed_stack_allocator : public __allocator
     {
-        size_t m_ullBlockSize;
+        std::size_t m_ullBlockSize;
     };
 
     struct __stack_allocator : public __allocator
@@ -33,31 +33,31 @@ namespace Duckvil { namespace Memory {
 
     struct __fixed_queue_allocator : public __allocator
     {
-        size_t m_ullBlockSize;
-        size_t m_ullTail;
-        size_t m_ullHead;
+        std::size_t m_ullBlockSize;
+        std::size_t m_ullTail;
+        std::size_t m_ullHead;
     };
 
     struct __queue_allocator : public __allocator
     {
-        size_t m_ullTail;
-        size_t m_ullHead;
+        std::size_t m_ullTail;
+        std::size_t m_ullHead;
     };
 
     void* calculate_aligned_pointer(void* _p, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
 
     struct IMemory
     {
-        typedef bool (*_basic_allocate)(__allocator* _pAllocator, size_t _ullSize);
+        typedef bool (*_basic_allocate)(__allocator* _pAllocator, std::size_t _ullSize);
 
-        typedef void* (*_linear_allocate)(__linear_allocator& _allocator, const void* _pData, size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_linear_allocate)(__linear_allocator& _allocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
         typedef const char* (*_linear_allocate_cstr)(__linear_allocator& _allocator, const char* _pData);
         typedef void (*_linear_clear)(__linear_allocator& _allocator);
-        typedef void* (*_linear_allocate_)(__linear_allocator* _pAllocator, const void* _pData, size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_linear_allocate_)(__linear_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
         typedef const char* (*_linear_allocate_cstr_)(__linear_allocator* _pAllocator, const char* _pData);
         typedef void (*_linear_clear_)(__linear_allocator* _pAllocator);
 
-        typedef void* (*_fixed_stack_allocate_)(__fixed_stack_allocator* _pAllocator, const void* _pData, size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_fixed_stack_allocate_)(__fixed_stack_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
         typedef const char* (*_fixed_stack_allocate_cstr_)(__fixed_stack_allocator* _pAllocator, const char* _pData);
         typedef void* (*_fixed_stack_top_)(__fixed_stack_allocator* _pAllocator);
         typedef void (*_fixed_stack_pop_)(__fixed_stack_allocator* _pAllocator);
@@ -65,7 +65,7 @@ namespace Duckvil { namespace Memory {
         typedef bool (*_fixed_stack_full_)(__fixed_stack_allocator* _pAllocator);
         typedef void (*_fixed_stack_clear_)(__fixed_stack_allocator* _pAllocator);
 
-        typedef void* (*_stack_allocate_)(__stack_allocator* _pAllocator, const void* _pData, size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_stack_allocate_)(__stack_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
         typedef const char* (*_stack_allocate_cstr_)(__stack_allocator* _pAllocator, const char* _pData);
         typedef void* (*_stack_top_)(__stack_allocator* _pAllocator);
         typedef void (*_stack_pop_)(__stack_allocator* _pAllocator);
@@ -73,7 +73,7 @@ namespace Duckvil { namespace Memory {
         typedef bool (*_stack_full_)(__stack_allocator* _pAllocator);
         typedef void (*_stack_clear_)(__stack_allocator* _pAllocator);
 
-        typedef void* (*_fixed_queue_allocate_)(__fixed_queue_allocator* _pAllocator, const void* _pData, size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_fixed_queue_allocate_)(__fixed_queue_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
         typedef const char* (*_fixed_queue_allocate_cstr_)(__fixed_queue_allocator* _pAllocator, const char* _pData);
         typedef void* (*_fixed_queue_begin_)(__fixed_queue_allocator* _pAllocator);
         typedef void (*_fixed_queue_pop_)(__fixed_queue_allocator* _pAllocator);
@@ -81,7 +81,7 @@ namespace Duckvil { namespace Memory {
         typedef bool (*_fixed_queue_full_)(__fixed_queue_allocator* _pAllocator);
         typedef void (*_fixed_queue_clear_)(__fixed_queue_allocator* _pAllocator);
 
-        typedef void* (*_queue_allocate_)(__queue_allocator* _pAllocator, const void* _pData, size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_queue_allocate_)(__queue_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
         typedef const char* (*_queue_allocate_cstr_)(__queue_allocator* _pAllocator, const char* _pData);
         typedef void* (*_queue_begin_)(__queue_allocator* _pAllocator);
         typedef void (*_queue_pop_)(__queue_allocator* _pAllocator);
@@ -89,11 +89,11 @@ namespace Duckvil { namespace Memory {
         typedef bool (*_queue_full_)(__queue_allocator* _pAllocator);
         typedef void (*_queue_clear_)(__queue_allocator* _pAllocator);
 
-        typedef __linear_allocator* (*_allocate_linear_allocator)(__allocator* _pAllocator, size_t _ullSize);
-        typedef __fixed_stack_allocator* (*_allocate_fixed_stack_allocator)(__allocator* _pAllocator, size_t _ullSize, size_t _ullTypeSize);
-        typedef __stack_allocator* (*_allocate_stack_allocator)(__allocator* _pAllocator, size_t _ullSize);
-        typedef __fixed_queue_allocator* (*_allocate_fixed_queue_allocator)(__allocator* _pAllocator, size_t _ullSize, size_t _ullTypeSize);
-        typedef __queue_allocator* (*_allocate_queue_allocator)(__allocator* _pAllocator, size_t _ullSize);
+        typedef __linear_allocator* (*_allocate_linear_allocator)(__allocator* _pAllocator, std::size_t _ullSize);
+        typedef __fixed_stack_allocator* (*_allocate_fixed_stack_allocator)(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef __stack_allocator* (*_allocate_stack_allocator)(__allocator* _pAllocator, std::size_t _ullSize);
+        typedef __fixed_queue_allocator* (*_allocate_fixed_queue_allocator)(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef __queue_allocator* (*_allocate_queue_allocator)(__allocator* _pAllocator, std::size_t _ullSize);
 
         _basic_allocate             m_fnBasicAllocate;
 

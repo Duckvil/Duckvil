@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 namespace Duckvil { namespace Utils {
@@ -37,7 +38,7 @@ namespace Duckvil { namespace Utils {
         CommandArgumentsParser(int _iArgc, char* _spArgv[]);
         ~CommandArgumentsParser();
 
-        bool Parse(CommandArgumentsParser::Descriptor* _pDescriptors, size_t _ullDescriptorsCount);
+        bool Parse(CommandArgumentsParser::Descriptor* _pDescriptors, std::size_t _ullDescriptorsCount);
 
         template <typename A>
         inline const Descriptor& operator[](A _index) { return m_pDescriptors[(uint32_t)_index]; }
