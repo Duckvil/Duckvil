@@ -12,9 +12,6 @@ FOREACH(child ${children})
     get_filename_component(PARENT_DIR ${child} DIRECTORY)
     add_subdirectory(${PARENT_DIR})
     get_filename_component(PROJECT_ID ${PARENT_DIR} NAME)
-    get_target_property(
-        TARGET_TYPE ${PROJECT_ID} TYPE
-    )
     set_target_properties(${PROJECT_ID} PROPERTIES
         CXX_STANDARD 20
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -32,5 +29,5 @@ FOREACH(child ${children})
         ${GLOBAL_STATIC_LIBRARIES}
         ${LIBS}
     )
-    add_test(NAME ${PARENT_DIR} COMMAND ${CMAKE_COMMAND} -E ENVIRONMENT CTEST_OUTPUT_ON_FAILURE=1)
+    add_test(NAME ${PROJECT_ID} COMMAND ${PROJECT_ID})
 ENDFOREACH()

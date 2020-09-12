@@ -4,10 +4,17 @@
 
 #include "UniTestFramework/UniTestFramework.h"
 
+#include <cstring>
+
 DUCKVIL_TEST(MainMemoryAllocation)
 {
+    char buffer[256] = { 0 };
+
+    strncpy(buffer, DUCKVIL_OUTPUT, sizeof(buffer));
+    strncat(buffer, "/Memory.dll", sizeof(buffer));
+
     Duckvil::PlugNPlay::module _module;
-    Duckvil::PlugNPlay::__module_information _memoryModule("D:/Projects/C++/Duckvil/bin/Memory.dll");
+    Duckvil::PlugNPlay::__module_information _memoryModule(buffer);
     Duckvil::Memory::IMemory* (*_fnInit)();
 
     Duckvil::PlugNPlay::module_init(&_module);
