@@ -23,6 +23,8 @@ DUCKVIL_TEST(MainMemoryAllocation)
     DUCKVIL_TEST_IS_NOT_NULL((void*)_module.get, "Module get function is not loaded");
     DUCKVIL_TEST_IS_NOT_NULL((void*)_module.free, "Module free function is not loaded");
 
+    printf("Trying to load: %s\n", buffer);
+
     _module.load(&_memoryModule);
     DUCKVIL_TEST_IS_NOT_NULL(_memoryModule.m_pModule, "Memory module is NULL");
 
