@@ -1,6 +1,6 @@
 #include "Memory/Internal/FixedQueueAllocator.h"
 
-#include <memory>
+#include <cstring>
 
 namespace Duckvil { namespace Memory {
 
