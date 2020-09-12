@@ -21,7 +21,7 @@ namespace Duckvil { namespace UniTestFramework {
         template <typename A>
         static bool AreEqual(const A* v1, const A& v2)
         {
-            if(v1 == NULL)
+            if(v1 == nullptr)
             {
                 return false;
             }
@@ -38,7 +38,7 @@ namespace Duckvil { namespace UniTestFramework {
         template <typename A>
         static bool NotEqual(const A* v1, const A& v2)
         {
-            if (v1 == NULL)
+            if (v1 == nullptr)
             {
                 return false;
             }

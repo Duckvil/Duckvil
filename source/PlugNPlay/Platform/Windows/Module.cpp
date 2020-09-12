@@ -9,7 +9,7 @@ namespace Duckvil { namespace PlugNPlay { namespace Platform {
     {
         _pModule->m_pModule = LoadLibraryA(_pModule->m_sName);
 
-        if(_pModule->m_pModule == NULL)
+        if(_pModule->m_pModule == nullptr)
         {
             return false;
         }
@@ -21,7 +21,7 @@ namespace Duckvil { namespace PlugNPlay { namespace Platform {
     {
         *_pFunction = GetProcAddress((HMODULE)_pModule.m_pModule, _sName);
 
-        if(*_pFunction == NULL)
+        if(*_pFunction == nullptr)
         {
             return false;
         }

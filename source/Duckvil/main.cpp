@@ -26,10 +26,10 @@ DUCKVIL_TEST(Module)
     DUCKVIL_TEST_IS_NOT_NULL((void*)g_module.free, "Module free function is not loaded");
 
     g_module.load(&g_memoryModule);
-    DUCKVIL_TEST_IS_NOT_NULL(g_memoryModule.m_pModule, "Memory module is NULL");
+    DUCKVIL_TEST_IS_NOT_NULL(g_memoryModule.m_pModule, "Memory module is nullptr");
 
     g_module.get(g_memoryModule, "duckvil_memory_init", (void**)&g_fnInit);
-    DUCKVIL_TEST_IS_NOT_NULL((void*)g_fnInit, "Memory module is NULL");
+    DUCKVIL_TEST_IS_NOT_NULL((void*)g_fnInit, "Memory module is nullptr");
 
     DUCKVIL_TEST_SUCCESS_PASS;
 }
@@ -61,7 +61,7 @@ DUCKVIL_TEST(Memory)
     memory->m_fnLinearAllocate_(otherLinear, &a, sizeof(int), alignof(int));
 
     res = (int*)memory->m_fnLinearAllocate_(otherLinear, &a, sizeof(int), alignof(int));
-    DUCKVIL_TEST_IS_NULL(res, "Pointer should be NULL, overflow detected");
+    DUCKVIL_TEST_IS_NULL(res, "Pointer should be nullptr, overflow detected");
 
     int* res4 = Duckvil::Memory::linear_allocate(memory, otherLinear2, a);
     const char* res3 = Duckvil::Memory::linear_allocate(memory, memoryChunk, "aaaa");

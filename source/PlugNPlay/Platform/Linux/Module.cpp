@@ -9,7 +9,7 @@ namespace Duckvil { namespace PlugNPlay { namespace Platform {
     {
         _pModule->m_pModule = dlopen(_pModule->m_sName, RTLD_LAZY);
 
-        if(_pModule->m_pModule == NULL)
+        if(_pModule->m_pModule == nullptr)
         {
             return false;
         }
@@ -21,7 +21,7 @@ namespace Duckvil { namespace PlugNPlay { namespace Platform {
     {
         *_pFunction = dlsym(_pModule.m_pModule, _sName);
 
-        if(*_pFunction == NULL)
+        if(*_pFunction == nullptr)
         {
             return false;
         }

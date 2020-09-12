@@ -6,11 +6,11 @@ namespace Duckvil { namespace Memory {
 
     bool allocate(__allocator* _pAllocator, std::size_t _ullSize)
     {
-        if(_pAllocator->memory == NULL)
+        if(_pAllocator->memory == nullptr)
         {
             _pAllocator->memory = (uint8_t*)malloc(_ullSize);
 
-            if(_pAllocator->memory == NULL)
+            if(_pAllocator->memory == nullptr)
             {
                 return false;
             }
