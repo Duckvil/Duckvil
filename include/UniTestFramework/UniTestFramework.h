@@ -67,8 +67,6 @@ namespace Duckvil { namespace UniTestFramework {
         {
             g_bTestsFailed = true;
         }
-
-        // throw std::runtime_error("AAA");
     }
 
 }}

@@ -8,19 +8,8 @@
 
 DUCKVIL_TEST(MainMemoryAllocation)
 {
-    char buffer[256] = { 0 };
-
-    strncpy(buffer, DUCKVIL_OUTPUT, sizeof(buffer));
-#ifdef DUCKVIL_PLATFORM_WINDOWS
-    strncat(buffer, "/Memory.dll", sizeof(buffer));
-#else
-#ifdef DUCKVIL_PLATFORM_LINUX
-    strncat(buffer, "/Memory.so", sizeof(buffer));
-#endif
-#endif
-
     Duckvil::PlugNPlay::module _module;
-    Duckvil::PlugNPlay::__module_information _memoryModule(buffer);
+    Duckvil::PlugNPlay::__module_information _memoryModule("Memory");
     Duckvil::Memory::IMemory* (*_fnInit)();
 
     Duckvil::PlugNPlay::module_init(&_module);
@@ -29,7 +18,7 @@ DUCKVIL_TEST(MainMemoryAllocation)
     DUCKVIL_TEST_IS_NOT_NULL((void*)_module.get, "Module get function is not loaded");
     DUCKVIL_TEST_IS_NOT_NULL((void*)_module.free, "Module free function is not loaded");
 
-    printf("Trying to load: %s\n", buffer);
+    printf("Trying to load: %s\n", _memoryModule.m_sName);
 
     _module.load(&_memoryModule);
     DUCKVIL_TEST_IS_NOT_NULL(_memoryModule.m_pModule, "Memory module is NULL");

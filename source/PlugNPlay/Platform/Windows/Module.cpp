@@ -3,11 +3,23 @@
 #ifdef DUCKVIL_PLATFORM_WINDOWS
 #include <Windows.h>
 
+#include <cstddef>
+
 namespace Duckvil { namespace PlugNPlay { namespace Platform {
 
     bool windows_load(__module_information* _pModule)
     {
-        _pModule->m_pModule = LoadLibraryA(_pModule->m_sName);
+        char buffer[256] = { 0 };
+        std::size_t len = strlen(DUCKVIL_OUTPUT);
+
+        strcpy(buffer, DUCKVIL_OUTPUT);
+        strcpy(buffer + len, "/");
+        len++;
+        strcpy(buffer + len, _pModule->m_sName);
+        len += strlen(_pModule->m_sName);
+        strcpy(buffer + len, ".dll");
+
+        _pModule->m_pModule = LoadLibraryA(buffer);
 
         if(_pModule->m_pModule == nullptr)
         {

@@ -2,30 +2,19 @@
 
 #include <cstring>
 
-char buffer[256] = { 0 };
-
 static Duckvil::PlugNPlay::module g_module;
-static Duckvil::PlugNPlay::__module_information g_memoryModule(buffer);
+static Duckvil::PlugNPlay::__module_information g_memoryModule("Memory");
 static void* g_fnInit;
 
 DUCKVIL_TEST(ModuleLoad)
 {
-    strncpy(buffer, DUCKVIL_OUTPUT, sizeof(buffer));
-#ifdef DUCKVIL_PLATFORM_WINDOWS
-    strncat(buffer, "/Memory.dll", sizeof(buffer));
-#else
-#ifdef DUCKVIL_PLATFORM_LINUX
-    strncat(buffer, "/Memory.so", sizeof(buffer));
-#endif
-#endif
-
     Duckvil::PlugNPlay::module_init(&g_module);
 
     DUCKVIL_TEST_IS_NOT_NULL((void*)g_module.load, "Module load function is not loaded");
     DUCKVIL_TEST_IS_NOT_NULL((void*)g_module.get, "Module get function is not loaded");
     DUCKVIL_TEST_IS_NOT_NULL((void*)g_module.free, "Module free function is not loaded");
 
-    printf("Trying to load: %s\n", buffer);
+    printf("Trying to load: %s\n", g_memoryModule.m_sName);
 
     g_module.load(&g_memoryModule);
     DUCKVIL_TEST_IS_NOT_NULL(g_memoryModule.m_pModule, "Memory module is NULL");

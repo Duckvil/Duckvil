@@ -15,7 +15,7 @@
 
 Duckvil::PlugNPlay::module g_module;
 Duckvil::Memory::IMemory* (*g_fnInit)();
-Duckvil::PlugNPlay::__module_information g_memoryModule("Memory.dll");
+Duckvil::PlugNPlay::__module_information g_memoryModule("Memory");
 
 DUCKVIL_TEST(Module)
 {
