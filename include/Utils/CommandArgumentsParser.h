@@ -33,12 +33,13 @@ namespace Duckvil { namespace Utils {
     private:
         int         m_iArgc;
         char**      m_spArgv;
+        Descriptor* m_pDescriptors;
 
     public:
         CommandArgumentsParser(int _iArgc, char* _spArgv[]);
         ~CommandArgumentsParser();
 
-        bool Parse(CommandArgumentsParser::Descriptor* _pDescriptors, std::size_t _ullDescriptorsCount);
+        bool Parse(Descriptor* _pDescriptors, std::size_t _ullDescriptorsCount);
 
         template <typename A>
         inline const Descriptor& operator[](A _index) { return m_pDescriptors[(uint32_t)_index]; }

@@ -23,6 +23,7 @@ namespace Duckvil { namespace Utils {
             return true;
         }
 
+        m_pDescriptors = _pDescriptors;
         m_iArgc -= (m_iArgc > 0);
         m_spArgv += (m_spArgv > 0);
 
