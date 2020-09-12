@@ -1,6 +1,6 @@
 #include "Memory/Internal/Allocator.h"
 
-#include <memory>
+#include <cstring>
 
 namespace Duckvil { namespace Memory {
 
