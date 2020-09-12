@@ -1,6 +1,7 @@
 #include "Memory/Internal/Allocator.h"
 
 #include <cstring>
+#include <cstdlib>
 
 namespace Duckvil { namespace Memory {
 
@@ -8,7 +9,7 @@ namespace Duckvil { namespace Memory {
     {
         if(_pAllocator->memory == nullptr)
         {
-            _pAllocator->memory = (uint8_t*)malloc(_ullSize);
+            _pAllocator->memory = (uint8_t*)std::malloc(_ullSize);
 
             if(_pAllocator->memory == nullptr)
             {
