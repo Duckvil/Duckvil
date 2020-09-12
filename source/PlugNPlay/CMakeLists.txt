@@ -12,3 +12,12 @@ target_include_directories(
     PlugNPlay
     PRIVATE
 )
+
+if(UNIX)
+    find_library(LIB_LOCATION libdl.so)
+
+    target_link_libraries(
+        PlugNPlay
+        ${LIB_LOCATION}
+    )
+endif()
