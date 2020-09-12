@@ -1,6 +1,6 @@
 #include "Utils/CommandArgumentsParser.h"
 
-#include <string>
+#include <cstring>
 
 namespace Duckvil { namespace Utils {
 
@@ -31,7 +31,7 @@ namespace Duckvil { namespace Utils {
         {
             char* argv = m_spArgv[i];
 
-            if(strlen(argv) > 0 && argv[0] == '-')
+            if(std::strlen(argv) > 0 && argv[0] == '-')
             {
                 argv++;
 
@@ -39,7 +39,7 @@ namespace Duckvil { namespace Utils {
                 {
                     Descriptor& desc = _pDescriptors[j];
 
-                    if(strcmp(desc.m_sOption, argv) == 0)
+                    if(std::strcmp(desc.m_sOption, argv) == 0)
                     {
                         desc.m_bIsSet = true;
 
@@ -47,7 +47,7 @@ namespace Duckvil { namespace Utils {
                         {
                             char* next = m_spArgv[i + 1];
 
-                            if(strlen(next) > 0 && next[0] != '-')
+                            if(std::strlen(next) > 0 && next[0] != '-')
                             {
                                 desc.m_sResult = next;
 
