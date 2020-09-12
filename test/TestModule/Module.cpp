@@ -11,7 +11,13 @@ static void* g_fnInit;
 DUCKVIL_TEST(ModuleLoad)
 {
     strncpy(buffer, DUCKVIL_OUTPUT, sizeof(buffer));
+#ifdef DUCKVIL_PLATFORM_WINDOWS
     strncat(buffer, "/Memory.dll", sizeof(buffer));
+#else
+#ifdef DUCKVIL_PLATFORM_LINUX
+    strncat(buffer, "/Memory.so", sizeof(buffer));
+#endif
+#endif
 
     Duckvil::PlugNPlay::module_init(&g_module);
 

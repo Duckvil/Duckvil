@@ -11,7 +11,13 @@ DUCKVIL_TEST(MainMemoryAllocation)
     char buffer[256] = { 0 };
 
     strncpy(buffer, DUCKVIL_OUTPUT, sizeof(buffer));
+#ifdef DUCKVIL_PLATFORM_WINDOWS
     strncat(buffer, "/Memory.dll", sizeof(buffer));
+#else
+#ifdef DUCKVIL_PLATFORM_LINUX
+    strncat(buffer, "/Memory.so", sizeof(buffer));
+#endif
+#endif
 
     Duckvil::PlugNPlay::module _module;
     Duckvil::PlugNPlay::__module_information _memoryModule(buffer);
