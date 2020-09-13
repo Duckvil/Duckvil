@@ -10,7 +10,7 @@ namespace Duckvil { namespace PlugNPlay { namespace Platform {
 
     bool linux_load(__module_information* _pModule)
     {
-        Utils::string _buffer(128);
+        Utils::string _buffer;
 
         Utils::join(_buffer, DUCKVIL_OUTPUT, "/", _pModule->m_sName, ".so");
 
