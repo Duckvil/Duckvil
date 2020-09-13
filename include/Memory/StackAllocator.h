@@ -45,49 +45,4 @@ namespace Duckvil { namespace Memory {
         return _pAllocator->capacity;
     }
 
-    class Stack
-    {
-    private:
-        __stack_allocator* m_pAllocator;
-        IMemory* m_pMemoryInterface;
-
-    public:
-        Stack(IMemory* _pMemoryInterface, __allocator* _pAllocator, std::size_t _ullSize) :
-            m_pMemoryInterface(_pMemoryInterface)
-        {
-            m_pAllocator = m_pMemoryInterface->m_fnAllocateStackAllocator(_pAllocator, _ullSize);
-        }
-
-        ~Stack()
-        {
-
-        }
-
-        template <typename Type>
-        Type* Allocate(const Type& _data)
-        {
-            return stack_allocate(m_pMemoryInterface, m_pAllocator, _data);
-        }
-
-        void* Top() const
-        {
-            return stack_top(m_pMemoryInterface, m_pAllocator);
-        }
-
-        void Pop()
-        {
-            stack_pop(m_pMemoryInterface, m_pAllocator);
-        }
-
-        bool Empty() const
-        {
-            return stack_empty(m_pAllocator);
-        }
-
-        bool Full() const
-        {
-            return stack_full(m_pAllocator);
-        }
-    };
-
 }}

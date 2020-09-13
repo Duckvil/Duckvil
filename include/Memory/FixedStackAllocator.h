@@ -46,20 +46,27 @@ namespace Duckvil { namespace Memory {
     }
 
     template <typename Type>
-    class FixedStack
+    class Stack
     {
     private:
         __fixed_stack_allocator* m_pAllocator;
         IMemory* m_pMemoryInterface;
 
     public:
-        FixedStack(IMemory* _pMemoryInterface, __allocator* _pAllocator, std::size_t _ullCount) :
+        Stack(IMemory* _pMemoryInterface, __allocator* _pAllocator, std::size_t _ullCount) :
             m_pMemoryInterface(_pMemoryInterface)
         {
             m_pAllocator = m_pMemoryInterface->m_fnAllocateFixedStackAllocator(_pAllocator, _ullCount * sizeof(Type), sizeof(Type));
         }
 
-        ~FixedStack()
+        Stack(IMemory* _pMemoryInterface, __fixed_stack_allocator* _pAllocator) :
+            m_pMemoryInterface(_pMemoryInterface),
+            m_pAllocator(_pAllocator)
+        {
+
+        }
+
+        ~Stack()
         {
 
         }

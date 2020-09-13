@@ -46,20 +46,27 @@ namespace Duckvil { namespace Memory {
     }
 
     template <typename Type>
-    class FixedQueue
+    class Queue
     {
     private:
         __fixed_queue_allocator* m_pAllocator;
         IMemory* m_pMemoryInterface;
 
     public:
-        FixedQueue(IMemory* _pMemoryInterface, __allocator* _pAllocator, std::size_t _ullCount) :
+        Queue(IMemory* _pMemoryInterface, __allocator* _pAllocator, std::size_t _ullCount) :
             m_pMemoryInterface(_pMemoryInterface)
         {
             m_pAllocator = m_pMemoryInterface->m_fnAllocateFixedQueueAllocator(_pAllocator, _ullCount * sizeof(Type), sizeof(Type));
         }
 
-        ~FixedQueue()
+        Queue(IMemory* _pMemoryInterface, __fixed_queue_allocator* _pAllocator) :
+            m_pMemoryInterface(_pMemoryInterface),
+            m_pAllocator(_pAllocator)
+        {
+
+        }
+
+        ~Queue()
         {
 
         }

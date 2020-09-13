@@ -68,7 +68,7 @@ DUCKVIL_TEST(Memory)
     int* res2 = Duckvil::Memory::linear_allocate(memory, memoryChunk, 20);
 
     {
-        Duckvil::Memory::FixedStack<int> _stack_allocator(memory, &memoryChunk, 2);
+        Duckvil::Memory::Stack<int> _stack_allocator(memory, &memoryChunk, 2);
 
         bool res = _stack_allocator.Empty();
         _stack_allocator.Allocate(10);
@@ -127,7 +127,7 @@ DUCKVIL_TEST(Memory)
     }
 
     {
-        Duckvil::Memory::FixedQueue<int> alloc(memory, &memoryChunk, 2);
+        Duckvil::Memory::Queue<int> alloc(memory, &memoryChunk, 2);
 
         int x = 10;
         int xx = 20;
