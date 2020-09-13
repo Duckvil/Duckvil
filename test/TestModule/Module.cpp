@@ -1,4 +1,6 @@
-#include "test/TestModule/Module.h"
+#include "UniTestFramework/UniTestFramework.h"
+
+#include "PlugNPlay/Module.h"
 
 #include <cstring>
 
@@ -36,9 +38,4 @@ DUCKVIL_TEST(ModuleRelease)
     DUCKVIL_TEST_IS_NULL(g_memoryModule.m_pModule, "Failed to free memory module");
 
     DUCKVIL_TEST_SUCCESS_PASS;
-}
-
-int main(int argc, char* argv[])
-{
-    return DUCKVIL_TEST_FAILED;
 }
