@@ -8,15 +8,6 @@
 
 namespace Duckvil { namespace Utils {
 
-    template<typename T1, typename T2, typename... Error>
-    struct is_string : std::false_type {};
-
-    template<typename T, typename... Checking>
-    struct is_string<T, T, Checking...> : is_string<T, Checking...> {};
-
-    template<typename T>
-    struct is_string<const char*, T> : std::true_type {};
-
     struct string
     {
         string()
@@ -58,9 +49,6 @@ namespace Duckvil { namespace Utils {
     template <typename... A>
     void join(string& _buffer, A&& ... _sText)
     {
-        static_assert(is_string<typename std::decay<A>::type...>::value,
-            "All types are not const char*");
-
         if(_buffer.m_ullLength == 0)
         {
             std::size_t _ullLength = 0;
