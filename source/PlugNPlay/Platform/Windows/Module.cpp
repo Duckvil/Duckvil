@@ -5,21 +5,17 @@
 
 #include <cstddef>
 
+#include "Utils/Utils.h"
+
 namespace Duckvil { namespace PlugNPlay { namespace Platform {
 
     bool windows_load(__module_information* _pModule)
     {
-        char buffer[256] = { 0 };
-        std::size_t len = strlen(DUCKVIL_OUTPUT);
+        Utils::string _buffer(128);
+        
+        Utils::join(_buffer, DUCKVIL_OUTPUT, "/", _pModule->m_sName, ".dll");
 
-        strcpy(buffer, DUCKVIL_OUTPUT);
-        strcpy(buffer + len, "/");
-        len++;
-        strcpy(buffer + len, _pModule->m_sName);
-        len += strlen(_pModule->m_sName);
-        strcpy(buffer + len, ".dll");
-
-        _pModule->m_pModule = LoadLibraryA(buffer);
+        _pModule->m_pModule = LoadLibraryA(_buffer.m_sText);
 
         if(_pModule->m_pModule == nullptr)
         {

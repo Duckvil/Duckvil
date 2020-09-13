@@ -10,17 +10,11 @@ namespace Duckvil { namespace PlugNPlay { namespace Platform {
 
     bool linux_load(__module_information* _pModule)
     {
-        char buffer[256] = { 0 };
-        std::size_t len = strlen(DUCKVIL_OUTPUT);
+        Utils::string _buffer(128);
 
-        strcpy(buffer, DUCKVIL_OUTPUT);
-        strcpy(buffer + len, "/");
-        len++;
-        strcpy(buffer + len, _pModule->m_sName);
-        len += strlen(_pModule->m_sName);
-        strcpy(buffer + len, ".so");
+        Utils::join(_buffer, DUCKVIL_OUTPUT, "/", _pModule->m_sName, ".so");
 
-        _pModule->m_pModule = dlopen(buffer, RTLD_LAZY);
+        _pModule->m_pModule = dlopen(_buffer.m_sText, RTLD_LAZY);
 
         if(_pModule->m_pModule == nullptr)
         {

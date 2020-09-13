@@ -42,4 +42,10 @@ namespace Duckvil { namespace Utils {
         return elems;
     }
 
+    void join_string(string& _sBuffer, const char* _sText, std::size_t& _ullIndex)
+    {
+        strcpy(_sBuffer.m_sText + _ullIndex, _sText);
+        _ullIndex += strlen(_sText);
+    }
+
 }}
