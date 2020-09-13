@@ -1,6 +1,7 @@
 #include "Utils/Utils.h"
 
 #include <sstream>
+#include <cstring>
 
 namespace Duckvil { namespace Utils {
 
