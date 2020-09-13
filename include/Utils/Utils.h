@@ -4,6 +4,7 @@
 #include <vector>
 #include <iterator>
 #include <type_traits>
+#include <cstring>
 
 namespace Duckvil { namespace Utils {
 
