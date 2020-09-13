@@ -33,8 +33,3 @@ DUCKVIL_TEST(MainMemoryAllocation)
 
     DUCKVIL_TEST_SUCCESS_PASS;
 }
-
-int main(int argc, char* argv[])
-{
-    return DUCKVIL_TEST_FAILED;
-}

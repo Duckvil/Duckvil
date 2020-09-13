@@ -8,7 +8,10 @@
 
 namespace Duckvil { namespace UniTestFramework {
 
-    static bool g_bTestsFailed = false;
+    struct __tests_result
+    {
+        static bool m_bTestsFailed;
+    };
 
     struct Assert
     {
@@ -63,9 +66,9 @@ namespace Duckvil { namespace UniTestFramework {
     {
         printf("TEST(%s:%u) '%s' failed! Reason: %s\n", _sFile, _uiLine, _sTestName, _sReason);
 
-        if(!g_bTestsFailed)
+        if(!__tests_result::m_bTestsFailed)
         {
-            g_bTestsFailed = true;
+            __tests_result::m_bTestsFailed = true;
         }
     }
 
@@ -93,4 +96,4 @@ bool DUCKVIL_CAT(duckvil_unitest_, name)::unit_test()
 #define DUCKVIL_TEST_IS_NOT_NULL(a, msg) do { if(!Duckvil::UniTestFramework::Assert::IsNotNULL(a)) { test_failed_message = msg; test_failed_line = __LINE__; return false; } } while(0)
 #define DUCKVIL_TEST_EXP(exp, msg) do { if(!(exp)) { test_failed_message = msg; test_failed_line = __LINE__; return false; } } while(0)
 #define DUCKVIL_TEST_SUCCESS_PASS return true
-#define DUCKVIL_TEST_FAILED Duckvil::UniTestFramework::g_bTestsFailed
+#define DUCKVIL_TEST_FAILED Duckvil::UniTestFramework::__tests_result::m_bTestsFailed
