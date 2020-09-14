@@ -10,9 +10,10 @@ namespace Duckvil { namespace Memory {
         {
             return 0;
         }
-        else if(_pAllocator->m_ullHead >= _pAllocator->capacity && _pAllocator->m_ullTail > 0)
+        else if(_pAllocator->m_ullHead + _pAllocator->m_ullBlockSize >= _pAllocator->capacity && _pAllocator->m_ullTail == _pAllocator->m_ullHead)
         {
-            _pAllocator->m_ullHead = _pAllocator->m_ullTail - _pAllocator->m_ullBlockSize;
+            _pAllocator->m_ullTail = 0;
+            _pAllocator->m_ullHead = 0;
         }
 
         uint8_t _padding = 0;
@@ -67,14 +68,7 @@ namespace Duckvil { namespace Memory {
     // Maybe some macro for clearing memory
         memset(_pAllocator->memory + _pAllocator->m_ullTail, 0, _pAllocator->m_ullBlockSize);
 
-        if(_pAllocator->m_ullTail >= _pAllocator->capacity - _pAllocator->m_ullBlockSize && _pAllocator->m_ullHead > 0)
-        {
-            _pAllocator->m_ullTail = _pAllocator->m_ullHead - _pAllocator->m_ullBlockSize;
-        }
-        else
-        {
-            _pAllocator->m_ullTail += _pAllocator->m_ullBlockSize;
-        }
+        _pAllocator->m_ullTail += _pAllocator->m_ullBlockSize;
 
         _pAllocator->used -= _pAllocator->m_ullBlockSize;
     }
