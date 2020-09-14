@@ -8,5 +8,6 @@
 #else
 #ifdef DUCKVIL_PLATFORM_LINUX
 #define DUCKVIL_EXPORT extern "C"
+// TODO: GCC shared library export
 #endif
 #endif
