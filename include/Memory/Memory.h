@@ -44,6 +44,11 @@ namespace Duckvil { namespace Memory {
         std::size_t m_ullHead;
     };
 
+    struct __fixed_array_allocator : public __allocator
+    {
+        std::size_t m_ullBlockSize;
+    };
+
     void* calculate_aligned_pointer(void* _p, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
 
     struct IMemory
@@ -89,11 +94,19 @@ namespace Duckvil { namespace Memory {
         typedef bool (*_queue_full_)(__queue_allocator* _pAllocator);
         typedef void (*_queue_clear_)(__queue_allocator* _pAllocator);
 
+        typedef void* (*_fixed_array_allocate_)(__fixed_array_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef const char* (*_fixed_array_allocate_cstr_)(__fixed_array_allocator* _pAllocator, const char* _pData);
+        typedef void* (*_fixed_array_at_)(__fixed_array_allocator* _pAllocator, std::size_t _ullIndex);
+        typedef bool (*_fixed_array_empty_)(__fixed_array_allocator* _pAllocator);
+        typedef bool (*_fixed_array_full_)(__fixed_array_allocator* _pAllocator);
+        typedef void (*_fixed_array_clear_)(__fixed_array_allocator* _pAllocator);
+
         typedef __linear_allocator* (*_allocate_linear_allocator)(__allocator* _pAllocator, std::size_t _ullSize);
         typedef __fixed_stack_allocator* (*_allocate_fixed_stack_allocator)(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
         typedef __stack_allocator* (*_allocate_stack_allocator)(__allocator* _pAllocator, std::size_t _ullSize);
         typedef __fixed_queue_allocator* (*_allocate_fixed_queue_allocator)(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
         typedef __queue_allocator* (*_allocate_queue_allocator)(__allocator* _pAllocator, std::size_t _ullSize);
+        typedef __fixed_array_allocator* (*_allocate_fixed_array_allocator)(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
 
         _basic_allocate             m_fnBasicAllocate;
 
@@ -136,11 +149,19 @@ namespace Duckvil { namespace Memory {
         _queue_full_          m_fnQueueFull_;
         _queue_clear_         m_fnQueueClear_;
 
+        _fixed_array_allocate_      m_fnFixedArrayAllocate_;
+        _fixed_array_allocate_cstr_ m_fnFixedArrayAllocateCStr_;
+        _fixed_array_at_            m_fnFixedArrayAt_;
+        _fixed_array_empty_         m_fnFixedArrayEmpty_;
+        _fixed_array_full_          m_fnFixedArrayFull_;
+        _fixed_array_clear_         m_fnFixedArrayClear_;
+
         _allocate_linear_allocator      m_fnAllocateLinearAllocator;
         _allocate_fixed_stack_allocator m_fnAllocateFixedStackAllocator;
         _allocate_stack_allocator       m_fnAllocateStackAllocator;
         _allocate_fixed_queue_allocator m_fnAllocateFixedQueueAllocator;
         _allocate_queue_allocator       m_fnAllocateQueueAllocator;
+        _allocate_fixed_array_allocator m_fnAllocateFixedArrayAllocator;
     };
 
 }}
