@@ -44,6 +44,16 @@ namespace Duckvil { namespace Memory {
         return (const char*)_memory;
     }
 
+    void* fixed_array_begin(__fixed_array_allocator* _pAllocator)
+    {
+        return _pAllocator->memory;
+    }
+
+    void* fixed_array_back(__fixed_array_allocator* _pAllocator)
+    {
+        return _pAllocator->memory + _pAllocator->used - _pAllocator->m_ullBlockSize;
+    }
+
     void* fixed_array_at(__fixed_array_allocator* _pAllocator, std::size_t _ullIndex)
     {
         return _pAllocator->memory + (_ullIndex * _pAllocator->m_ullBlockSize);

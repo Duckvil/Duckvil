@@ -74,6 +74,8 @@ Duckvil::Memory::IMemory* duckvil_memory_init()
 
     memory->m_fnFixedArrayAllocate_ = &fixed_array_allocate;
     memory->m_fnFixedArrayAllocateCStr_ = &fixed_array_allocate;
+    memory->m_fnFixedArrayBegin_ = &fixed_array_begin;
+    memory->m_fnFixedArrayBack_ = &fixed_array_back;
     memory->m_fnFixedArrayAt_ = &fixed_array_at;
     memory->m_fnFixedArrayEmpty_ = &fixed_array_empty;
     memory->m_fnFixedArrayFull_ = &fixed_array_full;

@@ -97,6 +97,8 @@ namespace Duckvil { namespace Memory {
         typedef void* (*_fixed_array_allocate_)(__fixed_array_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
         typedef const char* (*_fixed_array_allocate_cstr_)(__fixed_array_allocator* _pAllocator, const char* _pData);
         typedef void* (*_fixed_array_at_)(__fixed_array_allocator* _pAllocator, std::size_t _ullIndex);
+        typedef void* (*_fixed_array_begin_)(__fixed_array_allocator* _pAllocator);
+        typedef void* (*_fixed_array_back_)(__fixed_array_allocator* _pAllocator);
         typedef bool (*_fixed_array_empty_)(__fixed_array_allocator* _pAllocator);
         typedef bool (*_fixed_array_full_)(__fixed_array_allocator* _pAllocator);
         typedef void (*_fixed_array_clear_)(__fixed_array_allocator* _pAllocator);
@@ -151,6 +153,8 @@ namespace Duckvil { namespace Memory {
 
         _fixed_array_allocate_      m_fnFixedArrayAllocate_;
         _fixed_array_allocate_cstr_ m_fnFixedArrayAllocateCStr_;
+        _fixed_array_begin_         m_fnFixedArrayBegin_;
+        _fixed_array_back_          m_fnFixedArrayBack_;
         _fixed_array_at_            m_fnFixedArrayAt_;
         _fixed_array_empty_         m_fnFixedArrayEmpty_;
         _fixed_array_full_          m_fnFixedArrayFull_;

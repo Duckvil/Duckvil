@@ -8,6 +8,8 @@ namespace Duckvil { namespace Memory {
     const char* fixed_array_allocate(__fixed_array_allocator* _pAllocator, const char* _pData);
 
     void* fixed_array_at(__fixed_array_allocator* _pAllocator, std::size_t _ullIndex);
+    void* fixed_array_begin(__fixed_array_allocator* _pAllocator);
+    void* fixed_array_back(__fixed_array_allocator* _pAllocator);
     std::size_t fixed_array_size(__fixed_array_allocator* _pAllocator);
     bool fixed_array_empty(__fixed_array_allocator* _pAllocator);
     bool fixed_array_full(__fixed_array_allocator* _pAllocator);
