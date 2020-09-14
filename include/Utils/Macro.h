@@ -7,6 +7,6 @@
 #define DUCKVIL_EXPORT extern "C" __declspec(dllexport)
 #else
 #ifdef DUCKVIL_PLATFORM_LINUX
-#define DUCKVIL_EXPORT extern "C" __attribute__ ((dllexport))
+#define DUCKVIL_EXPORT extern "C"
 #endif
 #endif
