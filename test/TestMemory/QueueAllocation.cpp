@@ -11,7 +11,7 @@ DUCKVIL_TEST(FixedQueueAllocation)
     {
         Duckvil::Memory::Queue<int> _queue(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::__allocator*)__duckvil_global::m_memoryChunk, 4);
 
-        DUCKVIL_TEST_EXP(_queue.Empty(), "Stack is not empty");
+        DUCKVIL_TEST_EXP(_queue.Empty(), "Queue is not empty");
 
     // Contiguous allocation
         {
@@ -20,7 +20,7 @@ DUCKVIL_TEST(FixedQueueAllocation)
             _queue.Allocate(3);
             _queue.Allocate(4);
 
-            DUCKVIL_TEST_EXP(_queue.Full(), "Stack is not full");
+            DUCKVIL_TEST_EXP(_queue.Full(), "Queue is not full");
 
             DUCKVIL_TEST_EQUAL(_queue.Begin(), 1, "Wrong value");
             _queue.Pop();
@@ -34,7 +34,7 @@ DUCKVIL_TEST(FixedQueueAllocation)
             DUCKVIL_TEST_EQUAL(_queue.Begin(), 4, "Wrong value");
             _queue.Pop();
 
-            DUCKVIL_TEST_EXP(_queue.Empty(), "Stack is not empty");
+            DUCKVIL_TEST_EXP(_queue.Empty(), "Queue is not empty");
         }
 
     // Commutative allocation
@@ -60,7 +60,7 @@ DUCKVIL_TEST(FixedQueueAllocation)
                 DUCKVIL_TEST_EQUAL(_queue.Begin(), 4, "Wrong value");
                 _queue.Pop();
 
-                DUCKVIL_TEST_EXP(_queue.Empty(), "Stack is not empty");
+                DUCKVIL_TEST_EXP(_queue.Empty(), "Queue is not empty");
             }
 
             {
@@ -76,7 +76,7 @@ DUCKVIL_TEST(FixedQueueAllocation)
 
                 _queue.Pop();
 
-                DUCKVIL_TEST_EXP(_queue.Empty(), "Stack is not empty");
+                DUCKVIL_TEST_EXP(_queue.Empty(), "Queue is not empty");
             }
 
             {
@@ -95,7 +95,7 @@ DUCKVIL_TEST(FixedQueueAllocation)
                     DUCKVIL_TEST_EQUAL(_queue.Begin(), 3 * i, "Wrong value");
                     _queue.Pop();
 
-                    DUCKVIL_TEST_EXP(_queue.Empty(), "Stack is not empty");
+                    DUCKVIL_TEST_EXP(_queue.Empty(), "Queue is not empty");
                 }
             }
         }
