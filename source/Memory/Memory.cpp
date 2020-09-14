@@ -7,12 +7,13 @@
 #include "Memory/Internal/FixedQueueAllocator.h"
 #include "Memory/Internal/QueueAllocator.h"
 #include "Memory/Internal/FixedArrayAllocator.h"
+#include "Memory/Internal/FreeListAllocator.h"
 
 #include <memory>
 
 namespace Duckvil { namespace Memory {
 
-    void* calculate_aligned_pointer(void* _p, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset)
+    void* calculate_aligned_pointer(const void* _p, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset)
     {
         uintptr_t _memory_address = reinterpret_cast<uintptr_t>(_p);
         uint8_t _padding = _ucAlignment - 1;
@@ -21,6 +22,34 @@ namespace Duckvil { namespace Memory {
         _ucPaddedOffset = _new_address - _memory_address;
 
         return reinterpret_cast<void*>(_new_address);
+    }
+
+    uint8_t calculate_padding(const void* _p, uint8_t _ucAlignment)
+    {
+        uintptr_t _memory_address = reinterpret_cast<uintptr_t>(_p);
+        uint8_t _padding = _ucAlignment - 1;
+        uintptr_t _new_address = (_memory_address + _padding) & ~_padding;
+
+        return _new_address - _memory_address;
+    }
+
+    uint8_t calculate_padding(const void* _p, uint8_t _ucAlignment, uint8_t _ucHeaderSize)
+    {
+        uint8_t _padding = calculate_padding(_p, _ucAlignment);
+        uint8_t _needed_space = _ucHeaderSize;
+
+        if(_padding < _needed_space)
+        {
+            _needed_space -= _padding;
+            _padding += _ucAlignment * (_needed_space / _ucAlignment);
+
+            if(_needed_space % _ucAlignment > 0)
+            {
+                _padding += _ucAlignment;
+            }
+        }
+
+        return _padding;
     }
 
 }}
@@ -81,12 +110,17 @@ Duckvil::Memory::IMemory* duckvil_memory_init()
     memory->m_fnFixedArrayFull_ = &fixed_array_full;
     memory->m_fnFixedArrayClear_ = &fixed_array_clear;
 
+    memory->m_fnFreeListAllocate_ = &free_list_allocate;
+    memory->m_fnFreeListAllocateCStr_ = &free_list_allocate;
+    memory->m_fnFreeListClear_ = &free_list_clear;
+
     memory->m_fnAllocateLinearAllocator = &allocate_linear_allocator;
     memory->m_fnAllocateFixedStackAllocator = &allocate_fixed_stack_allocator;
     memory->m_fnAllocateStackAllocator = &allocate_stack_allocator;
     memory->m_fnAllocateFixedQueueAllocator = &allocate_fixed_queue_allocator;
     memory->m_fnAllocateQueueAllocator = &allocate_queue_allocator;
     memory->m_fnAllocateFixedArrayAllocator = &allocate_fixed_array_allocator;
+    memory->m_fnAllocateFreeListAllocator = &allocate_free_list_allocator;
 
     return memory;
 }

@@ -3,6 +3,8 @@
 #include <cstring>
 #include <cstdlib>
 
+#include "Memory/Internal/FreeListAllocator.h"
+
 namespace Duckvil { namespace Memory {
 
     bool allocate(__allocator* _pAllocator, std::size_t _ullSize)
@@ -131,6 +133,44 @@ namespace Duckvil { namespace Memory {
         _pAllocator->used += _size + _ullSize;
 
         return _memory;
+    }
+
+    __free_list_allocator* allocate_free_list_allocator(__allocator* _pAllocator, std::size_t _ullSize)
+    {
+        uint8_t _padding = 0;
+        __free_list_allocator* _allocator = (__free_list_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__free_list_allocator), _padding);
+
+        _allocator->memory = (uint8_t*)_allocator + sizeof(__free_list_allocator);
+
+        memset(_allocator->memory, 0, _ullSize);
+
+        __free_list_header* _header = (__free_list_header*)_allocator->memory;
+
+        _header->m_ucPadding = calculate_padding(_allocator->m_pFreeBlocks, 8, sizeof(__free_list_header));
+        _header->m_ullSize = sizeof(__free_list_header) + _header->m_ucPadding + _ullSize;
+
+        _allocator->m_pFreeBlocks = (uint8_t*)_header + sizeof(__free_list_header);
+
+        __free_list_node* _node = (__free_list_node*)_allocator->m_pFreeBlocks;
+
+        _node->m_pNext = nullptr;
+        _node->m_ullSize = _header->m_ullSize - sizeof(__free_list_header) - _header->m_ucPadding;
+
+        // _allocator->m_pFreeBlocks = (uint8_t*)_allocator->m_pFreeBlocks + sizeof(__free_list_header);
+
+        // _allocator->m_pFreeBlocks = _allocator->memory;
+
+        // __free_list_node* _node = (__free_list_node*)_allocator->m_pFreeBlocks;
+
+        // _node->m_ullSize = 11;
+        // _node->m_pNext = nullptr;
+
+        _allocator->used = sizeof(__free_list_node) + sizeof(__free_list_header);
+        _allocator->capacity = _ullSize;
+
+        _pAllocator->used += sizeof(__free_list_allocator) + _ullSize + sizeof(__free_list_node) + sizeof(__free_list_header);
+
+        return _allocator;
     }
 
 }}

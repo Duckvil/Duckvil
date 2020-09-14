@@ -12,5 +12,6 @@ namespace Duckvil { namespace Memory {
     __fixed_queue_allocator* allocate_fixed_queue_allocator(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
     __queue_allocator* allocate_queue_allocator(__allocator* _pAllocator, std::size_t _ullSize);
     __fixed_array_allocator* allocate_fixed_array_allocator(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+    __free_list_allocator* allocate_free_list_allocator(__allocator* _pAllocator, std::size_t _ullSize);
 
 }}
