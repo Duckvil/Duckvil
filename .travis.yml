@@ -11,7 +11,7 @@ before_install:
   - chmod +x ${TRAVIS_BUILD_DIR}/scripts/travis.sh
 
 install:
-  - ./travis.sh
+  - travis.sh
   # - mkdir -p ${HOME}/.cache
   # - DEPS_DIR="${HOME}/.cache/deps"
   # - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
