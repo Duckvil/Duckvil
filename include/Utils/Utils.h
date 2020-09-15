@@ -38,10 +38,9 @@ namespace Duckvil { namespace Utils {
         std::size_t m_ullLength;
     };
 
-    void split(const char* s, char delim, std::back_insert_iterator<std::vector<const char*>> result);
+    // void split(const char* s, char delim, std::back_insert_iterator<std::vector<const char*>> result);
     void split(const std::string& s, char delim, std::back_insert_iterator<std::vector<std::string>> result);
     std::vector<std::string> split(const std::string& s, char delim);
-    std::vector<const char*> split(const char* s, char delim);
 
     void join_string(string& _sBuffer, const char* _sText, std::size_t& _ullLength);
     void calculate_string_length(const char* _sText, std::size_t& _ullLength);
