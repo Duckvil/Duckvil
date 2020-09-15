@@ -23,6 +23,9 @@ install:
   # - PATH=${DEPS_DIR}/cmake-install:${DEPS_DIR}/cmake-install/bin:$PATH
   # - cd ${TRAVIS_BUILD_DIR}
 
+  - PATH=${DEPS_DIR}/cmake-install:${DEPS_DIR}/cmake-install/bin:$PATH
+  - cd ${TRAVIS_BUILD_DIR}
+
 addons:
   apt:
     packages: lcov

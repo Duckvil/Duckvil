@@ -12,6 +12,3 @@ then
     tar -xvf cmake-3.17.4-Linux-x86_64.tar.gz > /dev/null
     mv cmake-3.17.4-Linux-x86_64 cmake-install
 fi
-
-PATH=${DEPS_DIR}/cmake-install:${DEPS_DIR}/cmake-install/bin:$PATH
-cd ${TRAVIS_BUILD_DIR}
