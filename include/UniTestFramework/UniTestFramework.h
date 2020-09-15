@@ -15,6 +15,36 @@ namespace Duckvil { namespace UniTestFramework {
 
     struct Assert
     {
+        static bool AreEqual(const char* v1, const char* v2)
+        {
+            if(v1 == nullptr || v2 == nullptr)
+            {
+                return false;
+            }
+
+            return strcmp(v1, v2) == 0;
+        }
+
+        static bool AreEqual(const std::string& v1, const char* v2)
+        {
+            if(v1.size() == 0 || v2 == nullptr)
+            {
+                return false;
+            }
+
+            return strcmp(v1.c_str(), v2) == 0;
+        }
+
+        static bool AreEqual(const char* v1, const std::string& v2)
+        {
+            if(v2.size() == 0 || v1 == nullptr)
+            {
+                return false;
+            }
+
+            return strcmp(v2.c_str(), v1) == 0;
+        }
+
         template <typename A>
         static bool AreEqual(const A& v1, const A& v2)
         {
@@ -30,6 +60,36 @@ namespace Duckvil { namespace UniTestFramework {
             }
 
             return *v1 == v2;
+        }
+
+        static bool NotEqual(const char* v1, const char* v2)
+        {
+            if(v1 == nullptr || v2 == nullptr)
+            {
+                return false;
+            }
+
+            return strcmp(v1, v2) != 0;
+        }
+
+        static bool NotEqual(const std::string& v1, const char* v2)
+        {
+            if(v1.size() == 0 || v2 == nullptr)
+            {
+                return false;
+            }
+
+            return strcmp(v1.c_str(), v2) != 0;
+        }
+
+        static bool NotEqual(const char* v1, const std::string& v2)
+        {
+            if(v2.size() == 0 || v1 == nullptr)
+            {
+                return false;
+            }
+
+            return strcmp(v2.c_str(), v1) != 0;
         }
 
         template <typename A>
