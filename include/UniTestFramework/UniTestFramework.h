@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <stdexcept>
+#include <cstring>
 
 namespace Duckvil { namespace UniTestFramework {
 
