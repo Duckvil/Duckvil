@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-mkdir -p ${HOME}/.cache
+mkdir -p "${HOME}/.cache"
 DEPS_DIR="${HOME}/.cache/deps"
-mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+mkdir -p "${DEPS_DIR}" && cd "${DEPS_DIR}"
 
 if [ ! -d "cmake-install" ]
 then
