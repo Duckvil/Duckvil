@@ -39,3 +39,33 @@ DUCKVIL_TEST(ModuleRelease)
 
     DUCKVIL_TEST_SUCCESS_PASS;
 }
+
+Duckvil::PlugNPlay::__module_information g_memoryFailModule("NotExists");
+
+DUCKVIL_TEST(ModuleLoadFail)
+{
+    printf("Trying to load: %s\n", g_memoryFailModule.m_sName);
+
+    g_module.load(&g_memoryFailModule);
+    DUCKVIL_TEST_IS_NULL(g_memoryFailModule.m_pModule, "Memory module is not NULL");
+
+    DUCKVIL_TEST_SUCCESS_PASS;
+}
+
+DUCKVIL_TEST(ModuleGetFail)
+{
+    void* _fnMemoryInit;
+
+    DUCKVIL_TEST_EXP(g_module.get(g_memoryFailModule, "whatever", (void**)&_fnMemoryInit) == false, "Loaded function, but how!?");
+    DUCKVIL_TEST_IS_NULL((void*)_fnMemoryInit, "Memory module is not NULL");
+
+    DUCKVIL_TEST_SUCCESS_PASS;
+}
+
+DUCKVIL_TEST(ModuleFreeFail)
+{
+    DUCKVIL_TEST_EXP(g_module.free(&g_memoryFailModule) == false, "LOL");
+    DUCKVIL_TEST_IS_NULL(g_memoryModule.m_pModule, "Failed to free memory module");
+
+    DUCKVIL_TEST_SUCCESS_PASS;
+}
