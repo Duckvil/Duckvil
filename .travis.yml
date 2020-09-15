@@ -28,11 +28,22 @@ before_script:
 
 script:
   - cmake -DCMAKE_BUILD_TYPE=Debug ..
-  - cmake --build . --config Debug
-  - ctest --output-on-failure
+  - cmake --build . --config Debug -- -j $(nproc)
+  - ctest -j $(nproc) --output-on-failure
+  - lcov --capture --directory . --output-file coverage.info
 
 after_success:
-  - lcov --capture --directory . --output-file coverage.info
-  - lcov --list coverage.info
+# Create lcov report
+# capture coverage info
+# - lcov --directory . --no-external --capture --initial -b . --output-file coverage_base.info
+# - lcov --no-external --capture --directory . --output-file coverage_test.info -b .
+# - lcov --add-tracefile coverage_base.info --add-tracefile coverage_test.info --output-file coverage.info
+# filter out system and extra files.
+# To also not include test code in coverage add them with full path to the patterns: '*/tests/*'
+# - lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' --output-file coverage.info
+# output coverage data for debugging (optional)
+- cat coverage.info
+- lcov --list coverage.info
+- ls
 
 - bash <(curl -Ls https://coverage.codacy.com/get.sh) -f coverage.info || echo "Codacy did not collect coverage reports"
