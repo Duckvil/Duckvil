@@ -44,5 +44,6 @@ after_success:
 # - lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' --output-file coverage.info
 # output coverage data for debugging (optional)
 - lcov --list coverage.info
+- ls
 
 - bash <(curl -Ls https://coverage.codacy.com/get.sh) -f coverage.info || echo "Codacy did not collect coverage reports"
