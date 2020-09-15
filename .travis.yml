@@ -34,10 +34,10 @@ after_success:
 # Create lcov report
 # capture coverage info
 - lcov --directory . --no-external --capture --initial -b . --output-file coverage_base.info
-- lcov --list coverage_base.info
+- cat coverage_base.info
 - ctest -j $(nproc) --output-on-failure
 - lcov --no-external --capture --directory . --output-file coverage_test.info -b .
-- lcov --list coverage_test.info
+- cat coverage_test.info
 - lcov --add-tracefile coverage_base.info --add-tracefile coverage_test.info --output-file coverage.info
 # filter out system and extra files.
 # To also not include test code in coverage add them with full path to the patterns: '*/tests/*'
