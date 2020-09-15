@@ -46,4 +46,4 @@ after_success:
 - lcov --list coverage.info
 - ls
 
-- bash <(curl -Ls https://coverage.codacy.com/get.sh) -f coverage.info || echo "Codacy did not collect coverage reports"
+- bash <(curl -Ls https://coverage.codacy.com/get.sh) report || echo "Codacy did not collect coverage reports"
