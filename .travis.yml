@@ -8,7 +8,7 @@ cache: # see https://docs.travis-ci.com/user/caching/
 
 before_install:
   - PATH=${TRAVIS_BUILD_DIR}/scripts:$PATH
-  - chmod +x travis.sh
+  - chmod +x ${TRAVIS_BUILD_DIR}/scripts/travis.sh
 
 install:
   - ./travis.sh
