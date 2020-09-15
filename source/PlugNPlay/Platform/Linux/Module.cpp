@@ -26,6 +26,13 @@ namespace Duckvil { namespace PlugNPlay { namespace Platform {
 
     bool linux_get(const __module_information& _pModule, const char* _sName, void** _pFunction)
     {
+        if(_pModule.m_pModule == nullptr)
+        {
+            *_pFunction = nullptr;
+
+            return false;
+        }
+
         *_pFunction = dlsym(_pModule.m_pModule, _sName);
 
         if(*_pFunction == nullptr)
@@ -38,7 +45,7 @@ namespace Duckvil { namespace PlugNPlay { namespace Platform {
 
     bool linux_free(__module_information* _pModule)
     {
-        if(dlclose(_pModule->m_pModule) != 0)
+        if(_pModule->m_pModule == nullptr || dlclose(_pModule->m_pModule) != 0)
         {
             return false;
         }

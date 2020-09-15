@@ -27,6 +27,13 @@ namespace Duckvil { namespace PlugNPlay { namespace Platform {
 
     bool windows_get(const __module_information& _pModule, const char* _sName, void** _pFunction)
     {
+        if(_pModule.m_pModule == nullptr)
+        {
+            *_pFunction = nullptr;
+
+            return false;
+        }
+
         *_pFunction = GetProcAddress((HMODULE)_pModule.m_pModule, _sName);
 
         if(*_pFunction == nullptr)
@@ -39,7 +46,7 @@ namespace Duckvil { namespace PlugNPlay { namespace Platform {
 
     bool windows_free(__module_information* _pModule)
     {
-        if(FreeLibrary((HMODULE)_pModule->m_pModule) == FALSE)
+        if(_pModule->m_pModule == nullptr || FreeLibrary((HMODULE)_pModule->m_pModule) == FALSE)
         {
             return false;
         }
