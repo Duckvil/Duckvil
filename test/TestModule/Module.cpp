@@ -29,6 +29,9 @@ DUCKVIL_TEST(ModuleFunctionPointers)
     g_module.get(g_memoryModule, "duckvil_memory_init", (void**)&g_fnInit);
     DUCKVIL_TEST_IS_NOT_NULL((void*)g_fnInit, "Memory init function is NULL");
 
+    DUCKVIL_TEST_EXP(g_module.get(g_memoryModule, "not_valid_function", (void**)&g_fnInit) == false, "Should not happen");
+    DUCKVIL_TEST_IS_NULL((void*)g_fnInit, "Memory init function is not NULL");
+
     DUCKVIL_TEST_SUCCESS_PASS;
 }
 
