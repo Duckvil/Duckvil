@@ -6,10 +6,8 @@ cache: # see https://docs.travis-ci.com/user/caching/
 - directories:
   - ${HOME}/.cache
 
-# TODO: Check if cmake-install directory exists, if so delete it/do not install cmake
-
 before_install:
-  - PATH=${HOME}/scripts:$PATH
+  - PATH=${TRAVIS_BUILD_DIR}/scripts:$PATH
   - chmod +x travis.sh
 
 install:
