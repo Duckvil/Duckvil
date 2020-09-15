@@ -6,6 +6,8 @@ cache: # see https://docs.travis-ci.com/user/caching/
 - directories:
   - ${HOME}/.cache
 
+# TODO: Check if cmake-install directory exists, if so delete it/do not install cmake
+
 instal:
   - mkdir -p ${HOME}/.cache
   - DEPS_DIR="${HOME}/.cache/deps"
@@ -30,8 +32,7 @@ script:
   - cmake -DCMAKE_BUILD_TYPE=Debug ..
   - cmake --build . --config Debug -- -j $(nproc)
   - ctest -j $(nproc) --output-on-failure
-  - lcov --capture --directory . --output-file coverage.info
 
 after_success:
-  - lcov --list coverage.info
+  - lcov --capture --directory . --output-file coverage.info
   - bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.info
