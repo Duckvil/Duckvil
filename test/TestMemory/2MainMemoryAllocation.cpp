@@ -53,11 +53,21 @@ DUCKVIL_TEST(MemoryAlignmentCalculating)
 
 DUCKVIL_TEST(MainMemoryAllocation)
 {
-    Duckvil::Memory::__linear_allocator** _main = (Duckvil::Memory::__linear_allocator**)&__duckvil_global::m_memoryChunk;
+    {
+        Duckvil::Memory::__linear_allocator** _main = (Duckvil::Memory::__linear_allocator**)&__duckvil_global::m_memoryChunk;
 
-    *_main = new Duckvil::Memory::__linear_allocator();
+        *_main = 0;
 
-    __duckvil_global::m_pMemoryInterface->m_fnBasicAllocate(*_main, 1024);
+        DUCKVIL_TEST_EXP(__duckvil_global::m_pMemoryInterface->m_fnBasicAllocate(*_main, 1024) == false, "Should not happen");
+    }
+
+    {
+        Duckvil::Memory::__linear_allocator** _main = (Duckvil::Memory::__linear_allocator**)&__duckvil_global::m_memoryChunk;
+
+        *_main = new Duckvil::Memory::__linear_allocator();
+
+        DUCKVIL_TEST_EXP(__duckvil_global::m_pMemoryInterface->m_fnBasicAllocate(*_main, 1024) == true, "Could not allocate memory");
+    }
 
     DUCKVIL_TEST_SUCCESS_PASS;
 }
