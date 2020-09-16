@@ -7,8 +7,10 @@ cache: # see https://docs.travis-ci.com/user/caching/
   - ${HOME}/.cache
 
 before_install:
+  - sudo apt-get install travis
   - PATH=${TRAVIS_BUILD_DIR}/scripts:$PATH
   - chmod +x ${TRAVIS_BUILD_DIR}/scripts/travis.sh
+  - chmod +x ${TRAVIS_BUILD_DIR}/scripts/travis_merge_check.sh
 
 install:
   - travis.sh
