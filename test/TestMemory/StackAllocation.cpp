@@ -8,9 +8,35 @@
 
 DUCKVIL_TEST(FixedStackAllocation)
 {
+    {
+        Duckvil::Memory::Stack<int> _stack(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::__allocator*)__duckvil_global::m_memoryChunk, 1024 * 1024);
+    }
+
+    {
+        // TODO: Allocation size of size_t return 0 or exception
+        // Duckvil::Memory::Stack<int> _stack(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::__allocator*)__duckvil_global::m_memoryChunk, std::numeric_limits<std::size_t>::max());
+    }
+
     Duckvil::Memory::Stack<int> _stack(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::__allocator*)__duckvil_global::m_memoryChunk, 4);
 
     DUCKVIL_TEST_EXP(_stack.Empty(), "Stack is not empty");
+
+// Overflow detection
+    {
+        _stack.Allocate(1);
+        _stack.Allocate(2);
+        _stack.Allocate(3);
+        _stack.Allocate(4);
+        _stack.Allocate(5);
+
+        DUCKVIL_TEST_EXP(_stack.Full(), "Overflow not detected");
+        DUCKVIL_TEST_EQUAL(_stack.Top(), 4, "Overflow not detected");
+
+        _stack.Pop();
+        _stack.Pop();
+        _stack.Pop();
+        _stack.Pop();
+    }
 
 // Contiguous allocation
     {
