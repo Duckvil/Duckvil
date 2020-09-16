@@ -21,7 +21,8 @@ DUCKVIL_TEST(ModuleLoad)
     g_module.load(&g_memoryModule);
     DUCKVIL_TEST_IS_NOT_NULL(g_memoryModule.m_pModule, "Memory module is NULL");
 
-    DUCKVIL_TEST_SUCCESS_PASS;
+    // DUCKVIL_TEST_SUCCESS_PASS;
+    return false;
 }
 
 DUCKVIL_TEST(ModuleFunctionPointers)
