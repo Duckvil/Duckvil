@@ -54,6 +54,10 @@ namespace Duckvil { namespace Memory {
         void* m_pFreeBlocks;
     };
 
+    uintptr_t calculate_aligned_pointer(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
+    uint8_t calculate_padding(const uintptr_t& _ullAddress, uint8_t _ucAlignment);
+    uint8_t calculate_padding(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t _ucHeaderSize);
+
     void* calculate_aligned_pointer(const void* _p, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
     uint8_t calculate_padding(const void* _p, uint8_t _ucAlignment);
     uint8_t calculate_padding(const void* _p, uint8_t _ucAlignment, uint8_t _ucHeaderSize);
@@ -61,6 +65,13 @@ namespace Duckvil { namespace Memory {
     struct IMemory
     {
         typedef bool (*_basic_allocate)(__allocator* _pAllocator, std::size_t _ullSize);
+
+        typedef uintptr_t (*_calculate_aligned_pointer)(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
+        typedef uint8_t (*_calculate_padding)(const uintptr_t& _ullAddress, uint8_t _ucAlignment);
+        typedef uint8_t (*_calculate_padding_h)(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t _ucHeaderSize);
+        typedef void* (*_calculate_aligned_pointer_)(const void* _p, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
+        typedef uint8_t (*_calculate_padding_)(const void* _p, uint8_t _ucAlignment);
+        typedef uint8_t (*_calculate_padding_h_)(const void* _p, uint8_t _ucAlignment, uint8_t _ucHeaderSize);
 
         typedef void* (*_linear_allocate)(__linear_allocator& _allocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
         typedef const char* (*_linear_allocate_cstr)(__linear_allocator& _allocator, const char* _pData);
@@ -123,6 +134,13 @@ namespace Duckvil { namespace Memory {
         typedef void (*_free_list_clear_)(__free_list_allocator* _pAllocator);
 
         _basic_allocate             m_fnBasicAllocate;
+
+        _calculate_aligned_pointer  m_fnCalculateAlignedPointer;
+        _calculate_padding          m_fnCalculatePadding;
+        _calculate_padding_h        m_fnCalculatePaddingH;
+        _calculate_aligned_pointer_ m_fnCalculateAlignedPointer_;
+        _calculate_padding_         m_fnCalculatePadding_;
+        _calculate_padding_h_       m_fnCalculatePaddingH_;
 
         _linear_allocate            m_fnLinearAllocate;
         _linear_allocate_cstr       m_fnLinearAllocateCStr;

@@ -13,29 +13,27 @@
 
 namespace Duckvil { namespace Memory {
 
-    void* calculate_aligned_pointer(const void* _p, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset)
+    uintptr_t calculate_aligned_pointer(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset)
     {
-        uintptr_t _memory_address = reinterpret_cast<uintptr_t>(_p);
         uint8_t _padding = _ucAlignment - 1;
-        uintptr_t _new_address = (_memory_address + _padding) & ~_padding;
+        uintptr_t _new_address = (_ullAddress + _padding) & ~_padding;
 
-        _ucPaddedOffset = _new_address - _memory_address;
+        _ucPaddedOffset = _new_address - _ullAddress;
 
-        return reinterpret_cast<void*>(_new_address);
+        return _new_address;
     }
 
-    uint8_t calculate_padding(const void* _p, uint8_t _ucAlignment)
+    uint8_t calculate_padding(const uintptr_t& _ullAddress, uint8_t _ucAlignment)
     {
-        uintptr_t _memory_address = reinterpret_cast<uintptr_t>(_p);
         uint8_t _padding = _ucAlignment - 1;
-        uintptr_t _new_address = (_memory_address + _padding) & ~_padding;
+        uintptr_t _new_address = (_ullAddress + _padding) & ~_padding;
 
-        return _new_address - _memory_address;
+        return _new_address - _ullAddress;
     }
 
-    uint8_t calculate_padding(const void* _p, uint8_t _ucAlignment, uint8_t _ucHeaderSize)
+    uint8_t calculate_padding(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t _ucHeaderSize)
     {
-        uint8_t _padding = calculate_padding(_p, _ucAlignment);
+        uint8_t _padding = calculate_padding(_ullAddress, _ucAlignment);
         uint8_t _needed_space = _ucHeaderSize;
 
         if(_padding < _needed_space)
@@ -52,6 +50,21 @@ namespace Duckvil { namespace Memory {
         return _padding;
     }
 
+    void* calculate_aligned_pointer(const void* _p, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset)
+    {
+        return reinterpret_cast<void*>(calculate_aligned_pointer(reinterpret_cast<uintptr_t>(_p), _ucAlignment, _ucPaddedOffset));
+    }
+
+    uint8_t calculate_padding(const void* _p, uint8_t _ucAlignment)
+    {
+        return calculate_padding(reinterpret_cast<uintptr_t>(_p), _ucAlignment);
+    }
+
+    uint8_t calculate_padding(const void* _p, uint8_t _ucAlignment, uint8_t _ucHeaderSize)
+    {
+        return calculate_padding(reinterpret_cast<uintptr_t>(_p), _ucAlignment, _ucHeaderSize);
+    }
+
 }}
 
 Duckvil::Memory::IMemory* duckvil_memory_init()
@@ -61,6 +74,13 @@ Duckvil::Memory::IMemory* duckvil_memory_init()
     IMemory* memory = (IMemory*)malloc(sizeof(IMemory));
 
     memory->m_fnBasicAllocate = &allocate;
+
+    memory->m_fnCalculateAlignedPointer = &calculate_aligned_pointer;
+    memory->m_fnCalculatePadding = &calculate_padding;
+    memory->m_fnCalculatePaddingH = &calculate_padding;
+    memory->m_fnCalculateAlignedPointer_ = &calculate_aligned_pointer;
+    memory->m_fnCalculatePadding_ = &calculate_padding;
+    memory->m_fnCalculatePaddingH_ = &calculate_padding;
 
     memory->m_fnLinearAllocate = &linear_allocate;
     memory->m_fnLinearAllocateCStr = &linear_allocate;
