@@ -9,6 +9,11 @@ namespace Duckvil { namespace Memory {
 
     bool allocate(__allocator* _pAllocator, std::size_t _ullSize)
     {
+        if(_pAllocator == nullptr)
+        {
+            return false;
+        }
+
         if(_pAllocator->memory == nullptr)
         {
             _pAllocator->memory = (uint8_t*)std::malloc(_ullSize);
@@ -28,6 +33,11 @@ namespace Duckvil { namespace Memory {
 
     __linear_allocator* allocate_linear_allocator(__allocator* _pAllocator, std::size_t _ullSize)
     {
+        if(_pAllocator->capacity < _ullSize + _pAllocator->used)
+        {
+            return 0;
+        }
+
         uint8_t _padding = 0;
         __linear_allocator* _memory = (__linear_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__linear_allocator), _padding);
         std::size_t _size = sizeof(__linear_allocator);
@@ -45,6 +55,11 @@ namespace Duckvil { namespace Memory {
 
     __fixed_stack_allocator* allocate_fixed_stack_allocator(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
+        if(_pAllocator->capacity < _ullSize + _pAllocator->used)
+        {
+            return 0;
+        }
+
         uint8_t _padding = 0;
         __fixed_stack_allocator* _memory = (__fixed_stack_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__fixed_stack_allocator), _padding);
         std::size_t _size = sizeof(__fixed_stack_allocator);
@@ -63,6 +78,11 @@ namespace Duckvil { namespace Memory {
 
     __stack_allocator* allocate_stack_allocator(__allocator* _pAllocator, std::size_t _ullSize)
     {
+        if(_pAllocator->capacity < _ullSize + _pAllocator->used)
+        {
+            return 0;
+        }
+
         uint8_t _padding = 0;
         __stack_allocator* _memory = (__stack_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__stack_allocator), _padding);
         std::size_t _size = sizeof(__stack_allocator);
@@ -80,6 +100,11 @@ namespace Duckvil { namespace Memory {
 
     __fixed_queue_allocator* allocate_fixed_queue_allocator(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
+        if(_pAllocator->capacity < _ullSize + _pAllocator->used)
+        {
+            return 0;
+        }
+
         uint8_t _padding = 0;
         __fixed_queue_allocator* _memory = (__fixed_queue_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__fixed_queue_allocator), _padding);
         std::size_t _size = sizeof(__fixed_queue_allocator);
@@ -100,6 +125,11 @@ namespace Duckvil { namespace Memory {
 
     __queue_allocator* allocate_queue_allocator(__allocator* _pAllocator, std::size_t _ullSize)
     {
+        if(_pAllocator->capacity < _ullSize + _pAllocator->used)
+        {
+            return 0;
+        }
+
         uint8_t _padding = 0;
         __queue_allocator* _memory = (__queue_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__queue_allocator), _padding);
         std::size_t _size = sizeof(__queue_allocator);
@@ -119,6 +149,11 @@ namespace Duckvil { namespace Memory {
 
     __fixed_array_allocator* allocate_fixed_array_allocator(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
+        if(_pAllocator->capacity < _ullSize + _pAllocator->used)
+        {
+            return 0;
+        }
+
         uint8_t _padding = 0;
         __fixed_array_allocator* _memory = (__fixed_array_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__fixed_array_allocator), _padding);
         std::size_t _size = sizeof(__fixed_array_allocator);
@@ -137,6 +172,11 @@ namespace Duckvil { namespace Memory {
 
     __free_list_allocator* allocate_free_list_allocator(__allocator* _pAllocator, std::size_t _ullSize)
     {
+        if(_pAllocator->capacity < _ullSize + _pAllocator->used)
+        {
+            return 0;
+        }
+
         uint8_t _padding = 0;
         __free_list_allocator* _allocator = (__free_list_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__free_list_allocator), _padding);
 
