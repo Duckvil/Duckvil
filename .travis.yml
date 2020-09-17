@@ -16,6 +16,7 @@ before_install:
 install:
   - travis.sh
   - PATH=${HOME}/.cache/deps/cmake-install:${HOME}/.cache/deps/cmake-install/bin:$PATH
+  - PATH=${HOME}/.cache/deps/llvm/bin:$PATH
   - cd ${TRAVIS_BUILD_DIR}
 
 addons:

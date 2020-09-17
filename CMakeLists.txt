@@ -2,6 +2,16 @@ cmake_minimum_required(VERSION 3.17)
 
 project(Duckvil)
 
+find_program(CLANG_TIDY_COMMAND NAMES clang-tidy)
+
+if(NOT CLANG_TIDY_COMMAND)
+    message(WARNING "Could not find clang-tidy!")
+    set(CMAKE_CXX_CLANG_TIDY "" CACHE STRING "" FORCE)
+else()
+    set(CLANG_TIDY_CHECKS "-*,modernize-*")
+    set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND};-checks=${CLANG_TIDY_CHECKS};-header-filter='${CMAKE_SOURCE_DIR}/source/*'")
+endif()
+
 if(WIN32)
     add_definitions(-DDUCKVIL_PLATFORM_WINDOWS)
 else()
