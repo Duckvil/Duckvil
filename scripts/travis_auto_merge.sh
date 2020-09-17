@@ -37,15 +37,6 @@ then
 
         cat compile_commands.json
 
-        # clang-tidy $PWD -header-filter=.*,-checks=-*,clang-analyzer-*,-clang-analyzer-cplusplus* | ./codacy-clang-tidy-1.1.1 | \
-        # curl -XPOST -L -H "project-token: $CODACY_PROJECT_TOKEN" \
-        #     -H "Content-type: application/json" -d @- \
-        #     "https://api.codacy.com/2.0/commit/$TRAVIS_COMMIT/issuesRemoteResults"
-
-        # curl -XPOST -L -H "project-token: $CODACY_PROJECT_TOKEN" \
-        #     -H "Content-type: application/json" \
-        #     "https://api.codacy.com/2.0/commit/$TRAVIS_COMMIT/resultsFinal"
-
         ./codacy-clang-tidy-1.1.1 | \
         curl -XPOST -L -H "project-token: $CODACY_PROJECT_TOKEN" \
             -H "Content-type: application/json" -d @- \
