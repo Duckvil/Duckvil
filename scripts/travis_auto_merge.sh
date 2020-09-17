@@ -38,13 +38,13 @@ then
         cat compile_commands.json
 
         ./codacy-clang-tidy-1.1.1 | \
-        curl -XPOST -L -H "project-token: $CODACY_PROJECT_TOKEN" \
+        curl -XPOST -L -H "project-token: ${CODACY_PROJECT_TOKEN}" \
             -H "Content-type: application/json" -d @- \
-            "https://api.codacy.com/2.0/commit/$TRAVIS_COMMIT/issuesRemoteResults"
+            "https://api.codacy.com/2.0/commit/${TRAVIS_COMMIT}/issuesRemoteResults"
 
-        curl -XPOST -L -H "project-token: $CODACY_PROJECT_TOKEN" \
+        curl -XPOST -L -H "project-token: ${CODACY_PROJECT_TOKEN}" \
             -H "Content-type: application/json" \
-            "https://api.codacy.com/2.0/commit/$TRAVIS_COMMIT/resultsFinal"
+            "https://api.codacy.com/2.0/commit/${TRAVIS_COMMIT}/resultsFinal"
 
         lcov --capture --directory . --output-file coverage.info
         bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.info
