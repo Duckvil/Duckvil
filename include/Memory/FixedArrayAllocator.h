@@ -60,7 +60,7 @@ namespace Duckvil { namespace Memory {
             m_pAllocator = m_pMemoryInterface->m_fnAllocateFixedArrayAllocator(_pAllocator, _ullCount * sizeof(Type), sizeof(Type));
         }
 
-        Array(IMemory* _pMemoryInterface, __fixed_stack_allocator* _pAllocator) :
+        Array(IMemory* _pMemoryInterface, __fixed_array_allocator* _pAllocator) :
             m_pMemoryInterface(_pMemoryInterface),
             m_pAllocator(_pAllocator)
         {
