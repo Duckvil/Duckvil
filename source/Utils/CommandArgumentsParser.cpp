@@ -25,7 +25,7 @@ namespace Duckvil { namespace Utils {
 
         m_pDescriptors = _pDescriptors;
         m_iArgc -= (m_iArgc > 0);
-        m_spArgv += (m_spArgv > 0);
+        m_spArgv += (m_spArgv != nullptr);
 
         for(uint32_t i = 0; i < m_iArgc; i++)
         {
