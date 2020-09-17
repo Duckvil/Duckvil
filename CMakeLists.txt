@@ -10,7 +10,11 @@ if(NOT CLANG_TIDY_COMMAND)
 else()
     message(WARNING "Found clang-tidy")
     set(CLANG_TIDY_CHECKS "-*,modernize-*")
-    set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND};-checks=${CLANG_TIDY_CHECKS};-header-filter='${CMAKE_SOURCE_DIR}/source/*'")
+    set(CMAKE_CXX_CLANG_TIDY
+        clang-tidy;
+        -header-filter=.;
+        -checks=*;
+    )
 endif()
 
 if(WIN32)
