@@ -7,10 +7,11 @@ cache: # see https://docs.travis-ci.com/user/caching/
   - ${HOME}/.cache
 
 before_install:
-  - sudo apt-get install travis
+  - gem install travis --no-document
   - PATH=${TRAVIS_BUILD_DIR}/scripts:$PATH
   - chmod +x ${TRAVIS_BUILD_DIR}/scripts/travis.sh
-  - chmod +x ${TRAVIS_BUILD_DIR}/scripts/travis_merge_check.sh
+  - chmod +x ${TRAVIS_BUILD_DIR}/scripts/travis_auto_merge.sh
+  - echo -e "machine github.com\n  login $GITHUB_TOKEN" > ~/.netrc
 
 install:
   - travis.sh
@@ -22,14 +23,12 @@ addons:
     packages: lcov
 
 before_script:
+  - travis login --auto
   - mkdir -p build
   - cd build
 
 script:
-  - cmake -DCMAKE_BUILD_TYPE=Debug ..
-  - cmake --build . --config Debug -- -j $(nproc)
-  - ctest -j $(nproc) --output-on-failure
+  - travis_auto_merge.sh
 
-after_success:
-  - lcov --capture --directory . --output-file coverage.info
-  - bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.info
+after_script:
+  - travis logout --org
