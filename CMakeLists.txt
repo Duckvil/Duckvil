@@ -9,10 +9,10 @@ if(NOT CLANG_TIDY_COMMAND)
     set(CMAKE_CXX_CLANG_TIDY "" CACHE STRING "" FORCE)
 else()
     message(WARNING "Found clang-tidy")
-    set(CLANG_TIDY_CHECKS "-*,modernize-*")
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
     set(CMAKE_CXX_CLANG_TIDY
         clang-tidy;
-        -header-filter=.;
+        -header-filter=.*;
         -checks=*;
     )
 endif()

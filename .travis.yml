@@ -16,7 +16,6 @@ before_install:
 install:
   - travis.sh
   - PATH=${HOME}/.cache/deps/cmake-install:${HOME}/.cache/deps/cmake-install/bin:$PATH
-  # - PATH=${HOME}/.cache/deps/llvm/bin:$PATH
   - sudo apt-get install -y clang-tidy
   - cd ${TRAVIS_BUILD_DIR}
 
@@ -25,7 +24,7 @@ addons:
     packages: lcov
 
 before_script:
-  - travis login --auto
+  - travis login --auto --org
   - mkdir -p build
   - cd build
 

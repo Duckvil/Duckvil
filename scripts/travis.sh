@@ -13,11 +13,3 @@ then
     mv cmake-3.17.4-Linux-x86_64 cmake-install
     rm cmake-3.17.4-Linux-x86_64.tar.gz
 fi
-
-# if [ ! -d "llvm" ]
-# then
-#     wget --no-check-certificate https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.1/clang+llvm-10.0.1-powerpc64le-linux-rhel-7.4.tar.xz
-#     tar -xvf clang+llvm-10.0.1-powerpc64le-linux-rhel-7.4.tar.xz
-#     mv clang+llvm-10.0.1-powerpc64le-linux-rhel-7.4 llvm
-#     rm clang+llvm-10.0.1-powerpc64le-linux-rhel-7.4.tar.xz
-# fi
