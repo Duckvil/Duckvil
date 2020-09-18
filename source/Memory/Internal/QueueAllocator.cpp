@@ -27,6 +27,7 @@ namespace Duckvil { namespace Memory {
         _node->m_ullBlockSize = _ullSize;
         _node->m_ucPadding = _padding;
 
+        // Flawfinder: ignore
         memcpy((uint8_t*)_memory + g_ullQueueNodeSize, _pData, _ullSize);
 
         _pAllocator->m_ullHead += _ullSize + g_ullQueueNodeSize + _padding;

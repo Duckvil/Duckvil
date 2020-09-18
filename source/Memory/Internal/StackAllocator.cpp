@@ -16,6 +16,7 @@ namespace Duckvil { namespace Memory {
         uint8_t _padding = 0;
         _memory = calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, _ucAlignment, _padding);
 
+        // Flawfinder: ignore
         memcpy(_memory, _pData, _ullSize);
 
         __stack_node* _node = (__stack_node*)((uint8_t*)_memory + _ullSize);
@@ -40,6 +41,7 @@ namespace Duckvil { namespace Memory {
 
         _memory = (void*)(_pAllocator->memory + _pAllocator->used);
 
+        // Flawfinder: ignore
         memcpy(_memory, _pData, _len);
 
         __stack_node* _node = (__stack_node*)((uint8_t*)_memory + _len + 1);
