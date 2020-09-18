@@ -39,7 +39,7 @@ namespace Duckvil { namespace Memory {
     {
         void* _memory = 0;
 
-        return _memory;
+        return (const char*)_memory;
     }
 
     void* queue_begin(__queue_allocator* _pAllocator)

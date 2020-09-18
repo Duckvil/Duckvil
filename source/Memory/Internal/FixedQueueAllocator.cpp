@@ -36,7 +36,7 @@ namespace Duckvil { namespace Memory {
 
         if(_pAllocator->used >= _pAllocator->capacity)
         {
-            return _memory;
+            return (const char*)_memory;
         }
         else if(_pAllocator->m_ullHead >= _pAllocator->capacity && _pAllocator->m_ullTail > 0)
         {

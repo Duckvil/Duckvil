@@ -35,7 +35,7 @@ namespace Duckvil { namespace Memory {
 
         if(_pAllocator->capacity < _pAllocator->used + _len + g_ullStackNodeSize)
         {
-            return _memory;
+            return (const char*)_memory;
         }
 
         _memory = (void*)(_pAllocator->memory + _pAllocator->used);
