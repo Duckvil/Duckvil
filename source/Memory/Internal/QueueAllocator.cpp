@@ -9,17 +9,18 @@ namespace Duckvil { namespace Memory {
         __queue_node* _current_memory = (__queue_node*)(_pAllocator->memory + _pAllocator->m_ullTail);
         std::size_t _block_size = _current_memory->m_ullBlockSize;
         uint8_t _padding = _current_memory->m_ucPadding;
+        void* _memory = 0;
 
         if(_pAllocator->used + g_ullQueueNodeSize >= _pAllocator->capacity)
         {
-            return 0;
+            return _memory;
         }
         else if(_pAllocator->m_ullHead + g_ullQueueNodeSize + _block_size + _padding >= _pAllocator->capacity && _pAllocator->m_ullTail > 0)
         {
             _pAllocator->m_ullHead = 0;
         }
 
-        void* _memory = calculate_aligned_pointer(_pAllocator->memory + _pAllocator->m_ullHead, _ucAlignment, _padding);
+        _memory = calculate_aligned_pointer(_pAllocator->memory + _pAllocator->m_ullHead, _ucAlignment, _padding);
 
         __queue_node* _node = (__queue_node*)((uint8_t*)_memory);
 
@@ -36,7 +37,9 @@ namespace Duckvil { namespace Memory {
 
     const char* queue_allocate(__queue_allocator* _pAllocator, const char* _pData)
     {
-        return 0;
+        void* _memory = 0;
+
+        return _memory;
     }
 
     void* queue_begin(__queue_allocator* _pAllocator)

@@ -6,13 +6,15 @@ namespace Duckvil { namespace Memory {
 
     void* fixed_array_allocate(__fixed_array_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
     {
+        void* _memory = 0;
+
         if(_pAllocator->used > _pAllocator->capacity || _pAllocator->m_ullBlockSize < _ullSize)
         {
-            return 0;
+            return _memory;
         }
 
         uint8_t _padding = 0;
-        void* _memory = calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, _ucAlignment, _padding);
+        _memory = calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, _ucAlignment, _padding);
 
         memcpy(_memory, _pData, _ullSize);
 
@@ -24,13 +26,14 @@ namespace Duckvil { namespace Memory {
     const char* fixed_array_allocate(__fixed_array_allocator* _pAllocator, const char* _pData)
     {
         std::size_t _len = strlen(_pData);
+        void* _memory = 0;
 
         if(_pAllocator->capacity < _pAllocator->used + _len)
         {
             return 0;
         }
 
-        void* _memory = (void*)(_pAllocator->memory + _pAllocator->used);
+        _memory = (void*)(_pAllocator->memory + _pAllocator->used);
 
         memcpy(_memory, _pData, _len);
 
