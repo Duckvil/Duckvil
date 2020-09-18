@@ -9,7 +9,7 @@ namespace Duckvil { namespace Memory {
         __queue_node* _current_memory = (__queue_node*)(_pAllocator->memory + _pAllocator->m_ullTail);
         std::size_t _block_size = _current_memory->m_ullBlockSize;
         uint8_t _padding = _current_memory->m_ucPadding;
-        void* _memory = 0;
+        void* _memory = nullptr;
 
         if(_pAllocator->used + g_ullQueueNodeSize >= _pAllocator->capacity)
         {
@@ -37,7 +37,7 @@ namespace Duckvil { namespace Memory {
 
     const char* queue_allocate(__queue_allocator* _pAllocator, const char* _pData)
     {
-        void* _memory = 0;
+        void* _memory = nullptr;
 
         return (const char*)_memory;
     }

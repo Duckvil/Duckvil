@@ -6,7 +6,7 @@ namespace Duckvil { namespace Memory {
 
     void* fixed_array_allocate(__fixed_array_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
     {
-        void* _memory = 0;
+        void* _memory = nullptr;
 
         if(_pAllocator->used > _pAllocator->capacity || _pAllocator->m_ullBlockSize < _ullSize)
         {
@@ -26,7 +26,7 @@ namespace Duckvil { namespace Memory {
     const char* fixed_array_allocate(__fixed_array_allocator* _pAllocator, const char* _pData)
     {
         std::size_t _len = strlen(_pData);
-        void* _memory = 0;
+        void* _memory = nullptr;
 
         if(_pAllocator->capacity < _pAllocator->used + _len)
         {

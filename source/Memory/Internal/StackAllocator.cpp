@@ -6,7 +6,7 @@ namespace Duckvil { namespace Memory {
 
     void* stack_allocate(__stack_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
     {
-        void* _memory = 0;
+        void* _memory = nullptr;
 
         if(_pAllocator->capacity < _pAllocator->used + _ullSize + g_ullStackNodeSize)
         {
@@ -31,7 +31,7 @@ namespace Duckvil { namespace Memory {
     const char* stack_allocate(__stack_allocator* _pAllocator, const char* _pData)
     {
         std::size_t _len = strlen(_pData);
-        void* _memory = 0;
+        void* _memory = nullptr;
 
         if(_pAllocator->capacity < _pAllocator->used + _len + g_ullStackNodeSize)
         {
