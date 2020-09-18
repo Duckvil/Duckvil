@@ -35,9 +35,7 @@ then
 
         chmod +x codacy-clang-tidy-1.1.1
 
-        cat compile_commands.json
-
-        ./codacy-clang-tidy-1.1.1 | \
+        ./codacy-clang-tidy-1.1.1 < compile_commands.json | \
         curl -XPOST -L -H "project-token: ${CODACY_PROJECT_TOKEN}" \
             -H "Content-type: application/json" -d @- \
             "https://api.codacy.com/2.0/commit/${TRAVIS_COMMIT}/issuesRemoteResults"

@@ -14,6 +14,7 @@ else()
         clang-tidy;
         -header-filter=.*;
         -checks=*;
+        -p="${TRAVIS_BUILD_DIR}/build";
     )
 endif()
 
