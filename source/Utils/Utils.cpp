@@ -26,7 +26,7 @@ namespace Duckvil { namespace Utils {
     void join_string(string& _sBuffer, const string& _sText, std::size_t& _ullLength)
     {
         std::size_t _len = _sText.m_ullLength;
-        strcpy_s(_sBuffer.m_sText + _ullLength, _len, _sText.m_sText);
+        memcpy(_sBuffer.m_sText + _ullLength, _sText.m_sText, _len);
         _ullLength += _len - 1;
     }
 

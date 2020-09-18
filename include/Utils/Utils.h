@@ -19,7 +19,7 @@ namespace Duckvil { namespace Utils {
         string(const string& _string)
         {
             Allocate(_string.m_ullLength);
-            strcpy_s(m_sText, _string.m_ullLength, _string.m_sText);
+            memcpy(m_sText, _string.m_sText, _string.m_ullLength);
         }
 
         string(std::size_t _ullLength)
@@ -31,7 +31,7 @@ namespace Duckvil { namespace Utils {
         string(const char (&_sText)[Size])
         {
             Allocate(Size);
-            strcpy_s(m_sText, Size, _sText);
+            memcpy(m_sText, _sText, Size);
         }
 
         ~string()
@@ -57,7 +57,7 @@ namespace Duckvil { namespace Utils {
     template <std::size_t Size>
     void join_string(string& _sBuffer, const char (&_sText)[Size], std::size_t& _ullLength)
     {
-        strcpy_s(_sBuffer.m_sText + _ullLength, Size, _sText);
+        memcpy(_sBuffer.m_sText + _ullLength, _sText, Size);
         _ullLength += Size - 1;
     }
 
