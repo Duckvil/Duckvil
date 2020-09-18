@@ -21,15 +21,13 @@ then
     cmake --build . --config Debug -- -j $(nproc)
     ctest -j $(nproc) --output-on-failure
 
-    ln -s $PWD/compile_commands.json ${TRAVIS_BUILD_DIR}
-
     if [ $? -eq 0 ]
     then
         echo "2. Tests passed successful, we can merge to master"
 
-        # git checkout master
-        # git merge development
-        # git push origin master
+        git checkout master
+        git merge development
+        git push origin master
 
         wget --no-check-certificate https://github.com/codacy/codacy-clang-tidy/releases/download/1.1.1/codacy-clang-tidy-1.1.1
 
