@@ -1,16 +1,18 @@
 #pragma once
 
+#include "Utils/Utils.h"
+
 namespace Duckvil { namespace PlugNPlay {
 
     struct __module_information
     {
-        __module_information(const char* _sName) :
+        __module_information(const Utils::string& _sName) :
             m_sName(_sName)
         {
 
         }
 
-        const char* m_sName;
+        Utils::string m_sName;
         void* m_pModule;
     };
 

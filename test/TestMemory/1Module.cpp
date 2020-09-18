@@ -15,7 +15,7 @@ DUCKVIL_TEST(Module)
     DUCKVIL_TEST_IS_NOT_NULL((void*)__duckvil_global::m_module.get, "Module get function is not loaded");
     DUCKVIL_TEST_IS_NOT_NULL((void*)__duckvil_global::m_module.free, "Module free function is not loaded");
 
-    printf("Trying to load: %s\n", __duckvil_global::m_memoryModule.m_sName);
+    printf("Trying to load: %s\n", __duckvil_global::m_memoryModule.m_sName.m_sText);
 
     __duckvil_global::m_module.load(&__duckvil_global::m_memoryModule);
     DUCKVIL_TEST_IS_NOT_NULL(__duckvil_global::m_memoryModule.m_pModule, "Memory module is NULL");

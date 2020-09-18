@@ -23,15 +23,16 @@ namespace Duckvil { namespace Utils {
         return elems;
     }
 
-    void join_string(string& _sBuffer, const char* _sText, std::size_t& _ullLength)
+    void join_string(string& _sBuffer, const string& _sText, std::size_t& _ullLength)
     {
-        strcpy(_sBuffer.m_sText + _ullLength, _sText);
-        _ullLength += strlen(_sText);
+        std::size_t _len = _sText.m_ullLength;
+        strcpy_s(_sBuffer.m_sText + _ullLength, _len, _sText.m_sText);
+        _ullLength += _len - 1;
     }
 
-    void calculate_string_length(const char* _sText, std::size_t& _ullLength)
+    void calculate_string_length(const string& _sText, std::size_t& _ullLength)
     {
-        _ullLength += strlen(_sText);
+        _ullLength += _sText.m_ullLength - 1;
     }
 
 }}

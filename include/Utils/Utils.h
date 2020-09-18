@@ -16,9 +16,22 @@ namespace Duckvil { namespace Utils {
             m_ullLength = 0;
         }
 
+        string(const string& _string)
+        {
+            Allocate(_string.m_ullLength);
+            strcpy_s(m_sText, _string.m_ullLength, _string.m_sText);
+        }
+
         string(std::size_t _ullLength)
         {
             Allocate(_ullLength);
+        }
+
+        template <std::size_t Size>
+        string(const char (&_sText)[Size])
+        {
+            Allocate(Size);
+            strcpy_s(m_sText, Size, _sText);
         }
 
         ~string()
@@ -38,12 +51,24 @@ namespace Duckvil { namespace Utils {
         std::size_t m_ullLength;
     };
 
-    // void split(const char* s, char delim, std::back_insert_iterator<std::vector<const char*>> result);
     void split(const std::string& s, char delim, std::back_insert_iterator<std::vector<std::string>> result);
     std::vector<std::string> split(const std::string& s, char delim);
 
-    void join_string(string& _sBuffer, const char* _sText, std::size_t& _ullLength);
-    void calculate_string_length(const char* _sText, std::size_t& _ullLength);
+    template <std::size_t Size>
+    void join_string(string& _sBuffer, const char (&_sText)[Size], std::size_t& _ullLength)
+    {
+        strcpy_s(_sBuffer.m_sText + _ullLength, Size, _sText);
+        _ullLength += Size - 1;
+    }
+
+    template <std::size_t Size>
+    void calculate_string_length(const char (&_sText)[Size], std::size_t& _ullLength)
+    {
+        _ullLength += Size - 1;
+    }
+
+    void join_string(string& _sBuffer, const string& _sText, std::size_t& _ullLength);
+    void calculate_string_length(const string& _sText, std::size_t& _ullLength);
 
     template <typename... A>
     void join(string& _buffer, A&& ... _sText)
