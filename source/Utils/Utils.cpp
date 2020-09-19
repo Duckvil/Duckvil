@@ -1,6 +1,7 @@
 #include "Utils/Utils.h"
 
 #include <sstream>
+#include <limits>
 
 namespace Duckvil { namespace Utils {
 
@@ -21,6 +22,23 @@ namespace Duckvil { namespace Utils {
         split(s, delim, std::back_inserter(elems));
 
         return elems;
+    }
+
+    std::size_t find(const char* _sText, char _cToken, std::size_t _ullLength)
+    {
+        std::size_t _res = std::numeric_limits<std::size_t>::max();
+
+        for(std::size_t i = 0; i < _ullLength; i++)
+        {
+            if(_sText[i] == _cToken)
+            {
+                _res = i;
+
+                break;
+            }
+        }
+
+        return _res;
     }
 
     void join_string(string& _sBuffer, const string& _sText, std::size_t& _ullLength)

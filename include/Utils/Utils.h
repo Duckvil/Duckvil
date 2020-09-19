@@ -54,17 +54,19 @@ namespace Duckvil { namespace Utils {
     void split(const std::string& s, char delim, std::back_insert_iterator<std::vector<std::string>> result);
     std::vector<std::string> split(const std::string& s, char delim);
 
-    template <std::size_t Size>
-    void join_string(string& _sBuffer, const char (&_sText)[Size], std::size_t& _ullLength)
+    std::size_t find(const char* _sText, char _cToken, std::size_t _ullLength);
+
+    template <std::size_t Length>
+    void join_string(string& _sBuffer, const char (&_sText)[Length], std::size_t& _ullLength)
     {
-        memcpy(_sBuffer.m_sText + _ullLength, _sText, Size);
-        _ullLength += Size - 1;
+        memcpy(_sBuffer.m_sText + _ullLength, _sText, Length);
+        _ullLength += Length - 1;
     }
 
-    template <std::size_t Size>
-    void calculate_string_length(const char (&_sText)[Size], std::size_t& _ullLength)
+    template <std::size_t Length>
+    void calculate_string_length(const char (&_sText)[Length], std::size_t& _ullLength)
     {
-        _ullLength += Size - 1;
+        _ullLength += Length - 1;
     }
 
     void join_string(string& _sBuffer, const string& _sText, std::size_t& _ullLength);
