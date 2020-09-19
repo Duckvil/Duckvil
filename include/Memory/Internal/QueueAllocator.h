@@ -13,7 +13,7 @@ namespace Duckvil { namespace Memory {
     static const std::size_t g_ullQueueNodeSize = sizeof(__queue_node);
 
     void* queue_allocate(__queue_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment = 8);
-    const char* queue_allocate(__queue_allocator* _pAllocator, const char* _pData);
+    const char* queue_allocate(__queue_allocator* _pAllocator, const char* _pData, std::size_t _ullLength);
 
     void* queue_begin(__queue_allocator* _pAllocator);
     void queue_pop(__queue_allocator* _pAllocator);

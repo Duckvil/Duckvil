@@ -74,14 +74,14 @@ namespace Duckvil { namespace Memory {
         typedef uint8_t (*_calculate_padding_h_)(const void* _p, uint8_t _ucAlignment, uint8_t _ucHeaderSize);
 
         typedef void* (*_linear_allocate)(__linear_allocator& _allocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef const char* (*_linear_allocate_cstr)(__linear_allocator& _allocator, const char* _pData);
+        typedef const char* (*_linear_allocate_cstr)(__linear_allocator& _allocator, const char* _pData, std::size_t _ullLength);
         typedef void (*_linear_clear)(__linear_allocator& _allocator);
         typedef void* (*_linear_allocate_)(__linear_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef const char* (*_linear_allocate_cstr_)(__linear_allocator* _pAllocator, const char* _pData);
+        typedef const char* (*_linear_allocate_cstr_)(__linear_allocator* _pAllocator, const char* _pData, std::size_t _ullLength);
         typedef void (*_linear_clear_)(__linear_allocator* _pAllocator);
 
         typedef void* (*_fixed_stack_allocate_)(__fixed_stack_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef const char* (*_fixed_stack_allocate_cstr_)(__fixed_stack_allocator* _pAllocator, const char* _pData);
+        typedef const char* (*_fixed_stack_allocate_cstr_)(__fixed_stack_allocator* _pAllocator, const char* _pData, std::size_t _ullLength);
         typedef void* (*_fixed_stack_top_)(__fixed_stack_allocator* _pAllocator);
         typedef void (*_fixed_stack_pop_)(__fixed_stack_allocator* _pAllocator);
         typedef bool (*_fixed_stack_empty_)(__fixed_stack_allocator* _pAllocator);
@@ -89,7 +89,7 @@ namespace Duckvil { namespace Memory {
         typedef void (*_fixed_stack_clear_)(__fixed_stack_allocator* _pAllocator);
 
         typedef void* (*_stack_allocate_)(__stack_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef const char* (*_stack_allocate_cstr_)(__stack_allocator* _pAllocator, const char* _pData);
+        typedef const char* (*_stack_allocate_cstr_)(__stack_allocator* _pAllocator, const char* _pData, std::size_t _ullLength);
         typedef void* (*_stack_top_)(__stack_allocator* _pAllocator);
         typedef void (*_stack_pop_)(__stack_allocator* _pAllocator);
         typedef bool (*_stack_empty_)(__stack_allocator* _pAllocator);
@@ -97,7 +97,7 @@ namespace Duckvil { namespace Memory {
         typedef void (*_stack_clear_)(__stack_allocator* _pAllocator);
 
         typedef void* (*_fixed_queue_allocate_)(__fixed_queue_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef const char* (*_fixed_queue_allocate_cstr_)(__fixed_queue_allocator* _pAllocator, const char* _pData);
+        typedef const char* (*_fixed_queue_allocate_cstr_)(__fixed_queue_allocator* _pAllocator, const char* _pData, std::size_t _ullLength);
         typedef void* (*_fixed_queue_begin_)(__fixed_queue_allocator* _pAllocator);
         typedef void (*_fixed_queue_pop_)(__fixed_queue_allocator* _pAllocator);
         typedef bool (*_fixed_queue_empty_)(__fixed_queue_allocator* _pAllocator);
@@ -105,7 +105,7 @@ namespace Duckvil { namespace Memory {
         typedef void (*_fixed_queue_clear_)(__fixed_queue_allocator* _pAllocator);
 
         typedef void* (*_queue_allocate_)(__queue_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef const char* (*_queue_allocate_cstr_)(__queue_allocator* _pAllocator, const char* _pData);
+        typedef const char* (*_queue_allocate_cstr_)(__queue_allocator* _pAllocator, const char* _pData, std::size_t _ullLength);
         typedef void* (*_queue_begin_)(__queue_allocator* _pAllocator);
         typedef void (*_queue_pop_)(__queue_allocator* _pAllocator);
         typedef bool (*_queue_empty_)(__queue_allocator* _pAllocator);
@@ -113,7 +113,7 @@ namespace Duckvil { namespace Memory {
         typedef void (*_queue_clear_)(__queue_allocator* _pAllocator);
 
         typedef void* (*_fixed_array_allocate_)(__fixed_array_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef const char* (*_fixed_array_allocate_cstr_)(__fixed_array_allocator* _pAllocator, const char* _pData);
+        typedef const char* (*_fixed_array_allocate_cstr_)(__fixed_array_allocator* _pAllocator, const char* _pData, std::size_t _ullLength);
         typedef void* (*_fixed_array_at_)(__fixed_array_allocator* _pAllocator, std::size_t _ullIndex);
         typedef void* (*_fixed_array_begin_)(__fixed_array_allocator* _pAllocator);
         typedef void* (*_fixed_array_back_)(__fixed_array_allocator* _pAllocator);
@@ -130,7 +130,7 @@ namespace Duckvil { namespace Memory {
         typedef __free_list_allocator* (*_allocate_free_list_allocator)(__allocator* _pAllocator, std::size_t _ullSize);
 
         typedef void* (*_free_list_allocate_)(__free_list_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef const char* (*_free_list_allocate_cstr_)(__free_list_allocator* _pAllocator, const char* _pData);
+        typedef const char* (*_free_list_allocate_cstr_)(__free_list_allocator* _pAllocator, const char* _pData, std::size_t _ullLength);
         typedef void (*_free_list_clear_)(__free_list_allocator* _pAllocator);
 
         _basic_allocate             m_fnBasicAllocate;

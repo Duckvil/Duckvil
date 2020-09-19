@@ -29,12 +29,11 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    const char* fixed_queue_allocate(__fixed_queue_allocator* _pAllocator, const char* _pData)
+    const char* fixed_queue_allocate(__fixed_queue_allocator* _pAllocator, const char* _pData, std::size_t _ullLength)
     {
-        std::size_t _len = strlen(_pData);
         void* _memory = nullptr;
 
-        if(_pAllocator->used >= _pAllocator->capacity)
+        if(_pAllocator->used + _ullLength > _pAllocator->capacity)
         {
             return (const char*)_memory;
         }
@@ -45,9 +44,9 @@ namespace Duckvil { namespace Memory {
 
         _memory = (void*)(_pAllocator->memory + _pAllocator->m_ullHead);
 
-        memcpy(_memory, _pData, _len);
+        memcpy(_memory, _pData, _ullLength);
 
-        _pAllocator->m_ullHead += _len + 1;
+        _pAllocator->m_ullHead += _ullLength;
 
         return (const char*)_memory;
     }

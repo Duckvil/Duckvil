@@ -79,20 +79,18 @@ namespace Duckvil { namespace Memory {
         return 0;
     }
 
-    const char* free_list_allocate(__free_list_allocator* _pAllocator, const char* _pData)
+    const char* free_list_allocate(__free_list_allocator* _pAllocator, const char* _pData, std::size_t _ullLength)
     {
-        std::size_t _len = strlen(_pData);
-
-        if(_pAllocator->capacity < _pAllocator->used + _len)
+        if(_pAllocator->capacity < _pAllocator->used + _ullLength)
         {
             return 0;
         }
 
         void* _memory = (void*)(_pAllocator->memory + _pAllocator->used);
 
-        memcpy(_memory, _pData, _len);
+        memcpy(_memory, _pData, _ullLength);
 
-        _pAllocator->used += _len + 1;
+        _pAllocator->used += _ullLength;
 
         return (const char*)_memory;
     }

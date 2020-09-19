@@ -13,7 +13,7 @@ namespace Duckvil { namespace Memory {
     static const std::size_t g_ullStackNodeSize = sizeof(__stack_node);
 
     void* stack_allocate(__stack_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment = 8);
-    const char* stack_allocate(__stack_allocator* _pAllocator, const char* _pData);
+    const char* stack_allocate(__stack_allocator* _pAllocator, const char* _pData, std::size_t _ullLength);
 
     void* stack_allocator_top(__stack_allocator* _pAllocator);
     void stack_allocator_pop(__stack_allocator* _pAllocator);

@@ -35,7 +35,7 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    const char* queue_allocate(__queue_allocator* _pAllocator, const char* _pData)
+    const char* queue_allocate(__queue_allocator* _pAllocator, const char* _pData, std::size_t _ullLength)
     {
         void* _memory = nullptr;
 

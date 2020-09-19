@@ -23,21 +23,20 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    const char* fixed_array_allocate(__fixed_array_allocator* _pAllocator, const char* _pData)
+    const char* fixed_array_allocate(__fixed_array_allocator* _pAllocator, const char* _pData, std::size_t _ullLength)
     {
-        std::size_t _len = strlen(_pData);
         void* _memory = nullptr;
 
-        if(_pAllocator->capacity < _pAllocator->used + _len)
+        if(_pAllocator->capacity < _pAllocator->used + _ullLength)
         {
             return 0;
         }
 
         _memory = (void*)(_pAllocator->memory + _pAllocator->used);
 
-        memcpy(_memory, _pData, _len);
+        memcpy(_memory, _pData, _ullLength);
 
-        _pAllocator->used += _len + 1;
+        _pAllocator->used += _ullLength;
 
         return (const char*)_memory;
     }

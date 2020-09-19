@@ -16,7 +16,6 @@ namespace Duckvil { namespace Memory {
         uint8_t _padding = 0;
         _memory = calculate_aligned_pointer(_allocator.memory + _allocator.used, _ucAlignment, _padding);
 
-        // Flawfinder: ignore
         memcpy(_memory, _pData, _ullSize);
 
         _allocator.used += _ullSize + _padding;
@@ -24,21 +23,20 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    const char* linear_allocate(__linear_allocator& _allocator, const char* _pData)
+    const char* linear_allocate(__linear_allocator& _allocator, const char* _pData, std::size_t _ullLength)
     {
-        std::size_t _len = strlen(_pData);
         void* _memory = nullptr;
 
-        if(_allocator.capacity < _allocator.used + _len)
+        if(_allocator.capacity < _allocator.used + _ullLength)
         {
             return (const char*)_memory;
         }
 
         _memory = (void*)(_allocator.memory + _allocator.used);
 
-        memcpy(_memory, _pData, _len);
+        memcpy(_memory, _pData, _ullLength);
 
-        _allocator.used += _len + 1;
+        _allocator.used += _ullLength;
 
         return (const char*)_memory;
     }
@@ -68,21 +66,20 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    const char* linear_allocate(__linear_allocator* _pAllocator, const char* _pData)
+    const char* linear_allocate(__linear_allocator* _pAllocator, const char* _pData, std::size_t _ullLength)
     {
-        std::size_t _len = strlen(_pData);
         void* _memory = nullptr;
 
-        if(_pAllocator->capacity < _pAllocator->used + _len)
+        if(_pAllocator->capacity < _pAllocator->used + _ullLength)
         {
             return (const char*)_memory;
         }
 
         _memory = (void*)(_pAllocator->memory + _pAllocator->used);
 
-        memcpy(_memory, _pData, _len);
+        memcpy(_memory, _pData, _ullLength);
 
-        _pAllocator->used += _len + 1;
+        _pAllocator->used += _ullLength;
 
         return (const char*)_memory;
     }

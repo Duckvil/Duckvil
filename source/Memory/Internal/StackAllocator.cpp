@@ -28,26 +28,25 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    const char* stack_allocate(__stack_allocator* _pAllocator, const char* _pData)
+    const char* stack_allocate(__stack_allocator* _pAllocator, const char* _pData, std::size_t _ullLength)
     {
-        std::size_t _len = strlen(_pData);
         void* _memory = nullptr;
 
-        if(_pAllocator->capacity < _pAllocator->used + _len + g_ullStackNodeSize)
+        if(_pAllocator->capacity < _pAllocator->used + _ullLength + g_ullStackNodeSize)
         {
             return (const char*)_memory;
         }
 
         _memory = (void*)(_pAllocator->memory + _pAllocator->used);
 
-        memcpy(_memory, _pData, _len);
+        memcpy(_memory, _pData, _ullLength);
 
-        __stack_node* _node = (__stack_node*)((uint8_t*)_memory + _len + 1);
+        __stack_node* _node = (__stack_node*)((uint8_t*)_memory + _ullLength);
 
-        _node->m_ullBlockSize = _len + 1;
+        _node->m_ullBlockSize = _ullLength;
         _node->m_ucPadding = 0;
 
-        _pAllocator->used += _len + 1 + g_ullStackNodeSize;
+        _pAllocator->used += _ullLength + 1 + g_ullStackNodeSize;
 
         return (const char*)_memory;
     }

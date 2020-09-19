@@ -10,9 +10,10 @@ namespace Duckvil { namespace Memory {
         return (Type*)_pMemory->m_fnLinearAllocate(_allocator, &_pData, sizeof(Type), alignof(Type));
     }
 
-    const char* linear_allocate(IMemory* _pMemory, __linear_allocator& _allocator, const char* _pData)
+    template <std::size_t Length>
+    const char* linear_allocate(IMemory* _pMemory, __linear_allocator& _allocator, const char (&_pData)[Length])
     {
-        return _pMemory->m_fnLinearAllocateCStr(_allocator, _pData);
+        return _pMemory->m_fnLinearAllocateCStr(_allocator, _pData, Length);
     }
 
     template <typename Type>
@@ -21,9 +22,10 @@ namespace Duckvil { namespace Memory {
         return (Type*)_pMemory->m_fnLinearAllocate_(_pAllocator, &_pData, sizeof(Type), alignof(Type));
     }
 
-    const char* linear_allocate(IMemory* _pMemory, __linear_allocator* _pAllocator, const char* _pData)
+    template <std::size_t Length>
+    const char* linear_allocate(IMemory* _pMemory, __linear_allocator* _pAllocator, const char (&_pData)[Length])
     {
-        return _pMemory->m_fnLinearAllocateCStr_(_pAllocator, _pData);
+        return _pMemory->m_fnLinearAllocateCStr_(_pAllocator, _pData, Length);
     }
 
     bool linear_empty(__linear_allocator* _pAllocator)
