@@ -3,21 +3,9 @@
 #include "Utils/CommandArgumentsParser.h"
 #include "Utils/Macro.h"
 
-#include "Memory/LinearAllocator.h"
-#include "Memory/Internal/FreeListAllocator.h"
-
 #include "PlugNPlay/Module.h"
 
 Duckvil::Utils::CommandArgumentsParser::Descriptor* g_pDescriptors = { 0 };
-
-struct _test
-{
-    std::size_t test1;
-    std::size_t test2;
-    std::size_t test3;
-    std::size_t test4;
-    std::size_t test5;
-};
 
 int main(int argc, char* argv[])
 {
@@ -27,39 +15,6 @@ int main(int argc, char* argv[])
     {
         return 1;
     }
-
-    Duckvil::Memory::IMemory* (*_fnMemoryInit)();
-    Duckvil::PlugNPlay::module _module;
-    Duckvil::PlugNPlay::__module_information _memoryModule("Memory");
-    Duckvil::Memory::IMemory* _pMemoryInterface;
-
-    Duckvil::PlugNPlay::module_init(&_module);
-
-    _module.load(&_memoryModule);
-    _module.get(_memoryModule, "duckvil_memory_init", (void**)&_fnMemoryInit);
-
-    _pMemoryInterface = _fnMemoryInit();
-
-    Duckvil::Memory::__linear_allocator _main;
-
-    _pMemoryInterface->m_fnBasicAllocate(&_main, 1024);
-
-    Duckvil::Memory::__free_list_allocator* _free = _pMemoryInterface->m_fnAllocateFreeListAllocator(&_main, 512);
-
-    _test _t;
-
-    _test* _d = (_test*)_pMemoryInterface->m_fnFreeListAllocate_(_free, &_t, sizeof(_test), alignof(_test));
-
-    _d->test1 = 10;
-    _d->test5 = 20;
-
-    _test* _d2 = (_test*)_pMemoryInterface->m_fnFreeListAllocate_(_free, &_t, sizeof(_test), alignof(_test));
-
-    _d2->test1 = 11;
-    _d2->test5 = 22;
-
-    _pMemoryInterface->m_fnFreeListFree_(_free, _d2);
-    _pMemoryInterface->m_fnFreeListFree_(_free, _d);
 
     return 0;
 }
