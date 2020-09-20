@@ -48,5 +48,19 @@ DUCKVIL_TEST(CommandLineParser)
         DUCKVIL_TEST_EQUAL(_parser.Parse(_desc, DUCKVIL_ARRAY_SIZE(_desc)), false, "Parse passed");
     }
 
+    {
+        char* commands[] =
+        {
+            "test.exe",
+            "-test",
+            "-test2 lol",
+            "does_not_exists"
+        };
+
+        Duckvil::Utils::CommandArgumentsParser _parser(3, commands);
+
+        DUCKVIL_TEST_EQUAL(_parser.Parse(0, 0), true, "Nothing to parse");
+    }
+
     DUCKVIL_TEST_SUCCESS_PASS;
 }
