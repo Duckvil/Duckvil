@@ -181,34 +181,17 @@ namespace Duckvil { namespace Memory {
         __free_list_allocator* _allocator = (__free_list_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__free_list_allocator), _padding);
 
         _allocator->memory = (uint8_t*)_allocator + sizeof(__free_list_allocator);
+        _allocator->capacity = _ullSize;
+        _allocator->used = 0;
+
+        _allocator->m_pHead = _allocator->memory;
 
         memset(_allocator->memory, 0, _ullSize);
 
-        __free_list_header* _header = (__free_list_header*)_allocator->memory;
+        __free_list_node* _node = (__free_list_node*)_allocator->m_pHead;
 
-        _header->m_ucPadding = calculate_padding(_allocator->m_pFreeBlocks, 8, sizeof(__free_list_header));
-        _header->m_ullSize = sizeof(__free_list_header) + _header->m_ucPadding + _ullSize;
-
-        _allocator->m_pFreeBlocks = (uint8_t*)_header + sizeof(__free_list_header);
-
-        __free_list_node* _node = (__free_list_node*)_allocator->m_pFreeBlocks;
-
+        _node->m_ullSize = _ullSize;
         _node->m_pNext = nullptr;
-        _node->m_ullSize = _header->m_ullSize - sizeof(__free_list_header) - _header->m_ucPadding;
-
-        // _allocator->m_pFreeBlocks = (uint8_t*)_allocator->m_pFreeBlocks + sizeof(__free_list_header);
-
-        // _allocator->m_pFreeBlocks = _allocator->memory;
-
-        // __free_list_node* _node = (__free_list_node*)_allocator->m_pFreeBlocks;
-
-        // _node->m_ullSize = 11;
-        // _node->m_pNext = nullptr;
-
-        _allocator->used = sizeof(__free_list_node) + sizeof(__free_list_header);
-        _allocator->capacity = _ullSize;
-
-        _pAllocator->used += sizeof(__free_list_allocator) + _ullSize + sizeof(__free_list_node) + sizeof(__free_list_header);
 
         return _allocator;
     }

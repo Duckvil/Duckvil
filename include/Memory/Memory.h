@@ -51,7 +51,7 @@ namespace Duckvil { namespace Memory {
 
     struct __free_list_allocator : public __allocator
     {
-        void* m_pFreeBlocks;
+        void* m_pHead;
     };
 
     uintptr_t calculate_aligned_pointer(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
@@ -131,6 +131,7 @@ namespace Duckvil { namespace Memory {
 
         typedef void* (*_free_list_allocate_)(__free_list_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
         typedef const char* (*_free_list_allocate_cstr_)(__free_list_allocator* _pAllocator, const char* _pData, std::size_t _ullLength);
+        typedef void (*_free_list_free_)(__free_list_allocator* _pAllocator, void* _pointer);
         typedef void (*_free_list_clear_)(__free_list_allocator* _pAllocator);
 
         _basic_allocate             m_fnBasicAllocate;
@@ -190,9 +191,10 @@ namespace Duckvil { namespace Memory {
         _fixed_array_full_          m_fnFixedArrayFull_;
         _fixed_array_clear_         m_fnFixedArrayClear_;
 
-        _free_list_allocate_           m_fnFreeListAllocate_;
-        _free_list_allocate_cstr_      m_fnFreeListAllocateCStr_;
-        _free_list_clear_              m_fnFreeListClear_;
+        _free_list_allocate_            m_fnFreeListAllocate_;
+        _free_list_allocate_cstr_       m_fnFreeListAllocateCStr_;
+        _free_list_free_                m_fnFreeListFree_;
+        _free_list_clear_               m_fnFreeListClear_;
 
         _allocate_linear_allocator      m_fnAllocateLinearAllocator;
         _allocate_fixed_stack_allocator m_fnAllocateFixedStackAllocator;

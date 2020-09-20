@@ -48,7 +48,18 @@ int main(int argc, char* argv[])
 
     _test _t;
 
-    void* _d = _pMemoryInterface->m_fnFreeListAllocate_(_free, &_t, sizeof(_test), alignof(_test));
+    _test* _d = (_test*)_pMemoryInterface->m_fnFreeListAllocate_(_free, &_t, sizeof(_test), alignof(_test));
+
+    _d->test1 = 10;
+    _d->test5 = 20;
+
+    _test* _d2 = (_test*)_pMemoryInterface->m_fnFreeListAllocate_(_free, &_t, sizeof(_test), alignof(_test));
+
+    _d2->test1 = 11;
+    _d2->test5 = 22;
+
+    _pMemoryInterface->m_fnFreeListFree_(_free, _d2);
+    _pMemoryInterface->m_fnFreeListFree_(_free, _d);
 
     return 0;
 }
