@@ -4,6 +4,7 @@
 #include "Utils/Macro.h"
 
 #include "PlugNPlay/Module.h"
+#include "PlugNPlay/AutoLoader.h"
 
 Duckvil::Utils::CommandArgumentsParser::Descriptor* g_pDescriptors = { 0 };
 
@@ -15,6 +16,10 @@ int main(int argc, char* argv[])
     {
         return 1;
     }
+
+    Duckvil::PlugNPlay::AutoLoader _auto(DUCKVIL_OUTPUT);
+
+    _auto.LoadAll();
 
     return 0;
 }

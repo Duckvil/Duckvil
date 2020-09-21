@@ -12,8 +12,9 @@ namespace Duckvil { namespace PlugNPlay { namespace Platform {
     bool windows_load(__module_information* _pModule)
     {
         Utils::string _buffer;
-        
-        Utils::join(_buffer, DUCKVIL_OUTPUT, "/", _pModule->m_sName, ".dll");
+
+        // TODO: Delete or move .dll join
+        Utils::join(_buffer, _pModule->m_sPath, "/", _pModule->m_sName, ".dll");
 
         _pModule->m_pModule = LoadLibraryA(_buffer.m_sText);
 

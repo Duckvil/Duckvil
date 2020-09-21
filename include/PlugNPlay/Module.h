@@ -2,6 +2,8 @@
 
 #include "Utils/Utils.h"
 
+#include <filesystem>
+
 namespace Duckvil { namespace PlugNPlay {
 
     struct __module_information
@@ -9,11 +11,12 @@ namespace Duckvil { namespace PlugNPlay {
         __module_information(const Utils::string& _sName) :
             m_sName(_sName)
         {
-
+            m_sPath = DUCKVIL_OUTPUT;
         }
 
         Utils::string m_sName;
         void* m_pModule;
+        Utils::string m_sPath;
     };
 
     struct module

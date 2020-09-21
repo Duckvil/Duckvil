@@ -22,21 +22,41 @@ namespace Duckvil { namespace Utils {
             memcpy(m_sText, _string.m_sText, _string.m_ullLength);
         }
 
-        string(std::size_t _ullLength)
+        string(const char* _sText, std::size_t _ullLength)
         {
             Allocate(_ullLength);
+            memcpy(m_sText, _sText, _ullLength);
         }
 
-        template <std::size_t Size>
-        string(const char (&_sText)[Size])
+        template <std::size_t Length>
+        string(const char (&_sText)[Length])
         {
-            Allocate(Size);
-            memcpy(m_sText, _sText, Size);
+            Allocate(Length);
+            memcpy(m_sText, _sText, Length);
         }
 
         ~string()
         {
             delete[] m_sText;
+        }
+
+        template <std::size_t Length>
+        string& operator=(const char (&_sText)[Length])
+        {
+            Allocate(Length);
+            memcpy(m_sText, _sText, Length);
+
+            return *this;
+        }
+
+        string& operator=(const string& _string)
+        {
+            m_ullLength = _string.m_ullLength;
+
+            Allocate(m_ullLength);
+            memcpy(m_sText, _string.m_sText, m_ullLength);
+
+            return *this;
         }
 
         void Allocate(std::size_t _ullLength)
