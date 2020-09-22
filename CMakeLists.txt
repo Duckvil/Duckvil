@@ -10,12 +10,6 @@ if(NOT CLANG_TIDY_COMMAND)
 else()
     message(WARNING "Found clang-tidy")
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-    set(CMAKE_CXX_CLANG_TIDY
-        clang-tidy;
-        -header-filter=.*;
-        -checks=*;
-        -p="${TRAVIS_BUILD_DIR}/build";
-    )
 endif()
 
 if(WIN32)
