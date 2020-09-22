@@ -22,14 +22,8 @@ namespace Duckvil { namespace PlugNPlay {
                 continue;
             }
 
-            // char _filename[64];
-            // char _path[256];
-
-            // memcpy(_filename, p.path().filename().string().c_str(), 64);
-            // memcpy(_path, p.path().parent_path().string().c_str(), 256);
-
-            std::string& _filename = p.path().filename().string();
-            std::string& _path = p.path().parent_path().string();
+            const std::string& _filename = p.path().filename().string();
+            const std::string& _path = p.path().parent_path().string();
 
             __module_information _module(Utils::string(_filename.c_str(), _filename.size() + 1));
 
