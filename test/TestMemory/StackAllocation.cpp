@@ -29,6 +29,7 @@ DUCKVIL_TEST(FixedStackAllocation)
         _stack.Allocate(4);
         _stack.Allocate(5);
 
+        DUCKVIL_TEST_EQUAL(_stack.GetSize(), 4 * sizeof(int), "Wrong size");
         DUCKVIL_TEST_EXP(_stack.Full(), "Overflow not detected");
         DUCKVIL_TEST_EQUAL(_stack.Top(), 4, "Overflow not detected");
 

@@ -21,6 +21,7 @@ DUCKVIL_TEST(FixedQueueAllocation)
             _queue.Allocate(4);
 
             DUCKVIL_TEST_EXP(_queue.Full(), "Queue is not full");
+            DUCKVIL_TEST_EQUAL(_queue.GetSize(), 4 * sizeof(int), "Wrong size");
 
             DUCKVIL_TEST_EQUAL(_queue.Begin(), 1, "Wrong value");
             _queue.Pop();
