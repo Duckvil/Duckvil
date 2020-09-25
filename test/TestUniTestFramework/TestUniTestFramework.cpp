@@ -50,6 +50,15 @@ DUCKVIL_TEST(UniTestFramework)
         return false;
     }
 
+    Duckvil::UniTestFramework::test_failed("Test", "Test", __FILE__, __LINE__);
+
+    if(DUCKVIL_TEST_FAILED != true)
+    {
+        return false;
+    }
+
+    DUCKVIL_TEST_FAILED = false;
+
     DUCKVIL_TEST_SUCCESS_PASS;
 }
 
