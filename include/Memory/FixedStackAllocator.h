@@ -101,6 +101,11 @@ namespace Duckvil { namespace Memory {
         {
             return fixed_stack_size(m_pAllocator);
         }
+
+        size_t GetCapacity() const
+        {
+            return fixed_stack_capacity(m_pAllocator);
+        }
     };
 
 }}

@@ -102,6 +102,11 @@ namespace Duckvil { namespace Memory {
             return fixed_queue_size(m_pAllocator);
         }
 
+        size_t GetCapacity() const
+        {
+            return fixed_queue_capacity(m_pAllocator);
+        }
+
         inline const __fixed_queue_allocator* GetAllocator() const { return m_pAllocator; }
     };
 
