@@ -35,57 +35,57 @@ namespace Duckvil { namespace Memory {
 
         }
 
-        void* Allocate(const Type& _value)
+        inline void* Allocate(const Type& _value)
         {
             return fixed_array_allocate(m_pMemoryInterface, m_pAllocator, _value);
         }
 
-        const Type& At(std::size_t _ullIndex) const
+        inline const Type& At(std::size_t _ullIndex) const
         {
             return *(Type*)fixed_array_at(m_pMemoryInterface, m_pAllocator, _ullIndex);
         }
 
-        Type& At(std::size_t _ullIndex)
+        inline Type& At(std::size_t _ullIndex)
         {
             return *(Type*)fixed_array_at(m_pMemoryInterface, m_pAllocator, _ullIndex);
         }
 
-        const Type& operator[](std::size_t _ullIndex) const
+        inline const Type& operator[](std::size_t _ullIndex) const
         {
             return At(_ullIndex);
         }
 
-        Type& operator[](std::size_t _ullIndex)
+        inline Type& operator[](std::size_t _ullIndex)
         {
             return At(_ullIndex);
         }
 
-        const Type& Begin() const
+        inline const Type& Begin() const
         {
             return *(Type*)fixed_array_begin(m_pMemoryInterface, m_pAllocator);
         }
 
-        Type& Begin()
+        inline Type& Begin()
         {
             return *(Type*)fixed_array_begin(m_pMemoryInterface, m_pAllocator);
         }
 
-        const Type& Back() const
+        inline const Type& Back() const
         {
             return *(Type*)fixed_array_back(m_pMemoryInterface, m_pAllocator);
         }
 
-        Type& Back()
+        inline Type& Back()
         {
             return *(Type*)fixed_array_back(m_pMemoryInterface, m_pAllocator);
         }
 
-        bool Empty() const
+        inline bool Empty() const
         {
             return fixed_array_empty(m_pMemoryInterface, m_pAllocator);
         }
 
-        bool Full() const
+        inline bool Full() const
         {
             return fixed_array_full(m_pMemoryInterface, m_pAllocator);
         }

@@ -30,37 +30,37 @@ namespace Duckvil { namespace Memory {
 
         }
 
-        Type* Allocate(const Type& _data)
+        inline Type* Allocate(const Type& _data)
         {
             return fixed_queue_allocate(m_pMemoryInterface, m_pAllocator, _data);
         }
 
-        const Type& Begin() const
+        inline const Type& Begin() const
         {
             return *(Type*)fixed_queue_begin(m_pMemoryInterface, m_pAllocator);
         }
 
-        bool Empty() const
+        inline bool Empty() const
         {
             return fixed_queue_empty(m_pAllocator);
         }
 
-        bool Full() const
+        inline bool Full() const
         {
             return fixed_queue_full(m_pAllocator);
         }
 
-        void Pop()
+        inline void Pop()
         {
             fixed_queue_pop(m_pMemoryInterface, m_pAllocator);
         }
 
-        size_t GetSize() const
+        inline size_t GetSize() const
         {
             return fixed_queue_size(m_pAllocator);
         }
 
-        size_t GetCapacity() const
+        inline size_t GetCapacity() const
         {
             return fixed_queue_capacity(m_pAllocator);
         }
