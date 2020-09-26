@@ -2,7 +2,7 @@
 
 #include "test/TestMemory/Module.h"
 
-#include "Memory/FixedStackAllocator.h"
+#include "Memory/Stack.h"
 
 #include <cstring>
 

@@ -2,7 +2,7 @@
 
 #include "test/TestMemory/Module.h"
 
-#include "Memory/FixedQueueAllocator.h"
+#include "Memory/Queue.h"
 
 #include <cstring>
 
