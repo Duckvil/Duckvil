@@ -8,6 +8,7 @@
 #include "Memory/Internal/QueueAllocator.h"
 #include "Memory/Internal/FixedArrayAllocator.h"
 #include "Memory/Internal/FreeListAllocator.h"
+#include "Memory/Internal/FixedVectorAllocator.h"
 
 #include <memory>
 
@@ -135,6 +136,15 @@ Duckvil::Memory::IMemory* duckvil_memory_init()
     memory->m_fnFreeListFree_ = &free_list_free;
     memory->m_fnFreeListClear_ = &free_list_clear;
 
+    memory->m_fnFixedVectorAllocate_ = &fixed_vector_allocate;
+    memory->m_fnFixedVectorAllocateCStr_ = &fixed_vector_allocate;
+    memory->m_fnFixedVectorBegin_ = &fixed_vector_begin;
+    memory->m_fnFixedVectorBack_ = &fixed_vector_back;
+    memory->m_fnFixedVectorAt_ = &fixed_vector_at;
+    memory->m_fnFixedVectorEmpty_ = &fixed_vector_empty;
+    memory->m_fnFixedVectorFull_ = &fixed_vector_full;
+    memory->m_fnFixedVectorClear_ = &fixed_vector_clear;
+
     memory->m_fnAllocateLinearAllocator = &allocate_linear_allocator;
     memory->m_fnAllocateFixedStackAllocator = &allocate_fixed_stack_allocator;
     memory->m_fnAllocateStackAllocator = &allocate_stack_allocator;
@@ -142,6 +152,7 @@ Duckvil::Memory::IMemory* duckvil_memory_init()
     memory->m_fnAllocateQueueAllocator = &allocate_queue_allocator;
     memory->m_fnAllocateFixedArrayAllocator = &allocate_fixed_array_allocator;
     memory->m_fnAllocateFreeListAllocator = &allocate_free_list_allocator;
+    memory->m_fnAllocateFixedVectorAllocator = &allocate_fixed_vector_allocator;
 
     return memory;
 }

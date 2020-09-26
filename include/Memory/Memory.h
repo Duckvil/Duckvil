@@ -54,6 +54,11 @@ namespace Duckvil { namespace Memory {
         void* m_pHead;
     };
 
+    struct __fixed_vector_allocator : public __allocator
+    {
+        std::size_t m_ullBlockSize;
+    };
+
     uintptr_t calculate_aligned_pointer(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
     uint8_t calculate_padding(const uintptr_t& _ullAddress, uint8_t _ucAlignment);
     uint8_t calculate_padding(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t _ucHeaderSize);
@@ -121,6 +126,20 @@ namespace Duckvil { namespace Memory {
         typedef bool (*_fixed_array_full_)(__fixed_array_allocator* _pAllocator);
         typedef void (*_fixed_array_clear_)(__fixed_array_allocator* _pAllocator);
 
+        typedef void* (*_free_list_allocate_)(__free_list_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef const char* (*_free_list_allocate_cstr_)(__free_list_allocator* _pAllocator, const char* _pData, std::size_t _ullLength);
+        typedef void (*_free_list_free_)(__free_list_allocator* _pAllocator, void** _pointer);
+        typedef void (*_free_list_clear_)(__free_list_allocator* _pAllocator);
+
+        typedef void* (*_fixed_vector_allocate_)(__fixed_vector_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef const char* (*_fixed_vector_allocate_cstr_)(__fixed_vector_allocator* _pAllocator, const char* _pData, std::size_t _ullLength);
+        typedef void* (*_fixed_vector_at_)(__fixed_vector_allocator* _pAllocator, std::size_t _ullIndex);
+        typedef void* (*_fixed_vector_begin_)(__fixed_vector_allocator* _pAllocator);
+        typedef void* (*_fixed_vector_back_)(__fixed_vector_allocator* _pAllocator);
+        typedef bool (*_fixed_vector_empty_)(__fixed_vector_allocator* _pAllocator);
+        typedef bool (*_fixed_vector_full_)(__fixed_vector_allocator* _pAllocator);
+        typedef void (*_fixed_vector_clear_)(__fixed_vector_allocator* _pAllocator);
+
         typedef __linear_allocator* (*_allocate_linear_allocator)(__allocator* _pAllocator, std::size_t _ullSize);
         typedef __fixed_stack_allocator* (*_allocate_fixed_stack_allocator)(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
         typedef __stack_allocator* (*_allocate_stack_allocator)(__allocator* _pAllocator, std::size_t _ullSize);
@@ -128,11 +147,7 @@ namespace Duckvil { namespace Memory {
         typedef __queue_allocator* (*_allocate_queue_allocator)(__allocator* _pAllocator, std::size_t _ullSize);
         typedef __fixed_array_allocator* (*_allocate_fixed_array_allocator)(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
         typedef __free_list_allocator* (*_allocate_free_list_allocator)(__allocator* _pAllocator, std::size_t _ullSize);
-
-        typedef void* (*_free_list_allocate_)(__free_list_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef const char* (*_free_list_allocate_cstr_)(__free_list_allocator* _pAllocator, const char* _pData, std::size_t _ullLength);
-        typedef void (*_free_list_free_)(__free_list_allocator* _pAllocator, void** _pointer);
-        typedef void (*_free_list_clear_)(__free_list_allocator* _pAllocator);
+        typedef __fixed_vector_allocator* (*_allocate_fixed_vector_allocator)(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
 
         _basic_allocate             m_fnBasicAllocate;
 
@@ -191,18 +206,28 @@ namespace Duckvil { namespace Memory {
         _fixed_array_full_          m_fnFixedArrayFull_;
         _fixed_array_clear_         m_fnFixedArrayClear_;
 
-        _free_list_allocate_            m_fnFreeListAllocate_;
-        _free_list_allocate_cstr_       m_fnFreeListAllocateCStr_;
-        _free_list_free_                m_fnFreeListFree_;
-        _free_list_clear_               m_fnFreeListClear_;
+        _free_list_allocate_        m_fnFreeListAllocate_;
+        _free_list_allocate_cstr_   m_fnFreeListAllocateCStr_;
+        _free_list_free_            m_fnFreeListFree_;
+        _free_list_clear_           m_fnFreeListClear_;
 
-        _allocate_linear_allocator      m_fnAllocateLinearAllocator;
-        _allocate_fixed_stack_allocator m_fnAllocateFixedStackAllocator;
-        _allocate_stack_allocator       m_fnAllocateStackAllocator;
-        _allocate_fixed_queue_allocator m_fnAllocateFixedQueueAllocator;
-        _allocate_queue_allocator       m_fnAllocateQueueAllocator;
-        _allocate_fixed_array_allocator m_fnAllocateFixedArrayAllocator;
-        _allocate_free_list_allocator   m_fnAllocateFreeListAllocator;
+        _fixed_vector_allocate_         m_fnFixedVectorAllocate_;
+        _fixed_vector_allocate_cstr_    m_fnFixedVectorAllocateCStr_;
+        _fixed_vector_begin_            m_fnFixedVectorBegin_;
+        _fixed_vector_back_             m_fnFixedVectorBack_;
+        _fixed_vector_at_               m_fnFixedVectorAt_;
+        _fixed_vector_empty_            m_fnFixedVectorEmpty_;
+        _fixed_vector_full_             m_fnFixedVectorFull_;
+        _fixed_vector_clear_            m_fnFixedVectorClear_;
+
+        _allocate_linear_allocator          m_fnAllocateLinearAllocator;
+        _allocate_fixed_stack_allocator     m_fnAllocateFixedStackAllocator;
+        _allocate_stack_allocator           m_fnAllocateStackAllocator;
+        _allocate_fixed_queue_allocator     m_fnAllocateFixedQueueAllocator;
+        _allocate_queue_allocator           m_fnAllocateQueueAllocator;
+        _allocate_fixed_array_allocator     m_fnAllocateFixedArrayAllocator;
+        _allocate_free_list_allocator       m_fnAllocateFreeListAllocator;
+        _allocate_fixed_vector_allocator    m_fnAllocateFixedVectorAllocator;
     };
 
 }}

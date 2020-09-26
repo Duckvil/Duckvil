@@ -196,4 +196,27 @@ namespace Duckvil { namespace Memory {
         return _allocator;
     }
 
+    __fixed_vector_allocator* allocate_fixed_vector_allocator(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
+    {
+        if(_pAllocator->capacity < _ullSize + _pAllocator->used)
+        {
+            return 0;
+        }
+
+        uint8_t _padding = 0;
+        __fixed_vector_allocator* _memory = (__fixed_vector_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__fixed_vector_allocator), _padding);
+        std::size_t _size = sizeof(__fixed_vector_allocator);
+
+        _memory->capacity = _ullSize;
+        _memory->memory = (uint8_t*)_memory + _size;
+        _memory->used = 0;
+        _memory->m_ullBlockSize = _ullTypeSize;
+
+        memset(_memory->memory, 0, _ullSize);
+
+        _pAllocator->used += _size + _ullSize;
+
+        return _memory;
+    }
+
 }}
