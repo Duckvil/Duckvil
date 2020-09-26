@@ -2,6 +2,8 @@
 
 #include <cstring>
 
+#include "Memory/FreeListAllocator.h"
+
 namespace Duckvil { namespace Memory {
 
     void* fixed_vector_allocate(__fixed_vector_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
@@ -71,26 +73,25 @@ namespace Duckvil { namespace Memory {
         return _pAllocator->used == _pAllocator->capacity;
     }
 
-    void fixed_vector_resize(__free_list_allocator* _pParentAllocator, __fixed_vector_allocator* _pAllocator, std::size_t _ullNewSize)
+    void fixed_vector_resize(IMemory* _pInterface, __free_list_allocator* _pParentAllocator, __fixed_vector_allocator** _pAllocator, std::size_t _ullNewSize)
     {
-    // TODO: Implement resize function
-        // if(_pParentAllocator->capacity < _ullNewSize + _pParentAllocator->used)
-        // {
-        //     return;
-        // }
+        if(_pParentAllocator->capacity < _ullNewSize + _pParentAllocator->used)
+        {
+            return;
+        }
 
-        // uint8_t _padding = 0;
-        // __fixed_vector_allocator* _memory = (__fixed_vector_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__fixed_vector_allocator), _padding);
-        // std::size_t _size = sizeof(__fixed_vector_allocator);
+        __fixed_vector_allocator* _allocator = (__fixed_vector_allocator*)free_list_allocate(_pInterface, _pParentAllocator, sizeof(__fixed_vector_allocator) + _ullNewSize, alignof(__fixed_vector_allocator));
 
-        // _memory->capacity = _ullSize;
-        // _memory->memory = (uint8_t*)_memory + _size;
-        // _memory->used = 0;
-        // _memory->m_ullBlockSize = _ullTypeSize;
+        _allocator->memory = (uint8_t*)_allocator + sizeof(__fixed_vector_allocator);
+        _allocator->capacity = _ullNewSize;
+        _allocator->used = (*_pAllocator)->used;
+        _allocator->m_ullBlockSize = (*_pAllocator)->m_ullBlockSize;
 
-        // memset(_memory->memory, 0, _ullSize);
+        memcpy(_allocator->memory, (*_pAllocator)->memory, (*_pAllocator)->used);
 
-        // _pAllocator->used += _size + _ullSize;
+        _pInterface->m_fnFreeListFree_(_pParentAllocator, (void**)_pAllocator);
+
+        *_pAllocator = _allocator;
     }
 
     void fixed_vector_clear(__fixed_vector_allocator* _pAllocator)

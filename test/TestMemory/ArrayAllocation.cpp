@@ -2,7 +2,7 @@
 
 #include "test/TestMemory/Module.h"
 
-#include "Memory/FixedArrayAllocator.h"
+#include "Memory/Array.h"
 
 #include <cstring>
 

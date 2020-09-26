@@ -139,6 +139,7 @@ namespace Duckvil { namespace Memory {
         typedef bool (*_fixed_vector_empty_)(__fixed_vector_allocator* _pAllocator);
         typedef bool (*_fixed_vector_full_)(__fixed_vector_allocator* _pAllocator);
         typedef void (*_fixed_vector_clear_)(__fixed_vector_allocator* _pAllocator);
+        typedef void (*_fixed_vector_resize_)(IMemory* _pInterface, __free_list_allocator* _pParentAllocator, __fixed_vector_allocator** _pAllocator, std::size_t _ullNewSize);
 
         typedef __linear_allocator* (*_allocate_linear_allocator)(__allocator* _pAllocator, std::size_t _ullSize);
         typedef __fixed_stack_allocator* (*_allocate_fixed_stack_allocator)(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
@@ -148,6 +149,8 @@ namespace Duckvil { namespace Memory {
         typedef __fixed_array_allocator* (*_allocate_fixed_array_allocator)(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
         typedef __free_list_allocator* (*_allocate_free_list_allocator)(__allocator* _pAllocator, std::size_t _ullSize);
         typedef __fixed_vector_allocator* (*_allocate_fixed_vector_allocator)(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+
+        typedef __fixed_vector_allocator* (*__free_list_allocate_vector_allocator)(IMemory* _pMemoryInterface, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize, uint8_t _ucAlignment);
 
         _basic_allocate             m_fnBasicAllocate;
 
@@ -219,6 +222,7 @@ namespace Duckvil { namespace Memory {
         _fixed_vector_empty_            m_fnFixedVectorEmpty_;
         _fixed_vector_full_             m_fnFixedVectorFull_;
         _fixed_vector_clear_            m_fnFixedVectorClear_;
+        _fixed_vector_resize_           m_fnFixedVectorResize_;
 
         _allocate_linear_allocator          m_fnAllocateLinearAllocator;
         _allocate_fixed_stack_allocator     m_fnAllocateFixedStackAllocator;
@@ -228,6 +232,8 @@ namespace Duckvil { namespace Memory {
         _allocate_fixed_array_allocator     m_fnAllocateFixedArrayAllocator;
         _allocate_free_list_allocator       m_fnAllocateFreeListAllocator;
         _allocate_fixed_vector_allocator    m_fnAllocateFixedVectorAllocator;
+
+        __free_list_allocate_vector_allocator m_fnFreeListAllocateVectorAllocator;
     };
 
 }}

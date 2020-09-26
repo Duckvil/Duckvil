@@ -144,6 +144,7 @@ Duckvil::Memory::IMemory* duckvil_memory_init()
     memory->m_fnFixedVectorEmpty_ = &fixed_vector_empty;
     memory->m_fnFixedVectorFull_ = &fixed_vector_full;
     memory->m_fnFixedVectorClear_ = &fixed_vector_clear;
+    memory->m_fnFixedVectorResize_ = &fixed_vector_resize;
 
     memory->m_fnAllocateLinearAllocator = &allocate_linear_allocator;
     memory->m_fnAllocateFixedStackAllocator = &allocate_fixed_stack_allocator;
@@ -153,6 +154,8 @@ Duckvil::Memory::IMemory* duckvil_memory_init()
     memory->m_fnAllocateFixedArrayAllocator = &allocate_fixed_array_allocator;
     memory->m_fnAllocateFreeListAllocator = &allocate_free_list_allocator;
     memory->m_fnAllocateFixedVectorAllocator = &allocate_fixed_vector_allocator;
+
+    memory->m_fnFreeListAllocateVectorAllocator = &free_list_allocate_vector_allocator;
 
     return memory;
 }

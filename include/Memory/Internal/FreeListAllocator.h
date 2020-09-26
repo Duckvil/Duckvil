@@ -21,4 +21,6 @@ namespace Duckvil { namespace Memory {
     void free_list_free(__free_list_allocator* _pAllocator, void** _pointer);
     void free_list_clear(__free_list_allocator* _pAllocator);
 
+    __fixed_vector_allocator* free_list_allocate_vector_allocator(IMemory* _pMemoryInterface, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize, uint8_t _ucAlignment);
+
 }}
