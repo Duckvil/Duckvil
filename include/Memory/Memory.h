@@ -236,6 +236,8 @@ namespace Duckvil { namespace Memory {
         __free_list_allocate_vector_allocator m_fnFreeListAllocateVectorAllocator;
     };
 
+    typedef IMemory* (*init_callback)();
+
 }}
 
 DUCKVIL_EXPORT Duckvil::Memory::IMemory* duckvil_memory_init();
