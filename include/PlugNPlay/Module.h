@@ -27,5 +27,16 @@ namespace Duckvil { namespace PlugNPlay {
     };
 
     bool module_init(module* _pModule);
+    
+    template <typename Type>
+    bool get_variable(const module& _module, const __module_information& _module_info, const char* _sName, Type* _pVariable)
+    {
+        Type* _temp = nullptr;
+        bool result = _module.get(_module_info, _sName, (void**)&_temp);
+
+        *_pVariable = *_temp;
+
+        return result;
+    }
 
 }}

@@ -5,6 +5,7 @@
 
 #include "PlugNPlay/Module.h"
 #include "PlugNPlay/AutoLoader.h"
+#include "PlugNPlay/Plugin.h"
 
 #include "Memory/Vector.h"
 
@@ -35,19 +36,20 @@ int main(int argc, char* argv[])
     _module.load(&_dbModule);
 
     Duckvil::Memory::init_callback duckvil_memory_init;
-    Duckvil::RuntimeDatabase::__data* (*duckvil_runtimedatabase_init)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator);
 
     _module.get(_memoryModule, "duckvil_memory_init", (void**)&duckvil_memory_init);
-    _module.get(_dbModule, "duckcvil_runtimedatabase_init", (void**)&duckvil_runtimedatabase_init);
 
     Duckvil::Memory::IMemory* _memoryInterface = duckvil_memory_init();
 
     Duckvil::Memory::__linear_allocator _mainMemoryAllocator;
 
-    _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024);
-    Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnAllocateFreeListAllocator(&_mainMemoryAllocator, 512);
+    _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 2048);
+    Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnAllocateFreeListAllocator(&_mainMemoryAllocator, 1024);
 
-    Duckvil::RuntimeDatabase::__data* _db = duckvil_runtimedatabase_init(_memoryInterface, _free_list);
+    Duckvil::RuntimeDatabase::__data* _db = (Duckvil::RuntimeDatabase::__data*)Duckvil::PlugNPlay::instantiate_plugin(_module, _dbModule);
+
+    _db->m_pAllocator = (Duckvil::Memory::__free_list_allocator*)1;
+    Duckvil::RuntimeDatabase::__data* _db2 = (Duckvil::RuntimeDatabase::__data*)Duckvil::PlugNPlay::instantiate_plugin(_module, _dbModule);
 
     return 0;
 }
