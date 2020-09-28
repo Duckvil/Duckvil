@@ -31,7 +31,7 @@ namespace Duckvil { namespace PlugNPlay {
     void* instantiate_plugin(const module& _module, const __module_information& _module_info);
     void* instantiate_plugin(const module& _module, const __module_information& _module_info, Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator);
 
-    void* delete_plugin_instance(const module& _module, const __module_information& _module_info, Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, void* _pointer);
+    void delete_plugin_instance(const module& _module, const __module_information& _module_info, Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, void* _pointer);
 
 }}
 

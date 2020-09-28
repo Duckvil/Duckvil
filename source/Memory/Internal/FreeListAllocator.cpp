@@ -86,10 +86,10 @@ namespace Duckvil { namespace Memory {
         return (const char*)_memory;
     }
 
-    void free_list_free(__free_list_allocator* _pAllocator, void** _pointer)
+    void free_list_free(__free_list_allocator* _pAllocator, void* _pointer)
     {
-        __free_list_header* _header = (__free_list_header*)((uint8_t*)*_pointer - sizeof(__free_list_header));
-        uintptr_t _node = (uintptr_t)*_pointer - _header->m_ucPadding;
+        __free_list_header* _header = (__free_list_header*)((uint8_t*)_pointer - sizeof(__free_list_header));
+        uintptr_t _node = (uintptr_t)_pointer - _header->m_ucPadding;
         std::size_t _block_size = _header->m_ullSize;
         uintptr_t _block_end = _node + _block_size;
         __free_list_node* _previous_node = nullptr;
@@ -136,8 +136,6 @@ namespace Duckvil { namespace Memory {
         }
 
         memset(_previous_node, 0, _previous_node->m_ullSize);
-
-        *_pointer = 0;
 
         _pAllocator->used -= _block_size;
     }

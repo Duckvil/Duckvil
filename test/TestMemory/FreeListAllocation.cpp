@@ -51,7 +51,7 @@ DUCKVIL_TEST(FreeListAllocation)
     DUCKVIL_TEST_EQUAL(_d3->test1, 111, "Wrong value");
     DUCKVIL_TEST_EQUAL(_d3->test5, 222, "Wrong value");
 
-    Duckvil::Memory::free_list_free(__duckvil_global::m_pMemoryInterface, _free, (void**)&_d2);
+    Duckvil::Memory::free_list_free(__duckvil_global::m_pMemoryInterface, _free, _d2);
 
     DUCKVIL_TEST_IS_NULL(_d2, "Failed to free memory");
     DUCKVIL_TEST_EQUAL(_d->test1, 10, "Wrong value");
@@ -59,13 +59,13 @@ DUCKVIL_TEST(FreeListAllocation)
     DUCKVIL_TEST_EQUAL(_d3->test1, 111, "Wrong value");
     DUCKVIL_TEST_EQUAL(_d3->test5, 222, "Wrong value");
 
-    Duckvil::Memory::free_list_free(__duckvil_global::m_pMemoryInterface, _free, (void**)&_d3);
+    Duckvil::Memory::free_list_free(__duckvil_global::m_pMemoryInterface, _free, _d3);
 
     DUCKVIL_TEST_IS_NULL(_d3, "Failed to free memory");
     DUCKVIL_TEST_EQUAL(_d->test1, 10, "Wrong value");
     DUCKVIL_TEST_EQUAL(_d->test5, 20, "Wrong value");
 
-    Duckvil::Memory::free_list_free(__duckvil_global::m_pMemoryInterface, _free, (void**)&_d);
+    Duckvil::Memory::free_list_free(__duckvil_global::m_pMemoryInterface, _free, _d);
 
     DUCKVIL_TEST_IS_NULL(_d, "Failed to free memory");
 

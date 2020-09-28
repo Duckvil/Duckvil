@@ -20,7 +20,7 @@ namespace Duckvil { namespace PlugNPlay {
         return _details.m_pAllocator(_pMemoryInterface, _pAllocator);
     }
 
-    void* delete_plugin_instance(const module& _module, const __module_information& _module_info, Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, void* _pointer)
+    void delete_plugin_instance(const module& _module, const __module_information& _module_info, Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, void* _pointer)
     {
         __plugin_details _details = {};
 
