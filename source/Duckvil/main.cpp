@@ -11,7 +11,34 @@
 
 #include "RuntimeDatabase/RuntimeDatabase.h"
 
+#include "Memory/SlotArray.h"
+
 Duckvil::Utils::CommandArgumentsParser::Descriptor* g_pDescriptors = { 0 };
+
+#define slot(T, ...) \
+    struct T \
+        __VA_ARGS__ \
+    ; \
+    DUCKVIL_SLOT_ARRAY_DECLARE(T)
+
+slot(test, 
+{
+    int a;
+});
+
+struct test_t
+{
+    DUCKVIL_SLOT_ARRAY(test) m_test;
+};
+
+bool duckvil_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator)
+{
+    test_t* _data = (test_t*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, 0, sizeof(test_t), alignof(test_t));
+
+    _data->m_test = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, test);
+
+    return true;
+}
 
 int main(int argc, char* argv[])
 {
@@ -46,10 +73,12 @@ int main(int argc, char* argv[])
     _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 2048);
     Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnAllocateFreeListAllocator(&_mainMemoryAllocator, 1024);
 
-    Duckvil::RuntimeDatabase::__data* _db = (Duckvil::RuntimeDatabase::__data*)Duckvil::PlugNPlay::instantiate_plugin(_module, _dbModule);
+    duckvil_init(_memoryInterface, _free_list);
 
-    _db->m_pAllocator = (Duckvil::Memory::__free_list_allocator*)1;
-    Duckvil::RuntimeDatabase::__data* _db2 = (Duckvil::RuntimeDatabase::__data*)Duckvil::PlugNPlay::instantiate_plugin(_module, _dbModule);
+    // Duckvil::RuntimeDatabase::__data* _db = (Duckvil::RuntimeDatabase::__data*)Duckvil::PlugNPlay::instantiate_plugin(_module, _dbModule);
+
+    // _db->m_pAllocator = (Duckvil::Memory::__free_list_allocator*)1;
+    // Duckvil::RuntimeDatabase::__data* _db2 = (Duckvil::RuntimeDatabase::__data*)Duckvil::PlugNPlay::instantiate_plugin(_module, _dbModule);
 
     return 0;
 }
