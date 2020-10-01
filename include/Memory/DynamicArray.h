@@ -4,6 +4,16 @@
 
 #include "Memory/FreeListAllocator.h"
 
+#define _inline 			static inline
+
+#if ( defined _WIN32 || defined _WIN64 )
+#define _force_inline 		static __forceinline
+#elif ( defined __APPLE__ || defined _APPLE )
+#define _force_inline 		static __attribute__((always_inline))
+#else
+#define _force_inline 		_inline
+#endif
+
 struct __duckvil_dynamic_array
 {
     std::size_t m_ullSize;
@@ -22,7 +32,7 @@ struct __duckvil_dynamic_array
 #define DUCKVIL_DYNAMIC_ARRAY_FULL(arr) \
     (DUCKVIL_DYNAMIC_ARRAY_SIZE(arr) == DUCKVIL_DYNAMIC_ARRAY_CAPACITY(arr))
 
-inline void* duckvil_dynamic_array_resize(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, void* _pArray, std::size_t _ullSize, std::size_t _ullAmount)
+_inline void* duckvil_dynamic_array_resize(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, void* _pArray, std::size_t _ullSize, std::size_t _ullAmount)
 {
     std::size_t _capacity;
 
@@ -35,18 +45,24 @@ inline void* duckvil_dynamic_array_resize(Duckvil::Memory::IMemory* _pMemoryInte
         _capacity = 0;
     }
 
-    __duckvil_dynamic_array* _data = (__duckvil_dynamic_array*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, 0, _capacity * _ullSize + sizeof(__duckvil_dynamic_array), alignof(__duckvil_dynamic_array));
+    __duckvil_dynamic_array* _data = (__duckvil_dynamic_array*)/*realloc(_pArray ? DUCKVIL_DYNAMIC_ARRAY_HEAD(_pArray) : 0, _capacity * _ullSize + sizeof(__duckvil_dynamic_array));*/_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, 0, _capacity * _ullSize + sizeof(__duckvil_dynamic_array), alignof(__duckvil_dynamic_array));
 
     if(_data)
     {
+        _data->m_ullCapacity = _capacity;
+
         if(_pArray == nullptr)
         {
             _data->m_ullSize = 0;
         }
+        else
+        {
+            memcpy(_data, DUCKVIL_DYNAMIC_ARRAY_HEAD(_pArray), DUCKVIL_DYNAMIC_ARRAY_SIZE(_pArray) + sizeof(__duckvil_dynamic_array));
 
-        _data->m_ullCapacity = _capacity;
+            _pMemoryInterface->m_fnFreeListFree_(_pAllocator, DUCKVIL_DYNAMIC_ARRAY_HEAD(_pArray));
+        }
 
-        return (uint8_t*)_data + sizeof(__duckvil_dynamic_array);
+        return (std::size_t*)_data + 2;
     }
 
     return nullptr;
@@ -59,7 +75,7 @@ inline void* duckvil_dynamic_array_resize(Duckvil::Memory::IMemory* _pMemoryInte
     duckvil_dynamic_array_resize(memory_interface, allocator, arr, sizeof(*(arr)), DUCKVIL_DYNAMIC_ARRAY_CAPACITY(arr) ? DUCKVIL_DYNAMIC_ARRAY_CAPACITY(arr) * 2 : 1)
 
 #define DUCKVIL_DYNAMIC_ARRAY_PUSH(memory_interface, allocator, arr, val) \
-    if(arr == nullptr || (arr != nullptr && DUCKVIL_DYNAMIC_ARRAY_GROW(memory_interface, allocator, arr, 1))) \
+    if(arr == nullptr || (arr != nullptr && DUCKVIL_DYNAMIC_ARRAY_NEED_GROW(arr, 1))) \
     { \
         *((void**)&(arr)) = DUCKVIL_DYNAMIC_ARRAY_GROW(memory_interface, allocator, arr);\
     } \
@@ -85,7 +101,7 @@ inline void* duckvil_dynamic_array_resize(Duckvil::Memory::IMemory* _pMemoryInte
     (arr + (DUCKVIL_DYNAMIC_ARRAY_SIZE(arr) ? DUCKVIL_DYNAMIC_ARRAY_SIZE(arr) - 1 : 0))
 
 #define DUCKVIL_DYNAMIC_ARRAY_NEW(memory_interface, allocator, type) \
-    (type*)duckvil_dynamic_array_resize(memory_interface, allocator, 0, sizeof(type), 0)
+    (type*)duckvil_dynamic_array_resize(memory_interface, allocator, nullptr, sizeof(type), 0)
 
 #define DUCKVIL_DYNAMIC_ARRAY_CLEAR(arr) \
     DUCKVIL_DYNAMIC_ARRAY_SIZE(arr) = 0

@@ -11,34 +11,9 @@
 
 #include "RuntimeDatabase/RuntimeDatabase.h"
 
-#include "Memory/SlotArray.h"
+#include "RuntimeReflection/RuntimeReflection.h"
 
 Duckvil::Utils::CommandArgumentsParser::Descriptor* g_pDescriptors = { 0 };
-
-#define slot(T, ...) \
-    struct T \
-        __VA_ARGS__ \
-    ; \
-    DUCKVIL_SLOT_ARRAY_DECLARE(T)
-
-slot(test, 
-{
-    int a;
-});
-
-struct test_t
-{
-    DUCKVIL_SLOT_ARRAY(test) m_test;
-};
-
-bool duckvil_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator)
-{
-    test_t* _data = (test_t*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, 0, sizeof(test_t), alignof(test_t));
-
-    _data->m_test = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, test);
-
-    return true;
-}
 
 int main(int argc, char* argv[])
 {
@@ -73,7 +48,31 @@ int main(int argc, char* argv[])
     _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 2048);
     Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnAllocateFreeListAllocator(&_mainMemoryAllocator, 1024);
 
-    duckvil_init(_memoryInterface, _free_list);
+    {
+        Duckvil::PlugNPlay::__module_information _runtimeReflectionModule("RuntimeReflection");
+        duckvil_runtime_reflection_init_callback _rr_init;
+
+        _module.load(&_runtimeReflectionModule);
+        _module.get(_runtimeReflectionModule, "duckvil_runtime_reflection_init", (void**)&_rr_init);
+
+        Duckvil::RuntimeReflection::__functions* _rr_data = _rr_init(_memoryInterface, _free_list);
+        _rr_data->m_fnInit(_memoryInterface, _free_list, _rr_data);
+
+        struct test
+        {
+
+        };
+
+        struct test2
+        {
+
+        };
+
+        Duckvil::RuntimeReflection::__duckvil_resource_type_t a = _rr_data->m_fnRecordType(_memoryInterface, _free_list, _rr_data->m_pData, typeid(test).hash_code(), "test");
+        Duckvil::RuntimeReflection::__duckvil_resource_type_t b = _rr_data->m_fnRecordType(_memoryInterface, _free_list, _rr_data->m_pData, typeid(test2).hash_code(), "test2");
+    }
+
+    // duckvil_init(_memoryInterface, _free_list);
 
     // Duckvil::RuntimeDatabase::__data* _db = (Duckvil::RuntimeDatabase::__data*)Duckvil::PlugNPlay::instantiate_plugin(_module, _dbModule);
 

@@ -135,8 +135,6 @@ namespace Duckvil { namespace Memory {
             _previous_node->m_pNext = _iterator->m_pNext;
         }
 
-        memset(_previous_node, 0, _previous_node->m_ullSize);
-
         _pAllocator->used -= _block_size;
     }
 

@@ -7,6 +7,7 @@
 struct __duckvil_slot_array_base
 {
     DUCKVIL_DYNAMIC_ARRAY(uint32_t) m_handleIndices;
+    DUCKVIL_DYNAMIC_ARRAY(uint32_t) m_indirectionIndices;
     DUCKVIL_DYNAMIC_ARRAY(uint32_t) m_freeIndices;
 };
 
@@ -17,26 +18,29 @@ struct __duckvil_slot_array_base
         DUCKVIL_DYNAMIC_ARRAY(t) m_data; \
         uint32_t (*_insert_callback)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, __duckvil_slot_array_##t*, t); \
     }; \
-    /*TODO: Force inline*/ uint32_t duckvil_slot_array_##t##_insert(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, __duckvil_slot_array_ ## t* s, t v) \
+    _force_inline uint32_t duckvil_slot_array_##t##_insert(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, __duckvil_slot_array_ ## t* s, t v) \
     { \
         uint32_t _free_index = duckvil_slot_array_next(_pMemoryInterface, _pAllocator, (__duckvil_slot_array_base*)s); \
         DUCKVIL_DYNAMIC_ARRAY_PUSH(_pMemoryInterface, _pAllocator, s->m_data, v); \
+        DUCKVIL_DYNAMIC_ARRAY_PUSH(_pMemoryInterface, _pAllocator, s->m_base.m_indirectionIndices, _free_index); \
         s->m_base.m_handleIndices[_free_index] = DUCKVIL_DYNAMIC_ARRAY_SIZE(s->m_data) - 1; \
         return _free_index; \
     } \
-    inline __duckvil_slot_array_##t duckvil_slot_array_##t##_new(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator) \
+    _inline __duckvil_slot_array_##t duckvil_slot_array_##t##_new(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator) \
     { \
         __duckvil_slot_array_##t _slot_array; \
         _slot_array.m_data = DUCKVIL_DYNAMIC_ARRAY_NEW(_pMemoryInterface, _pAllocator, t); \
         _slot_array.m_base.m_handleIndices = DUCKVIL_DYNAMIC_ARRAY_NEW(_pMemoryInterface, _pAllocator, uint32_t); \
+        _slot_array.m_base.m_indirectionIndices = DUCKVIL_DYNAMIC_ARRAY_NEW(_pMemoryInterface, _pAllocator, uint32_t); \
         _slot_array.m_base.m_freeIndices = DUCKVIL_DYNAMIC_ARRAY_NEW(_pMemoryInterface, _pAllocator, uint32_t); \
         _slot_array._insert_callback = &duckvil_slot_array_##t##_insert; \
         return _slot_array; \
     }
 
-/*TODO: Force inline*/
-uint32_t duckvil_slot_array_next(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, __duckvil_slot_array_base* _pBase)
+_force_inline uint32_t duckvil_slot_array_next(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, __duckvil_slot_array_base* _pBase)
 {
+    __duckvil_dynamic_array* _head = DUCKVIL_DYNAMIC_ARRAY_HEAD(_pBase->m_freeIndices);
+
     if(DUCKVIL_DYNAMIC_ARRAY_EMPTY(_pBase->m_freeIndices))
     {
         DUCKVIL_DYNAMIC_ARRAY_PUSH(_pMemoryInterface, _pAllocator, _pBase->m_handleIndices, 0);
@@ -66,6 +70,7 @@ uint32_t duckvil_slot_array_next(Duckvil::Memory::IMemory* _pMemoryInterface, Du
 #define DUCKVIL_SLOT_ARRAY_CLEAR(s) \
     DUCKVIL_DYNAMIC_ARRAY_CLEAR(s.m_base.m_handleIndices); \
     DUCKVIL_DYNAMIC_ARRAY_CLEAR(s.m_base.m_freeIndices); \
+    DUCKVIL_DYNAMIC_ARRAY_CLEAR(s.m_base.m_indirectionIndices); \
     DUCKVIL_DYNAMIC_ARRAY_CLEAR(s.m_data);
 
 #define DUCKVIL_SLOT_ARRAY_SIZE(s) \
@@ -75,7 +80,7 @@ uint32_t duckvil_slot_array_next(Duckvil::Memory::IMemory* _pMemoryInterface, Du
     duckvil_slot_array_##t##_new(memory_interface, allocator)
 
 #define DUCKVIL_SLOT_ARRAY_INSERT(memory_interface, allocator, s, v) \
-    s._insert_callback(memory_interface, allocator, &s, v)
+    s._insert_callback(memory_interface, allocator, &(s), v)
 
 #define DUCKVIL_SLOT_ARRAY_GET(s, handle) \
     (s.m_data[s.m_base.m_handleIndices[handle]])
