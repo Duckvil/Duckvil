@@ -70,6 +70,7 @@ int main(int argc, char* argv[])
 
         Duckvil::RuntimeReflection::__duckvil_resource_type_t a = _rr_data->m_fnRecordType(_memoryInterface, _free_list, _rr_data->m_pData, typeid(test).hash_code(), "test");
         Duckvil::RuntimeReflection::__duckvil_resource_type_t b = _rr_data->m_fnRecordType(_memoryInterface, _free_list, _rr_data->m_pData, typeid(test2).hash_code(), "test2");
+        Duckvil::RuntimeReflection::__duckvil_resource_type_t c = _rr_data->m_fnRecordType(_memoryInterface, _free_list, _rr_data->m_pData, typeid(test2).hash_code(), "test3");
     }
 
     // duckvil_init(_memoryInterface, _free_list);

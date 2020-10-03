@@ -47,7 +47,7 @@ namespace Duckvil { namespace PlugNPlay {
     } \
     void free(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, void* _pointer) \
     { \
-        _pMemoryInterface->m_fnFreeListFree_(_pAllocator, &_pointer); \
+        _pMemoryInterface->m_fnFreeListFree_(_pAllocator, _pointer); \
     } \
     extern "C" DUCKVIL_EXPORT Duckvil::PlugNPlay::__plugin_details g_pluginDetails = \
     { \

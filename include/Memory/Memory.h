@@ -126,7 +126,9 @@ namespace Duckvil { namespace Memory {
         typedef bool (*_fixed_array_full_)(__fixed_array_allocator* _pAllocator);
         typedef void (*_fixed_array_clear_)(__fixed_array_allocator* _pAllocator);
 
-        typedef void* (*_free_list_allocate_)(__free_list_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_free_list_allocate_d_)(__free_list_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_free_list_allocate_)(__free_list_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_free_list_reallocate_)(__free_list_allocator* _pAllocator, void* _pData, std::size_t _ullDataSize, std::size_t _ullSize, uint8_t _ucAlignment);
         typedef const char* (*_free_list_allocate_cstr_)(__free_list_allocator* _pAllocator, const char* _pData, std::size_t _ullLength);
         typedef void (*_free_list_free_)(__free_list_allocator* _pAllocator, void* _pointer);
         typedef void (*_free_list_clear_)(__free_list_allocator* _pAllocator);
@@ -210,6 +212,8 @@ namespace Duckvil { namespace Memory {
         _fixed_array_clear_         m_fnFixedArrayClear_;
 
         _free_list_allocate_        m_fnFreeListAllocate_;
+        _free_list_allocate_d_      m_fnFreeListAllocate_D_;
+        _free_list_reallocate_      m_fnFreeListReallocate_;
         _free_list_allocate_cstr_   m_fnFreeListAllocateCStr_;
         _free_list_free_            m_fnFreeListFree_;
         _free_list_clear_           m_fnFreeListClear_;

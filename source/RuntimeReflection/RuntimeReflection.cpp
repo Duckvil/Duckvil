@@ -4,7 +4,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
     bool init(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __functions* _pFunctions)
     {
-        __data* _data = (__data*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, 0, sizeof(__data), alignof(__data));
+        __data* _data = (__data*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__data), alignof(__data));
 
         _pFunctions->m_pData = _data;
         _data->m_aTypes = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __type_t);
@@ -32,7 +32,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
 Duckvil::RuntimeReflection::__functions* duckvil_runtime_reflection_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator)
 {
-    Duckvil::RuntimeReflection::__functions* _functions = (Duckvil::RuntimeReflection::__functions*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, 0, sizeof(Duckvil::RuntimeReflection::__functions), alignof(Duckvil::RuntimeReflection::__functions));
+    Duckvil::RuntimeReflection::__functions* _functions = (Duckvil::RuntimeReflection::__functions*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Duckvil::RuntimeReflection::__functions), alignof(Duckvil::RuntimeReflection::__functions));
 
     _functions->m_fnInit = &Duckvil::RuntimeReflection::init;
     _functions->m_fnRecordType = &Duckvil::RuntimeReflection::record_type;

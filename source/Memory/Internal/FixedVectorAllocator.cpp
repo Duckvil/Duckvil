@@ -89,7 +89,7 @@ namespace Duckvil { namespace Memory {
 
         memcpy(_allocator->memory, (*_pAllocator)->memory, (*_pAllocator)->used);
 
-        _pInterface->m_fnFreeListFree_(_pParentAllocator, (void**)_pAllocator);
+        _pInterface->m_fnFreeListFree_(_pParentAllocator, *_pAllocator);
 
         *_pAllocator = _allocator;
     }
