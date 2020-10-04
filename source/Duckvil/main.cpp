@@ -45,8 +45,8 @@ int main(int argc, char* argv[])
 
     Duckvil::Memory::__linear_allocator _mainMemoryAllocator;
 
-    _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 2048);
-    Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnAllocateFreeListAllocator(&_mainMemoryAllocator, 1024);
+    _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024);
+    Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnAllocateFreeListAllocator(&_mainMemoryAllocator, 512 * 1024);
 
     {
         Duckvil::PlugNPlay::__module_information _runtimeReflectionModule("RuntimeReflection");
@@ -60,7 +60,14 @@ int main(int argc, char* argv[])
 
         struct test
         {
+            test(int a) :
+                a(a)
+            {
 
+            }
+
+            int a;
+            int b;
         };
 
         struct test2
@@ -68,9 +75,15 @@ int main(int argc, char* argv[])
 
         };
 
-        Duckvil::RuntimeReflection::__duckvil_resource_type_t a = _rr_data->m_fnRecordType(_memoryInterface, _free_list, _rr_data->m_pData, typeid(test).hash_code(), "test");
-        Duckvil::RuntimeReflection::__duckvil_resource_type_t b = _rr_data->m_fnRecordType(_memoryInterface, _free_list, _rr_data->m_pData, typeid(test2).hash_code(), "test2");
-        Duckvil::RuntimeReflection::__duckvil_resource_type_t c = _rr_data->m_fnRecordType(_memoryInterface, _free_list, _rr_data->m_pData, typeid(test2).hash_code(), "test3");
+        Duckvil::RuntimeReflection::__duckvil_resource_type_t a = Duckvil::RuntimeReflection::record_type<test>(_memoryInterface, _free_list, _rr_data, "test");
+        Duckvil::RuntimeReflection::__duckvil_resource_type_t b = Duckvil::RuntimeReflection::record_type<test2>(_memoryInterface, _free_list, _rr_data, "test2");
+
+        Duckvil::RuntimeReflection::__duckvil_resource_constructor_t a_cons = Duckvil::RuntimeReflection::record_constructor<test, int>(_memoryInterface, _free_list, _rr_data);
+
+        test* aaaaa = (test*)Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_data->m_pData, a_cons, 10);
+
+        Duckvil::RuntimeReflection::__duckvil_resource_property_t prop = _rr_data->m_fnRecordProperty(_memoryInterface, _free_list, _rr_data->m_pData, a, typeid(int).hash_code(), "a", offsetof(test, a));
+        _rr_data->m_fnRecordProperty(_memoryInterface, _free_list, _rr_data->m_pData, a, typeid(int).hash_code(), "b", offsetof(test, b));
     }
 
     // duckvil_init(_memoryInterface, _free_list);

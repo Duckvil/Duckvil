@@ -93,6 +93,9 @@ _inline void* duckvil_dynamic_array_resize(Duckvil::Memory::IMemory* _pMemoryInt
         DUCKVIL_DYNAMIC_ARRAY_SIZE(arr) -= 1; \
     }
 
+#define DUCKVIL_DYNAMIC_ARRAY_FOR(arr, type, iter_name) \
+    for(type* iter_name = arr; iter_name != DUCKVIL_DYNAMIC_ARRAY_BACK(arr); ++iter_name)
+
 #define DUCKVIL_DYNAMIC_ARRAY_BACK(arr) \
     (arr + (DUCKVIL_DYNAMIC_ARRAY_SIZE(arr) ? DUCKVIL_DYNAMIC_ARRAY_SIZE(arr) - 1 : 0))
 
