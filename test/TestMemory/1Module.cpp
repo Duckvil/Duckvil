@@ -5,7 +5,7 @@
 Duckvil::PlugNPlay::module __duckvil_global::m_module;
 Duckvil::PlugNPlay::__module_information __duckvil_global::m_memoryModule = Duckvil::PlugNPlay::__module_information("Memory");
 Duckvil::Memory::IMemory* __duckvil_global::m_pMemoryInterface;
-void* __duckvil_global::m_memoryChunk;
+void* __duckvil_global::m_pMemoryChunk;
 
 DUCKVIL_TEST(Module)
 {
