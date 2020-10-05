@@ -36,8 +36,6 @@ struct __duckvil_slot_array_base
 
 _force_inline uint32_t duckvil_slot_array_next(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, __duckvil_slot_array_base* _pBase)
 {
-    __duckvil_dynamic_array* _head = DUCKVIL_DYNAMIC_ARRAY_HEAD(_pBase->m_freeIndices);
-
     if(DUCKVIL_DYNAMIC_ARRAY_EMPTY(_pBase->m_freeIndices))
     {
         DUCKVIL_DYNAMIC_ARRAY_PUSH(_pMemoryInterface, _pAllocator, _pBase->m_handleIndices, 0);

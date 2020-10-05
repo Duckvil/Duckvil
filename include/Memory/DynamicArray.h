@@ -41,7 +41,7 @@ _inline void* duckvil_dynamic_array_resize(Duckvil::Memory::IMemory* _pMemoryInt
     if(_pArray)
     {
         _capacity = _ullAmount;
-        _data = (__duckvil_dynamic_array*)_pMemoryInterface->m_fnFreeListReallocate_(_pAllocator, DUCKVIL_DYNAMIC_ARRAY_HEAD(_pArray), DUCKVIL_DYNAMIC_ARRAY_SIZE(_pArray), _capacity * _ullSize + sizeof(__duckvil_dynamic_array), alignof(__duckvil_dynamic_array));
+        _data = (__duckvil_dynamic_array*)_pMemoryInterface->m_fnFreeListReallocate_(_pAllocator, DUCKVIL_DYNAMIC_ARRAY_HEAD(_pArray), _capacity * _ullSize + sizeof(__duckvil_dynamic_array), _capacity * _ullSize + sizeof(__duckvil_dynamic_array), alignof(__duckvil_dynamic_array));
     }
     else
     {
