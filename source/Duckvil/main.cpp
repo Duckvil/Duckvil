@@ -13,6 +13,8 @@
 
 #include "RuntimeReflection/RuntimeReflection.h"
 
+#include "Parser/Tokenizer.h"
+
 Duckvil::Utils::CommandArgumentsParser::Descriptor* g_pDescriptors = { 0 };
 
 int main(int argc, char* argv[])
@@ -81,9 +83,28 @@ int main(int argc, char* argv[])
         Duckvil::RuntimeReflection::__duckvil_resource_constructor_t a_cons = Duckvil::RuntimeReflection::record_constructor<test, int>(_memoryInterface, _free_list, _rr_data);
 
         test* aaaaa = (test*)Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_data->m_pData, a_cons, 10);
+        test* bbbbb = (test*)Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_data->m_pData, a_cons, 20);
 
-        Duckvil::RuntimeReflection::__duckvil_resource_property_t prop = _rr_data->m_fnRecordProperty(_memoryInterface, _free_list, _rr_data->m_pData, a, typeid(int).hash_code(), "a", offsetof(test, a));
+        Duckvil::RuntimeReflection::__duckvil_resource_property_t prop = Duckvil::RuntimeReflection::record_property<test, int>(_memoryInterface, _free_list, _rr_data, offsetof(test, a), "a");
+        
+        int* aa = (int*)_rr_data->m_fnGetProperty(_rr_data->m_pData, prop, bbbbb);
+
+        aa = (int*)Duckvil::RuntimeReflection::get_property(_rr_data->m_pData, "a", bbbbb);
+
         _rr_data->m_fnRecordProperty(_memoryInterface, _free_list, _rr_data->m_pData, a, typeid(int).hash_code(), "b", offsetof(test, b));
+    }
+
+    {
+        Duckvil::PlugNPlay::__module_information _parser("Parser");
+        Duckvil::Parser::__functions* (*duckvil_parser_init)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator);
+
+        _module.load(&_parser);
+        _module.get(_parser, "duckvil_parser_init", (void**)&duckvil_parser_init);
+
+        Duckvil::Parser::__functions* _funcs = duckvil_parser_init(_memoryInterface, _free_list);
+        Duckvil::Parser::__loaded_data _data;
+
+        _funcs->load_file(_memoryInterface, _free_list, &_data, "D:/Projects/C++/Duckvil/include/Parser/Tokenizer.h", "");
     }
 
     // duckvil_init(_memoryInterface, _free_list);

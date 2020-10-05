@@ -27,14 +27,17 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename Type, typename... Args>
     void* create_type(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, Args... _vArgs)
     {
-        void* _ptr = _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Type), alignof(Type));
-
-        return new(_ptr) Type(_vArgs...);
+        return new(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Type), alignof(Type))) Type(_vArgs...);
     }
 
     DUCKVIL_RESOURCE_DECLARE(type_t);
     DUCKVIL_RESOURCE_DECLARE(constructor_t);
     DUCKVIL_RESOURCE_DECLARE(property_t);
+
+    struct __traits
+    {
+        bool m_bIsPointer;
+    };
 
     slot(__type_t,
     {
@@ -56,6 +59,7 @@ namespace Duckvil { namespace RuntimeReflection {
         std::size_t m_ullTypeID;
         char m_sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX];
         uintptr_t m_ullAddress;
+        __traits m_traits;
     });
 
     struct __data
@@ -74,14 +78,33 @@ namespace Duckvil { namespace RuntimeReflection {
         DUCKVIL_RESOURCE(constructor_t) (*m_fnRecordConstructor)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, std::size_t _ullTypeID, DUCKVIL_RESOURCE(type_t) _owner, uint8_t* _pConctructor);
         DUCKVIL_RESOURCE(property_t) (*m_fnRecordProperty)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, const char* _sName, uintptr_t _ullAddress);
 
-        void* (*m_fnGetProperty)(__data* _pData, DUCKVIL_RESOURCE(property_t) _handle, void* _pObject);
+        void* (*m_fnGetProperty)(__data* _pData, DUCKVIL_RESOURCE(property_t) _handle, const void* _pObject);
     };
 
     DUCKVIL_RESOURCE(type_t) record_type(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, std::size_t _ullTypeID, const char _sTypeName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX]);
     DUCKVIL_RESOURCE(constructor_t) record_constructor(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, std::size_t _ullTypeID, DUCKVIL_RESOURCE(type_t) _owner, uint8_t* _pConctructor);
     DUCKVIL_RESOURCE(property_t) record_property(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, const char _sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX], uintptr_t _ullAddress);
 
-    void* get_property(__data* _pData, DUCKVIL_RESOURCE(property_t) _handle, void* _pObject);
+    void* get_property(__data* _pData, DUCKVIL_RESOURCE(property_t) _handle, const void* _pObject);
+
+    template <typename Type>
+    void* get_property(__data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX], const Type* _pObject)
+    {
+        static std::size_t _typeID = typeid(Type).hash_code();
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aProperties.m_data); i++)
+        {
+            __property_t _property = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aProperties, i);
+            __type_t _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _property.m_owner.m_ID);
+
+            if(strcmp(_property.m_sName, _sName) == 0 && _type.m_ullTypeID == _typeID)
+            {
+                return (uint8_t*)_pObject + _property.m_ullAddress;
+            }
+        }
+
+        return 0;
+    }
 
     bool init(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __functions* _pFunctions);
 
@@ -94,17 +117,38 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename Type, typename... Args>
     DUCKVIL_RESOURCE(constructor_t) record_constructor(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __functions* _pFunctions)
     {
+        static std::size_t _typeID = typeid(Type).hash_code();
+
         for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pFunctions->m_pData->m_aTypes.m_data); i++)
         {
             __type_t _type = DUCKVIL_SLOT_ARRAY_GET(_pFunctions->m_pData->m_aTypes, i);
 
-            if(_type.m_ullTypeID == typeid(Type).hash_code())
+            if(_type.m_ullTypeID == _typeID)
             {
                 return _pFunctions->m_fnRecordConstructor(_pMemoryInterface, _pAllocator, _pFunctions->m_pData, _type.m_ullTypeID, _type.m_uiSlotIndex, (uint8_t*)&create_type<Type, Args...>);
             }
         }
 
         return DUCKVIL_RESOURCE(constructor_t) { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    }
+
+    template <typename A, typename B>
+    DUCKVIL_RESOURCE(property_t) record_property(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __functions* _pFunctions, uintptr_t _ullOffset, const char _sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX])
+    {
+        static std::size_t _typeA_ID = typeid(A).hash_code();
+        static std::size_t _typeB_ID = typeid(B).hash_code();
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pFunctions->m_pData->m_aTypes.m_data); i++)
+        {
+            __type_t _type = DUCKVIL_SLOT_ARRAY_GET(_pFunctions->m_pData->m_aTypes, i);
+
+            if(_type.m_ullTypeID == _typeA_ID)
+            {
+                return _pFunctions->m_fnRecordProperty(_pMemoryInterface, _pAllocator, _pFunctions->m_pData, _type.m_uiSlotIndex, _typeB_ID, _sName, _ullOffset);
+            }
+        }
+
+        return DUCKVIL_RESOURCE(property_t) { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
     }
 
     template <typename... Args>

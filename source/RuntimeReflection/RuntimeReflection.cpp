@@ -63,11 +63,11 @@ namespace Duckvil { namespace RuntimeReflection {
         return _handle;
     }
 
-    void* get_property(__data* _pData, DUCKVIL_RESOURCE(property_t) _handle, void* _pObject)
+    void* get_property(__data* _pData, DUCKVIL_RESOURCE(property_t) _handle, const void* _pObject)
     {
-        __property_t* _property = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aProperties, _handle.m_ID);
+        __property_t _property = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aProperties, _handle.m_ID);
 
-        return (uint8_t*)_pObject + _property->m_ullAddress;
+        return (uint8_t*)_pObject + _property.m_ullAddress;
     }
 
 }}
