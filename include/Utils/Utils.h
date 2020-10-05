@@ -61,6 +61,7 @@ namespace Duckvil { namespace Utils {
 
         void Allocate(std::size_t _ullLength)
         {
+        // TODO: Allow to allocate using Duckvil allocators
             m_sText = new char[_ullLength];
             m_ullLength = _ullLength;
 
