@@ -6,6 +6,8 @@
 #include <type_traits>
 #include <cstring>
 
+#include "Memory/Memory.h"
+
 namespace Duckvil { namespace Utils {
 
     struct string
@@ -16,29 +18,41 @@ namespace Duckvil { namespace Utils {
             m_ullLength = 0;
         }
 
-        string(const string& _string)
+        string(const string& _string, Memory::IMemory* _pMemory = 0, Memory::__free_list_allocator* _pAllocator = 0)
         {
-            Allocate(_string.m_ullLength);
+            Allocate(_string.m_ullLength, _pMemory, _pAllocator);
             memcpy(m_sText, _string.m_sText, _string.m_ullLength);
         }
 
-        string(const char* _sText, std::size_t _ullLength)
+        string(const char* _sText, std::size_t _ullLength, Memory::IMemory* _pMemory = 0, Memory::__free_list_allocator* _pAllocator = 0)
         {
-            Allocate(_ullLength);
+            Allocate(_ullLength, _pMemory, _pAllocator);
             memcpy(m_sText, _sText, _ullLength);
         }
 
         template <std::size_t Length>
-        string(const char (&_sText)[Length])
+        string(const char (&_sText)[Length], Memory::IMemory* _pMemory = 0, Memory::__free_list_allocator* _pAllocator = 0)
         {
-            Allocate(Length);
+            Allocate(Length, _pMemory, _pAllocator);
             memcpy(m_sText, _sText, Length);
         }
 
         ~string()
         {
-            delete[] m_sText;
+            if(m_pMemory != nullptr && m_pAllocator != nullptr)
+            {
+                m_pMemory->m_fnFreeListFree_(m_pAllocator, m_sText);
+            }
+            else
+            {
+                delete[] m_sText;
+            }
         }
+
+        char* m_sText;
+        std::size_t m_ullLength;
+        Memory::IMemory* m_pMemory = 0;
+        Memory::__free_list_allocator* m_pAllocator = 0;
 
         template <std::size_t Length>
         string& operator=(const char (&_sText)[Length])
@@ -59,17 +73,24 @@ namespace Duckvil { namespace Utils {
             return *this;
         }
 
-        void Allocate(std::size_t _ullLength)
+        void Allocate(std::size_t _ullLength, Memory::IMemory* _pMemory = 0, Memory::__free_list_allocator* _pAllocator = 0)
         {
         // TODO: Allow to allocate using Duckvil allocators
-            m_sText = new char[_ullLength];
+            if(_pMemory != nullptr && _pAllocator != nullptr)
+            {
+                m_sText = (char*)_pMemory->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8);
+                m_pMemory = _pMemory;
+                m_pAllocator = _pAllocator;
+            }
+            else
+            {
+                m_sText = new char[_ullLength];
+            }
+
             m_ullLength = _ullLength;
 
             memset(m_sText, 0, _ullLength);
         }
-
-        char* m_sText;
-        std::size_t m_ullLength;
     };
 
     void split(const std::string& s, char delim, std::back_insert_iterator<std::vector<std::string>> result);

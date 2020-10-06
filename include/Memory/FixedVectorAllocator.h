@@ -4,6 +4,8 @@
 
 #include "Memory/Iterator.h"
 
+#include "Utils/Utils.h"
+
 namespace Duckvil { namespace Memory {
 
     template <typename Type>

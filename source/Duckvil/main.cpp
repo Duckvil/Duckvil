@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <filesystem>
 
 #include "Utils/CommandArgumentsParser.h"
 #include "Utils/Macro.h"
@@ -82,12 +83,14 @@ int main(int argc, char* argv[])
 
         Duckvil::RuntimeReflection::__duckvil_resource_constructor_t a_cons = Duckvil::RuntimeReflection::record_constructor<test, int>(_memoryInterface, _free_list, _rr_data);
 
-        test* aaaaa = (test*)Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_data->m_pData, a_cons, 10);
-        test* bbbbb = (test*)Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_data->m_pData, a_cons, 20);
+        //test* aaaaa = (test*)Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_data->m_pData, a_cons, 10);
+        //test* bbbbb = (test*)Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_data->m_pData, a_cons, 20);
+
+        test* bbbbb = (test*)Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_data->m_pData, "test", 20);
 
         Duckvil::RuntimeReflection::__duckvil_resource_property_t prop = Duckvil::RuntimeReflection::record_property<test, int>(_memoryInterface, _free_list, _rr_data, offsetof(test, a), "a");
         
-        int* aa = (int*)_rr_data->m_fnGetProperty(_rr_data->m_pData, prop, bbbbb);
+        int* aa = (int*)Duckvil::RuntimeReflection::get_property(_rr_data->m_pData, "a", bbbbb);
 
         aa = (int*)Duckvil::RuntimeReflection::get_property(_rr_data->m_pData, "a", bbbbb);
 
@@ -104,7 +107,12 @@ int main(int argc, char* argv[])
         Duckvil::Parser::__functions* _funcs = duckvil_parser_init(_memoryInterface, _free_list);
         Duckvil::Parser::__loaded_data _data;
 
-        _funcs->load_file(_memoryInterface, _free_list, &_data, "D:/Projects/C++/Duckvil/include/Parser/Tokenizer.h", "");
+        _funcs->load_file(&_data, (std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include/Parser/Tokenizer.h").string().c_str());
+        
+        while(!_funcs->token_exists(_data))
+        {
+            _funcs->get_token(&_data);
+        }
     }
 
     // duckvil_init(_memoryInterface, _free_list);

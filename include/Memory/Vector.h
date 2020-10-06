@@ -17,6 +17,12 @@ namespace Duckvil { namespace Memory {
         IMemory* m_pMemoryInterface;
 
     public:
+        Vector()
+        {
+            m_pMemoryInterface = 0;
+            m_pAllocator = 0;
+        }
+
         Vector(IMemory* _pMemoryInterface, __allocator* _pAllocator, std::size_t _ullCount) :
             m_pMemoryInterface(_pMemoryInterface)
         {
@@ -40,8 +46,6 @@ namespace Duckvil { namespace Memory {
         {
 
         }
-
-    // TODO: Try to reallocate when overflow
 
         inline void* Allocate(const Type& _value)
         {
