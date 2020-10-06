@@ -14,7 +14,7 @@
 
 #include "RuntimeReflection/RuntimeReflection.h"
 
-#include "Parser/Tokenizer.h"
+#include "Parser/AST.h"
 
 Duckvil::Utils::CommandArgumentsParser::Descriptor* g_pDescriptors = { 0 };
 
@@ -99,20 +99,36 @@ int main(int argc, char* argv[])
 
     {
         Duckvil::PlugNPlay::__module_information _parser("Parser");
-        Duckvil::Parser::__functions* (*duckvil_parser_init)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator);
+        Duckvil::Parser::__lexer_ftable* (*duckvil_lexer_init)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator);
+        Duckvil::Parser::__ast_ftable* (*duckvil_ast_init)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator);
 
         _module.load(&_parser);
-        _module.get(_parser, "duckvil_parser_init", (void**)&duckvil_parser_init);
+        _module.get(_parser, "duckvil_lexer_init", (void**)&duckvil_lexer_init);
+        _module.get(_parser, "duckvil_ast_init", (void**)&duckvil_ast_init);
 
-        Duckvil::Parser::__functions* _funcs = duckvil_parser_init(_memoryInterface, _free_list);
-        Duckvil::Parser::__loaded_data _data;
+        Duckvil::Parser::__lexer_ftable* _funcs = duckvil_lexer_init(_memoryInterface, _free_list);
+        Duckvil::Parser::__lexer_data _data;
 
-        _funcs->load_file(&_data, (std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include/Parser/Tokenizer.h").string().c_str());
-        
-        while(!_funcs->token_exists(_data))
-        {
-            _funcs->get_token(&_data);
-        }
+        _funcs->load_file(&_data, (std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include/Parser/Lexer.h").string().c_str());
+
+        Duckvil::Parser::__ast_ftable* _ast = duckvil_ast_init(_memoryInterface, _free_list);
+
+        Duckvil::Parser::__ast _ast_data;
+
+        _ast->generate_ast(&_ast_data, _funcs, _data);
+
+        // std::string _token;
+
+        // while(_funcs->next_token(&_data, &_token))
+        // {
+        //     if(!_funcs->space(_data))
+        //         printf("%s", _token.c_str());
+        //     else
+        //         printf(" ");
+
+        //     if(_data.m_cPendingSymbol != 0)
+        //         printf("%c", _data.m_cPendingSymbol);
+        // }
     }
 
     // duckvil_init(_memoryInterface, _free_list);
