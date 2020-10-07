@@ -22,7 +22,7 @@ namespace Duckvil { namespace Parser {
         bool m_bWasSpace;
         bool m_bSpace;
         bool m_bNewLine;
-        // char m_cPendingSymbol;
+        bool m_bEnd;
     };
 
     struct __lexer_ftable

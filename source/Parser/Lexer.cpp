@@ -11,6 +11,7 @@ namespace Duckvil { namespace Parser {
         _pData->m_bSpace = false;
         _pData->m_bWasSpace = false;
         _pData->m_bNewLine = false;
+        _pData->m_bEnd = false;
 
         std::ifstream _hFile(_sFilename);
         std::string _buf;
@@ -27,6 +28,11 @@ namespace Duckvil { namespace Parser {
 
     bool next_token(__lexer_data* _pData, std::string* _pToken)
     {
+        if(_pData->m_bEnd)
+        {
+            return false;
+        }
+
         _pData->m_sToken.clear();
         _pData->m_bSpace = false;
         _pData->m_bNewLine = false;
@@ -41,21 +47,19 @@ namespace Duckvil { namespace Parser {
             return true;
         }
 
-        // _pData->m_cPendingSymbol = 0;
-
         while(1)
         {
-            if(_pData->m_uiCurrentLine >= _pData->m_aLines.size() - 1 && _pData->m_uiCurrentCharacterIndex >= _pData->m_sCurrentLine.size())
-            {
-                return false;
-            }
-
             if(_pData->m_uiCurrentCharacterIndex >= _pData->m_sCurrentLine.size())
             {
+                if(_pData->m_uiCurrentLine >= _pData->m_aLines.size() - 1)
+                {
+                    _pData->m_bEnd = true;
+
+                    break;
+                }
+
                 _pData->m_sCurrentLine = _pData->m_aLines[++_pData->m_uiCurrentLine];
                 _pData->m_uiCurrentCharacterIndex = 0;
-                // _pData->m_cPendingSymbol = '\n';
-                // _pData->m_sToken = "\n";
                 _pData->m_bNewLine = true;
 
                 break;
@@ -64,11 +68,14 @@ namespace Duckvil { namespace Parser {
             _pData->m_cCurrentCharacter = _pData->m_sCurrentLine[_pData->m_uiCurrentCharacterIndex++];
 
             if(_pData->m_cCurrentCharacter == '\'' ||
+                _pData->m_cCurrentCharacter == '{' ||
                 _pData->m_cCurrentCharacter == '}' ||
                 _pData->m_cCurrentCharacter == '[' ||
                 _pData->m_cCurrentCharacter == ']' ||
                 _pData->m_cCurrentCharacter == '<' ||
                 _pData->m_cCurrentCharacter == '>' ||
+                _pData->m_cCurrentCharacter == ')' ||
+                _pData->m_cCurrentCharacter == '(' ||
                 _pData->m_cCurrentCharacter == ':' ||
                 _pData->m_cCurrentCharacter == ';' ||
                 _pData->m_cCurrentCharacter == ',' ||
@@ -77,11 +84,16 @@ namespace Duckvil { namespace Parser {
                 _pData->m_cCurrentCharacter == '*' ||
                 _pData->m_cCurrentCharacter == '/' ||
                 _pData->m_cCurrentCharacter == '"' ||
-                _pData->m_cCurrentCharacter == '{' ||
                 _pData->m_cCurrentCharacter == '#')
             {
-                // _pData->m_cPendingSymbol = _pData->m_cCurrentCharacter;
-                _pData->m_sToken += _pData->m_cCurrentCharacter;
+                if(_pData->m_sToken.size() > 0)
+                {
+                    _pData->m_uiCurrentCharacterIndex--;
+                }
+                else
+                {
+                    _pData->m_sToken += _pData->m_cCurrentCharacter;
+                }
 
                 break;
             }
