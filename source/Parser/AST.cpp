@@ -1,6 +1,103 @@
 #include "Parser/AST.h"
 
+#include <stack>
+#include <queue>
+
+#include "Utils/Utils.h"
+
 namespace Duckvil { namespace Parser {
+
+    std::vector<__ast_entity_argument> process_arguments(__lexer_ftable* _pLexer, const std::string& _sArgs)
+    {
+        // std::string _args = _sArgs.substr(1, _sArgs.size() - 2); // remove ()
+        // std::vector<std::string> _splitted = Utils::split(_args, ',');
+        std::vector<__ast_entity_argument> _res;
+
+        __lexer_data _exp = {};
+        std::string _token;
+
+        _exp.m_aLines.push_back(_sArgs);
+        _exp.m_sCurrentLine = _exp.m_aLines[_exp.m_uiCurrentLine];
+
+        uint32_t _roundBrackets = 0;
+        uint32_t _triBrackets = 0;
+        std::string _tmp;
+        std::string _type;
+        bool _keyword = false;
+
+        while(_pLexer->next_token(&_exp, &_token))
+        {
+            if(_token == "(")
+            {
+                _roundBrackets++;
+            }
+            else if(_token == ")")
+            {
+                _roundBrackets--;
+
+                if(_roundBrackets == 0)
+                {
+                    __ast_entity_argument _arg = {};
+
+                    _arg.m_sType = _type;
+                    _arg.m_sName = _tmp;
+
+                    _res.push_back(_arg);
+
+                    _tmp.clear();
+                }
+            }
+            else if(_token == "<")
+            {
+                _triBrackets++;
+            }
+            else if(_token == ">")
+            {
+                _triBrackets--;
+            }
+            else if(_token == "const")
+            {
+                _keyword = true;
+
+                _tmp += _token;
+            }
+            else if(_token == ",")
+            {
+                __ast_entity_argument _arg = {};
+
+                _arg.m_sType = _type;
+                _arg.m_sName = _tmp;
+
+                _res.push_back(_arg);
+
+                _tmp.clear();
+            }
+            else if(_exp.m_bSpace)
+            {
+                if(_triBrackets == 0)
+                {
+                    if(!_keyword)
+                    {
+                        _type = _tmp;
+
+                        _tmp.clear();
+                    }
+                    else
+                    {
+                        _keyword = false;
+
+                        _tmp += " ";
+                    }
+                }
+            }
+            else
+            {
+                _tmp += _token;
+            }
+        }
+
+        return _res;
+    }
 
     void generate_ast(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data& _lexerData)
     {
@@ -42,6 +139,18 @@ namespace Duckvil { namespace Parser {
 
                 _pAST->m_pPendingScope = _scope;
             }
+            else if(_token == "public")
+            {
+                _pAST->m_currentAccess = __ast_access::__ast_access_public;
+            }
+            else if(_token == "protected")
+            {
+                _pAST->m_currentAccess = __ast_access::__ast_access_protected;
+            }
+            else if(_token == "private")
+            {
+                _pAST->m_currentAccess = __ast_access::__ast_access_private;
+            }
             else if(_pAST->m_pCurrentScope != nullptr && _pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure && ((__ast_entity_structure*)_pAST->m_pCurrentScope)->m_sName == _token)
             {
                 __ast_entity_constructor* _scope = new __ast_entity_constructor();
@@ -59,6 +168,11 @@ namespace Duckvil { namespace Parser {
             }
             else if(_token == "}")
             {
+                if(_pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure)
+                {
+                    _pLexer->next_token(&_lexerData, &_token); // Skip ;
+                }
+
                 _pAST->m_pCurrentScope = _pAST->m_pCurrentScope->m_pParentScope;
                 _pAST->m_pPendingScope = nullptr;
             }
@@ -74,7 +188,91 @@ namespace Duckvil { namespace Parser {
             }
             else if(_token == ";")
             {
-                printf("AAA\n");
+                if(_tmp_expression.size() > 0 && _tmp_expression[_tmp_expression.size() - 1] == ')')
+                {
+                    // Function or callback
+
+                    __lexer_data _exp = {};
+
+                    _exp.m_aLines.push_back(_tmp_expression);
+                    _exp.m_sCurrentLine = _exp.m_aLines[_exp.m_uiCurrentLine];
+
+                    bool _space = false;
+                    uint32_t _triBrackets = 0;
+                    std::string _tmp;
+                    bool _wasType = false;
+                    __ast_entity* _entity = 0;
+
+                    while(_pLexer->next_token(&_exp, &_token))
+                    {
+                        if(_token == "<")
+                        {
+                            _triBrackets++;
+                        }
+                        else if(_token == ">")
+                        {
+                            _triBrackets--;
+                        }
+                        else if(_exp.m_bSpace && _triBrackets == 0)
+                        {
+                            _wasType = true;
+                        }
+                        else if(_wasType && _token == "(")
+                        {
+                            // callback
+
+                            _entity = new __ast_entity_callback();
+
+                            ((__ast_entity_callback*)_entity)->m_sReturnType = _tmp;
+
+                            _pLexer->next_token(&_exp, &_token); // *
+                            _pLexer->next_token(&_exp, &_token); // name
+
+                            ((__ast_entity_callback*)_entity)->m_sName = _token;
+
+                            _pLexer->next_token(&_exp, &_token); // )
+
+                            std::string _curr = _exp.m_sCurrentLine.substr(_exp.m_uiCurrentCharacterIndex);
+                            std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, _curr);
+
+                            ((__ast_entity_callback*)_entity)->m_aArguments.insert(((__ast_entity_callback*)_entity)->m_aArguments.begin(), _args.begin(), _args.end());
+                        }
+                        else
+                        {
+                            if(_wasType)
+                            {
+                                // function
+
+                                _entity = new __ast_entity_function();
+
+                                ((__ast_entity_function*)_entity)->m_accessLevel = _pAST->m_currentAccess;
+                                ((__ast_entity_function*)_entity)->m_sReturnType = _tmp;
+
+                                _tmp.clear();
+                            }
+
+                            _tmp += _token;
+                        }
+                    }
+                }
+                else
+                {
+                    // Variable
+
+                    std::size_t _position = _tmp_expression.find_last_of(' ');
+
+                    __ast_entity_variable* _scope = new __ast_entity_variable();
+
+                    _scope->m_sName = _tmp_expression.substr(_position + 1);
+                    _scope->m_sType = _tmp_expression.substr(0, _position);
+                    _scope->m_accessLevel = _pAST->m_currentAccess;
+
+                    _scope->m_pParentScope = _pAST->m_pCurrentScope;
+
+                    _pAST->m_pCurrentScope->m_aScopes.push_back(_scope);
+                }
+
+                _tmp_expression.clear();
             }
             else if(_token == "\n")
             {
@@ -96,63 +294,12 @@ namespace Duckvil { namespace Parser {
                 else
                 {
                     _tmp_expression += _token;
-
-                    if(_lexerData.m_bSpace)
-                    {
-                        _tmp_expression += ' ';
-                    }
                 }
             }
-
-            // else if(_token != "")
-            // {
-            //     if(_pAST->m_pPendingScope != nullptr)
-            //     {
-            //         if(_pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_namespace)
-            //         {
-            //             ((__ast_entity_namespace*)_pAST->m_pPendingScope)->m_sName = _token;
-            //         }
-            //         else if(_pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure)
-            //         {
-            //             ((__ast_entity_structure*)_pAST->m_pPendingScope)->m_sName = _token;
-            //         }
-            //     }
-            //     else
-            //     {
-            //         _tmp_expression += _token;
-            //     }
-            // }
-            // else if(_lexerData.m_cPendingSymbol != 0)
-            // {
-            //     if(_lexerData.m_cPendingSymbol == '{' && _pAST->m_pPendingScope)
-            //     {
-            //         _pAST->m_pCurrentScope = _pAST->m_pPendingScope;
-            //         _pAST->m_pPendingScope = nullptr;
-            //     }
-            //     else if(_lexerData.m_cPendingSymbol == '}')
-            //     {
-            //         _pAST->m_pCurrentScope = _pAST->m_pCurrentScope->m_pParentScope;
-            //         _pAST->m_pPendingScope = nullptr;
-            //     }
-            //     else if(_lexerData.m_cPendingSymbol == '#')
-            //     {
-            //         while(_pLexer->next_token(&_lexerData, &_token))
-            //         {
-            //             if(_lexerData.m_cPendingSymbol == '\n')
-            //             {
-            //                 break;
-            //             }
-            //         }
-            //     }
-            //     else if(_lexerData.m_cPendingSymbol == '\n')
-            //     {
-
-            //     }
-            //     else
-            //     {
-            //         _tmp_expression += _lexerData.m_cPendingSymbol;
-            //     }
-            // }
+            else if(_lexerData.m_bSpace && _tmp_expression.size() > 0)
+            {
+                _tmp_expression += ' ';
+            }
         }
     }
 

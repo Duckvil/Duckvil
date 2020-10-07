@@ -12,6 +12,7 @@ namespace Duckvil { namespace Parser {
     {
         __ast_entity_type_function,
         __ast_entity_type_constructor,
+        __ast_entity_type_callback,
         __ast_entity_type_namespace,
         __ast_entity_type_structure,
         __ast_entity_type_variable,
@@ -29,7 +30,8 @@ namespace Duckvil { namespace Parser {
     {
         __ast_access_public,
         __ast_access_protected,
-        __ast_access_private
+        __ast_access_private,
+        __ast_access_not_specified
     };
 
     struct __ast_entity
@@ -45,9 +47,9 @@ namespace Duckvil { namespace Parser {
         __ast_entity* m_pParentScope;
     };
 
-    struct __ast_argument : public __ast_entity
+    struct __ast_entity_argument : public __ast_entity
     {
-        __ast_argument(__ast_entity_type _entityType = __ast_entity_type::__ast_entity_type_argument) :
+        __ast_entity_argument(__ast_entity_type _entityType = __ast_entity_type::__ast_entity_type_argument) :
             __ast_entity(_entityType)
         {
 
@@ -57,10 +59,10 @@ namespace Duckvil { namespace Parser {
         std::string m_sName;
     };
 
-    struct __ast_variable : public __ast_argument
+    struct __ast_entity_variable : public __ast_entity_argument
     {
-        __ast_variable() :
-            __ast_argument(__ast_entity_type::__ast_entity_type_variable)
+        __ast_entity_variable(__ast_entity_type _entityType = __ast_entity_type::__ast_entity_type_variable) :
+            __ast_entity_argument(_entityType)
         {
 
         }
@@ -100,8 +102,20 @@ namespace Duckvil { namespace Parser {
 
         }
 
-        std::vector<__ast_argument> m_aArguments;
+        std::vector<__ast_entity_argument> m_aArguments;
         __ast_access m_accessLevel;
+    };
+
+    struct __ast_entity_callback : public __ast_entity_callable
+    {
+        __ast_entity_callback() :
+            __ast_entity_callable(__ast_entity_type::__ast_entity_type_callback)
+        {
+
+        }
+
+        std::string m_sName;
+        std::string m_sReturnType;
     };
 
     struct __ast_entity_constructor : public __ast_entity_callable
@@ -133,6 +147,7 @@ namespace Duckvil { namespace Parser {
         __ast_entity m_main;
         __ast_entity* m_pCurrentScope;
         __ast_entity* m_pPendingScope;
+        __ast_access m_currentAccess;
     };
 
     struct __ast_ftable
