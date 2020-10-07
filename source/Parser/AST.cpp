@@ -14,6 +14,14 @@ namespace Duckvil { namespace Parser {
         std::vector<__ast_entity_argument> _res;
 
         __lexer_data _exp = {};
+
+        _exp.m_bWasSpace = false;
+        _exp.m_bSpace = false;
+        _exp.m_bEnd = false;
+        _exp.m_bNewLine = false;
+        _exp.m_uiCurrentCharacterIndex = 0;
+        _exp.m_uiCurrentLine = 0;
+
         std::string _token;
 
         _exp.m_aLines.push_back(_sArgs);
@@ -37,6 +45,11 @@ namespace Duckvil { namespace Parser {
 
                 if(_roundBrackets == 0)
                 {
+                    if(_type.size() <= 0 && _tmp.size() <= 0)
+                    {
+                        continue;
+                    }
+
                     __ast_entity_argument _arg = {};
 
                     _arg.m_sType = _type;
@@ -63,6 +76,11 @@ namespace Duckvil { namespace Parser {
             }
             else if(_token == ",")
             {
+                if(_type.size() <= 0 && _tmp.size() <= 0)
+                {
+                    continue;
+                }
+
                 __ast_entity_argument _arg = {};
 
                 _arg.m_sType = _type;
@@ -156,10 +174,15 @@ namespace Duckvil { namespace Parser {
                 __ast_entity_constructor* _scope = new __ast_entity_constructor();
 
                 _scope->m_pParentScope = _pAST->m_pCurrentScope;
+                _scope->m_accessLevel = _pAST->m_currentAccess;
 
                 _pAST->m_pCurrentScope->m_aScopes.push_back(_scope);
 
-                _pAST->m_pPendingScope = _scope;
+                std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, _lexerData.m_sCurrentLine.substr(_lexerData.m_uiCurrentCharacterIndex));
+
+            // TODO: Fix round brackets while parsing arguments
+
+                _scope->m_aArguments.insert(_scope->m_aArguments.begin(), _args.begin(), _args.end());
             }
             else if(_token == "{")
             {
@@ -223,19 +246,27 @@ namespace Duckvil { namespace Parser {
 
                             _entity = new __ast_entity_callback();
 
-                            ((__ast_entity_callback*)_entity)->m_sReturnType = _tmp;
+                            __ast_entity_callback* _castedEntity = (__ast_entity_callback*)_entity;
+
+                            _castedEntity->m_sReturnType = _tmp;
+                            _castedEntity->m_accessLevel = _pAST->m_currentAccess;
 
                             _pLexer->next_token(&_exp, &_token); // *
                             _pLexer->next_token(&_exp, &_token); // name
 
-                            ((__ast_entity_callback*)_entity)->m_sName = _token;
+                            _castedEntity->m_sName = _token;
 
                             _pLexer->next_token(&_exp, &_token); // )
 
-                            std::string _curr = _exp.m_sCurrentLine.substr(_exp.m_uiCurrentCharacterIndex);
-                            std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, _curr);
+                            std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, _exp.m_sCurrentLine.substr(_exp.m_uiCurrentCharacterIndex));
 
-                            ((__ast_entity_callback*)_entity)->m_aArguments.insert(((__ast_entity_callback*)_entity)->m_aArguments.begin(), _args.begin(), _args.end());
+                            _castedEntity->m_aArguments.insert(_castedEntity->m_aArguments.begin(), _args.begin(), _args.end());
+
+                            _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
+
+                            _entity->m_pParentScope = _pAST->m_pCurrentScope;
+
+                            break;
                         }
                         else
                         {
@@ -245,10 +276,22 @@ namespace Duckvil { namespace Parser {
 
                                 _entity = new __ast_entity_function();
 
-                                ((__ast_entity_function*)_entity)->m_accessLevel = _pAST->m_currentAccess;
-                                ((__ast_entity_function*)_entity)->m_sReturnType = _tmp;
+                                __ast_entity_function* _castedEntity = (__ast_entity_function*)_entity;
+
+                                _castedEntity->m_accessLevel = _pAST->m_currentAccess;
+                                _castedEntity->m_sReturnType = _tmp;
+
+                                _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
+
+                                _entity->m_pParentScope = _pAST->m_pCurrentScope;
 
                                 _tmp.clear();
+
+                                std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, _exp.m_sCurrentLine.substr(_exp.m_uiCurrentCharacterIndex));
+
+                                _castedEntity->m_aArguments.insert(_castedEntity->m_aArguments.begin(), _args.begin(), _args.end());
+
+                                break;
                             }
 
                             _tmp += _token;
@@ -267,9 +310,9 @@ namespace Duckvil { namespace Parser {
                     _scope->m_sType = _tmp_expression.substr(0, _position);
                     _scope->m_accessLevel = _pAST->m_currentAccess;
 
-                    _scope->m_pParentScope = _pAST->m_pCurrentScope;
-
                     _pAST->m_pCurrentScope->m_aScopes.push_back(_scope);
+
+                    _scope->m_pParentScope = _pAST->m_pCurrentScope;
                 }
 
                 _tmp_expression.clear();
@@ -280,6 +323,23 @@ namespace Duckvil { namespace Parser {
             }
             else if(_token != "")
             {
+                bool _defineFound = false;
+
+                for(const std::string& _userDefine : _pAST->m_aUserDefines)
+                {
+                    if(_token == _userDefine)
+                    {
+                        _defineFound = true;
+
+                        break;
+                    }
+                }
+
+                if(_defineFound)
+                {
+                    continue;
+                }
+
                 if(_pAST->m_pPendingScope != nullptr)
                 {
                     if(_pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_namespace)

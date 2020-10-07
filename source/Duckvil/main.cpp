@@ -115,20 +115,9 @@ int main(int argc, char* argv[])
 
         Duckvil::Parser::__ast _ast_data;
 
+        _ast_data.m_aUserDefines.push_back("DUCKVIL_EXPORT");
+
         _ast->generate_ast(&_ast_data, _funcs, _data);
-
-        // std::string _token;
-
-        // while(_funcs->next_token(&_data, &_token))
-        // {
-        //     if(!_funcs->space(_data))
-        //         printf("%s", _token.c_str());
-        //     else
-        //         printf(" ");
-
-        //     if(_data.m_cPendingSymbol != 0)
-        //         printf("%c", _data.m_cPendingSymbol);
-        // }
     }
 
     // duckvil_init(_memoryInterface, _free_list);

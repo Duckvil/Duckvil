@@ -125,9 +125,6 @@ namespace Duckvil { namespace Parser {
         {
 
         }
-
-        std::string m_sName;
-        std::string m_sReturnType;
     };
 
     struct __ast_entity_function : public __ast_entity_callable
@@ -148,6 +145,7 @@ namespace Duckvil { namespace Parser {
         __ast_entity* m_pCurrentScope;
         __ast_entity* m_pPendingScope;
         __ast_access m_currentAccess;
+        std::vector<std::string> m_aUserDefines;
     };
 
     struct __ast_ftable
