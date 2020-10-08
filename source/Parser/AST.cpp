@@ -7,7 +7,7 @@
 
 namespace Duckvil { namespace Parser {
 
-    std::vector<__ast_entity_argument> process_arguments(__lexer_ftable* _pLexer, const std::string& _sArgs)
+    std::vector<__ast_entity_argument> process_arguments(__lexer_ftable* _pLexer, __lexer_data& _lexerData, const std::string& _sArgs)
     {
         // std::string _args = _sArgs.substr(1, _sArgs.size() - 2); // remove ()
         // std::vector<std::string> _splitted = Utils::split(_args, ',');
@@ -178,16 +178,23 @@ namespace Duckvil { namespace Parser {
 
                 _pAST->m_pCurrentScope->m_aScopes.push_back(_scope);
 
-                std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, _lexerData.m_sCurrentLine.substr(_lexerData.m_uiCurrentCharacterIndex));
+                std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, _lexerData, _lexerData.m_sCurrentLine.substr(_lexerData.m_uiCurrentCharacterIndex));
 
             // TODO: Fix round brackets while parsing arguments
 
                 _scope->m_aArguments.insert(_scope->m_aArguments.begin(), _args.begin(), _args.end());
+
+                _pAST->m_pPendingScope = _scope;
             }
             else if(_token == "{")
             {
                 _pAST->m_pCurrentScope = _pAST->m_pPendingScope;
                 _pAST->m_pPendingScope = nullptr;
+
+                if(_pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_constructor)
+                {
+                    __ast_entity_constructor* _castedEntity = (__ast_entity_constructor*)_pAST->m_pCurrentScope->m_scopeType;
+                }
             }
             else if(_token == "}")
             {
@@ -216,6 +223,13 @@ namespace Duckvil { namespace Parser {
                     // Function or callback
 
                     __lexer_data _exp = {};
+
+                    _exp.m_bWasSpace = false;
+                    _exp.m_bSpace = false;
+                    _exp.m_bEnd = false;
+                    _exp.m_bNewLine = false;
+                    _exp.m_uiCurrentCharacterIndex = 0;
+                    _exp.m_uiCurrentLine = 0;
 
                     _exp.m_aLines.push_back(_tmp_expression);
                     _exp.m_sCurrentLine = _exp.m_aLines[_exp.m_uiCurrentLine];
@@ -258,7 +272,7 @@ namespace Duckvil { namespace Parser {
 
                             _pLexer->next_token(&_exp, &_token); // )
 
-                            std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, _exp.m_sCurrentLine.substr(_exp.m_uiCurrentCharacterIndex));
+                            std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, _lexerData, _exp.m_sCurrentLine.substr(_exp.m_uiCurrentCharacterIndex));
 
                             _castedEntity->m_aArguments.insert(_castedEntity->m_aArguments.begin(), _args.begin(), _args.end());
 
@@ -267,6 +281,10 @@ namespace Duckvil { namespace Parser {
                             _entity->m_pParentScope = _pAST->m_pCurrentScope;
 
                             break;
+                        }
+                        else if(_pAST->m_pPendingScope && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_constructor)
+                        {
+                            printf("AAAAA\n");
                         }
                         else
                         {
@@ -287,7 +305,7 @@ namespace Duckvil { namespace Parser {
 
                                 _tmp.clear();
 
-                                std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, _exp.m_sCurrentLine.substr(_exp.m_uiCurrentCharacterIndex));
+                                std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, _lexerData, _exp.m_sCurrentLine.substr(_exp.m_uiCurrentCharacterIndex));
 
                                 _castedEntity->m_aArguments.insert(_castedEntity->m_aArguments.begin(), _args.begin(), _args.end());
 

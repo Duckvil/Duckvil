@@ -13,10 +13,14 @@ namespace Duckvil { namespace Parser {
 
     struct __lexer_data
     {
-        __lexer_data() :
-            m_uiCurrentCharacterIndex(0)
+        __lexer_data()
         {
-            
+
+        }
+
+        __lexer_data(int a, int b)
+        {
+
         }
 
         std::vector<std::string> m_aLines;
