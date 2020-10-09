@@ -17,6 +17,7 @@ namespace Duckvil { namespace Parser {
         __ast_entity_type_structure,
         __ast_entity_type_variable,
         __ast_entity_type_argument,
+        __ast_entity_type_enum,
         __ast_entity_type_main
     };
 
@@ -81,6 +82,17 @@ namespace Duckvil { namespace Parser {
 
         std::string m_sName;
         __ast_structure_type m_structureType;
+    };
+
+    struct __ast_entity_enum : public __ast_entity
+    {
+        __ast_entity_enum() :
+            __ast_entity(__ast_entity_type::__ast_entity_type_enum)
+        {
+
+        }
+
+        std::string m_sName;
     };
 
     struct __ast_entity_namespace : public __ast_entity

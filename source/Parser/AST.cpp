@@ -9,8 +9,6 @@ namespace Duckvil { namespace Parser {
 
     std::vector<__ast_entity_argument> process_arguments(__lexer_ftable* _pLexer, __lexer_data& _lexerData, const std::string& _sArgs)
     {
-        // std::string _args = _sArgs.substr(1, _sArgs.size() - 2); // remove ()
-        // std::vector<std::string> _splitted = Utils::split(_args, ',');
         std::vector<__ast_entity_argument> _res;
 
         __lexer_data _exp = {};
@@ -157,6 +155,18 @@ namespace Duckvil { namespace Parser {
 
                 _pAST->m_pPendingScope = _scope;
             }
+            else if(_token == "enum")
+            {
+                __ast_entity_enum* _scope = new __ast_entity_enum();
+
+                _scope->m_pParentScope = _pAST->m_pCurrentScope;
+
+                _pAST->m_pCurrentScope->m_aScopes.push_back(_scope);
+
+                _pAST->m_pPendingScope = _scope;
+
+                _pLexer->next_token(&_lexerData, &_token); // name
+            }
             else if(_token == "public")
             {
                 _pAST->m_currentAccess = __ast_access::__ast_access_public;
@@ -185,16 +195,58 @@ namespace Duckvil { namespace Parser {
                 _scope->m_aArguments.insert(_scope->m_aArguments.begin(), _args.begin(), _args.end());
 
                 _pAST->m_pPendingScope = _scope;
+
+                uint32_t _roundBrackets = 0;
+                uint32_t _mustacheBrackets = 0;
+
+                while(_pLexer->next_token(&_lexerData, &_token))
+                {
+                    if(_token == "(")
+                    {
+                        _roundBrackets++;
+                    }
+                    else if(_token == ")")
+                    {
+                        _roundBrackets--;
+
+                        if(_roundBrackets == 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                // Skip ';' or if '{' - whole constructor body
+                while(_pLexer->next_token(&_lexerData, &_token))
+                {
+                    if(_token == "{")
+                    {
+                        _mustacheBrackets++;
+                    }
+                    else if(_token == "}")
+                    {
+                        _mustacheBrackets--;
+
+                        if(_mustacheBrackets == 0)
+                        {
+                            break;
+                        }
+                    }
+                    else if(_token == ";")
+                    {
+                        break;
+                    }
+                }
             }
             else if(_token == "{")
             {
                 _pAST->m_pCurrentScope = _pAST->m_pPendingScope;
                 _pAST->m_pPendingScope = nullptr;
 
-                if(_pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_constructor)
-                {
-                    __ast_entity_constructor* _castedEntity = (__ast_entity_constructor*)_pAST->m_pCurrentScope->m_scopeType;
-                }
+                // if(_pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_constructor)
+                // {
+                //     __ast_entity_constructor* _castedEntity = (__ast_entity_constructor*)_pAST->m_pCurrentScope->m_scopeType;
+                // }
             }
             else if(_token == "}")
             {
@@ -367,6 +419,10 @@ namespace Duckvil { namespace Parser {
                     else if(_pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure)
                     {
                         ((__ast_entity_structure*)_pAST->m_pPendingScope)->m_sName = _token;
+                    }
+                    else if(_pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_enum)
+                    {
+                        ((__ast_entity_enum*)_pAST->m_pPendingScope)->m_sName = _token;
                     }
                 }
                 else

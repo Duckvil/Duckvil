@@ -11,6 +11,23 @@
 
 namespace Duckvil { namespace Parser {
 
+    enum __lexer_token_type
+    {
+        __lexer_token_type_symbol, // (, ), &, !, etc.
+        __lexer_token_type_number, // 1, 2, 12, 1423, 1.2, etc.
+        __lexer_token_type_text, // test, func, etc.
+        __lexer_token_type_string, // "aaa", "bbb", etc.
+        __lexer_token_type_floating,
+        __lexer_token_type_integer,
+        __lexer_token_type_negative_integer,
+        __lexer_token_type_negative_floating
+    };
+
+    struct __lexer_token
+    {
+        __lexer_token_type m_tokenType;
+    };
+
     struct __lexer_data
     {
         __lexer_data()

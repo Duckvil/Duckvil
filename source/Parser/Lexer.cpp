@@ -84,7 +84,9 @@ namespace Duckvil { namespace Parser {
                 _pData->m_cCurrentCharacter == '*' ||
                 _pData->m_cCurrentCharacter == '/' ||
                 _pData->m_cCurrentCharacter == '"' ||
-                _pData->m_cCurrentCharacter == '#')
+                _pData->m_cCurrentCharacter == '#' ||
+                _pData->m_cCurrentCharacter == '!' ||
+                _pData->m_cCurrentCharacter == '-')
             {
                 if(_pData->m_sToken.size() > 0)
                 {
