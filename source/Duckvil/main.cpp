@@ -12,7 +12,7 @@
 
 #include "RuntimeDatabase/RuntimeDatabase.h"
 
-#include "RuntimeReflection/RuntimeReflection.h"
+#include "RuntimeReflection/Recorder.h"
 
 #include "Parser/AST.h"
 
@@ -54,47 +54,55 @@ int main(int argc, char* argv[])
     {
         Duckvil::PlugNPlay::__module_information _runtimeReflectionModule("RuntimeReflection");
         duckvil_runtime_reflection_init_callback _rr_init;
+        duckvil_runtime_reflection_recorder_init_callback _rr_recorder_init;
 
         _module.load(&_runtimeReflectionModule);
         _module.get(_runtimeReflectionModule, "duckvil_runtime_reflection_init", (void**)&_rr_init);
+        _module.get(_runtimeReflectionModule, "duckvil_runtime_reflection_recorder_init", (void**)&_rr_recorder_init);
 
-        Duckvil::RuntimeReflection::__functions* _rr_data = _rr_init(_memoryInterface, _free_list);
-        _rr_data->m_fnInit(_memoryInterface, _free_list, _rr_data);
+        Duckvil::RuntimeReflection::__ftable* _rr_ftable = _rr_init(_memoryInterface, _free_list);
+        Duckvil::RuntimeReflection::__recorder_ftable* _rr_recorder = _rr_recorder_init(_memoryInterface, _free_list);
 
-        struct test
+        Duckvil::RuntimeReflection::__data* _rr_data = _rr_ftable->m_fnInit(_memoryInterface, _free_list, _rr_ftable);
+
         {
-            test(int a) :
-                a(a)
-            {
+            Duckvil::PlugNPlay::__module_information _test_type_module("TestRuntimeReflectionType");
 
+            _module.load(&_test_type_module);
+
+            void (*test_type)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__data* _pData);
+            uint32_t (*get_recorder_count)();
+
+            _module.get(_test_type_module, "duckvil_get_runtime_reflection_recorder_count", (void**)&get_recorder_count);
+
+            uint32_t _count = get_recorder_count();
+
+            for(uint32_t i = 0; i < _count; i++)
+            {
+                _module.get(_test_type_module, (std::string("duckvil_runtime_reflection_record_") + std::to_string(i)).c_str(), (void**)&test_type);
             }
 
-            int a;
-            int b;
-        };
+            test_type(_memoryInterface, _free_list, _rr_recorder, _rr_data);
+        }
 
-        struct test2
-        {
+        Duckvil::RuntimeReflection::__duckvil_resource_type_t _t = _rr_ftable->m_fnGetType(_rr_data, "TestType");
 
-        };
+        // Duckvil::RuntimeReflection::record_type<test>(_memoryInterface, _free_list, _rr_recorder, _rr_data, "test");
 
-        Duckvil::RuntimeReflection::__duckvil_resource_type_t a = Duckvil::RuntimeReflection::record_type<test>(_memoryInterface, _free_list, _rr_data, "test");
-        Duckvil::RuntimeReflection::__duckvil_resource_type_t b = Duckvil::RuntimeReflection::record_type<test2>(_memoryInterface, _free_list, _rr_data, "test2");
+        // Duckvil::RuntimeReflection::__duckvil_resource_type_t a = Duckvil::RuntimeReflection::record_type<test>(_memoryInterface, _free_list, _rr_ftable, "test");
+        // Duckvil::RuntimeReflection::__duckvil_resource_type_t b = Duckvil::RuntimeReflection::record_type<test2>(_memoryInterface, _free_list, _rr_ftable, "test2");
 
-        Duckvil::RuntimeReflection::__duckvil_resource_constructor_t a_cons = Duckvil::RuntimeReflection::record_constructor<test, int>(_memoryInterface, _free_list, _rr_data);
+        // Duckvil::RuntimeReflection::__duckvil_resource_constructor_t a_cons = Duckvil::RuntimeReflection::record_constructor<test, int>(_memoryInterface, _free_list, _rr_ftable);
 
-        //test* aaaaa = (test*)Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_data->m_pData, a_cons, 10);
-        //test* bbbbb = (test*)Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_data->m_pData, a_cons, 20);
+        // test* bbbbb = (test*)Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_ftable->m_pData, "test", 20);
 
-        test* bbbbb = (test*)Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_data->m_pData, "test", 20);
-
-        Duckvil::RuntimeReflection::__duckvil_resource_property_t prop = Duckvil::RuntimeReflection::record_property<test, int>(_memoryInterface, _free_list, _rr_data, offsetof(test, a), "a");
+        // Duckvil::RuntimeReflection::__duckvil_resource_property_t prop = Duckvil::RuntimeReflection::record_property<test, int>(_memoryInterface, _free_list, _rr_ftable, offsetof(test, a), "a");
         
-        int* aa = (int*)Duckvil::RuntimeReflection::get_property(_rr_data->m_pData, "a", bbbbb);
+        // int* aa = (int*)Duckvil::RuntimeReflection::get_property(_rr_ftable->m_pData, "a", bbbbb);
 
-        aa = (int*)Duckvil::RuntimeReflection::get_property(_rr_data->m_pData, "a", bbbbb);
+        // aa = (int*)Duckvil::RuntimeReflection::get_property(_rr_ftable->m_pData, "a", bbbbb);
 
-        _rr_data->m_fnRecordProperty(_memoryInterface, _free_list, _rr_data->m_pData, a, typeid(int).hash_code(), "b", offsetof(test, b));
+        // _rr_ftable->m_fnRecordProperty(_memoryInterface, _free_list, _rr_ftable->m_pData, a, typeid(int).hash_code(), "b", offsetof(test, b));
     }
 
     {
@@ -109,7 +117,7 @@ int main(int argc, char* argv[])
         Duckvil::Parser::__lexer_ftable* _funcs = duckvil_lexer_init(_memoryInterface, _free_list);
         Duckvil::Parser::__lexer_data _data;
 
-        _funcs->load_file(&_data, (std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include/Parser/Lexer.h").string().c_str());
+        _funcs->load_file(&_data, (std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include/Parser/AST.h").string().c_str());
 
         Duckvil::Parser::__ast_ftable* _ast = duckvil_ast_init(_memoryInterface, _free_list);
 
@@ -117,7 +125,8 @@ int main(int argc, char* argv[])
 
         _ast_data.m_aUserDefines.push_back("DUCKVIL_EXPORT");
 
-        _ast->generate_ast(&_ast_data, _funcs, _data);
+        _ast->ast_generate(&_ast_data, _funcs, _data);
+        _ast->ast_print(_ast_data);
     }
 
     // duckvil_init(_memoryInterface, _free_list);
