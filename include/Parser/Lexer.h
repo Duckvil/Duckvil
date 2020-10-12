@@ -30,16 +30,6 @@ namespace Duckvil { namespace Parser {
 
     struct __lexer_data
     {
-        __lexer_data()
-        {
-
-        }
-
-        __lexer_data(int a, int b)
-        {
-
-        }
-
         std::vector<std::string> m_aLines;
         std::string m_sCurrentLine;
         uint32_t m_uiCurrentLine;
