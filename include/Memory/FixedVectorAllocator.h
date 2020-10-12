@@ -50,4 +50,9 @@ namespace Duckvil { namespace Memory {
         _pMemory->m_fnFixedVectorResize_(_pMemory, m_pParentAllocator, _pAllocator, _ullNewSize);
     }
 
+    inline std::size_t fixed_vector_size(IMemory* _pMemory, __fixed_vector_allocator* _pAllocator)
+    {
+        return _pMemory->m_fnFixedVectorSize_(_pAllocator);
+    }
+
 }}

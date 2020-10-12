@@ -62,6 +62,11 @@ namespace Duckvil { namespace Memory {
             return *(Type*)fixed_vector_at(m_pMemoryInterface, m_pAllocator, _ullIndex);
         }
 
+        inline std::size_t Size() const
+        {
+            return fixed_vector_size(m_pMemoryInterface, m_pAllocator) / sizeof(Type);
+        }
+
         inline const Type& operator[](std::size_t _ullIndex) const
         {
             return At(_ullIndex);
