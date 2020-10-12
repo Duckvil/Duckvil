@@ -147,6 +147,7 @@ Duckvil::Memory::IMemory* duckvil_memory_init()
     memory->m_fnFixedVectorFull_ = &fixed_vector_full;
     memory->m_fnFixedVectorClear_ = &fixed_vector_clear;
     memory->m_fnFixedVectorResize_ = &fixed_vector_resize;
+    memory->m_fnFixedVectorSize_ = &fixed_vector_size;
 
     memory->m_fnAllocateLinearAllocator = &allocate_linear_allocator;
     memory->m_fnAllocateFixedStackAllocator = &allocate_fixed_stack_allocator;
