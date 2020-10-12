@@ -13,6 +13,7 @@
 #include "RuntimeDatabase/RuntimeDatabase.h"
 
 #include "RuntimeReflection/Recorder.h"
+#include "RuntimeReflection/Generator.h"
 
 #include "Parser/AST.h"
 
@@ -51,12 +52,14 @@ int main(int argc, char* argv[])
     _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024);
     Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnAllocateFreeListAllocator(&_mainMemoryAllocator, 512 * 1024);
 
+    Duckvil::PlugNPlay::__module_information _runtimeReflectionModule("RuntimeReflection");
+
+    _module.load(&_runtimeReflectionModule);
+
     {
-        Duckvil::PlugNPlay::__module_information _runtimeReflectionModule("RuntimeReflection");
         duckvil_runtime_reflection_init_callback _rr_init;
         duckvil_runtime_reflection_recorder_init_callback _rr_recorder_init;
 
-        _module.load(&_runtimeReflectionModule);
         _module.get(_runtimeReflectionModule, "duckvil_runtime_reflection_init", (void**)&_rr_init);
         _module.get(_runtimeReflectionModule, "duckvil_runtime_reflection_recorder_init", (void**)&_rr_recorder_init);
 
@@ -127,6 +130,16 @@ int main(int argc, char* argv[])
 
         _ast->ast_generate(&_ast_data, _funcs, _data);
         _ast->ast_print(_ast_data);
+
+        {
+            Duckvil::RuntimeReflection::__generator_ftable* (*duckvil_runtime_reflection_generator)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator);
+
+            _module.get(_runtimeReflectionModule, "duckvil_runtime_reflection_generator_init", (void**)&duckvil_runtime_reflection_generator);
+
+            Duckvil::RuntimeReflection::__generator_ftable* _generator_ftable = duckvil_runtime_reflection_generator(_memoryInterface, _free_list);
+
+            _generator_ftable->generate((std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__/test.cpp").string().c_str(), _ast_data);
+        }
     }
 
     // duckvil_init(_memoryInterface, _free_list);
