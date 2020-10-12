@@ -35,6 +35,18 @@ namespace Duckvil { namespace Parser {
         __ast_access_not_specified
     };
 
+    struct __ast_inheritance
+    {
+        __ast_access m_protection;
+        std::string m_sName;
+    };
+
+    struct __ast_meta
+    {
+        std::string m_sKey;
+        std::string m_sValue;
+    };
+
     struct __ast_entity
     {
         __ast_entity(__ast_entity_type _scopeType = __ast_entity_type::__ast_entity_type_main) :
@@ -46,6 +58,7 @@ namespace Duckvil { namespace Parser {
         __ast_entity_type m_scopeType;
         std::vector<__ast_entity*> m_aScopes;
         __ast_entity* m_pParentScope;
+        std::vector<__ast_meta> m_aMeta;
     };
 
     struct __ast_entity_argument : public __ast_entity
@@ -82,6 +95,7 @@ namespace Duckvil { namespace Parser {
 
         std::string m_sName;
         __ast_structure_type m_structureType;
+        std::vector<__ast_inheritance> m_aInheritance;
     };
 
     struct __ast_entity_enum : public __ast_entity
@@ -162,10 +176,12 @@ namespace Duckvil { namespace Parser {
 
     struct __ast_ftable
     {
-        void (*generate_ast)(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data& _lexerData);
+        void (*ast_generate)(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data& _lexerData);
+        void (*ast_print)(const __ast& _AST);
     };
 
-    void generate_ast(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data& _lexerData);
+    void ast_generate(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data& _lexerData);
+    void ast_print(const __ast& _AST);
 
 }}
 
