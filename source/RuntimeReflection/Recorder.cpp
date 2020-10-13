@@ -10,6 +10,7 @@ namespace Duckvil { namespace RuntimeReflection {
         _type.m_constructors = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __constructor_t);
         _type.m_properties = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __property_t);
         _type.m_namespaces = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __namespace_t);
+        _type.m_inheritances = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __inheritance_t);
         memcpy(_type.m_sTypeName, _sTypeName, DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX);
 
         uint32_t _type_handle = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _pData->m_aTypes, _type);
@@ -23,7 +24,7 @@ namespace Duckvil { namespace RuntimeReflection {
         return _handle;
     }
 
-    DUCKVIL_RESOURCE(constructor_t) record_constructor(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, std::size_t _ullTypeID, DUCKVIL_RESOURCE(type_t) _owner, uint8_t* _pConctructor)
+    DUCKVIL_RESOURCE(constructor_t) record_constructor(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, uint8_t* _pConctructor)
     {
         __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aTypes, _owner.m_ID);
         __constructor_t _constructor = {};
@@ -70,6 +71,21 @@ namespace Duckvil { namespace RuntimeReflection {
         return _handle;
     }
 
+    DUCKVIL_RESOURCE(inheritance_t) record_inheritance(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, DUCKVIL_RESOURCE(type_t) _typeHandle, __protection _protection)
+    {
+        __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aTypes, _owner.m_ID);
+        __inheritance_t _inheritance = {};
+
+        _inheritance.m_uiTypeSlotIndex = _typeHandle;
+        _inheritance.m_protection = _protection;
+
+        DUCKVIL_RESOURCE(inheritance_t) _handle = {};
+
+        _handle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _type->m_inheritances, _inheritance);
+
+        return _handle;
+    }
+
 }}
 
 Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_recorder_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator)
@@ -80,6 +96,7 @@ Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_record
     _functions->m_fnRecordConstructor = &Duckvil::RuntimeReflection::record_constructor;
     _functions->m_fnRecordProperty = &Duckvil::RuntimeReflection::record_property;
     _functions->m_fnRecordNamespace = &Duckvil::RuntimeReflection::record_namespace;
+    _functions->m_fnRecordInheritance = &Duckvil::RuntimeReflection::record_inheritance;
 
     return _functions;
 }
