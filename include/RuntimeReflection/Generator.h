@@ -3,9 +3,11 @@
 #include "Utils/Macro.h"
 
 #include "Memory/Memory.h"
-#include "Memory/Vector.h"
 
 #include "Parser/AST.h"
+
+#include <stack>
+#include <queue>
 
 #define DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX 256
 
@@ -21,7 +23,9 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         // Memory::Vector<const char*> m_aNamespaces;
     // TODO: Change to Duckvil vector
-        std::vector<__generator_namespace> m_aNamespaces;
+        std::queue<__generator_namespace> m_aNamespaces;
+        const Parser::__ast_entity_structure* m_pCurrent;
+        bool m_bWasNamespaces;
     };
 
     struct __generator_ftable
