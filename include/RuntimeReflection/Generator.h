@@ -3,6 +3,7 @@
 #include "Utils/Macro.h"
 
 #include "Memory/Memory.h"
+#include "Memory/Vector.h"
 
 #include "Parser/AST.h"
 
@@ -10,9 +11,23 @@
 
 namespace Duckvil { namespace RuntimeReflection {
 
+    struct __generator_namespace
+    {
+        char m_sName[32];
+        std::vector<Parser::__ast_meta> m_aMeta;
+    };
+
+    struct __generator_data
+    {
+        // Memory::Vector<const char*> m_aNamespaces;
+    // TODO: Change to Duckvil vector
+        std::vector<__generator_namespace> m_aNamespaces;
+    };
+
     struct __generator_ftable
     {
-        void (*generate)(const char _sPath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const Parser::__ast& _ast);
+        __generator_data* (*init)(Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator);
+        void (*generate)(__generator_data* _pData, const char _sPath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const Parser::__ast& _ast);
     };
 
 }}

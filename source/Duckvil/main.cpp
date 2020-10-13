@@ -137,8 +137,9 @@ int main(int argc, char* argv[])
             _module.get(_runtimeReflectionModule, "duckvil_runtime_reflection_generator_init", (void**)&duckvil_runtime_reflection_generator);
 
             Duckvil::RuntimeReflection::__generator_ftable* _generator_ftable = duckvil_runtime_reflection_generator(_memoryInterface, _free_list);
+            Duckvil::RuntimeReflection::__generator_data* _generatorData = _generator_ftable->init(_memoryInterface, _free_list);
 
-            _generator_ftable->generate((std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__/test.cpp").string().c_str(), _ast_data);
+            _generator_ftable->generate(_generatorData, (std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__/test.cpp").string().c_str(), _ast_data);
         }
     }
 
