@@ -10,8 +10,6 @@
 
 #include "Memory/Vector.h"
 
-#include "RuntimeDatabase/RuntimeDatabase.h"
-
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/Generator.h"
 
@@ -34,12 +32,10 @@ int main(int argc, char* argv[])
 
     Duckvil::PlugNPlay::module _module;
     Duckvil::PlugNPlay::__module_information _memoryModule("Memory");
-    Duckvil::PlugNPlay::__module_information _dbModule("RuntimeDatabase");
 
     Duckvil::PlugNPlay::module_init(&_module);
 
     _module.load(&_memoryModule);
-    _module.load(&_dbModule);
 
     Duckvil::Memory::init_callback duckvil_memory_init;
 
@@ -73,7 +69,7 @@ int main(int argc, char* argv[])
 
             _module.load(&_test_type_module);
 
-            void (*test_type)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__data* _pData);
+            void (*test_type)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData);
             uint32_t (*get_recorder_count)();
 
             _module.get(_test_type_module, "duckvil_get_runtime_reflection_recorder_count", (void**)&get_recorder_count);
@@ -85,7 +81,7 @@ int main(int argc, char* argv[])
                 _module.get(_test_type_module, (std::string("duckvil_runtime_reflection_record_") + std::to_string(i)).c_str(), (void**)&test_type);
             }
 
-            test_type(_memoryInterface, _free_list, _rr_recorder, _rr_data);
+            test_type(_memoryInterface, _free_list, _rr_recorder, _rr_ftable, _rr_data);
         }
 
         Duckvil::RuntimeReflection::__duckvil_resource_type_t _t = _rr_ftable->m_fnGetType(_rr_data, "TestType");
@@ -144,11 +140,6 @@ int main(int argc, char* argv[])
     }
 
     // duckvil_init(_memoryInterface, _free_list);
-
-    // Duckvil::RuntimeDatabase::__data* _db = (Duckvil::RuntimeDatabase::__data*)Duckvil::PlugNPlay::instantiate_plugin(_module, _dbModule);
-
-    // _db->m_pAllocator = (Duckvil::Memory::__free_list_allocator*)1;
-    // Duckvil::RuntimeDatabase::__data* _db2 = (Duckvil::RuntimeDatabase::__data*)Duckvil::PlugNPlay::instantiate_plugin(_module, _dbModule);
 
     return 0;
 }
