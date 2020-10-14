@@ -103,6 +103,9 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         std::ofstream _file(_sPath);
 
+        _file << "#include \"" << _pData->m_sInclude << "\"\n";
+        // TODO: Include generated .h file
+
         _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD(0)\n";
         _file << "{\n";
 

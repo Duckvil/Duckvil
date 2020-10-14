@@ -24,8 +24,9 @@ namespace Duckvil { namespace RuntimeReflection {
         // Memory::Vector<const char*> m_aNamespaces;
     // TODO: Change to Duckvil vector
         std::queue<__generator_namespace> m_aNamespaces;
-        const Parser::__ast_entity_structure* m_pCurrent;
-        bool m_bWasNamespaces;
+        const Parser::__ast_entity_structure* m_pCurrent = 0;
+        bool m_bWasNamespaces = false;
+        char m_sInclude[256] = { 0 };
     };
 
     struct __generator_ftable
