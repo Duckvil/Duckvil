@@ -86,7 +86,8 @@ namespace Duckvil { namespace Parser {
                 _pData->m_cCurrentCharacter == '"' ||
                 _pData->m_cCurrentCharacter == '#' ||
                 _pData->m_cCurrentCharacter == '!' ||
-                _pData->m_cCurrentCharacter == '-')
+                _pData->m_cCurrentCharacter == '-' ||
+                _pData->m_cCurrentCharacter == '~')
             {
                 if(_pData->m_sToken.size() > 0)
                 {
@@ -99,8 +100,7 @@ namespace Duckvil { namespace Parser {
 
                 break;
             }
-
-            if(_pData->m_cCurrentCharacter == ' ')
+            else if(_pData->m_cCurrentCharacter == ' ')
             {
                 _pData->m_bWasSpace = true;
 

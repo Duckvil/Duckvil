@@ -49,10 +49,6 @@ namespace Duckvil { namespace Parser {
         bool (*space)(const __lexer_data& _data);
     };
 
-    void load_file(__lexer_data* _pData, const char _sFilename[DUCKVIL_TOKENIZER_MAX_FILENAME_LENGTH]);
-    bool next_token(__lexer_data* _pData, std::string* _pToken);
-    bool space(const __lexer_data& _data);
-
 }}
 
 DUCKVIL_EXPORT Duckvil::Parser::__lexer_ftable* duckvil_lexer_init(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator);
