@@ -266,7 +266,7 @@ namespace Duckvil { namespace Parser {
 
                     _name = _tmp;
 
-                    _index = _lexerData.m_uiCurrentCharacterIndex - 1;
+                    _index = _exp.m_uiCurrentCharacterIndex - 1;
                 }
             }
             else if(_token == ")")
@@ -945,11 +945,24 @@ namespace Duckvil { namespace Parser {
             }
             else if(_token == "#")
             {
+                bool _skipNewLine = false;
+
                 while(_pLexer->next_token(&_lexerData, &_token))
                 {
                     if(_lexerData.m_bNewLine)
                     {
-                        break;
+                        if(_skipNewLine)
+                        {
+                            _skipNewLine = false;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else if(_token == "\\")
+                    {
+                        _skipNewLine = true;
                     }
                 }
             }

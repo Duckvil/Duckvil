@@ -60,6 +60,7 @@ int main(int argc, char* argv[])
         _astData.m_aUserDefines.push_back("DUCKVIL_EXPORT");
 
         _ast->ast_generate(&_astData, _lexerFtable, _data);
+        _ast->ast_print(_astData);
     }
 
 // Load each file in specified folder, generate AST and generate reflection based on AST

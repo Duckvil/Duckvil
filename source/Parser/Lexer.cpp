@@ -68,6 +68,7 @@ namespace Duckvil { namespace Parser {
             _pData->m_cCurrentCharacter = _pData->m_sCurrentLine[_pData->m_uiCurrentCharacterIndex++];
 
             if(_pData->m_cCurrentCharacter == '\'' ||
+                _pData->m_cCurrentCharacter == '\\' ||
                 _pData->m_cCurrentCharacter == '{' ||
                 _pData->m_cCurrentCharacter == '}' ||
                 _pData->m_cCurrentCharacter == '[' ||
