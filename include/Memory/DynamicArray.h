@@ -4,8 +4,6 @@
 
 #include "Memory/Internal/FreeListAllocator.h"
 
-#define _inline 			static inline
-
 #if ( defined _WIN32 || defined _WIN64 )
 #define _force_inline 		static __forceinline
 #elif ( defined __APPLE__ || defined _APPLE )
@@ -32,7 +30,7 @@ struct __duckvil_dynamic_array
 #define DUCKVIL_DYNAMIC_ARRAY_FULL(arr) \
     (DUCKVIL_DYNAMIC_ARRAY_SIZE(arr) == DUCKVIL_DYNAMIC_ARRAY_CAPACITY(arr))
 
-_inline void* duckvil_dynamic_array_resize(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, void* _pArray, std::size_t _ullSize, std::size_t _ullAmount)
+static inline void* duckvil_dynamic_array_resize(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, void* _pArray, std::size_t _ullSize, std::size_t _ullAmount)
 {
     std::size_t _capacity;
     __duckvil_dynamic_array* _data = 0;

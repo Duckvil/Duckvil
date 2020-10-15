@@ -273,18 +273,22 @@ namespace Duckvil { namespace Parser {
             {
                 _roundBrackets--;
             }
-            else if(_roundBrackets == 1 && _token == "*")
+            else if(_roundBrackets == 1 && _token == "*" && _index == _exp.m_uiCurrentCharacterIndex - 2)
             {
                 _callback = true;
-            }
-            else if(_token == "inline")
-            {
-
             }
             else if(_token == "const" && _roundBrackets == 0)
             {
                 _tmp += _token + " ";
 
+                _wasKeyword = true;
+            }
+            else if(_token == "static")
+            {
+                _wasKeyword = true;
+            }
+            else if(_token == "inline")
+            {
                 _wasKeyword = true;
             }
             else if(_exp.m_bSpace && _triBrackets == 0 && !_wasKeyword)
@@ -796,12 +800,51 @@ namespace Duckvil { namespace Parser {
                     }
                 }
             }
-            else if(_token == "inline")
+            else if(_token == "using")
             {
-
+                while(_pLexer->next_token(&_lexerData, &_token))
+                {
+                    if(_token == ";")
+                    {
+                        break;
+                    }
+                }
             }
             else if(_pAST->m_pCurrentScope != nullptr && _pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure && ((__ast_entity_structure*)_pAST->m_pCurrentScope)->m_sName == _token && !_error)
             {
+                uint32_t _toDecrease = 1;
+
+                while(_pLexer->next_token(&_lexerData, &_token))
+                {
+                    if(_token == "(")
+                    {
+                        _lexerData.m_uiCurrentCharacterIndex -= _toDecrease;
+
+                        break;
+                    }
+                    else if(_token == "<")
+                    {
+                        _error = true;
+
+                        break;
+                    }
+                    else if(_token != "")
+                    {
+                        _error = true;
+
+                        break;
+                    }
+
+                    _toDecrease++;
+                }
+
+                if(_error)
+                {
+                    _continue = true;
+
+                    continue;
+                }
+
                 std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, _lexerData, _lexerData.m_sCurrentLine.substr(_lexerData.m_uiCurrentCharacterIndex), _error);
 
                 if(_error)

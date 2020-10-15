@@ -59,6 +59,7 @@ int main(int argc, char* argv[])
 
         _astData.m_aUserDefines.push_back("DUCKVIL_EXPORT");
 
+        printf("%s\n", _path.path().string().c_str());
         _ast->ast_generate(&_astData, _lexerFtable, _data);
         _ast->ast_print(_astData);
     }
