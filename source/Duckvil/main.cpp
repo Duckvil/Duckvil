@@ -123,6 +123,8 @@ int main(int argc, char* argv[])
         Duckvil::Parser::__ast _ast_data;
 
         _ast_data.m_aUserDefines.push_back("DUCKVIL_EXPORT");
+        _ast_data.m_aUserDefines.push_back("slot");
+        _ast_data.m_aUserDefines.push_back("DUCKVIL_RESOURCE_DECLARE");
 
         _ast->ast_generate(&_ast_data, _funcs, _data);
         _ast->ast_print(_ast_data);

@@ -947,6 +947,46 @@ namespace Duckvil { namespace Parser {
             }
             else
             {
+                bool _skip = false;
+
+                for(std::string& _define : _pAST->m_aUserDefines)
+                {
+                    if(_token == _define)
+                    {
+                        uint32_t _roundBrackets = 0;
+
+                        while(_pLexer->next_token(&_lexerData, &_token))
+                        {
+                            if(_token == "(")
+                            {
+                                _roundBrackets++;
+                            }
+                            else if(_token == ")")
+                            {
+                                _roundBrackets--;
+
+                                if(_roundBrackets == 0)
+                                {
+                                    break;
+                                }
+                            }
+                            else if(_token == ";" && _roundBrackets == 0)
+                            {
+                                break;
+                            }
+                        }
+
+                        _skip = true;
+
+                        break;
+                    }
+                }
+
+                if(_skip)
+                {
+                    continue;
+                }
+
                 if(_token == "")
                 {
                     if(_lexerData.m_bSpace)

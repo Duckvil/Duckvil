@@ -58,6 +58,8 @@ int main(int argc, char* argv[])
         Duckvil::Parser::__ast _astData;
 
         _astData.m_aUserDefines.push_back("DUCKVIL_EXPORT");
+        _astData.m_aUserDefines.push_back("slot");
+        _astData.m_aUserDefines.push_back("DUCKVIL_RESOURCE_DECLARE");
 
         printf("%s\n", _path.path().string().c_str());
         _ast->ast_generate(&_astData, _lexerFtable, _data);
@@ -73,6 +75,8 @@ int main(int argc, char* argv[])
         Duckvil::Parser::__ast _astData;
 
         _astData.m_aUserDefines.push_back("DUCKVIL_EXPORT");
+        _astData.m_aUserDefines.push_back("slot");
+        _astData.m_aUserDefines.push_back("DUCKVIL_RESOURCE_DECLARE");
 
         _ast->ast_generate(&_astData, _lexerFtable, _data);
 
