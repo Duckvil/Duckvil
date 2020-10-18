@@ -125,6 +125,39 @@ namespace Duckvil { namespace RuntimeReflection {
                             _file << "record_property<" + _additionalNamespaceTypedef + _castedVariable->m_sType + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(" + _additionalNamespace + _casted->m_sName + ", " + _castedVariable->m_sName + "), \"" + _castedVariable->m_sName + "\");\n";
                         }
                     }
+                    else if(_ent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_constructor)
+                    {
+                        // TODO: Not always generate, idk why
+                        const Parser::__ast_entity_constructor* _castedConstructor = (const Parser::__ast_entity_constructor*)_ent;
+
+                        if(_castedConstructor->m_accessLevel == Parser::__ast_access::__ast_access_public)
+                        {
+                            _file << "record_constructor<" + _additionalNamespace + _casted->m_sName;
+
+                            if(_castedConstructor->m_aArguments.size() == 0)
+                            {
+                                _file << ">";
+                            }
+                            else
+                            {
+                                _file << ", ";
+
+                                for(uint32_t i = 0; i < _castedConstructor->m_aArguments.size(); i++)
+                                {
+                                    _file << _castedConstructor->m_aArguments[i].m_sType;
+
+                                    if(i < _castedConstructor->m_aArguments.size() - 1)
+                                    {
+                                        _file << ", ";
+                                    }
+                                }
+
+                                _file << ">";
+                            }
+
+                            _file << "(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF);\n";
+                        }
+                    }
                 }
             }
 
