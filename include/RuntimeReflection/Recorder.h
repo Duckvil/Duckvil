@@ -26,13 +26,13 @@ namespace Duckvil { namespace RuntimeReflection {
     };
 
     template <typename Type>
-    DUCKVIL_RESOURCE(type_t) record_type(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX])
+    static DUCKVIL_RESOURCE(type_t) record_type(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX])
     {
         return _pFunctions->m_fnRecordType(_pMemoryInterface, _pAllocator, _pData, typeid(Type).hash_code(), _sName);
     }
 
     template <typename Type, typename... Args>
-    DUCKVIL_RESOURCE(constructor_t) record_constructor(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData)
+    static DUCKVIL_RESOURCE(constructor_t) record_constructor(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData)
     {
         static std::size_t _typeID = typeid(Type).hash_code();
 
@@ -42,7 +42,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
             if(_type.m_ullTypeID == _typeID)
             {
-                return _pFunctions->m_fnRecordConstructor(_pMemoryInterface, _pAllocator, _pData, _type.m_ullTypeID, _type.m_uiSlotIndex, (uint8_t*)&create_type<Type, Args...>);
+                return _pFunctions->m_fnRecordConstructor(_pMemoryInterface, _pAllocator, _pData, _type.m_uiSlotIndex, _type.m_ullTypeID, (uint8_t*)&create_type<Type, Args...>);
             }
         }
 
@@ -50,7 +50,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename A, typename B>
-    DUCKVIL_RESOURCE(property_t) record_property(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, uintptr_t _ullOffset, const char _sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX])
+    static DUCKVIL_RESOURCE(property_t) record_property(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, uintptr_t _ullOffset, const char _sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX])
     {
         static std::size_t _typeA_ID = typeid(A).hash_code();
         static std::size_t _typeB_ID = typeid(B).hash_code();
@@ -69,7 +69,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename B>
-    DUCKVIL_RESOURCE(property_t) record_property(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, uintptr_t _ullOffset, const char _sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX])
+    static DUCKVIL_RESOURCE(property_t) record_property(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, uintptr_t _ullOffset, const char _sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX])
     {
         static std::size_t _typeB_ID = typeid(B).hash_code();
 
