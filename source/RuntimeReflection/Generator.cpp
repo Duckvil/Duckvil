@@ -42,6 +42,15 @@ namespace Duckvil { namespace RuntimeReflection {
         else if(_entity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_structure)
         {
             const Parser::__ast_entity_structure* _casted = (const Parser::__ast_entity_structure*)_entity;
+            const Parser::__ast_entity_structure* _parent = _casted;
+            std::string _additionalNamespace;
+
+            while(_parent->m_pParentScope->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_structure)
+            {
+                _additionalNamespace += ((Parser::__ast_entity_structure*)_parent->m_pParentScope)->m_sName + "::";
+
+                _parent = (Parser::__ast_entity_structure*)_parent->m_pParentScope;
+            }
 
             if(!_pData->m_bWasNamespaces)
             {
@@ -50,7 +59,7 @@ namespace Duckvil { namespace RuntimeReflection {
                 _file << "using namespace " + combine_namespace(_pData->m_aNamespaces) + ";\n";
             }
 
-            _file << "_type = record_type<" + _casted->m_sName + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, \"" + _casted->m_sName + "\");\n";
+            _file << "_type = record_type<" + _additionalNamespace + _casted->m_sName + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, \"" + _casted->m_sName + "\");\n";
 
             for(const Parser::__ast_inheritance& _inheritance : _casted->m_aInheritance)
             {
@@ -70,16 +79,48 @@ namespace Duckvil { namespace RuntimeReflection {
                 }
             }
 
-            _pData->m_pCurrent = _casted;
-        }
-        else if(_entity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_variable)
-        {
-            if(_pData->m_pCurrent != nullptr &&_pData->m_pCurrent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_structure)
+            for(Parser::__ast_entity* _ent : _entity->m_aScopes)
             {
-                const Parser::__ast_entity_variable* _casted = (const Parser::__ast_entity_variable*)_entity;
+                if(_ent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_variable)
+                {
+                    const Parser::__ast_entity_variable* _castedVariable = (const Parser::__ast_entity_variable*)_ent;
 
-                _file << "record_property<" + _casted->m_sType + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(" + _pData->m_pCurrent->m_sName + ", " + _casted->m_sName + "), \"" + _casted->m_sName + "\");\n";
+                    if(_castedVariable->m_accessLevel == Parser::__ast_access::__ast_access_public)
+                    {
+                        std::string _additionalNamespaceTypedef;
+
+                        for(Parser::__ast_entity* _typedefEntity : _casted->m_aScopes)
+                        {
+                            if(_typedefEntity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_callback_typedef)
+                            {
+                                Parser::__ast_entity_callback_typedef* _castedTypedefEntity = (Parser::__ast_entity_callback_typedef*)_typedefEntity;
+
+                                if(_castedTypedefEntity->m_sName == _castedVariable->m_sType)
+                                {
+                                    _additionalNamespaceTypedef += ((Parser::__ast_entity_structure*)_casted)->m_sName + "::";
+
+                                    break;
+                                }
+                            }
+                            else if(_typedefEntity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_typedef)
+                            {
+                                Parser::__ast_entity_typedef* _castedTypedefEntity = (Parser::__ast_entity_typedef*)_typedefEntity;
+
+                                if(_castedTypedefEntity->m_sName == _castedVariable->m_sType)
+                                {
+                                    _additionalNamespaceTypedef += ((Parser::__ast_entity_structure*)_casted)->m_sName + "::";
+
+                                    break;
+                                }
+                            }
+                        }
+
+                        _file << "record_property<" + _additionalNamespaceTypedef + _castedVariable->m_sType + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(" + _additionalNamespace + _casted->m_sName + ", " + _castedVariable->m_sName + "), \"" + _castedVariable->m_sName + "\");\n";
+                    }
+                }
             }
+
+            // _pData->m_pCurrent = _casted;
         }
 
         for(Parser::__ast_entity* _ent : _entity->m_aScopes)
@@ -104,12 +145,14 @@ namespace Duckvil { namespace RuntimeReflection {
         std::ofstream _file(_sPath);
 
         _file << "#include \"" << _pData->m_sInclude << "\"\n";
+        _file << "#include \"RuntimeReflection/Recorder.h\"\n";
         // TODO: Include generated .h file
 
-        _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD(0)\n";
+        _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD(" << _pData->m_uiRecorderIndex << ")\n";
         _file << "{\n";
 
         _file << "using namespace Duckvil::RuntimeReflection;\n";
+        _file << "using namespace Duckvil;\n";
         _file << "DUCKVIL_RESOURCE(type_t) _type;\n";
 
         recursive(_pData, &_ast.m_main, _file);
