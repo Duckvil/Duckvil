@@ -49,6 +49,17 @@ namespace Duckvil { namespace Parser {
         std::string m_sValue;
     };
 
+    struct __ast_template_element
+    {
+        std::string m_sType;
+        std::string m_sName;
+    };
+
+    struct __ast_template
+    {
+        std::vector<__ast_template_element> m_aElements;
+    };
+
     struct __ast_entity
     {
         __ast_entity(__ast_entity_type _scopeType = __ast_entity_type::__ast_entity_type_main) :
@@ -98,6 +109,7 @@ namespace Duckvil { namespace Parser {
         std::string m_sName;
         __ast_structure_type m_structureType;
         std::vector<__ast_inheritance> m_aInheritance;
+        std::vector<__ast_template> m_aTemplates;
     };
 
     struct __ast_entity_enum : public __ast_entity
@@ -181,6 +193,8 @@ namespace Duckvil { namespace Parser {
         {
 
         }
+
+        std::vector<__ast_template> m_aTemplates;
     };
 
     struct __ast_entity_function : public __ast_entity_callable
@@ -193,6 +207,7 @@ namespace Duckvil { namespace Parser {
 
         std::string m_sName;
         std::string m_sReturnType;
+        std::vector<__ast_template> m_aTemplates;
     };
 
     struct __ast
