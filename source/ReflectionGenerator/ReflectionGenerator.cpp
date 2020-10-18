@@ -5,6 +5,8 @@
 #include "RuntimeReflection/RuntimeReflection.h"
 #include "RuntimeReflection/Generator.h"
 
+#include <fstream>
+
 int main(int argc, char* argv[])
 {
     Duckvil::PlugNPlay::module _module;
@@ -43,6 +45,8 @@ int main(int argc, char* argv[])
     _module.get(_reflectionModule, "duckvil_runtime_reflection_generator_init", (void**)&_runtime_reflection_generator);
 
     Duckvil::RuntimeReflection::__generator_ftable* _generatorFtable = _runtime_reflection_generator(_memoryInterface, _free_list);
+    std::filesystem::path _lastPath;
+    uint32_t _index = 0;
 
     for(auto& _path : std::filesystem::recursive_directory_iterator(std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include"))
     {
@@ -61,10 +65,59 @@ int main(int argc, char* argv[])
         _astData.m_aUserDefines.push_back("slot");
         _astData.m_aUserDefines.push_back("DUCKVIL_RESOURCE_DECLARE");
 
-        printf("%s\n", _path.path().string().c_str());
         _ast->ast_generate(&_astData, _lexerFtable, _data);
-        _ast->ast_print(_astData);
+
+        Duckvil::RuntimeReflection::__generator_data _generatorData;
+        std::filesystem::path _relativePath = std::filesystem::relative(_path.path(), std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include");
+        std::filesystem::path _pluginDirectory = _relativePath;
+
+    // At least it is working...
+        while(_pluginDirectory.has_parent_path())
+        {
+            _pluginDirectory = _pluginDirectory.parent_path();
+        }
+
+        if(_lastPath == "")
+        {
+            _lastPath = _pluginDirectory;
+        }
+
+        if(_lastPath != _pluginDirectory)
+        {
+            std::ofstream _file(std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _lastPath / "plugin_info.cpp");
+
+            _file << "#include \"RuntimeReflection/Recorder.h\"\n";
+            _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(" << _index << ")";
+
+            _file.close();
+
+            _index = 0;
+            _lastPath = _pluginDirectory;
+        }
+
+        strcpy(_generatorData.m_sInclude, _relativePath.string().c_str());
+        _generatorData.m_uiRecorderIndex = ++_index;
+
+        std::filesystem::path _generatePath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _relativePath;
+
+        if(!std::filesystem::exists(_generatePath.parent_path()))
+        {
+            std::filesystem::create_directories(_generatePath.parent_path());
+        }
+
+        _generatePath.replace_extension(".generated.cpp");
+
+        _generatorFtable->generate(&_generatorData, _generatePath.string().c_str(), _astData);
     }
+
+    std::ofstream _file(std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _lastPath / "plugin_info.cpp");
+
+    _file << "#include \"RuntimeReflection/Recorder.h\"\n";
+    _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(" << _index << ")";
+
+    _file.close();
+
+    _index = 1;
 
 // Load each file in specified folder, generate AST and generate reflection based on AST
     {
