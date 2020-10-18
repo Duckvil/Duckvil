@@ -18,7 +18,9 @@ namespace Duckvil { namespace Parser {
         __ast_entity_type_variable,
         __ast_entity_type_argument,
         __ast_entity_type_enum,
-        __ast_entity_type_main
+        __ast_entity_type_main,
+        __ast_entity_type_typedef,
+        __ast_entity_type_callback_typedef
     };
 
     enum __ast_structure_type
@@ -131,6 +133,33 @@ namespace Duckvil { namespace Parser {
 
         std::vector<__ast_entity_argument> m_aArguments;
         __ast_access m_accessLevel;
+    };
+
+    struct __ast_entity_typedef : public __ast_entity
+    {
+        __ast_entity_typedef(__ast_entity_type _type = __ast_entity_type::__ast_entity_type_typedef) :
+            __ast_entity(_type)
+        {
+
+        }
+
+        // typedef Test<float> TestFloat;
+
+        std::string m_sType; // like Test<float>
+        std::string m_sName; // TestFloat
+    };
+
+    struct __ast_entity_callback_typedef : public __ast_entity_typedef
+    {
+        __ast_entity_callback_typedef() :
+            __ast_entity_typedef(__ast_entity_type::__ast_entity_type_callback_typedef)
+        {
+
+        }
+
+        // typedef float (*test)(int);
+
+        std::vector<__ast_entity_argument> m_aArguments;
     };
 
     struct __ast_entity_callback : public __ast_entity_callable

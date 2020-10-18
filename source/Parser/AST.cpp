@@ -455,12 +455,96 @@ namespace Duckvil { namespace Parser {
             }
             else if(_token == "typedef")
             {
+                std::string _internal;
+                std::size_t _openBracketIndex = std::string::npos;
+                uint32_t _roundBrackets = 0;
+                bool _wasType = false;
+                std::string _type;
+                bool _wasOpenBracket = false;
+                std::string _name;
+                bool _skip = false;
+
                 while(_pLexer->next_token(&_lexerData, &_token))
                 {
                     if(_token == ";")
                     {
                         break;
                     }
+                    else if(_token == "(")
+                    {
+                        _roundBrackets++;
+                        _openBracketIndex = _lexerData.m_uiCurrentCharacterIndex - 1;
+                        _wasOpenBracket = true;
+
+                        if(_skip)
+                        {
+                            continue;
+                        }
+
+                        while(_pLexer->next_token(&_lexerData, &_token))
+                        {
+                            if(_token == "*")
+                            {
+
+                            }
+                            else if(_token == ")")
+                            {
+                                _name = _internal;
+                                _skip = true;
+
+                                break;
+                            }
+                            else
+                            {
+                                _internal += _token;
+                            }
+                        }
+                    }
+                    else if(_token == ")")
+                    {
+                        _roundBrackets--;
+                    }
+                    else if(_token == "" && _lexerData.m_bSpace && _internal.size() > 0 && !_wasOpenBracket)
+                    {
+                        _type = _internal;
+                        _wasType = true;
+
+                        _internal.clear();
+                    }
+                    else
+                    {
+                        if(!_skip)
+                        {
+                            _internal += _token;
+                        }
+                    }
+                }
+
+                if(_openBracketIndex == std::string::npos)
+                {
+                    __ast_entity_typedef* _entity = new __ast_entity_typedef();
+
+                    _entity->m_sType = _type;
+                    _entity->m_sName = _internal;
+
+                    _entity->m_pParentScope = _pAST->m_pCurrentScope;
+
+                    _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
+                }
+                else
+                {
+                    __ast_entity_callback_typedef* _entity = new __ast_entity_callback_typedef();
+
+                    _entity->m_sName = _internal;
+                    _entity->m_sType = _type;
+
+                    std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, _lexerData, _lexerData.m_sCurrentLine.substr(_openBracketIndex));
+
+                    _entity->m_aArguments.insert(_entity->m_aArguments.begin(), _args.begin(), _args.end());
+
+                    _entity->m_pParentScope = _pAST->m_pCurrentScope;
+
+                    _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
                 }
             }
             else if(_token == "using")
