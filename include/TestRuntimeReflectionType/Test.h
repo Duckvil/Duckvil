@@ -14,6 +14,11 @@ namespace Duckvil { namespace Test {
         ~TestType();
 
         float m_fA;
+
+        void test();
+        void test2(float a, float b);
+        static void test3();
+        static void test4(float a, float b);
     };
 
 }}
