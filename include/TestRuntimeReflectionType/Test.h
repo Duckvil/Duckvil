@@ -10,6 +10,7 @@ namespace Duckvil { namespace Test {
 
     public:
         TestType();
+        TestType(float a);
         ~TestType();
 
         float m_fA;

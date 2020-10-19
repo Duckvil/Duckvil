@@ -177,6 +177,32 @@ namespace Duckvil { namespace RuntimeReflection {
         return nullptr;
     }
 
+    template <typename... Args>
+    void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, Args... _vArgs)
+    {
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+        {
+            __type_t _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
+
+            if(_typeHandle.m_ID == _type.m_uiSlotIndex.m_ID)
+            {
+                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_constructors.m_data); j++)
+                {
+                    __constructor_t _constructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_constructors, j);
+
+                    if(_constructor.m_ullTypeID == typeid(void*(Args...)).hash_code())
+                    {
+                        void* (*_constructor_callback)(Memory::IMemory*, Memory::__free_list_allocator*, Args...) = (void* (*)(Memory::IMemory*, Memory::__free_list_allocator*, Args...))_constructor.m_pData;
+
+                        return _constructor_callback(_pMemoryInterface, _pAllocator, _vArgs...);
+                    }
+                }
+            }
+        }
+
+        return nullptr;
+    }
+
 }}
 
 typedef Duckvil::RuntimeReflection::__ftable* (*duckvil_runtime_reflection_init_callback)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator);

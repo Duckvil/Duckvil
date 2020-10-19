@@ -7,6 +7,12 @@ namespace Duckvil { namespace Test {
 
     }
 
+    TestType::TestType(float a) :
+        m_fA(a)
+    {
+
+    }
+
     TestType::~TestType()
     {
 

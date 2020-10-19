@@ -15,6 +15,8 @@
 
 #include "Parser/AST.h"
 
+#include "TestRuntimeReflectionType/Test.h"
+
 Duckvil::Utils::CommandArgumentsParser::Descriptor* g_pDescriptors = { 0 };
 
 int main(int argc, char* argv[])
@@ -86,7 +88,9 @@ int main(int argc, char* argv[])
 
         Duckvil::RuntimeReflection::__duckvil_resource_type_t _t = _rr_ftable->m_fnGetType(_rr_data, "TestType");
 
-        void* _testT = Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_data, "TestType");
+        void* _testT = Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_data, _t, 10.f);
+        float* _prop = (float*)Duckvil::RuntimeReflection::get_property(_rr_data, "m_fA", (Duckvil::Test::TestType*)_testT);
+        printf("AAAA\n");
     }
 
     // {
