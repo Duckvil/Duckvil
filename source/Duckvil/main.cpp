@@ -86,60 +86,45 @@ int main(int argc, char* argv[])
 
         Duckvil::RuntimeReflection::__duckvil_resource_type_t _t = _rr_ftable->m_fnGetType(_rr_data, "TestType");
 
-        // Duckvil::RuntimeReflection::record_type<test>(_memoryInterface, _free_list, _rr_recorder, _rr_data, "test");
-
-        // Duckvil::RuntimeReflection::__duckvil_resource_type_t a = Duckvil::RuntimeReflection::record_type<test>(_memoryInterface, _free_list, _rr_ftable, "test");
-        // Duckvil::RuntimeReflection::__duckvil_resource_type_t b = Duckvil::RuntimeReflection::record_type<test2>(_memoryInterface, _free_list, _rr_ftable, "test2");
-
-        // Duckvil::RuntimeReflection::__duckvil_resource_constructor_t a_cons = Duckvil::RuntimeReflection::record_constructor<test, int>(_memoryInterface, _free_list, _rr_ftable);
-
-        // test* bbbbb = (test*)Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_ftable->m_pData, "test", 20);
-
-        // Duckvil::RuntimeReflection::__duckvil_resource_property_t prop = Duckvil::RuntimeReflection::record_property<test, int>(_memoryInterface, _free_list, _rr_ftable, offsetof(test, a), "a");
-        
-        // int* aa = (int*)Duckvil::RuntimeReflection::get_property(_rr_ftable->m_pData, "a", bbbbb);
-
-        // aa = (int*)Duckvil::RuntimeReflection::get_property(_rr_ftable->m_pData, "a", bbbbb);
-
-        // _rr_ftable->m_fnRecordProperty(_memoryInterface, _free_list, _rr_ftable->m_pData, a, typeid(int).hash_code(), "b", offsetof(test, b));
+        void* _testT = Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_data, "TestType");
     }
 
-    {
-        Duckvil::PlugNPlay::__module_information _parser("Parser");
-        Duckvil::Parser::__lexer_ftable* (*duckvil_lexer_init)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator);
-        Duckvil::Parser::__ast_ftable* (*duckvil_ast_init)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator);
+    // {
+    //     Duckvil::PlugNPlay::__module_information _parser("Parser");
+    //     Duckvil::Parser::__lexer_ftable* (*duckvil_lexer_init)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator);
+    //     Duckvil::Parser::__ast_ftable* (*duckvil_ast_init)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator);
 
-        _module.load(&_parser);
-        _module.get(_parser, "duckvil_lexer_init", (void**)&duckvil_lexer_init);
-        _module.get(_parser, "duckvil_ast_init", (void**)&duckvil_ast_init);
+    //     _module.load(&_parser);
+    //     _module.get(_parser, "duckvil_lexer_init", (void**)&duckvil_lexer_init);
+    //     _module.get(_parser, "duckvil_ast_init", (void**)&duckvil_ast_init);
 
-        Duckvil::Parser::__lexer_ftable* _funcs = duckvil_lexer_init(_memoryInterface, _free_list);
-        Duckvil::Parser::__lexer_data _data;
+    //     Duckvil::Parser::__lexer_ftable* _funcs = duckvil_lexer_init(_memoryInterface, _free_list);
+    //     Duckvil::Parser::__lexer_data _data;
 
-        _funcs->load_file(&_data, (std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include/Parser/AST.h").string().c_str());
+    //     _funcs->load_file(&_data, (std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include/Parser/AST.h").string().c_str());
 
-        Duckvil::Parser::__ast_ftable* _ast = duckvil_ast_init(_memoryInterface, _free_list);
+    //     Duckvil::Parser::__ast_ftable* _ast = duckvil_ast_init(_memoryInterface, _free_list);
 
-        Duckvil::Parser::__ast _ast_data;
+    //     Duckvil::Parser::__ast _ast_data;
 
-        _ast_data.m_aUserDefines.push_back("DUCKVIL_EXPORT");
-        _ast_data.m_aUserDefines.push_back("slot");
-        _ast_data.m_aUserDefines.push_back("DUCKVIL_RESOURCE_DECLARE");
+    //     _ast_data.m_aUserDefines.push_back("DUCKVIL_EXPORT");
+    //     _ast_data.m_aUserDefines.push_back("slot");
+    //     _ast_data.m_aUserDefines.push_back("DUCKVIL_RESOURCE_DECLARE");
 
-        _ast->ast_generate(&_ast_data, _funcs, _data);
-        _ast->ast_print(_ast_data);
+    //     _ast->ast_generate(&_ast_data, _funcs, _data);
+    //     _ast->ast_print(_ast_data);
 
-        {
-            Duckvil::RuntimeReflection::__generator_ftable* (*duckvil_runtime_reflection_generator)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator);
+    //     {
+    //         Duckvil::RuntimeReflection::__generator_ftable* (*duckvil_runtime_reflection_generator)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator);
 
-            _module.get(_runtimeReflectionModule, "duckvil_runtime_reflection_generator_init", (void**)&duckvil_runtime_reflection_generator);
+    //         _module.get(_runtimeReflectionModule, "duckvil_runtime_reflection_generator_init", (void**)&duckvil_runtime_reflection_generator);
 
-            Duckvil::RuntimeReflection::__generator_ftable* _generator_ftable = duckvil_runtime_reflection_generator(_memoryInterface, _free_list);
-            Duckvil::RuntimeReflection::__generator_data* _generatorData = _generator_ftable->init(_memoryInterface, _free_list);
+    //         Duckvil::RuntimeReflection::__generator_ftable* _generator_ftable = duckvil_runtime_reflection_generator(_memoryInterface, _free_list);
+    //         Duckvil::RuntimeReflection::__generator_data* _generatorData = _generator_ftable->init(_memoryInterface, _free_list);
 
-            _generator_ftable->generate(_generatorData, (std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__/test.cpp").string().c_str(), _ast_data);
-        }
-    }
+    //         _generator_ftable->generate(_generatorData, (std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__/test.cpp").string().c_str(), _ast_data);
+    //     }
+    // }
 
     // duckvil_init(_memoryInterface, _free_list);
 

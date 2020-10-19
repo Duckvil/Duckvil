@@ -31,22 +31,28 @@ namespace Duckvil { namespace RuntimeReflection {
         return _pFunctions->m_fnRecordType(_pMemoryInterface, _pAllocator, _pData, typeid(Type).hash_code(), _sName);
     }
 
+    // template <typename Type, typename... Args>
+    // static DUCKVIL_RESOURCE(constructor_t) record_constructor(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData)
+    // {
+    //     static std::size_t _typeID = typeid(Type).hash_code();
+
+    //     for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+    //     {
+    //         __type_t _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
+
+    //         if(_type.m_ullTypeID == _typeID)
+    //         {
+    //             return _pFunctions->m_fnRecordConstructor(_pMemoryInterface, _pAllocator, _pData, _type.m_uiSlotIndex, _type.m_ullTypeID, (uint8_t*)&create_type<Type, Args...>);
+    //         }
+    //     }
+
+    //     return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    // }
+
     template <typename Type, typename... Args>
-    static DUCKVIL_RESOURCE(constructor_t) record_constructor(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData)
+    static DUCKVIL_RESOURCE(constructor_t) record_constructor(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle)
     {
-        static std::size_t _typeID = typeid(Type).hash_code();
-
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
-        {
-            __type_t _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
-
-            if(_type.m_ullTypeID == _typeID)
-            {
-                return _pFunctions->m_fnRecordConstructor(_pMemoryInterface, _pAllocator, _pData, _type.m_uiSlotIndex, _type.m_ullTypeID, (uint8_t*)&create_type<Type, Args...>);
-            }
-        }
-
-        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+        return _pFunctions->m_fnRecordConstructor(_pMemoryInterface, _pAllocator, _pData, _typeHandle, typeid(void*(Args...)).hash_code(), (uint8_t*)&create_type<Type, Args...>);
     }
 
     template <typename A, typename B>

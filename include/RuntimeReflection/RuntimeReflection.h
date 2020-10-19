@@ -164,12 +164,17 @@ namespace Duckvil { namespace RuntimeReflection {
                 {
                     __constructor_t _constructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_constructors, j);
 
-                    void* (*_constructor_callback)(Memory::IMemory*, Memory::__free_list_allocator*, Args...) = (void* (*)(Memory::IMemory*, Memory::__free_list_allocator*, Args...))_constructor.m_pData;
+                    if(_constructor.m_ullTypeID == typeid(void*(Args...)).hash_code())
+                    {
+                        void* (*_constructor_callback)(Memory::IMemory*, Memory::__free_list_allocator*, Args...) = (void* (*)(Memory::IMemory*, Memory::__free_list_allocator*, Args...))_constructor.m_pData;
 
-                    return _constructor_callback(_pMemoryInterface, _pAllocator, _vArgs...);
+                        return _constructor_callback(_pMemoryInterface, _pAllocator, _vArgs...);
+                    }
                 }
             }
         }
+
+        return nullptr;
     }
 
 }}

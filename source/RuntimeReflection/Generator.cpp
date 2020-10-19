@@ -155,7 +155,7 @@ namespace Duckvil { namespace RuntimeReflection {
                                 _file << ">";
                             }
 
-                            _file << "(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF);\n";
+                            _file << "(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);\n";
                         }
                     }
                 }
