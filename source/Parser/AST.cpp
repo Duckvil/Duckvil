@@ -48,6 +48,10 @@ namespace Duckvil { namespace Parser {
             break;
         case __ast_entity_type::__ast_entity_type_function:
             printf("Function\n");
+            DUCKVIL_SPACES
+            printf(" Name: %s\n", ((__ast_entity_function*)_entity)->m_sName.c_str());
+            DUCKVIL_SPACES
+            printf(" Return: %s\n", ((__ast_entity_function*)_entity)->m_sReturnType.c_str());
             break;
         }
 
@@ -903,6 +907,7 @@ namespace Duckvil { namespace Parser {
                 std::string _type;
                 uint32_t _triBrackets = 0;
                 uint32_t _roundBrackets = 0;
+                uint32_t _quadBrackets = 0;
                 std::size_t _roundBracketBeginIndex = std::string::npos;
                 bool _callback = false;
                 bool _wasOpenBracket = false;
@@ -942,7 +947,24 @@ namespace Duckvil { namespace Parser {
 
                         _internalTmp += _token;
                     }
-                    else if(_token == "(" && _triBrackets == 0)
+                    else if(_token == "[" && _wasType)
+                    {
+                        _quadBrackets++;
+
+                        while(_pLexer->next_token(&_exp, &_token))
+                        {
+                            if(_token == "]")
+                            {
+                                _quadBrackets--;
+
+                                if(_quadBrackets == 0)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else if(_token == "(" && _triBrackets == 0 && _wasType)
                     {
                         _roundBrackets++;
                         _wasOpenBracket = true;
@@ -975,6 +997,11 @@ namespace Duckvil { namespace Parser {
                     else if(_token == ")" && _triBrackets == 0)
                     {
                         _roundBrackets--;
+
+                        if(!_wasType)
+                        {
+                            _internalTmp += _token;
+                        }
                     }
                     else if(_token == "inline")
                     {
@@ -1054,7 +1081,7 @@ namespace Duckvil { namespace Parser {
 
                     _pAST->m_pPendingScope = nullptr;
                 }
-                else
+                else if(_wasOpenBracket && !_callback)
                 {
                     // Function
 

@@ -66,6 +66,7 @@ int main(int argc, char* argv[])
         _astData.m_aUserDefines.push_back("DUCKVIL_RESOURCE_DECLARE");
 
         _ast->ast_generate(&_astData, _lexerFtable, _data);
+        _ast->ast_print(_astData);
 
         Duckvil::RuntimeReflection::__generator_data _generatorData;
         std::filesystem::path _relativePath = std::filesystem::relative(_path.path(), std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include");
@@ -118,27 +119,6 @@ int main(int argc, char* argv[])
     _file.close();
 
     _index = 1;
-
-// Load each file in specified folder, generate AST and generate reflection based on AST
-    {
-        Duckvil::Parser::__lexer_data _data;
-
-        _lexerFtable->load_file(&_data, (std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include/Parser/AST.h").string().c_str());
-
-        Duckvil::Parser::__ast _astData;
-
-        _astData.m_aUserDefines.push_back("DUCKVIL_EXPORT");
-        _astData.m_aUserDefines.push_back("slot");
-        _astData.m_aUserDefines.push_back("DUCKVIL_RESOURCE_DECLARE");
-
-        _ast->ast_generate(&_astData, _lexerFtable, _data);
-
-        Duckvil::RuntimeReflection::__generator_data _generatorData;// = _generatorFtable->init(_memoryInterface, _free_list);
-
-        strcpy(_generatorData.m_sInclude, "Parser/AST.h");
-
-        _generatorFtable->generate(&_generatorData, (std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__/Parser/AST.generated.cpp").string().c_str(), _astData);
-    }
 
     return 0;
 }
