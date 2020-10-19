@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
         }
 
         strcpy(_generatorData.m_sInclude, _relativePath.string().c_str());
-        _generatorData.m_uiRecorderIndex = ++_index;
+        _generatorData.m_uiRecorderIndex = _index++;
 
         std::filesystem::path _generatePath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _relativePath;
 
