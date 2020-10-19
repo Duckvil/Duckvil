@@ -11,6 +11,7 @@ namespace Duckvil { namespace RuntimeReflection {
         _type.m_properties = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __property_t);
         _type.m_namespaces = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __namespace_t);
         _type.m_inheritances = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __inheritance_t);
+        _type.m_functions = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __function_t);
         memcpy(_type.m_sTypeName, _sTypeName, DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX);
 
         uint32_t _type_handle = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _pData->m_aTypes, _type);
@@ -86,6 +87,24 @@ namespace Duckvil { namespace RuntimeReflection {
         return _handle;
     }
 
+    DUCKVIL_RESOURCE(function_t) record_function(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, __ifunction* _pFunction, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX], std::size_t _ullReturnTypeID, std::size_t _ullArgumentsTypeID)
+    {
+        __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aTypes, _owner.m_ID);
+        __function_t _function = {};
+
+        _function.m_pFunction = _pFunction;
+        _function.m_ullReturnTypeID = _ullReturnTypeID;
+        _function.m_ullArgumentsTypeID = _ullArgumentsTypeID;
+
+        memcpy(_function.m_sFunctionName, _sName, DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX);
+
+        DUCKVIL_RESOURCE(function_t) _handle = {};
+
+        _handle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _type->m_functions, _function);
+
+        return _handle;
+    }
+
 }}
 
 Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_recorder_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator)
@@ -97,6 +116,7 @@ Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_record
     _functions->m_fnRecordProperty = &Duckvil::RuntimeReflection::record_property;
     _functions->m_fnRecordNamespace = &Duckvil::RuntimeReflection::record_namespace;
     _functions->m_fnRecordInheritance = &Duckvil::RuntimeReflection::record_inheritance;
+    _functions->m_fnRecordFunction = &Duckvil::RuntimeReflection::record_function;
 
     return _functions;
 }
