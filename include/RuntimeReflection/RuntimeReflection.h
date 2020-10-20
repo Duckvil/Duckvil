@@ -38,7 +38,7 @@ namespace Duckvil { namespace RuntimeReflection {
     };
 
     template <typename T>
-	struct __function;
+    struct __function;
 
     template <typename Type, typename... Args>
     struct __function<void(Type::*)(Args...)> : public __ifunction
