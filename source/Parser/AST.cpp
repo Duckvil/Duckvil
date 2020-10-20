@@ -645,12 +645,13 @@ namespace Duckvil { namespace Parser {
                     std::size_t _roundBracketIndex = std::string::npos;
                     std::size_t _quadBrackets = 0;
                     bool _variable = false;
+                    bool _skipped = false;
 
                     while(_pLexer->next_token(&_exp, &_token))
                     {
                         if(_token == "")
                         {
-                            if(_exp.m_bSpace && _triBrackets == 0 && !_wasType)
+                            if(_exp.m_bSpace && _triBrackets == 0 && !_wasType && !_skipped)
                             {
                                 _type = _internalTmp;
                                 _wasType = true;
@@ -661,6 +662,12 @@ namespace Duckvil { namespace Parser {
                             {
                                 _name = _internalTmp;
                                 _wasName = true;
+
+                                _internalTmp.clear();
+                            }
+                            else if(_skipped)
+                            {
+                                _skipped = false;
                             }
                         }
                         else if(_token == "<")
@@ -703,11 +710,11 @@ namespace Duckvil { namespace Parser {
                         }
                         else if(_token == "inline")
                         {
-
+                            _skipped = true;
                         }
                         else if(_token == "static")
                         {
-
+                            _skipped = true;
                         }
                         else
                         {
