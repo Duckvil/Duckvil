@@ -96,6 +96,11 @@ int main(int argc, char* argv[])
         Duckvil::RuntimeReflection::invoke<Duckvil::Test::TestType>(_rr_data, "test3");
         Duckvil::RuntimeReflection::invoke<Duckvil::Test::TestType>(_rr_data, "test4", 30.f, 40.f);
 
+        int _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, "a");
+        _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, "b");
+        _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, 1);
+        _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, 1.f);
+
         printf("AAAA\n");
     }
 

@@ -23,6 +23,7 @@
 #define DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX 32
 #define DUCKVIL_RUNTIME_REFLECTION_NAMESPACE_NAME_MAX 32
 #define DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX 32
+#define DUCKVIL_RUNTIME_REFLECTION_KEY_META_NAME_MAX 32
 
 namespace Duckvil { namespace RuntimeReflection {
 
@@ -40,6 +41,7 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename T>
     struct __function;
 
+// Member function with specific arguments which returns void
     template <typename Type, typename... Args>
     struct __function<void(Type::*)(Args...)> : public __ifunction
     {
@@ -48,6 +50,7 @@ namespace Duckvil { namespace RuntimeReflection {
         FunctionCallback m_fnFunction;
     };
 
+// Member function with specific arguments which returns specific type
     template <typename Type, typename ReturnType, typename... Args>
     struct __function<ReturnType(Type::*)(Args...)> : public __ifunction
     {
@@ -56,6 +59,7 @@ namespace Duckvil { namespace RuntimeReflection {
         FunctionCallback m_fnFunction;
     };
 
+// Static function with specific arguments which returns void
     template <typename... Args>
     struct __function<void(*)(Args...)> : public __ifunction
     {
@@ -64,6 +68,7 @@ namespace Duckvil { namespace RuntimeReflection {
         FunctionCallback m_fnFunction;
     };
 
+// Static function with specific arguments which returns specific type
     template <typename ReturnType, typename... Args>
     struct __function<ReturnType(*)(Args...)> : public __ifunction
     {
@@ -78,10 +83,18 @@ namespace Duckvil { namespace RuntimeReflection {
     DUCKVIL_RESOURCE_DECLARE(namespace_t);
     DUCKVIL_RESOURCE_DECLARE(inheritance_t);
     DUCKVIL_RESOURCE_DECLARE(function_t);
+    DUCKVIL_RESOURCE_DECLARE(variant_t);
+    DUCKVIL_RESOURCE_DECLARE(meta_t);
 
     struct __traits
     {
         bool m_bIsPointer;
+        bool m_bIsReference;
+        bool m_bIsArray;
+        bool m_bIsVoid;
+        bool m_bIsIntegral;
+        bool m_bIsFloatingPoint;
+        bool m_bIsEnum;
     };
 
     enum __protection
@@ -90,6 +103,20 @@ namespace Duckvil { namespace RuntimeReflection {
         __protection_protected,
         __protection_private
     };
+
+    slot(__variant_t,
+    {
+        std::size_t m_ullSize;
+        std::size_t m_ullTypeID;
+        void* m_pData; // IDK?
+        __traits m_traits;
+    });
+
+    slot(__meta_t,
+    {
+        DUCKVIL_RESOURCE(variant_t) m_key;
+        DUCKVIL_RESOURCE(variant_t) m_value;
+    });
 
     slot(__constructor_t,
     {
@@ -137,6 +164,9 @@ namespace Duckvil { namespace RuntimeReflection {
         DUCKVIL_SLOT_ARRAY(__namespace_t) m_namespaces;
         DUCKVIL_SLOT_ARRAY(__inheritance_t) m_inheritances;
         DUCKVIL_SLOT_ARRAY(__function_t) m_functions;
+        DUCKVIL_SLOT_ARRAY(__variant_t) m_variantKeys;
+        DUCKVIL_SLOT_ARRAY(__variant_t) m_variantValues;
+        DUCKVIL_SLOT_ARRAY(__meta_t) m_metas;
     });
 
     struct __data
@@ -186,6 +216,58 @@ namespace Duckvil { namespace RuntimeReflection {
         }
 
         return nullptr;
+    }
+
+    template <typename KeyType>
+    DUCKVIL_RESOURCE(variant_t) get_meta_value_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const KeyType& _key)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantKeys.m_data); i++)
+        {
+            const __variant_t& _keyVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, i);
+
+            if(_keyVariant.m_ullTypeID == typeid(KeyType).hash_code() && _keyVariant.m_ullSize == sizeof(KeyType) && memcmp(_keyVariant.m_pData, &_key, _keyVariant.m_ullSize) == 0)
+            {
+                return { i };
+            }
+        }
+    }
+
+    template <typename ValueType, typename KeyType>
+    ValueType get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const KeyType& _key)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantKeys.m_data); i++)
+        {
+            const __variant_t& _keyVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, i);
+
+            if(_keyVariant.m_ullTypeID == typeid(KeyType).hash_code() && _keyVariant.m_ullSize == sizeof(KeyType) && memcmp(_keyVariant.m_pData, &_key, _keyVariant.m_ullSize) == 0)
+            {
+                const __variant_t& _valueVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantValues, i);
+
+                return *(ValueType*)_valueVariant.m_pData;
+            }
+        }
+    }
+
+    template <typename ValueType, std::size_t Length>
+    ValueType get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char (&_key)[Length])
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantKeys.m_data); i++)
+        {
+            const __variant_t& _keyVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, i);
+
+            if(_keyVariant.m_ullTypeID == typeid(const char*).hash_code() && _keyVariant.m_ullSize == Length && memcmp(_keyVariant.m_pData, _key, Length) == 0)
+            {
+                const __variant_t& _valueVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantValues, i);
+
+                return *(ValueType*)_valueVariant.m_pData;
+            }
+        }
     }
 
     template <typename Type>
