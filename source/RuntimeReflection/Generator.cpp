@@ -158,15 +158,15 @@ namespace Duckvil { namespace RuntimeReflection {
                             _file << "(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);\n";
                         }
                     }
-                    // else if(_ent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_function)
-                    // {
-                    //     const Parser::__ast_entity_function* _castedFunction = (const Parser::__ast_entity_function*)_ent;
+                    else if(_ent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_function)
+                    {
+                        const Parser::__ast_entity_function* _castedFunction = (const Parser::__ast_entity_function*)_ent;
 
-                    //     if(_castedFunction->m_accessLevel == Parser::__ast_access::__ast_access_public)
-                    //     {
-                    //         _file << "record_function(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &" << _additionalNamespace + _casted->m_sName << ", \"" << _casted->m_sName << "\");\n";
-                    //     }
-                    // }
+                        if(_castedFunction->m_accessLevel == Parser::__ast_access::__ast_access_public)
+                        {
+                            _file << "record_function(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &" << _additionalNamespace + _casted->m_sName + "::" + _castedFunction->m_sName << ", \"" << _castedFunction->m_sName << "\");\n";
+                        }
+                    }
                 }
             }
 
