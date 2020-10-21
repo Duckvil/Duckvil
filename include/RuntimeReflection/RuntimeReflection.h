@@ -85,15 +85,15 @@ namespace Duckvil { namespace RuntimeReflection {
     DUCKVIL_RESOURCE_DECLARE(variant_t);
     DUCKVIL_RESOURCE_DECLARE(meta_t);
 
-    struct __traits
+    enum class __traits : uint8_t
     {
-        bool m_bIsPointer;
-        bool m_bIsReference;
-        bool m_bIsArray;
-        bool m_bIsVoid;
-        bool m_bIsIntegral;
-        bool m_bIsFloatingPoint;
-        bool m_bIsEnum;
+        is_pointer        = 1 << 0,
+        is_reference      = 1 << 1,
+        is_array          = 1 << 2,
+        is_void           = 1 << 3,
+        is_integral       = 1 << 4,
+        is_floating_point = 1 << 5,
+        is_enum           = 1 << 6
     };
 
     enum __protection
@@ -103,12 +103,24 @@ namespace Duckvil { namespace RuntimeReflection {
         __protection_private
     };
 
-    slot(__variant_t,
+    enum __variant_owner
+    {
+        __variant_owner_type,
+        __variant_owner_property
+    };
+
+    struct __variant
     {
         std::size_t m_ullSize;
         std::size_t m_ullTypeID;
         void* m_pData;
         __traits m_traits;
+    };
+
+    slot(__variant_t,
+    {
+        __variant m_variant;
+        __variant_owner m_owner;
     });
 
     slot(__meta_t,
@@ -165,8 +177,11 @@ namespace Duckvil { namespace RuntimeReflection {
         DUCKVIL_SLOT_ARRAY(__namespace_t) m_namespaces;
         DUCKVIL_SLOT_ARRAY(__inheritance_t) m_inheritances;
         DUCKVIL_SLOT_ARRAY(__function_t) m_functions;
+    // This contains all variant keys, even for properties, functions, etc.
+    // It could be useful if we want to get all metas that contains specific key in specific type
         DUCKVIL_SLOT_ARRAY(__variant_t) m_variantKeys;
         DUCKVIL_SLOT_ARRAY(__variant_t) m_variantValues;
+    // This contains only metas for specific type
         DUCKVIL_SLOT_ARRAY(__meta_t) m_metas;
     });
 
@@ -228,7 +243,7 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             const __variant_t& _keyVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, i);
 
-            if(_keyVariant.m_ullTypeID == typeid(KeyType).hash_code() && _keyVariant.m_ullSize == sizeof(KeyType) && memcmp(_keyVariant.m_pData, &_key, _keyVariant.m_ullSize) == 0)
+            if(_keyVariant.m_variant.m_ullTypeID == typeid(KeyType).hash_code() && _keyVariant.m_variant.m_ullSize == sizeof(KeyType) && memcmp(_keyVariant.m_variant.m_pData, &_key, _keyVariant.m_variant.m_ullSize) == 0)
             {
                 return { i };
             }
@@ -236,37 +251,77 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename ValueType, typename KeyType>
-    ValueType get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const KeyType&& _key)
+    ValueType get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _handle, const KeyType&& _key)
     {
-        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _handle.m_ID);
 
         for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantKeys.m_data); i++)
         {
             const __variant_t& _keyVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, i);
 
-            if(_keyVariant.m_ullTypeID == typeid(KeyType).hash_code() && _keyVariant.m_ullSize == sizeof(KeyType) && memcmp(_keyVariant.m_pData, &_key, _keyVariant.m_ullSize) == 0)
+            if(_keyVariant.m_variant.m_ullTypeID == typeid(KeyType).hash_code() && _keyVariant.m_variant.m_ullSize == sizeof(KeyType) && memcmp(_keyVariant.m_variant.m_pData, &_key, _keyVariant.m_variant.m_ullSize) == 0)
             {
                 const __variant_t& _valueVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantValues, i);
 
-                return *(ValueType*)_valueVariant.m_pData;
+                return *(ValueType*)_valueVariant.m_variant.m_pData;
             }
         }
     }
 
     template <typename ValueType, std::size_t Length>
-    ValueType get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char (&_key)[Length])
+    ValueType get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _handle, const char (&_key)[Length])
     {
-        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _handle.m_ID);
 
         for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantKeys.m_data); i++)
         {
             const __variant_t& _keyVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, i);
 
-            if(_keyVariant.m_ullTypeID == typeid(const char*).hash_code() && _keyVariant.m_ullSize == Length && memcmp(_keyVariant.m_pData, _key, Length) == 0)
+            if(_keyVariant.m_variant.m_ullTypeID == typeid(const char*).hash_code() && _keyVariant.m_variant.m_ullSize == Length && memcmp(_keyVariant.m_variant.m_pData, _key, Length) == 0)
             {
                 const __variant_t& _valueVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantValues, i);
 
-                return *(ValueType*)_valueVariant.m_pData;
+                return *(ValueType*)_valueVariant.m_variant.m_pData;
+            }
+        }
+    }
+
+    template <typename ValueType, typename KeyType>
+    ValueType get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(property_t) _handle, const KeyType&& _key)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+        const __property_t& _property = DUCKVIL_SLOT_ARRAY_GET(_type.m_properties, _handle.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_property.m_metas.m_data); i++)
+        {
+            const __meta_t& _meta = DUCKVIL_SLOT_ARRAY_GET(_property.m_metas, i);
+            const __variant_t& _keyVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, _meta.m_key.m_ID);
+
+            if(_keyVariant.m_variant.m_ullTypeID == typeid(KeyType).hash_code() && _keyVariant.m_variant.m_ullSize == sizeof(KeyType) && memcmp(_keyVariant.m_variant.m_pData, &_key, _keyVariant.m_variant.m_ullSize) == 0)
+            {
+                const __variant_t& _valueVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantValues, _meta.m_key.m_ID);
+
+                return *(ValueType*)_valueVariant.m_variant.m_pData;
+            }
+        }
+    }
+
+    template <typename ValueType, std::size_t Length>
+    ValueType get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(property_t) _handle, const char (&_key)[Length])
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+        const __property_t& _property = DUCKVIL_SLOT_ARRAY_GET(_type.m_properties, _handle.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_property.m_metas.m_data); i++)
+        {
+            const __meta_t& _meta = DUCKVIL_SLOT_ARRAY_GET(_property.m_metas, i);
+            const __variant_t& _keyVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, _meta.m_key.m_ID);
+
+            if(_keyVariant.m_variant.m_ullTypeID == typeid(const char*).hash_code() && _keyVariant.m_variant.m_ullSize == Length && memcmp(_keyVariant.m_variant.m_pData, _key, Length) == 0)
+            {
+                const __variant_t& _valueVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantValues, _meta.m_key.m_ID);
+
+                return *(ValueType*)_valueVariant.m_variant.m_pData;
             }
         }
     }
@@ -283,6 +338,23 @@ namespace Duckvil { namespace RuntimeReflection {
             if(_type.m_ullTypeID == typeid(Type).hash_code())
             {
                 return _type.m_uiSlotIndex;
+            }
+        }
+
+        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    }
+
+    static DUCKVIL_RESOURCE(property_t) get_property_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char _sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX])
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_properties.m_data); i++)
+        {
+            const __property_t& _property = DUCKVIL_SLOT_ARRAY_GET(_type.m_properties, i);
+
+            if(strcmp(_property.m_sName, _sName) == 0)
+            {
+                return { i };
             }
         }
 
@@ -308,7 +380,7 @@ namespace Duckvil { namespace RuntimeReflection {
                     {
                         return (uint8_t*)_pObject + _property.m_ullAddress;
                     }
-                } 
+                }
             }
         }
 

@@ -87,6 +87,7 @@ int main(int argc, char* argv[])
         }
 
         Duckvil::RuntimeReflection::__duckvil_resource_type_t _t = _rr_ftable->m_fnGetType(_rr_data, "TestType");
+        Duckvil::RuntimeReflection::__duckvil_resource_property_t _propHandle = Duckvil::RuntimeReflection::get_property_handle(_rr_data, _t, "m_fA");
 
         void* _testT = Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_data, _t, 10.f);
         float* _prop = (float*)Duckvil::RuntimeReflection::get_property(_rr_data, "m_fA", (Duckvil::Test::TestType*)_testT);
@@ -100,6 +101,8 @@ int main(int argc, char* argv[])
         _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, "b");
         _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, 1);
         _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, 1.f);
+        _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, _propHandle, 1);
+        _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, _propHandle, "a");
 
         printf("AAAA\n");
     }
