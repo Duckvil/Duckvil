@@ -23,7 +23,6 @@
 #define DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX 32
 #define DUCKVIL_RUNTIME_REFLECTION_NAMESPACE_NAME_MAX 32
 #define DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX 32
-#define DUCKVIL_RUNTIME_REFLECTION_KEY_META_NAME_MAX 32
 
 namespace Duckvil { namespace RuntimeReflection {
 
@@ -108,7 +107,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         std::size_t m_ullSize;
         std::size_t m_ullTypeID;
-        void* m_pData; // IDK?
+        void* m_pData;
         __traits m_traits;
     });
 
@@ -116,6 +115,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         DUCKVIL_RESOURCE(variant_t) m_key;
         DUCKVIL_RESOURCE(variant_t) m_value;
+        uint32_t m_uiOwner;
     });
 
     slot(__constructor_t,
@@ -132,6 +132,7 @@ namespace Duckvil { namespace RuntimeReflection {
         char m_sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX];
         uintptr_t m_ullAddress;
         __traits m_traits;
+        DUCKVIL_SLOT_ARRAY(__meta_t) m_metas;
     });
 
     slot(__namespace_t,

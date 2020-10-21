@@ -16,6 +16,20 @@
 
 namespace Duckvil { namespace RuntimeReflection {
 
+    struct __recorder_meta_info
+    {
+        std::size_t m_ullKeyTypeID;
+        std::size_t m_ullKeyTypeSize;
+        uint8_t m_ucKeyTypeAlignment;
+        __traits m_keyTraits;
+        const void* m_pKeyData;
+        std::size_t m_ullValueTypeID;
+        std::size_t m_ullValueTypeSize;
+        uint8_t m_ucValueTypeAlignment;
+        __traits m_valueTraits;
+        const void* m_pValueData;
+    };
+
     template <typename Type>
     static __traits recorder_generate_traits()
     {
@@ -46,6 +60,7 @@ namespace Duckvil { namespace RuntimeReflection {
         DUCKVIL_RESOURCE(namespace_t) (*m_fnRecordNamespace)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, const char _sName[DUCKVIL_RUNTIME_REFLECTION_NAMESPACE_NAME_MAX]);
         DUCKVIL_RESOURCE(inheritance_t) (*m_fnRecordInheritance)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, DUCKVIL_RESOURCE(type_t) _typeHandle, __protection _protection);
         DUCKVIL_RESOURCE(function_t) (*m_fnRecordFunction)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, __ifunction* _pFunction, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX], std::size_t _ullReturnTypeID, std::size_t _ullArgumentsTypeID);
+        DUCKVIL_RESOURCE(meta_t) (*m_fnRecordTypeMeta)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, const __recorder_meta_info& _meta);
     };
 
     template <typename Type>
@@ -82,150 +97,41 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename KeyType, typename ValueType>
     static DUCKVIL_RESOURCE(meta_t) record_meta(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const KeyType& _key, const ValueType& _value)
     {
-        __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aTypes, _typeHandle.m_ID);
-        std::size_t _keyTypeID = typeid(KeyType).hash_code();
-        std::size_t _keyTypeSize = sizeof(KeyType);
-        bool _keyFound = false;
+        __recorder_meta_info _meta = {};
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type->m_variantKeys.m_data); i++)
-        {
-            __variant_t _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, i);
+        _meta.m_ullKeyTypeID = typeid(KeyType).hash_code();
+        _meta.m_ullKeyTypeSize = sizeof(KeyType);
+        _meta.m_ucKeyTypeAlignment = alignof(KeyType);
+        _meta.m_pKeyData = &_key;
+        _meta.m_keyTraits = recorder_generate_traits<KeyType>();
 
-            if(_key.m_ullTypeID == _keyTypeID && _key.m_ullSize == _keyTypeSize && memcmp(_key.m_pData, &_key, _keyTypeSize) == 0)
-            {
-                // The key was found, we need to change value
+        _meta.m_ullValueTypeID = typeid(ValueType).hash_code();
+        _meta.m_ullValueTypeSize = sizeof(ValueType);
+        _meta.m_ucValueTypeAlignment = alignof(ValueType);
+        _meta.m_pValueData = &_value;
+        _meta.m_valueTraits = recorder_generate_traits<ValueType>();
 
-                _keyFound = true;
-
-                break;
-            }
-        }
-
-        if(!_keyFound)
-        {
-            DUCKVIL_RESOURCE(variant_t) _keyHandle = {};
-            DUCKVIL_RESOURCE(variant_t) _valueHandle = {};
-
-            {
-                __variant_t _keyVariant = {};
-
-                _keyVariant.m_ullTypeID = _keyTypeID;
-                _keyVariant.m_ullSize = _keyTypeSize;
-                _keyVariant.m_pData = _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _keyVariant.m_ullSize, alignof(KeyType));
-                _keyVariant.m_traits = recorder_generate_traits<KeyType>();
-
-                memcpy(_keyVariant.m_pData, &_key, _keyVariant.m_ullSize);
-
-                _keyHandle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _type->m_variantKeys, _keyVariant);
-            }
-
-            {
-                __variant_t _valueVariant = {};
-
-                _valueVariant.m_ullTypeID = typeid(ValueType).hash_code();
-                _valueVariant.m_ullSize = sizeof(ValueType);
-                _valueVariant.m_pData = _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _valueVariant.m_ullSize, alignof(ValueType));
-                _valueVariant.m_traits = recorder_generate_traits<ValueType>();
-
-                memcpy(_valueVariant.m_pData, &_value, _valueVariant.m_ullSize);
-
-                _valueHandle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _type->m_variantValues, _valueVariant);
-            }
-
-            if(_keyHandle.m_ID != _valueHandle.m_ID)
-            {
-                // Something gone wrong... should not happen
-
-                return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
-            }
-
-            __meta_t _meta = {};
-
-            _meta.m_key = _keyHandle;
-            _meta.m_value = _valueHandle;
-
-            DUCKVIL_RESOURCE(meta_t) _metaHandle = {};
-
-            _metaHandle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _type->m_metas, _meta);
-
-            return _metaHandle;
-        }
-
-        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+        return _pFunctions->m_fnRecordTypeMeta(_pMemoryInterface, _pAllocator, _pData, _typeHandle, _meta);
     }
 
     template <typename ValueType, std::size_t Length>
     static DUCKVIL_RESOURCE(meta_t) record_meta(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char (&_key)[Length], const ValueType& _value)
     {
-        __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aTypes, _typeHandle.m_ID);
-        std::size_t _keyTypeID = typeid(const char*).hash_code();
-        bool _keyFound = false;
+        __recorder_meta_info _meta = {};
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type->m_variantKeys.m_data); i++)
-        {
-            __variant_t _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, i);
+        _meta.m_ullKeyTypeID = typeid(const char*).hash_code();
+        _meta.m_ullKeyTypeSize = Length;
+        _meta.m_ucKeyTypeAlignment = alignof(const char*);
+        _meta.m_pKeyData = &_key;
+        _meta.m_keyTraits = recorder_generate_traits(_key);
 
-            if(_key.m_ullTypeID == _keyTypeID && _key.m_ullSize == Length && memcmp(_key.m_pData, &_key, Length) == 0)
-            {
-                // The key was found, we need to change value
+        _meta.m_ullValueTypeID = typeid(ValueType).hash_code();
+        _meta.m_ullValueTypeSize = sizeof(ValueType);
+        _meta.m_ucValueTypeAlignment = alignof(ValueType);
+        _meta.m_pValueData = &_value;
+        _meta.m_valueTraits = recorder_generate_traits<ValueType>();
 
-                _keyFound = true;
-
-                break;
-            }
-        }
-
-        if(!_keyFound)
-        {
-            DUCKVIL_RESOURCE(variant_t) _keyHandle = {};
-            DUCKVIL_RESOURCE(variant_t) _valueHandle = {};
-
-            {
-                __variant_t _keyVariant = {};
-
-                _keyVariant.m_ullTypeID = _keyTypeID;
-                _keyVariant.m_ullSize = Length;
-                _keyVariant.m_pData = _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _keyVariant.m_ullSize, 8);
-                _keyVariant.m_traits = recorder_generate_traits(_key);
-
-                memcpy(_keyVariant.m_pData, _key, Length);
-
-                _keyHandle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _type->m_variantKeys, _keyVariant);
-            }
-
-            {
-                __variant_t _valueVariant = {};
-
-                _valueVariant.m_ullTypeID = typeid(ValueType).hash_code();
-                _valueVariant.m_ullSize = sizeof(ValueType);
-                _valueVariant.m_pData = _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _valueVariant.m_ullSize, alignof(ValueType));
-                _valueVariant.m_traits = recorder_generate_traits<ValueType>();
-
-                memcpy(_valueVariant.m_pData, &_value, _valueVariant.m_ullSize);
-
-                _valueHandle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _type->m_variantValues, _valueVariant);
-            }
-
-            if(_keyHandle.m_ID != _valueHandle.m_ID)
-            {
-                // Something gone wrong... should not happen
-
-                return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
-            }
-
-            __meta_t _meta = {};
-
-            _meta.m_key = _keyHandle;
-            _meta.m_value = _valueHandle;
-
-            DUCKVIL_RESOURCE(meta_t) _metaHandle = {};
-
-            _metaHandle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _type->m_metas, _meta);
-
-            return _metaHandle;
-        }
-
-        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+        return _pFunctions->m_fnRecordTypeMeta(_pMemoryInterface, _pAllocator, _pData, _typeHandle, _meta);
     }
 
     template <typename B>
