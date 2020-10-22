@@ -24,6 +24,9 @@ namespace Duckvil { namespace Test {
         void test2(float a, float b);
         static void test3();
         static void test4(float a, float b);
+
+        int test5(float a, float b);
+        static int test6();
     };
 
 }}

@@ -258,26 +258,6 @@ namespace Duckvil { namespace RuntimeReflection {
             }
         }
 
-        // for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
-        // {
-        //     const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
-
-        //     if(_typeHandle.m_ID == _type.m_uiSlotIndex.m_ID)
-        //     {
-        //         for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_constructors.m_data); j++)
-        //         {
-        //             const __constructor_t& _constructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_constructors, j);
-
-        //             if(_constructor.m_ullTypeID == typeid(void*(Args...)).hash_code())
-        //             {
-        //                 void* (*_constructor_callback)(Memory::IMemory*, Memory::__free_list_allocator*, Args...) = (void* (*)(Memory::IMemory*, Memory::__free_list_allocator*, Args...))_constructor.m_pData;
-
-        //                 return _constructor_callback(_pMemoryInterface, _pAllocator, _vArgs...);
-        //             }
-        //         }
-        //     }
-        // }
-
         return nullptr;
     }
 
@@ -466,6 +446,24 @@ namespace Duckvil { namespace RuntimeReflection {
         return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
     }
 
+    template <typename... Args>
+    static DUCKVIL_RESOURCE(function_t) get_function_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX])
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); i++)
+        {
+            const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, i);
+
+            if(strcmp(_function.m_sFunctionName, _sName) == 0 && _function.m_ullArgumentsTypeID == typeid(void(Args...)).hash_code())
+            {
+                return { i };
+            }
+        }
+
+        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    }
+
     template <typename Type>
     void* get_property(__data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX], const Type* _pObject)
     {
@@ -514,7 +512,33 @@ namespace Duckvil { namespace RuntimeReflection {
 
                         (_pObject->*(_func->m_fnFunction))(_vArgs...);
                     }
-                } 
+                }
+            }
+        }
+    }
+
+    template <typename ReturnType, typename Type, typename... Args>
+    ReturnType invoke(__data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX], Type* _pObject, Args... _vArgs)
+    {
+        static std::size_t _typeID = typeid(Type).hash_code();
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+        {
+            const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
+
+            if(_type.m_ullTypeID == _typeID)
+            {
+                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); j++)
+                {
+                    const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, j);
+
+                    if(strcmp(_function.m_sFunctionName, _sName) == 0 && typeid(ReturnType).hash_code() == _function.m_ullReturnTypeID && typeid(void(Args...)).hash_code() == _function.m_ullArgumentsTypeID)
+                    {
+                        __function<ReturnType(Type::*)(Args...)>* _func = (__function<ReturnType(Type::*)(Args...)>*)_function.m_pFunction;
+
+                        return (_pObject->*(_func->m_fnFunction))(_vArgs...);
+                    }
+                }
             }
         }
     }
@@ -541,7 +565,33 @@ namespace Duckvil { namespace RuntimeReflection {
 
                         (*(_func->m_fnFunction))(_vArgs...);
                     }
-                } 
+                }
+            }
+        }
+    }
+
+    template <typename ReturnType, typename Type, typename... Args>
+    ReturnType invoke(__data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX], Args... _vArgs)
+    {
+        static std::size_t _typeID = typeid(Type).hash_code();
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+        {
+            const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
+
+            if(_type.m_ullTypeID == _typeID)
+            {
+                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); j++)
+                {
+                    const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, j);
+
+                    if(strcmp(_function.m_sFunctionName, _sName) == 0 && typeid(ReturnType).hash_code() == _function.m_ullReturnTypeID && typeid(void(Args...)).hash_code() == _function.m_ullArgumentsTypeID)
+                    {
+                        __function<ReturnType(*)(Args...)>* _func = (__function<ReturnType(*)(Args...)>*)_function.m_pFunction;
+
+                        return (*(_func->m_fnFunction))(_vArgs...);
+                    }
+                }
             }
         }
     }

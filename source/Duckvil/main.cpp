@@ -89,6 +89,7 @@ int main(int argc, char* argv[])
         Duckvil::RuntimeReflection::__duckvil_resource_type_t _t = _rr_ftable->m_fnGetType(_rr_data, "TestType");
         Duckvil::RuntimeReflection::__duckvil_resource_property_t _propHandle = Duckvil::RuntimeReflection::get_property_handle(_rr_data, _t, "m_fA");
         Duckvil::RuntimeReflection::__duckvil_resource_constructor_t _consHandle = Duckvil::RuntimeReflection::get_constructor_handle(_rr_data, _t);
+        Duckvil::RuntimeReflection::__duckvil_resource_function_t _funcHandle = Duckvil::RuntimeReflection::get_function_handle<float, float>(_rr_data, _t, "test2");
 
         void* _testT = Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_data, _t, 10.f);
         float* _prop = (float*)Duckvil::RuntimeReflection::get_property(_rr_data, "m_fA", (Duckvil::Test::TestType*)_testT);
@@ -97,8 +98,10 @@ int main(int argc, char* argv[])
         Duckvil::RuntimeReflection::invoke(_rr_data, "test2", (Duckvil::Test::TestType*)_testT, 10.f, 20.f);
         Duckvil::RuntimeReflection::invoke<Duckvil::Test::TestType>(_rr_data, "test3");
         Duckvil::RuntimeReflection::invoke<Duckvil::Test::TestType>(_rr_data, "test4", 30.f, 40.f);
+        int _res = Duckvil::RuntimeReflection::invoke<int>(_rr_data, "test5", (Duckvil::Test::TestType*)_testT, 10.f, 20.f);
+        _res = Duckvil::RuntimeReflection::invoke<int, Duckvil::Test::TestType>(_rr_data, "test6");
 
-        int _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, "a");
+        _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, "a");
         _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, "b");
         _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, 1);
         _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, 1.f);

@@ -40,4 +40,14 @@ namespace Duckvil { namespace Test {
         printf("Static function 2 arguments %f %f\n", a, b);
     }
 
+    int TestType::test5(float a, float b)
+    {
+        return (int)a + (int)b;
+    }
+
+    int TestType::test6()
+    {
+        return 666;
+    }
+
 }}
