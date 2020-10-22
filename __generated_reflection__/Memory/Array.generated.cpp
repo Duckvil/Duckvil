@@ -5,4 +5,5 @@ DUCKVIL_RUNTIME_REFLECTION_RECORD(0)
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
 DUCKVIL_RESOURCE(type_t) _type;
+DUCKVIL_RESOURCE(property_t) _property;
 }
