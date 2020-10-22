@@ -2,8 +2,11 @@
 
 // #include "RuntimeReflection/OOP/Recorder.h"
 
+#include "RuntimeReflection/Markers.h"
+
 namespace Duckvil { namespace Test {
 
+    DUCKVIL_CLASS(1 = 10)
     class TestType
     {
     private:
@@ -13,6 +16,7 @@ namespace Duckvil { namespace Test {
         TestType(float a);
         ~TestType();
 
+        DUCKVIL_VARIABLE(2 = 20)
         float m_fA;
 
         void test();

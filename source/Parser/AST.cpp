@@ -935,7 +935,7 @@ namespace Duckvil { namespace Parser {
             else if(_token == ":" && _pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure)
             {
                 __ast_entity_structure* _structure = (__ast_entity_structure*)_pAST->m_pPendingScope;
-                __ast_access _access;
+                __ast_access _access = __ast_access::__ast_access_not_specified;
                 std::string _name;
 
                 while(_pLexer->next_token(&_lexerData, &_token))
@@ -946,11 +946,11 @@ namespace Duckvil { namespace Parser {
                     }
                     else if(_token == "protected")
                     {
-                        _access = __ast_access::__ast_access_public;
+                        _access = __ast_access::__ast_access_protected;
                     }
                     else if(_token == "private")
                     {
-                        _access = __ast_access::__ast_access_public;
+                        _access = __ast_access::__ast_access_private;
                     }
                     else if(_token == ",")
                     {

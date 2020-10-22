@@ -68,6 +68,11 @@ namespace Duckvil { namespace RuntimeReflection {
 
                 _file << "_type = record_type<" + _additionalNamespace + _casted->m_sName + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, \"" + _casted->m_sName + "\");\n";
 
+                for(const Parser::__ast_meta& _meta : _casted->m_aMeta)
+                {
+                    _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+                }
+
                 for(const Parser::__ast_inheritance& _inheritance : _casted->m_aInheritance)
                 {
                     _file << "record_inheritance(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, get_type<" + _inheritance.m_sName + ">(_pData), ";
@@ -122,7 +127,12 @@ namespace Duckvil { namespace RuntimeReflection {
                                 }
                             }
 
-                            _file << "record_property<" + _additionalNamespaceTypedef + _castedVariable->m_sType + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(" + _additionalNamespace + _casted->m_sName + ", " + _castedVariable->m_sName + "), \"" + _castedVariable->m_sName + "\");\n";
+                            _file << "_property = record_property<" + _additionalNamespaceTypedef + _castedVariable->m_sType + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(" + _additionalNamespace + _casted->m_sName + ", " + _castedVariable->m_sName + "), \"" + _castedVariable->m_sName + "\");\n";
+
+                            for(const Parser::__ast_meta& _meta : _castedVariable->m_aMeta)
+                            {
+                                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _property, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+                            }
                         }
                     }
                     else if(_ent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_constructor)
@@ -204,6 +214,7 @@ namespace Duckvil { namespace RuntimeReflection {
         _file << "using namespace Duckvil::RuntimeReflection;\n";
         _file << "using namespace Duckvil;\n";
         _file << "DUCKVIL_RESOURCE(type_t) _type;\n";
+        _file << "DUCKVIL_RESOURCE(property_t) _property;\n";
 
         recursive(_pData, &_ast.m_main, _file);
 
