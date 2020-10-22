@@ -366,6 +366,10 @@ namespace Duckvil { namespace Parser {
 
                     _pAST->m_pCurrentScope->m_aScopes.push_back(_pAST->m_pPendingScope);
                 }
+                else if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_enum)
+                {
+                    continue;
+                }
                 else
                 {
                     __ast_entity_structure* _scope = new __ast_entity_structure(__ast_structure_type::__ast_structure_type_class);
