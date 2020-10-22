@@ -6,6 +6,7 @@ using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
 DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
+DUCKVIL_RESOURCE(constructor_t) _constructor;
 using namespace Duckvil::RuntimeReflection;
 _type = record_type<__generator_namespace>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__generator_namespace");
 _property = record_property<char>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(__generator_namespace, m_sName), "m_sName");

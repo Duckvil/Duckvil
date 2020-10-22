@@ -6,6 +6,7 @@ using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
 DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
+DUCKVIL_RESOURCE(constructor_t) _constructor;
 using namespace Duckvil::Memory;
 _type = record_type<__queue_node>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__queue_node");
 _property = record_property<std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(__queue_node, m_ullBlockSize), "m_ullBlockSize");

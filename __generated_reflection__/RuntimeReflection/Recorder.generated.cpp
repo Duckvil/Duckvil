@@ -6,6 +6,7 @@ using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
 DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
+DUCKVIL_RESOURCE(constructor_t) _constructor;
 using namespace Duckvil::RuntimeReflection;
 _type = record_type<__recorder_meta_info>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__recorder_meta_info");
 _property = record_property<std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(__recorder_meta_info, m_ullKeyTypeID), "m_ullKeyTypeID");

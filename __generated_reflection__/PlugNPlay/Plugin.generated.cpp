@@ -6,6 +6,7 @@ using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
 DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
+DUCKVIL_RESOURCE(constructor_t) _constructor;
 using namespace Duckvil::PlugNPlay;
 _type = record_type<__plugin_details>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__plugin_details");
 _property = record_property<const char*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(__plugin_details, m_sPluginName), "m_sPluginName");
