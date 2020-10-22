@@ -198,6 +198,7 @@ namespace Duckvil { namespace RuntimeReflection {
         void* (*m_fnGetProperty)(__data* _pData, DUCKVIL_RESOURCE(type_t) _type_handle, DUCKVIL_RESOURCE(property_t) _handle, const void* _pObject);
     };
 
+// Create type object using constructor handle
     template <typename... Args>
     void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(constructor_t) _constructorHandle, Args... _vArgs)
     {
@@ -208,6 +209,8 @@ namespace Duckvil { namespace RuntimeReflection {
         return _constructor_callback(_pMemoryInterface, _pAllocator, _vArgs...);
     }
 
+// Create type object using type name string
+// Note: It will compare given arguments with available constructors arguments
     template <typename... Args>
     void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, const char _sTypeName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX], Args... _vArgs)
     {
@@ -230,6 +233,48 @@ namespace Duckvil { namespace RuntimeReflection {
                 }
             }
         }
+
+        return nullptr;
+    }
+
+// Create type object using type handle
+// Note: It will compare given arguments with available constructors arguments
+    template <typename... Args>
+    void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, Args... _vArgs)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+
+        for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_constructors.m_data); j++)
+        {
+            const __constructor_t& _constructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_constructors, j);
+
+            if(_constructor.m_ullTypeID == typeid(void*(Args...)).hash_code())
+            {
+                void* (*_constructor_callback)(Memory::IMemory*, Memory::__free_list_allocator*, Args...) = (void* (*)(Memory::IMemory*, Memory::__free_list_allocator*, Args...))_constructor.m_pData;
+
+                return _constructor_callback(_pMemoryInterface, _pAllocator, _vArgs...);
+            }
+        }
+
+        // for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+        // {
+        //     const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
+
+        //     if(_typeHandle.m_ID == _type.m_uiSlotIndex.m_ID)
+        //     {
+        //         for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_constructors.m_data); j++)
+        //         {
+        //             const __constructor_t& _constructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_constructors, j);
+
+        //             if(_constructor.m_ullTypeID == typeid(void*(Args...)).hash_code())
+        //             {
+        //                 void* (*_constructor_callback)(Memory::IMemory*, Memory::__free_list_allocator*, Args...) = (void* (*)(Memory::IMemory*, Memory::__free_list_allocator*, Args...))_constructor.m_pData;
+
+        //                 return _constructor_callback(_pMemoryInterface, _pAllocator, _vArgs...);
+        //             }
+        //         }
+        //     }
+        // }
 
         return nullptr;
     }
@@ -387,32 +432,7 @@ namespace Duckvil { namespace RuntimeReflection {
         return 0;
     }
 
-    template <typename... Args>
-    void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, Args... _vArgs)
-    {
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
-        {
-            const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
-
-            if(_typeHandle.m_ID == _type.m_uiSlotIndex.m_ID)
-            {
-                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_constructors.m_data); j++)
-                {
-                    const __constructor_t& _constructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_constructors, j);
-
-                    if(_constructor.m_ullTypeID == typeid(void*(Args...)).hash_code())
-                    {
-                        void* (*_constructor_callback)(Memory::IMemory*, Memory::__free_list_allocator*, Args...) = (void* (*)(Memory::IMemory*, Memory::__free_list_allocator*, Args...))_constructor.m_pData;
-
-                        return _constructor_callback(_pMemoryInterface, _pAllocator, _vArgs...);
-                    }
-                }
-            }
-        }
-
-        return nullptr;
-    }
-
+// Invoke member function
     template <typename Type, typename... Args>
     void invoke(__data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX], Type* _pObject, Args... _vArgs)
     {
@@ -439,6 +459,7 @@ namespace Duckvil { namespace RuntimeReflection {
         }
     }
 
+// Invoke static function
     template <typename Type, typename... Args>
     void invoke(__data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX], Args... _vArgs)
     {
