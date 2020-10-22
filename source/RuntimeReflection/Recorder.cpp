@@ -182,6 +182,83 @@ namespace Duckvil { namespace RuntimeReflection {
         return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
     }
 
+    DUCKVIL_RESOURCE(meta_t) record_constructor_meta(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(constructor_t) _owner, const __recorder_meta_info& _meta)
+    {
+        __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aTypes, _owner.m_ID);
+        __constructor_t* _property = DUCKVIL_SLOT_ARRAY_GET_POINTER(_type->m_constructors, _owner.m_ID);
+        bool _keyFound = false;
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type->m_variantKeys.m_data); i++)
+        {
+            __variant_t _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, i);
+
+            if(_key.m_owner == __variant_owner::__variant_owner_constructor &&
+                _key.m_variant.m_ullTypeID == _meta.m_ullKeyTypeID &&
+                _key.m_variant.m_ullSize == _meta.m_ullKeyTypeSize &&
+                memcmp(_key.m_variant.m_pData, _meta.m_pKeyData, _meta.m_ullKeyTypeSize) == 0)
+            {
+                _keyFound = true;
+
+                break;
+            }
+        }
+
+        if(!_keyFound)
+        {
+            DUCKVIL_RESOURCE(variant_t) _keyHandle = {};
+            DUCKVIL_RESOURCE(variant_t) _valueHandle = {};
+
+            {
+                __variant_t _keyVariant = {};
+
+                _keyVariant.m_variant.m_ullTypeID = _meta.m_ullKeyTypeID;
+                _keyVariant.m_variant.m_ullSize = _meta.m_ullKeyTypeSize;
+                _keyVariant.m_variant.m_pData = _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _keyVariant.m_variant.m_ullSize, _meta.m_ucKeyTypeAlignment);
+                _keyVariant.m_variant.m_traits = _meta.m_keyTraits;
+                _keyVariant.m_owner = __variant_owner::__variant_owner_constructor;
+
+                memcpy(_keyVariant.m_variant.m_pData, _meta.m_pKeyData, _keyVariant.m_variant.m_ullSize);
+
+                _keyHandle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _type->m_variantKeys, _keyVariant);
+            }
+
+            {
+                __variant_t _valueVariant = {};
+
+                _valueVariant.m_variant.m_ullTypeID = _meta.m_ullValueTypeID;
+                _valueVariant.m_variant.m_ullSize = _meta.m_ullValueTypeSize;
+                _valueVariant.m_variant.m_pData = _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _valueVariant.m_variant.m_ullSize, _meta.m_ucValueTypeAlignment);
+                _valueVariant.m_variant.m_traits = _meta.m_valueTraits;
+                _valueVariant.m_owner = __variant_owner::__variant_owner_constructor;
+
+                memcpy(_valueVariant.m_variant.m_pData, _meta.m_pValueData, _valueVariant.m_variant.m_ullSize);
+
+                _valueHandle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _type->m_variantValues, _valueVariant);
+            }
+
+            if(_keyHandle.m_ID != _valueHandle.m_ID)
+            {
+                // Something gone wrong... should not happen
+
+                return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+            }
+
+            __meta_t _meta = {};
+
+            _meta.m_key = _keyHandle;
+            _meta.m_value = _valueHandle;
+            _meta.m_uiOwner = _owner.m_ID;
+
+            DUCKVIL_RESOURCE(meta_t) _metaHandle = {};
+
+            _metaHandle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _property->m_metas, _meta);
+
+            return _metaHandle;
+        }
+
+        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    }
+
     DUCKVIL_RESOURCE(constructor_t) record_constructor(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, uint8_t* _pConctructor)
     {
         __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aTypes, _owner.m_ID);
@@ -190,6 +267,7 @@ namespace Duckvil { namespace RuntimeReflection {
         _constructor.m_ullTypeID = _ullTypeID;
         _constructor.m_owner = _owner;
         _constructor.m_pData = _pConctructor;
+        _constructor.m_metas = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __meta_t);
 
         DUCKVIL_RESOURCE(constructor_t) _handle = {};
 
@@ -277,6 +355,7 @@ Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_record
     _functions->m_fnRecordFunction = &Duckvil::RuntimeReflection::record_function;
     _functions->m_fnRecordTypeMeta = &Duckvil::RuntimeReflection::record_type_meta;
     _functions->m_fnRecordPropertyMeta = &Duckvil::RuntimeReflection::record_property_meta;
+    _functions->m_fnRecordConstructorMeta = &Duckvil::RuntimeReflection::record_constructor_meta;
 
     return _functions;
 }

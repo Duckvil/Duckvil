@@ -6,17 +6,18 @@
 
 namespace Duckvil { namespace Test {
 
-    DUCKVIL_CLASS(1 = 10)
+    DUCKVIL_CLASS("a" = 10, "b" = 20, 1 = 30, 1.f = 40)
     class TestType
     {
     private:
 
     public:
+        DUCKVIL_CONSTRUCTOR("a" = 1)
         TestType();
         TestType(float a);
         ~TestType();
 
-        DUCKVIL_VARIABLE(2 = 20)
+        DUCKVIL_VARIABLE(1 = 11, "a" = 22)
         float m_fA;
 
         void test();

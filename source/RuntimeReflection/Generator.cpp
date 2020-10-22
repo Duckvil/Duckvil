@@ -142,7 +142,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
                         if(_castedConstructor->m_accessLevel == Parser::__ast_access::__ast_access_public)
                         {
-                            _file << "record_constructor<" + _additionalNamespace + _casted->m_sName;
+                            _file << "_constructor = record_constructor<" + _additionalNamespace + _casted->m_sName;
 
                             if(_castedConstructor->m_aArguments.size() == 0)
                             {
@@ -166,6 +166,11 @@ namespace Duckvil { namespace RuntimeReflection {
                             }
 
                             _file << "(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);\n";
+
+                            for(const Parser::__ast_meta& _meta : _castedConstructor->m_aMeta)
+                            {
+                                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _constructor, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+                            }
                         }
                     }
                     else if(_ent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_function)
@@ -215,6 +220,7 @@ namespace Duckvil { namespace RuntimeReflection {
         _file << "using namespace Duckvil;\n";
         _file << "DUCKVIL_RESOURCE(type_t) _type;\n";
         _file << "DUCKVIL_RESOURCE(property_t) _property;\n";
+        _file << "DUCKVIL_RESOURCE(constructor_t) _constructor;\n";
 
         recursive(_pData, &_ast.m_main, _file);
 

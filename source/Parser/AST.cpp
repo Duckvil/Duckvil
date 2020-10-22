@@ -335,6 +335,14 @@ namespace Duckvil { namespace Parser {
 
                 _scope->m_aMeta = parse_meta(_pLexer, _lexerData);
             }
+            else if(_token == "DUCKVIL_CONSTRUCTOR")
+            {
+                __ast_entity_constructor* _scope = new __ast_entity_constructor();
+
+                _pAST->m_pPendingScope = _scope;
+
+                _scope->m_aMeta = parse_meta(_pLexer, _lexerData);
+            }
             else if(_token == "namespace")
             {
                 if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_namespace)
@@ -1326,8 +1334,16 @@ namespace Duckvil { namespace Parser {
                             uint32_t _mustacheBrackets = 0;
                             uint32_t _roundBrackets = 1;
                             bool _end = false;
+                            __ast_entity_constructor* _scope = nullptr;
 
-                            __ast_entity_constructor* _scope = new __ast_entity_constructor();
+                            if(_pAST->m_pPendingScope != nullptr)
+                            {
+                                _scope = (__ast_entity_constructor*)_pAST->m_pPendingScope;
+                            }
+                            else
+                            {
+                                _scope = new __ast_entity_constructor();
+                            }
 
                             _scope->m_pParentScope = _pAST->m_pCurrentScope;
                             _scope->m_accessLevel = _pAST->m_currentAccess;
@@ -1382,7 +1398,8 @@ namespace Duckvil { namespace Parser {
 
                             continue;
                         }
-                        
+
+                        _pAST->m_pPendingScope = nullptr;
                     }
                     else if(_pAST->m_pCurrentScope != nullptr && _pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_enum)
                     {

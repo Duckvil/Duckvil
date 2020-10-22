@@ -1,6 +1,7 @@
 #pragma once
 
 #define DUCKVIL_CLASS(...) // IDK
+#define DUCKVIL_CONSTRUCTOR(...) // Should be used for constructors
 #define DUCKVIL_STRUCT(...) // Should be used for classes of structures
 #define DUCKVIL_FUNCTION(...) // Should be used for functions
 #define DUCKVIL_VARIABLE(...) // Should be used for variables
