@@ -104,6 +104,10 @@ int main(int argc, char* argv[])
         Duckvil::RuntimeReflection::invoke(_rr_data, _t, _funcHandle, _testT, 10.f, 10.f);
         int _res = Duckvil::RuntimeReflection::invoke<int>(_rr_data, "test5", (Duckvil::Test::TestType*)_testT, 10.f, 20.f);
         _res = Duckvil::RuntimeReflection::invoke<int, Duckvil::Test::TestType>(_rr_data, "test6");
+        Duckvil::RuntimeReflection::invoke(_rr_data, "test7", (Duckvil::Test::TestType*)_testT);
+        Duckvil::RuntimeReflection::invoke(_rr_data, "test7", (Duckvil::Test::TestType*)_testT, 1);
+        Duckvil::RuntimeReflection::invoke<Duckvil::Test::TestType>(_rr_data, "test8");
+        Duckvil::RuntimeReflection::invoke<Duckvil::Test::TestType>(_rr_data, "test8", 1);
 
         {
             DUCKVIL_BENCHMARK_BEGIN(_begin);
