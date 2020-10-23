@@ -37,43 +37,79 @@ namespace Duckvil { namespace RuntimeReflection {
 
     };
 
+    template <typename ReturnType, typename... Args>
+    struct __proxy_static_function : public __ifunction
+    {
+        virtual ReturnType Invoke(const Args&... _vArgs) = 0;
+    };
+
+    template <typename ReturnType, typename... Args>
+    struct __proxy_member_function : public __ifunction
+    {
+        virtual ReturnType Invoke(void* _pObject, const Args&... _vArgs) = 0;
+    };
+
     template <typename T>
     struct __function;
 
 // Member function with specific arguments which returns void
     template <typename Type, typename... Args>
-    struct __function<void(Type::*)(Args...)> : public __ifunction
+    struct __function<void(Type::*)(Args...)> : public __proxy_member_function<void, Args...>
     {
         typedef void (Type::*FunctionCallback)(Args...);
 
         FunctionCallback m_fnFunction;
+
+        void Invoke(void* _pObject, const Args&... _vArgs) override
+        {
+            Type* _object = (Type*)_pObject;
+
+            (_object->*(m_fnFunction))(_vArgs...);
+        }
     };
 
 // Member function with specific arguments which returns specific type
     template <typename Type, typename ReturnType, typename... Args>
-    struct __function<ReturnType(Type::*)(Args...)> : public __ifunction
+    struct __function<ReturnType(Type::*)(Args...)> : public __proxy_member_function<ReturnType, Args...>
     {
         typedef ReturnType (Type::*FunctionCallback)(Args...);
 
         FunctionCallback m_fnFunction;
+
+        ReturnType Invoke(void* _pObject, const Args&... _vArgs) override
+        {
+            Type* _object = (Type*)_pObject;
+
+            return (_object->*(m_fnFunction))(_vArgs...);
+        }
     };
 
 // Static function with specific arguments which returns void
     template <typename... Args>
-    struct __function<void(*)(Args...)> : public __ifunction
+    struct __function<void(*)(Args...)> : public __proxy_static_function<void, Args...>
     {
         typedef void (*FunctionCallback)(Args...);
 
         FunctionCallback m_fnFunction;
+
+        void Invoke(const Args&... _vArgs) override
+        {
+            m_fnFunction(_vArgs...);
+        }
     };
 
 // Static function with specific arguments which returns specific type
     template <typename ReturnType, typename... Args>
-    struct __function<ReturnType(*)(Args...)> : public __ifunction
+    struct __function<ReturnType(*)(Args...)> : public __proxy_static_function<ReturnType, Args...>
     {
         typedef ReturnType (*FunctionCallback)(Args...);
 
         FunctionCallback m_fnFunction;
+
+        ReturnType Invoke(const Args&... _vArgs) override
+        {
+            return m_fnFunction(_vArgs...);
+        }
     };
 
     DUCKVIL_RESOURCE_DECLARE(type_t);
@@ -540,6 +576,20 @@ namespace Duckvil { namespace RuntimeReflection {
                     }
                 }
             }
+        }
+    }
+
+    template <typename... Args>
+    void invoke(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, void* _pObject, const Args&... _vArgs)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+        const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, _functionHandle.m_ID);
+
+        if(typeid(void(Args...)).hash_code() == _function.m_ullArgumentsTypeID)
+        {
+            __proxy_member_function<void, Args...>* _func = (__proxy_member_function<void, Args...>*)_function.m_pFunction;
+
+            _func->Invoke(_pObject, _vArgs...);
         }
     }
 

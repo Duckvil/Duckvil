@@ -98,6 +98,7 @@ int main(int argc, char* argv[])
         Duckvil::RuntimeReflection::invoke(_rr_data, "test2", (Duckvil::Test::TestType*)_testT, 10.f, 20.f);
         Duckvil::RuntimeReflection::invoke<Duckvil::Test::TestType>(_rr_data, "test3");
         Duckvil::RuntimeReflection::invoke<Duckvil::Test::TestType>(_rr_data, "test4", 30.f, 40.f);
+        Duckvil::RuntimeReflection::invoke(_rr_data, _t, _funcHandle, _testT, 10.f, 10.f);
         int _res = Duckvil::RuntimeReflection::invoke<int>(_rr_data, "test5", (Duckvil::Test::TestType*)_testT, 10.f, 20.f);
         _res = Duckvil::RuntimeReflection::invoke<int, Duckvil::Test::TestType>(_rr_data, "test6");
 
