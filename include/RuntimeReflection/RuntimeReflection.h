@@ -238,7 +238,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
 // Create type object using constructor handle
     template <typename... Args>
-    void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(constructor_t) _constructorHandle, Args... _vArgs)
+    static void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(constructor_t) _constructorHandle, Args... _vArgs)
     {
         const __constructor_t& _constructor = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aConstructors, _constructorHandle.m_ID);
 
@@ -250,7 +250,7 @@ namespace Duckvil { namespace RuntimeReflection {
 // Create type object using type name string
 // Note: It will compare given arguments with available constructors arguments
     template <typename... Args>
-    void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, const char _sTypeName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX], Args... _vArgs)
+    static void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, const char _sTypeName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX], Args... _vArgs)
     {
         for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
         {
@@ -278,7 +278,7 @@ namespace Duckvil { namespace RuntimeReflection {
 // Create type object using type handle
 // Note: It will compare given arguments with available constructors arguments
     template <typename... Args>
-    void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, Args... _vArgs)
+    static void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, Args... _vArgs)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
 
@@ -298,7 +298,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename KeyType>
-    DUCKVIL_RESOURCE(variant_t) get_meta_value_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const KeyType& _key)
+    static DUCKVIL_RESOURCE(variant_t) get_meta_value_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const KeyType& _key)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
 
@@ -311,10 +311,12 @@ namespace Duckvil { namespace RuntimeReflection {
                 return { i };
             }
         }
+
+        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
     }
 
     template <typename ValueType, typename KeyType>
-    ValueType get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _handle, const KeyType&& _key)
+    static inline const ValueType& get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _handle, const KeyType&& _key)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _handle.m_ID);
 
@@ -332,7 +334,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename ValueType, std::size_t Length>
-    ValueType get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _handle, const char (&_key)[Length])
+    static inline const ValueType& get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _handle, const char (&_key)[Length])
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _handle.m_ID);
 
@@ -350,7 +352,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename ValueType, typename KeyType>
-    ValueType get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(property_t) _handle, const KeyType&& _key)
+    static inline const ValueType& get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(property_t) _handle, const KeyType&& _key)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         const __property_t& _property = DUCKVIL_SLOT_ARRAY_GET(_type.m_properties, _handle.m_ID);
@@ -370,7 +372,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename ValueType, std::size_t Length>
-    ValueType get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(property_t) _handle, const char (&_key)[Length])
+    static inline const ValueType& get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(property_t) _handle, const char (&_key)[Length])
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         const __property_t& _property = DUCKVIL_SLOT_ARRAY_GET(_type.m_properties, _handle.m_ID);
@@ -390,7 +392,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename ValueType, typename KeyType>
-    ValueType get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _handle, const KeyType&& _key)
+    static inline const ValueType& get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _handle, const KeyType&& _key)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         const __constructor_t& _constructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_constructors, _handle.m_ID);
@@ -410,7 +412,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename ValueType, std::size_t Length>
-    ValueType get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _handle, const char (&_key)[Length])
+    static inline const ValueType& get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _handle, const char (&_key)[Length])
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         const __constructor_t& _constructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_constructors, _handle.m_ID);
@@ -430,7 +432,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename Type>
-    DUCKVIL_RESOURCE(type_t) get_type(__data* _pData)
+    static DUCKVIL_RESOURCE(type_t) get_type(__data* _pData)
     {
         static std::size_t _typeID = typeid(Type).hash_code();
 
@@ -523,7 +525,7 @@ namespace Duckvil { namespace RuntimeReflection {
             }
         }
 
-        return 0;
+        return nullptr;
     }
 
     static void* get_property(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char _sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX], const void* _pObject)
@@ -540,12 +542,12 @@ namespace Duckvil { namespace RuntimeReflection {
             }
         }
 
-        return 0;
+        return nullptr;
     }
 
 // Invoke member function
     template <typename Type, typename... Args>
-    void invoke(__data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX], Type* _pObject, Args... _vArgs)
+    static void invoke(__data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX], Type* _pObject, Args... _vArgs)
     {
         static std::size_t _typeID = typeid(Type).hash_code();
 
@@ -571,7 +573,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename ReturnType, typename Type, typename... Args>
-    ReturnType invoke(__data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX], Type* _pObject, Args... _vArgs)
+    static ReturnType invoke(__data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX], Type* _pObject, Args... _vArgs)
     {
         static std::size_t _typeID = typeid(Type).hash_code();
 
@@ -597,7 +599,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename... Args>
-    void invoke(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, void* _pObject, const Args&... _vArgs)
+    static void invoke(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, void* _pObject, const Args&... _vArgs)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, _functionHandle.m_ID);
@@ -612,7 +614,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
 // Invoke static function
     template <typename Type, typename... Args>
-    void invoke(__data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX], Args... _vArgs)
+    static void invoke(__data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX], Args... _vArgs)
     {
         static std::size_t _typeID = typeid(Type).hash_code();
 
@@ -638,7 +640,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename ReturnType, typename Type, typename... Args>
-    ReturnType invoke(__data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX], Args... _vArgs)
+    static ReturnType invoke(__data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX], Args... _vArgs)
     {
         static std::size_t _typeID = typeid(Type).hash_code();
 
