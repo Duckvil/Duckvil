@@ -658,6 +658,7 @@ namespace Duckvil { namespace Parser {
                     std::size_t _quadBrackets = 0;
                     bool _variable = false;
                     bool _skipped = false;
+                    __ast_flags _flags = {};
 
                     while(_pLexer->next_token(&_exp, &_token))
                     {
@@ -723,10 +724,17 @@ namespace Duckvil { namespace Parser {
                         else if(_token == "inline")
                         {
                             _skipped = true;
+                            _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_inline);
                         }
                         else if(_token == "static")
                         {
                             _skipped = true;
+                            _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_static);
+                        }
+                        else if(_token == "const")
+                        {
+                            _skipped = true;
+                            _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_const);
                         }
                         else
                         {
@@ -752,6 +760,7 @@ namespace Duckvil { namespace Parser {
                         _entity->m_accessLevel = _pAST->m_currentAccess;
                         _entity->m_sReturnType = _type;
                         _entity->m_sName = _name;
+                        _entity->m_flags = _flags;
 
                         _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
 
@@ -994,6 +1003,16 @@ namespace Duckvil { namespace Parser {
                     }
                 }
             }
+            else if(_token == ":" && _pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_enum)
+            {
+                while(_pLexer->next_token(&_lexerData, &_token))
+                {
+                    if(_token != "")
+                    {
+                        break;
+                    }
+                }
+            }
             else if(_token == ";")
             {
                 if(_tmpExpression.size() <= 0)
@@ -1024,6 +1043,7 @@ namespace Duckvil { namespace Parser {
                 bool _wasOpenBracket = false;
                 bool _end = false;
                 bool _wasKeyword = false;
+                __ast_flags _flags = {};
 
                 while(!_end && _pLexer->next_token(&_exp, &_token))
                 {
@@ -1116,17 +1136,17 @@ namespace Duckvil { namespace Parser {
                     }
                     else if(_token == "inline")
                     {
-
+                        _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_inline);
                     }
                     else if(_token == "static")
                     {
-
+                        _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_static);
                     }
                     else if(_token == "const")
                     {
                         _internalTmp += _token;
-
                         _wasKeyword = true;
+                        _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_const);
                     }
                     else if(_token == "=")
                     {
@@ -1214,6 +1234,7 @@ namespace Duckvil { namespace Parser {
                     _entity->m_accessLevel = _pAST->m_currentAccess;
                     _entity->m_sReturnType = _type;
                     _entity->m_sName = _internalTmp;
+                    _entity->m_flags = _flags;
 
                     _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
 

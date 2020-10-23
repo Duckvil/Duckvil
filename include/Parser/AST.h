@@ -37,6 +37,13 @@ namespace Duckvil { namespace Parser {
         __ast_access_not_specified
     };
 
+    enum __ast_flags : uint8_t
+    {
+        __ast_flags_static = 1 << 0,
+        __ast_flags_const = 1 << 1,
+        __ast_flags_inline = 1 << 2
+    };
+
     struct __ast_inheritance
     {
         __ast_access m_protection;
@@ -208,6 +215,7 @@ namespace Duckvil { namespace Parser {
         std::string m_sName;
         std::string m_sReturnType;
         std::vector<__ast_template> m_aTemplates;
+        __ast_flags m_flags;
     };
 
     struct __ast
