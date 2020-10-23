@@ -17,6 +17,8 @@
 
 #include "TestRuntimeReflectionType/Test.h"
 
+#include "Utils/Benchmark.h"
+
 Duckvil::Utils::CommandArgumentsParser::Descriptor* g_pDescriptors = { 0 };
 
 int main(int argc, char* argv[])
@@ -103,13 +105,23 @@ int main(int argc, char* argv[])
         int _res = Duckvil::RuntimeReflection::invoke<int>(_rr_data, "test5", (Duckvil::Test::TestType*)_testT, 10.f, 20.f);
         _res = Duckvil::RuntimeReflection::invoke<int, Duckvil::Test::TestType>(_rr_data, "test6");
 
-        _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, "a");
-        _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, "b");
-        _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, 1);
-        _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, 1.f);
-        _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, _propHandle, 1);
-        _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, _propHandle, "a");
-        _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, _consHandle, "a");
+        {
+            DUCKVIL_BENCHMARK_BEGIN(_begin);
+            for (uint32_t i = 0; i < 100; i++)
+            {
+                _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, "a");
+                _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, "b");
+                _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, 1);
+                _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, 1.f);
+                _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, _propHandle, 1);
+                _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, _propHandle, "a");
+                _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, _consHandle, "a");
+            }
+            DUCKVIL_BENCHMARK_END(_end);
+            DUCKVIL_BENCHMARK_DURATION(_res, _begin, _end);
+
+            printf("%u", _res.count());
+        }
 
         printf("AAAA\n");
     }
