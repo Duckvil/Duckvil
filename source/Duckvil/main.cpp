@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
 
         {
             DUCKVIL_BENCHMARK_BEGIN(_begin);
-            for (uint32_t i = 0; i < 100; i++)
+            for (uint32_t i = 0; i < 1000000; i++)
             {
                 _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, "a");
                 _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, "b");

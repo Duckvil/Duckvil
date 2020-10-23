@@ -50,4 +50,24 @@ namespace Duckvil { namespace Test {
         return 666;
     }
 
+    void TestType::test7()
+    {
+
+    }
+
+    void TestType::test7(int a)
+    {
+
+    }
+
+    void TestType::test8()
+    {
+
+    }
+
+    void TestType::test8(int a)
+    {
+
+    }
+
 }}
