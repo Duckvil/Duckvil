@@ -60,7 +60,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
         FunctionCallback m_fnFunction;
 
-        void Invoke(void* _pObject, const Args&... _vArgs) override
+        inline void Invoke(void* _pObject, const Args&... _vArgs) final override
         {
             Type* _object = (Type*)_pObject;
 
@@ -76,7 +76,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
         FunctionCallback m_fnFunction;
 
-        ReturnType Invoke(void* _pObject, const Args&... _vArgs) override
+        inline ReturnType Invoke(void* _pObject, const Args&... _vArgs) final override
         {
             Type* _object = (Type*)_pObject;
 
@@ -92,7 +92,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
         FunctionCallback m_fnFunction;
 
-        void Invoke(const Args&... _vArgs) override
+        inline void Invoke(const Args&... _vArgs) final override
         {
             m_fnFunction(_vArgs...);
         }
@@ -106,7 +106,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
         FunctionCallback m_fnFunction;
 
-        ReturnType Invoke(const Args&... _vArgs) override
+        inline ReturnType Invoke(const Args&... _vArgs) final override
         {
             return m_fnFunction(_vArgs...);
         }
@@ -501,7 +501,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename Type>
-    void* get_property(__data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX], const Type* _pObject)
+    static void* get_property(__data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX], const Type* _pObject)
     {
         static std::size_t _typeID = typeid(Type).hash_code();
 
@@ -520,6 +520,23 @@ namespace Duckvil { namespace RuntimeReflection {
                         return (uint8_t*)_pObject + _property.m_ullAddress;
                     }
                 }
+            }
+        }
+
+        return 0;
+    }
+
+    static void* get_property(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char _sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX], const void* _pObject)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_properties.m_data); i++)
+        {
+            const __property_t& _property = DUCKVIL_SLOT_ARRAY_GET(_type.m_properties, i);
+
+            if(strcmp(_property.m_sName, _sName) == 0)
+            {
+                return (uint8_t*)_pObject + _property.m_ullAddress;
             }
         }
 

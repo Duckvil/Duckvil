@@ -93,6 +93,7 @@ int main(int argc, char* argv[])
 
         void* _testT = Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_data, _t, 10.f);
         float* _prop = (float*)Duckvil::RuntimeReflection::get_property(_rr_data, "m_fA", (Duckvil::Test::TestType*)_testT);
+        _prop = (float*)Duckvil::RuntimeReflection::get_property(_rr_data, _t, "m_fA", _testT);
 
         Duckvil::RuntimeReflection::invoke(_rr_data, "test", (Duckvil::Test::TestType*)_testT);
         Duckvil::RuntimeReflection::invoke(_rr_data, "test2", (Duckvil::Test::TestType*)_testT, 10.f, 20.f);
