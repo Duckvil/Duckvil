@@ -144,11 +144,7 @@ namespace Duckvil { namespace RuntimeReflection {
                         {
                             _file << "_constructor = record_constructor<" + _additionalNamespace + _casted->m_sName;
 
-                            if(_castedConstructor->m_aArguments.size() == 0)
-                            {
-                                _file << ">";
-                            }
-                            else
+                            if(!_castedConstructor->m_aArguments.empty())
                             {
                                 _file << ", ";
 
@@ -161,11 +157,9 @@ namespace Duckvil { namespace RuntimeReflection {
                                         _file << ", ";
                                     }
                                 }
-
-                                _file << ">";
                             }
 
-                            _file << "(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);\n";
+                            _file << ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);\n";
 
                             for(const Parser::__ast_meta& _meta : _castedConstructor->m_aMeta)
                             {
@@ -179,7 +173,34 @@ namespace Duckvil { namespace RuntimeReflection {
 
                         if(_castedFunction->m_accessLevel == Parser::__ast_access::__ast_access_public)
                         {
-                            _file << "record_function(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &" << _additionalNamespace + _casted->m_sName + "::" + _castedFunction->m_sName << ", \"" << _castedFunction->m_sName << "\");\n";
+                            _file << "record_function<";
+
+                            if(_castedFunction->m_flags & Parser::__ast_flags::__ast_flags_static)
+                            {
+                                _file << _castedFunction->m_sReturnType;
+                            }
+                            else
+                            {
+                                _file << _additionalNamespace + _casted->m_sName + ", ";
+                                _file << _castedFunction->m_sReturnType;
+                            }
+
+                            if(!_castedFunction->m_aArguments.empty())
+                            {
+                                _file << ", ";
+
+                                for(uint32_t i = 0; i < _castedFunction->m_aArguments.size(); i++)
+                                {
+                                    _file << _castedFunction->m_aArguments[i].m_sType;
+
+                                    if(i < _castedFunction->m_aArguments.size() - 1)
+                                    {
+                                        _file << ", ";
+                                    }
+                                }
+                            }
+
+                            _file << ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &" << _additionalNamespace + _casted->m_sName + "::" + _castedFunction->m_sName << ", \"" << _castedFunction->m_sName << "\");\n";
                         }
                     }
                 }
