@@ -79,6 +79,7 @@ _constructor = record_constructor<__ast_entity_function>(DUCKVIL_RUNTIME_REFLECT
 _property = record_property<std::string>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(__ast_entity_function, m_sName), "m_sName");
 _property = record_property<std::string>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(__ast_entity_function, m_sReturnType), "m_sReturnType");
 _property = record_property<std::vector<__ast_template>>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(__ast_entity_function, m_aTemplates), "m_aTemplates");
+_property = record_property<__ast_flags>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(__ast_entity_function, m_flags), "m_flags");
 _type = record_type<__ast>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__ast");
 _property = record_property<__ast_entity>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(__ast, m_main), "m_main");
 _property = record_property<__ast_entity*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(__ast, m_pCurrentScope), "m_pCurrentScope");

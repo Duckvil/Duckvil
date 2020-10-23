@@ -1,6 +1,6 @@
 #include "Utils\Utils.h"
 #include "RuntimeReflection/Recorder.h"
-DUCKVIL_RUNTIME_REFLECTION_RECORD(2)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(3)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -16,7 +16,7 @@ _constructor = record_constructor<string, const char, Memory::IMemory*, Memory::
 _property = record_property<std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(string, m_ullLength), "m_ullLength");
 _property = record_property<Memory::IMemory*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(string, m_pMemory), "m_pMemory");
 _property = record_property<Memory::__free_list_allocator*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(string, m_pAllocator), "m_pAllocator");
-record_function(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &string::operator=, "operator=");
-record_function(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &string::operator=, "operator=");
-record_function(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &string::Allocate, "Allocate");
+record_function<string, string&, const char>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &string::operator=, "operator=");
+record_function<string, string&, const string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &string::operator=, "operator=");
+record_function<string, void, std::size_t, Memory::IMemory*, Memory::__free_list_allocator*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &string::Allocate, "Allocate");
 }

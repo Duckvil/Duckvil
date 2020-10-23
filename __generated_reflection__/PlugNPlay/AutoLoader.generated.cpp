@@ -10,5 +10,5 @@ DUCKVIL_RESOURCE(constructor_t) _constructor;
 using namespace Duckvil::PlugNPlay;
 _type = record_type<AutoLoader>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "AutoLoader");
 _constructor = record_constructor<AutoLoader, const std::filesystem::path&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
-record_function(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &AutoLoader::LoadAll, "LoadAll");
+record_function<AutoLoader, void>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &AutoLoader::LoadAll, "LoadAll");
 }
