@@ -153,7 +153,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
                             for(const Parser::__ast_meta& _meta : _castedVariable->m_aMeta)
                             {
-                                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _property, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+                                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _property, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
                             }
                         }
                     }
@@ -185,7 +185,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
                             for(const Parser::__ast_meta& _meta : _castedConstructor->m_aMeta)
                             {
-                                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _constructor, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+                                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _constructor, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
                             }
                         }
                     }
