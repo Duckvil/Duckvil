@@ -12,5 +12,5 @@ _type = record_type<AutoLoader>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STU
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "PlugNPlay");
 _constructor = record_constructor<AutoLoader, const std::filesystem::path&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
-record_function<AutoLoader, void>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &AutoLoader::LoadAll, "LoadAll");
+record_function<AutoLoader, void, Memory::IMemory*, Memory::__free_list_allocator*, __module_information**, uint32_t*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &AutoLoader::LoadAll, "LoadAll");
 }
