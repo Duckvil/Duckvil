@@ -97,23 +97,35 @@ int main(int argc, char* argv[])
         float* _prop = (float*)Duckvil::RuntimeReflection::get_property(_rr_data, "m_fA", (Duckvil::Test::TestType*)_testT);
         _prop = (float*)Duckvil::RuntimeReflection::get_property(_rr_data, _t, "m_fA", _testT);
 
-        Duckvil::RuntimeReflection::invoke(_rr_data, "test", (Duckvil::Test::TestType*)_testT);
-        Duckvil::RuntimeReflection::invoke(_rr_data, "test2", (Duckvil::Test::TestType*)_testT, 10.f, 20.f);
-        Duckvil::RuntimeReflection::invoke<Duckvil::Test::TestType>(_rr_data, "test3");
-        Duckvil::RuntimeReflection::invoke<Duckvil::Test::TestType>(_rr_data, "test4", 30.f, 40.f);
-        Duckvil::RuntimeReflection::invoke(_rr_data, _t, _funcHandle, _testT, 10.f, 10.f);
-        int _res = Duckvil::RuntimeReflection::invoke<int>(_rr_data, "test5", (Duckvil::Test::TestType*)_testT, 10.f, 20.f);
-        _res = Duckvil::RuntimeReflection::invoke<int, Duckvil::Test::TestType>(_rr_data, "test6");
-        Duckvil::RuntimeReflection::invoke(_rr_data, "test7", (Duckvil::Test::TestType*)_testT);
-        Duckvil::RuntimeReflection::invoke(_rr_data, "test7", (Duckvil::Test::TestType*)_testT, 1);
-        Duckvil::RuntimeReflection::invoke<Duckvil::Test::TestType>(_rr_data, "test8");
-        Duckvil::RuntimeReflection::invoke<Duckvil::Test::TestType>(_rr_data, "test8", 1);
+        Duckvil::RuntimeReflection::get_type(_rr_data, "TestType", "Duckvil", "Test");
 
         {
             DUCKVIL_BENCHMARK_BEGIN(_begin);
             for (uint32_t i = 0; i < 1000000; i++)
             {
-                _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, "a");
+                Duckvil::RuntimeReflection::invoke(_rr_data, "test", (Duckvil::Test::TestType*)_testT);
+                Duckvil::RuntimeReflection::invoke(_rr_data, "test2", (Duckvil::Test::TestType*)_testT, 10.f, 20.f);
+                Duckvil::RuntimeReflection::invoke<Duckvil::Test::TestType>(_rr_data, "test3");
+                Duckvil::RuntimeReflection::invoke<Duckvil::Test::TestType>(_rr_data, "test4", 30.f, 40.f);
+                Duckvil::RuntimeReflection::invoke(_rr_data, _t, _funcHandle, _testT, 10.f, 10.f);
+                int _res = Duckvil::RuntimeReflection::invoke<int>(_rr_data, "test5", (Duckvil::Test::TestType*)_testT, 10.f, 20.f);
+                _res = Duckvil::RuntimeReflection::invoke<int, Duckvil::Test::TestType>(_rr_data, "test6");
+                Duckvil::RuntimeReflection::invoke(_rr_data, "test7", (Duckvil::Test::TestType*)_testT);
+                Duckvil::RuntimeReflection::invoke(_rr_data, "test7", (Duckvil::Test::TestType*)_testT, 1);
+                Duckvil::RuntimeReflection::invoke<Duckvil::Test::TestType>(_rr_data, "test8");
+                Duckvil::RuntimeReflection::invoke<Duckvil::Test::TestType>(_rr_data, "test8", 1);
+            }
+            DUCKVIL_BENCHMARK_END(_end);
+            DUCKVIL_BENCHMARK_DURATION(_res, _begin, _end);
+
+            printf("%u\n", _res.count());
+        }
+
+        {
+            DUCKVIL_BENCHMARK_BEGIN(_begin);
+            for (uint32_t i = 0; i < 10000000; i++)
+            {
+                int _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, "a");
                 _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, "b");
                 _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, 1);
                 _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, 1.f);
@@ -124,7 +136,7 @@ int main(int argc, char* argv[])
             DUCKVIL_BENCHMARK_END(_end);
             DUCKVIL_BENCHMARK_DURATION(_res, _begin, _end);
 
-            printf("%u", _res.count());
+            printf("%u\n", _res.count());
         }
 
         printf("AAAA\n");

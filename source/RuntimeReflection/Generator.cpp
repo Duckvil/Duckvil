@@ -68,6 +68,28 @@ namespace Duckvil { namespace RuntimeReflection {
 
                 _file << "_type = record_type<" + _additionalNamespace + _casted->m_sName + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, \"" + _casted->m_sName + "\");\n";
 
+                Parser::__ast_entity* _namespace = _casted->m_pParentScope;
+                std::stack<Parser::__ast_entity_namespace*> _namespaces;
+
+                while(_namespace->m_scopeType != Parser::__ast_entity_type::__ast_entity_type_main)
+                {
+                    if(_namespace->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_namespace)
+                    {
+                        _namespaces.push((Parser::__ast_entity_namespace*)_namespace);
+                    }
+
+                    _namespace = _namespace->m_pParentScope;
+                }
+
+                while(!_namespaces.empty())
+                {
+                    Parser::__ast_entity_namespace* _n = _namespaces.top();
+
+                    _file << "record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, \"" << _n->m_sName << "\");\n";
+
+                    _namespaces.pop();
+                }
+
                 for(const Parser::__ast_meta& _meta : _casted->m_aMeta)
                 {
                     _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
