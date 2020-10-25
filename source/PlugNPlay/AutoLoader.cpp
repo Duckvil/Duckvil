@@ -13,8 +13,10 @@ namespace Duckvil { namespace PlugNPlay {
 
     }
 
-    void AutoLoader::LoadAll()
+    void AutoLoader::LoadAll(Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator, __module_information** _pModules, uint32_t* _pLoaded)
     {
+        std::vector<__module_information> _toLoad;
+
         for(auto& p : std::filesystem::directory_iterator(m_sLoadPath))
         {
             if(p.path().filename().extension() != ".dll")
@@ -29,7 +31,21 @@ namespace Duckvil { namespace PlugNPlay {
 
             _module.m_sPath = Utils::string(_path.c_str(), _path.size() + 1);
 
+            _toLoad.push_back(_module);
+        }
+
+        *_pModules = (__module_information*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(__module_information) * _toLoad.size(), alignof(__module_information));
+        *_pLoaded = _toLoad.size();
+
+        uint32_t _index = 0;
+
+        for(__module_information _module : _toLoad)
+        {
             m_module.load(&_module);
+
+            (*_pModules)[_index] = _module;
+
+            _index++;
         }
     }
 
