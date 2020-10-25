@@ -13,7 +13,7 @@
     DUCKVIL_EXPORT uint32_t duckvil_get_runtime_reflection_recorder_count() { return count; }
 
 #define DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF _pMemoryInterface, _pAllocator, _pRecorder, _pData
-#define DUCVKIL_RUNTIME_REFLECTION_RECORDER_TRAIT(type, trait) (std::trait<type>::value ? static_cast<__traits>((uint8_t)_traits | (uint8_t)__traits::trait) : _traits)
+#define DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(type, trait) (std::trait<type>::value ? static_cast<__traits>((uint8_t)_traits | (uint8_t)__traits::trait) : _traits)
 
 namespace Duckvil { namespace RuntimeReflection {
 
@@ -36,13 +36,13 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         __traits _traits = {};
 
-        _traits = DUCVKIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_pointer);
-        _traits = DUCVKIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_reference);
-        _traits = DUCVKIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_array);
-        _traits = DUCVKIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_void);
-        _traits = DUCVKIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_integral);
-        _traits = DUCVKIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_floating_point);
-        _traits = DUCVKIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_enum);
+        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_pointer);
+        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_reference);
+        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_array);
+        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_void);
+        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_integral);
+        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_floating_point);
+        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_enum);
 
         return _traits;
     }
