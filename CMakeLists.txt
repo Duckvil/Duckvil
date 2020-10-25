@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.17)
 
 project(Duckvil)
 
+option(GENERATE_REFLECTION "Generate reflection" OFF)
+
 find_program(CLANG_TIDY_COMMAND NAMES clang-tidy)
 
 if(NOT CLANG_TIDY_COMMAND)
@@ -32,3 +34,9 @@ add_subdirectory(source)
 list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
 ENABLE_TESTING()
 add_subdirectory(test)
+
+if(GENERATE_REFLECTION)
+    message(STATUS "Generating reflection started!")
+    execute_process(COMMAND "${CMAKE_SOURCE_DIR}/bin/ReflectionGenerator.exe")
+    message(STATUS "Generating reflection done!")
+endif()
