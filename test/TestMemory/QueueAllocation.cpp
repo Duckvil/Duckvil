@@ -9,7 +9,6 @@
 DUCKVIL_TEST(FixedQueueAllocation)
 {
     {
-        // TODO: Fix test for queue using free list allocation
         Duckvil::Memory::Queue<int> _queue(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::__free_list_allocator*)__duckvil_global::m_pHeap, 4);
 
         DUCKVIL_TEST_EXP(_queue.Empty(), "Queue is not empty");
