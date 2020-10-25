@@ -47,23 +47,25 @@ namespace Duckvil { namespace RuntimeReflection {
 
             if(_casted->m_aTemplates.size() == 0)
             {
+                std::string _combined = combine_namespace(_pData->m_aNamespaces);
+
+                if(_combined.size() > 0)
+                {
+                    if(!_pData->m_bWasNamespaces)
+                    {
+                        _pData->m_bWasNamespaces = true;
+
+                        _file << "using namespace " + _combined + ";\n";
+                    }
+
+                    _additionalNamespace += _combined + "::";
+                }
+
                 while(_parent->m_pParentScope->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_structure)
                 {
                     _additionalNamespace += ((Parser::__ast_entity_structure*)_parent->m_pParentScope)->m_sName + "::";
 
                     _parent = (Parser::__ast_entity_structure*)_parent->m_pParentScope;
-                }
-
-                if(!_pData->m_bWasNamespaces)
-                {
-                    _pData->m_bWasNamespaces = true;
-
-                    std::string _combined = combine_namespace(_pData->m_aNamespaces);
-
-                    if(_combined.size() > 0)
-                    {
-                        _file << "using namespace " + _combined + ";\n";
-                    }
                 }
 
                 _file << "_type = record_type<" + _additionalNamespace + _casted->m_sName + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, \"" + _casted->m_sName + "\");\n";
