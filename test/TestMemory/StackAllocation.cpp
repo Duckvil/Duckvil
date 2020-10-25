@@ -9,7 +9,7 @@
 DUCKVIL_TEST(FixedStackAllocation)
 {
     {
-        Duckvil::Memory::Stack<int> _stack(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::__allocator*)__duckvil_global::m_pMemoryChunk, 1024 * 1024);
+        Duckvil::Memory::Stack<int> _stack(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::__linear_allocator*)__duckvil_global::m_pMemoryChunk, 1024 * 1024);
     }
 
     {
@@ -17,7 +17,7 @@ DUCKVIL_TEST(FixedStackAllocation)
         // Duckvil::Memory::Stack<int> _stack(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::__allocator*)__duckvil_global::m_pMemoryChunk, std::numeric_limits<std::size_t>::max());
     }
 
-    Duckvil::Memory::Stack<int> _stack(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::__allocator*)__duckvil_global::m_pMemoryChunk, 4);
+    Duckvil::Memory::Stack<int> _stack(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::__linear_allocator*)__duckvil_global::m_pMemoryChunk, 4);
 
     DUCKVIL_TEST_EXP(_stack.Empty(), "Stack is not empty");
     DUCKVIL_TEST_EQUAL(_stack.GetCapacity(), 4 * sizeof(int), "Wrong capacity");

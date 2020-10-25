@@ -9,7 +9,7 @@
 DUCKVIL_TEST(VectorAllocation)
 {
     {
-        Duckvil::Memory::__free_list_allocator* _free_list = __duckvil_global::m_pMemoryInterface->m_fnAllocateFreeListAllocator((Duckvil::Memory::__allocator*)__duckvil_global::m_pMemoryChunk, 256);
+        Duckvil::Memory::__free_list_allocator* _free_list = (Duckvil::Memory::__free_list_allocator*)__duckvil_global::m_pHeap;
 
         DUCKVIL_TEST_IS_NOT_NULL(_free_list, "Free list allocator allocation failed");
 

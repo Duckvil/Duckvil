@@ -9,13 +9,13 @@
 DUCKVIL_TEST(LinearAllocation)
 {
     {
-        Duckvil::Memory::__linear_allocator* _linear = __duckvil_global::m_pMemoryInterface->m_fnAllocateLinearAllocator((Duckvil::Memory::__allocator*)__duckvil_global::m_pMemoryChunk, 1024 * 1024 * 1024);
+        Duckvil::Memory::__linear_allocator* _linear = __duckvil_global::m_pMemoryInterface->m_fnAllocateLinearAllocator((Duckvil::Memory::__linear_allocator*)__duckvil_global::m_pMemoryChunk, 1024 * 1024 * 1024);
 
         DUCKVIL_TEST_IS_NULL(_linear, "Hmm, allocated too much memory");
     }
 
     {
-        Duckvil::Memory::__linear_allocator* _linear = __duckvil_global::m_pMemoryInterface->m_fnAllocateLinearAllocator((Duckvil::Memory::__allocator*)__duckvil_global::m_pMemoryChunk, 16);
+        Duckvil::Memory::__linear_allocator* _linear = __duckvil_global::m_pMemoryInterface->m_fnAllocateLinearAllocator((Duckvil::Memory::__linear_allocator*)__duckvil_global::m_pMemoryChunk, 16);
 
         DUCKVIL_TEST_EXP(Duckvil::Memory::linear_empty(_linear), "Linear allocator is not empty");
         DUCKVIL_TEST_EQUAL(Duckvil::Memory::linear_capacity(_linear), (size_t)16, "Wrong capacity");

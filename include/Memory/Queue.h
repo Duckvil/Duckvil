@@ -12,10 +12,17 @@ namespace Duckvil { namespace Memory {
         IMemory* m_pMemoryInterface;
 
     public:
-        Queue(IMemory* _pMemoryInterface, __allocator* _pAllocator, std::size_t _ullCount) :
+        Queue()
+        {
+            m_pMemoryInterface = 0;
+            m_pAllocator = 0;
+        }
+
+    // TODO: Fix allocating other allocators in Allocator.cpp
+        Queue(IMemory* _pMemoryInterface, __free_list_allocator* _pAllocator, std::size_t _ullCount) :
             m_pMemoryInterface(_pMemoryInterface)
         {
-            m_pAllocator = m_pMemoryInterface->m_fnAllocateFixedQueueAllocator(_pAllocator, _ullCount * sizeof(Type), sizeof(Type));
+            m_pAllocator = m_pMemoryInterface->m_fnAllocateFixedQueueAllocator(_pMemoryInterface, _pAllocator, _ullCount * sizeof(Type), sizeof(Type));
         }
 
         Queue(IMemory* _pMemoryInterface, __fixed_queue_allocator* _pAllocator) :

@@ -7,7 +7,7 @@
 
 namespace Duckvil { namespace Memory {
 
-    bool allocate(__allocator* _pAllocator, std::size_t _ullSize)
+    bool allocate(__linear_allocator* _pAllocator, std::size_t _ullSize)
     {
         if(_pAllocator == nullptr)
         {
@@ -31,7 +31,7 @@ namespace Duckvil { namespace Memory {
         return true;
     }
 
-    __linear_allocator* allocate_linear_allocator(__allocator* _pAllocator, std::size_t _ullSize)
+    __linear_allocator* allocate_linear_allocator(__linear_allocator* _pAllocator, std::size_t _ullSize)
     {
         if(_pAllocator->capacity < _ullSize + _pAllocator->used)
         {
@@ -53,7 +53,7 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    __fixed_stack_allocator* allocate_fixed_stack_allocator(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
+    __fixed_stack_allocator* allocate_fixed_stack_allocator(__linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
         if(_pAllocator->capacity < _ullSize + _pAllocator->used)
         {
@@ -76,7 +76,7 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    __stack_allocator* allocate_stack_allocator(__allocator* _pAllocator, std::size_t _ullSize)
+    __stack_allocator* allocate_stack_allocator(__linear_allocator* _pAllocator, std::size_t _ullSize)
     {
         if(_pAllocator->capacity < _ullSize + _pAllocator->used)
         {
@@ -98,32 +98,25 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    __fixed_queue_allocator* allocate_fixed_queue_allocator(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
+    __fixed_queue_allocator* allocate_fixed_queue_allocator(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
-        if(_pAllocator->capacity < _ullSize + _pAllocator->used)
-        {
-            return 0;
-        }
+        __fixed_queue_allocator* _allocator = (__fixed_queue_allocator*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(__fixed_queue_allocator) + _ullSize, alignof(__fixed_queue_allocator));
 
-        uint8_t _padding = 0;
-        __fixed_queue_allocator* _memory = (__fixed_queue_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__fixed_queue_allocator), _padding);
         std::size_t _size = sizeof(__fixed_queue_allocator);
 
-        _memory->capacity = _ullSize;
-        _memory->memory = (uint8_t*)_memory + _size;
-        _memory->used = 0;
-        _memory->m_ullBlockSize = _ullTypeSize;
-        _memory->m_ullTail = 0;
-        _memory->m_ullHead = 0;
+        _allocator->capacity = _ullSize;
+        _allocator->memory = (uint8_t*)_allocator + _size;
+        _allocator->used = 0;
+        _allocator->m_ullBlockSize = _ullTypeSize;
+        _allocator->m_ullTail = 0;
+        _allocator->m_ullHead = 0;
 
-        memset(_memory->memory, 0, _ullSize);
+        memset(_allocator->memory, 0, _ullSize);
 
-        _pAllocator->used += _size + _ullSize;
-
-        return _memory;
+        return _allocator;
     }
 
-    __queue_allocator* allocate_queue_allocator(__allocator* _pAllocator, std::size_t _ullSize)
+    __queue_allocator* allocate_queue_allocator(__linear_allocator* _pAllocator, std::size_t _ullSize)
     {
         if(_pAllocator->capacity < _ullSize + _pAllocator->used)
         {
@@ -147,7 +140,7 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    __fixed_array_allocator* allocate_fixed_array_allocator(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
+    __fixed_array_allocator* allocate_fixed_array_allocator(__linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
         if(_pAllocator->capacity < _ullSize + _pAllocator->used)
         {
@@ -170,7 +163,7 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    __free_list_allocator* allocate_free_list_allocator(__allocator* _pAllocator, std::size_t _ullSize)
+    __free_list_allocator* allocate_free_list_allocator(__linear_allocator* _pAllocator, std::size_t _ullSize)
     {
         if(_pAllocator->capacity < _ullSize + _pAllocator->used)
         {
@@ -193,10 +186,12 @@ namespace Duckvil { namespace Memory {
         _node->m_ullSize = _ullSize;
         _node->m_pNext = nullptr;
 
+        _pAllocator->used += _ullSize + sizeof(__free_list_allocator);
+
         return _allocator;
     }
 
-    __fixed_vector_allocator* allocate_fixed_vector_allocator(__allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
+    __fixed_vector_allocator* allocate_fixed_vector_allocator(__linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
         if(_pAllocator->capacity < _ullSize + _pAllocator->used)
         {

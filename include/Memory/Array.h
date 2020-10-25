@@ -17,7 +17,7 @@ namespace Duckvil { namespace Memory {
         IMemory* m_pMemoryInterface;
 
     public:
-        Array(IMemory* _pMemoryInterface, __allocator* _pAllocator, std::size_t _ullCount) :
+        Array(IMemory* _pMemoryInterface, __linear_allocator* _pAllocator, std::size_t _ullCount) :
             m_pMemoryInterface(_pMemoryInterface)
         {
             m_pAllocator = m_pMemoryInterface->m_fnAllocateFixedArrayAllocator(_pAllocator, _ullCount * sizeof(Type), sizeof(Type));
