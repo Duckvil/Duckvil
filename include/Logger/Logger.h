@@ -5,6 +5,9 @@
 
 #include "Utils/Utils.h"
 
+#include <chrono>
+#include <ctime>
+
 #define DUCKVIL_LOGGER_MESSAGE_LENGTH_MAX 32
 #define DUCKVIL_LOGGER_PATH_LENGTH_MAX 256
 
@@ -23,7 +26,8 @@ namespace Duckvil { namespace Logger {
     enum __flags : uint8_t
     {
         __flags_dump_to_file = 1 << 0,
-        __flags_log_to_console = 1 << 1
+        __flags_log_to_console = 1 << 1,
+        __flags_immediate_log = 1 << 2
     };
 
     struct __log_info
@@ -44,18 +48,22 @@ namespace Duckvil { namespace Logger {
         char m_sMessage[DUCKVIL_LOGGER_MESSAGE_LENGTH_MAX];
         __verbosity m_verbosity;
         __flags _flags;
+        std::time_t m_time;
     };
 
     struct __data
     {
         Memory::Queue<__log_info> m_logs;
+        std::chrono::steady_clock::time_point m_initTime;
+        char m_buffer[128];
     };
 
     struct __ftable
     {
         __data* (*init)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator);
-        void (*log_info)(__data* _pData, const __log_info& _logInfo);
-        void (*dispatch_logs)(__data* _pData);
+        void (*log_info)(__data* _pData, __log_info& _logInfo);
+        void (*format)(__data* _pData, const __log_info& _logInfo, char* _ppBuffer);
+        void (*dispatch_logs)(__ftable* _pFTable, __data* _pData);
     };
 
 }}

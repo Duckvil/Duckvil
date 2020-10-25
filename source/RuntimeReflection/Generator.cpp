@@ -161,7 +161,6 @@ namespace Duckvil { namespace RuntimeReflection {
                     }
                     else if(_ent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_constructor)
                     {
-                        // TODO: Not always generate, idk why
                         const Parser::__ast_entity_constructor* _castedConstructor = (const Parser::__ast_entity_constructor*)_ent;
 
                         if(_castedConstructor->m_accessLevel == Parser::__ast_access::__ast_access_public)

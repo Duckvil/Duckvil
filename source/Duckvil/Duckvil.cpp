@@ -130,7 +130,8 @@ namespace Duckvil {
 
     void update(__data* _pData, __ftable* _pFTable)
     {
-        _pData->m_pLogger->dispatch_logs(_pData->m_pLoggerData);
+        DUCKVIL_LOG_INFO("AAAAAAA");
+        _pData->m_pLogger->dispatch_logs(_pData->m_pLogger, _pData->m_pLoggerData);
     }
 
 }
