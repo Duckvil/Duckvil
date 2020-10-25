@@ -1,7 +1,5 @@
 #pragma once
 
-// #include "RuntimeReflection/OOP/Recorder.h"
-
 #include "RuntimeReflection/Markers.h"
 
 namespace Duckvil { namespace Test {
