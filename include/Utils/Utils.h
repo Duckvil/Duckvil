@@ -24,6 +24,18 @@ namespace Duckvil { namespace Utils {
             memcpy(m_sText, _string.m_sText, _string.m_ullLength);
         }
 
+        string(string&& _string) noexcept :
+            m_sText(std::move(_string.m_sText)),
+            m_ullLength(std::move(_string.m_ullLength)),
+            m_pMemory(std::move(_string.m_pMemory)),
+            m_pAllocator(std::move(_string.m_pAllocator))
+        {
+            _string.m_pAllocator = 0;
+            _string.m_pMemory = 0;
+            _string.m_sText = 0;
+            _string.m_ullLength = 0;
+        }
+
         string(const char* _sText, std::size_t _ullLength, Memory::IMemory* _pMemory = 0, Memory::__free_list_allocator* _pAllocator = 0)
         {
             Allocate(_ullLength, _pMemory, _pAllocator);
@@ -31,14 +43,19 @@ namespace Duckvil { namespace Utils {
         }
 
         template <std::size_t Length>
-        string(const char (&_sText)[Length], Memory::IMemory* _pMemory = 0, Memory::__free_list_allocator* _pAllocator = 0)
+        string(const char (&_sText)[Length], Memory::IMemory* _pMemory = 0, Memory::__free_list_allocator* _pAllocator = 0) :
+            string(_sText, Length, _pMemory, _pAllocator)
         {
-            Allocate(Length, _pMemory, _pAllocator);
-            memcpy(m_sText, _sText, Length);
+
         }
 
         ~string()
         {
+            if(m_ullLength == 0)
+            {
+                return;
+            }
+
             if(m_pMemory != nullptr && m_pAllocator != nullptr)
             {
                 m_pMemory->m_fnFreeListFree_(m_pAllocator, m_sText);
