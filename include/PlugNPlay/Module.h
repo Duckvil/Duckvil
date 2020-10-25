@@ -14,6 +14,13 @@ namespace Duckvil { namespace PlugNPlay {
             m_sPath = DUCKVIL_OUTPUT;
         }
 
+        __module_information(const Utils::string& _sName, const Utils::string& _sPath) :
+            m_sName(_sName),
+            m_sPath(_sPath)
+        {
+
+        }
+
         Utils::string m_sName;
         void* m_pModule;
         Utils::string m_sPath;
