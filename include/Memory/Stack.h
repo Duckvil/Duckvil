@@ -55,12 +55,12 @@ namespace Duckvil { namespace Memory {
             return fixed_stack_full(m_pAllocator);
         }
 
-        inline size_t GetSize() const
+        inline std::size_t GetSize() const
         {
             return fixed_stack_size(m_pAllocator);
         }
 
-        inline size_t GetCapacity() const
+        inline std::size_t GetCapacity() const
         {
             return fixed_stack_capacity(m_pAllocator);
         }

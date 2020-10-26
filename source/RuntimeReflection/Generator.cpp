@@ -1,6 +1,7 @@
 #include "RuntimeReflection/Generator.h"
 
 #include <fstream>
+#include <cstring>
 
 namespace Duckvil { namespace RuntimeReflection {
 
