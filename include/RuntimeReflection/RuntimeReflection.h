@@ -270,22 +270,22 @@ namespace Duckvil { namespace RuntimeReflection {
     };
 
 // Create type object using constructor handle
-    template <typename... Args>
-    static void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(constructor_t) _constructorHandle, Args... _vArgs)
-    {
-        const __constructor_t& _constructor = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aConstructors, _constructorHandle.m_ID);
+    // template <typename... Args>
+    // static void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(constructor_t) _constructorHandle, Args... _vArgs)
+    // {
+    //     const __constructor_t& _constructor = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aConstructors, _constructorHandle.m_ID);
 
-        void* (*_constructor_callback)(Memory::IMemory*, Memory::__free_list_allocator*, Args...) = (void* (*)(Memory::IMemory*, Memory::__free_list_allocator*, Args...))_constructor.m_pData;
+    //     void* (*_constructor_callback)(Memory::IMemory*, Memory::__free_list_allocator*, Args...) = (void* (*)(Memory::IMemory*, Memory::__free_list_allocator*, Args...))_constructor.m_pData;
 
-        return _constructor_callback(_pMemoryInterface, _pAllocator, _vArgs...);
-    }
+    //     return _constructor_callback(_pMemoryInterface, _pAllocator, _vArgs...);
+    // }
 
 // Create type object using type name string
 // Note: It will compare given arguments with available constructors arguments
     template <typename... Args>
     static void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, const char _sTypeName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX], Args... _vArgs)
     {
-        static const std::szie_t& _constructorTypeID = typeid(void*(Args...)).hash_code();
+        static const std::size_t& _constructorTypeID = typeid(void*(Args...)).hash_code();
 
         for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
         {
