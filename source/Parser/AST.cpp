@@ -352,6 +352,67 @@ namespace Duckvil { namespace Parser {
         }
     }
 
+    void parse_template(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, std::string& _sToken, std::vector<__ast_template>& _templates)
+    {
+        uint32_t _triBrackets = 0;
+        bool _wasType = false;
+        std::string _type;
+        std::string _internal;
+        std::vector<__ast_template_element> _elements;
+
+        while(_pLexer->next_token(_pLexerData, &_sToken))
+        {
+            if(_sToken == "<")
+            {
+                _triBrackets++;
+            }
+            else if(_sToken == ">")
+            {
+                _triBrackets--;
+
+                if(_triBrackets == 0)
+                {
+                    __ast_template_element _element;
+
+                    _element.m_sType = _type;
+                    _element.m_sName = _internal;
+
+                    _elements.push_back(_element);
+
+                    __ast_template _template;
+
+                    _template.m_aElements.insert(_template.m_aElements.begin(), _elements.begin(), _elements.end());
+
+                    _templates.push_back(_template);
+
+                    break;
+                }
+            }
+            else if(_sToken == ",")
+            {
+                __ast_template_element _element;
+
+                _element.m_sType = _type;
+                _element.m_sName = _internal;
+
+                _elements.push_back(_element);
+
+                _internal.clear();
+            }
+            else if(_sToken == "" && _pLexerData->m_bSpace && _internal.size() > 0)
+            {
+                _wasType = true;
+                _type = _internal;
+
+                _internal.clear();
+            }
+            else
+            {
+                _internal += _sToken;
+            }
+        }
+    }
+
     void ast_generate(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data& _lexerData)
     {
         _pAST->m_pCurrentScope = &_pAST->m_main;
@@ -550,63 +611,7 @@ namespace Duckvil { namespace Parser {
             }
             else if(_token == "template")
             {
-                uint32_t _triBrackets = 0;
-                bool _wasType = false;
-                std::string _type;
-                std::string _internal;
-                std::vector<__ast_template_element> _elements;
-
-                while(_pLexer->next_token(&_lexerData, &_token))
-                {
-                    if(_token == "<")
-                    {
-                        _triBrackets++;
-                    }
-                    else if(_token == ">")
-                    {
-                        _triBrackets--;
-
-                        if(_triBrackets == 0)
-                        {
-                            __ast_template_element _element;
-
-                            _element.m_sType = _type;
-                            _element.m_sName = _internal;
-
-                            _elements.push_back(_element);
-
-                            __ast_template _template;
-
-                            _template.m_aElements.insert(_template.m_aElements.begin(), _elements.begin(), _elements.end());
-
-                            _templates.push_back(_template);
-
-                            break;
-                        }
-                    }
-                    else if(_token == ",")
-                    {
-                        __ast_template_element _element;
-
-                        _element.m_sType = _type;
-                        _element.m_sName = _internal;
-
-                        _elements.push_back(_element);
-
-                        _internal.clear();
-                    }
-                    else if(_token == "" && _lexerData.m_bSpace && _internal.size() > 0)
-                    {
-                        _wasType = true;
-                        _type = _internal;
-
-                        _internal.clear();
-                    }
-                    else
-                    {
-                        _internal += _token;
-                    }
-                }
+                parse_template(_pLexer, &_lexerData, _token, _templates);
             }
             else if(_token == "typedef")
             {
