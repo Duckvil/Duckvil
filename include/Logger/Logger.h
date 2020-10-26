@@ -12,8 +12,14 @@
 #define DUCKVIL_LOGGER_MESSAGE_LENGTH_MAX 32
 #define DUCKVIL_LOGGER_PATH_LENGTH_MAX 256
 
-#define DUCKVIL_LOG_INFO(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_info, __VA_ARGS__)// _pData->m_pLogger->log(_pData->m_pLogger, _pData->m_pLoggerData, Logger::__log_info(__LINE__, __FILE__, message, Logger::__verbosity::__verbosity_info))
+#ifdef DUCKVIL_PLATFORM_WINDOWS
+#define DUCKVIL_LOG_INFO(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_info, __VA_ARGS__)
 #define DUCKVIL_LOG_WARNING(message, ...) _pData->m_pLogger->log(_pData->m_pLogger, _pData->m_pLoggerData, Logger::__log_info(__LINE__, __FILE__, message, Logger::__verbosity::__verbosity_warning))
+#else
+#ifdef DUCKVIL_PLATFORM_LINUX
+#define DUCKVIL_LOG_INFO(message, args...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_info, args)
+#endif
+#endif
 
 namespace Duckvil { namespace Logger {
 
