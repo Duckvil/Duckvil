@@ -227,17 +227,19 @@ namespace Duckvil { namespace RuntimeReflection {
 
         for(Parser::__ast_entity* _ent : _pEntity->m_aScopes)
         {
-            if(_ent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_variable)
+            switch(_ent->m_scopeType)
             {
+            case Parser::__ast_entity_type::__ast_entity_type_variable:
                 generate_variable(_ent, _casted, _file, _additionalNamespace);
-            }
-            else if(_ent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_constructor)
-            {
+                break;
+            case Parser::__ast_entity_type::__ast_entity_type_constructor:
                 generate_constructor(_ent, _casted, _file, _additionalNamespace);
-            }
-            else if(_ent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_function)
-            {
+                break;
+            case Parser::__ast_entity_type::__ast_entity_type_function:
                 generate_function(_ent, _casted, _file, _additionalNamespace);
+                break;
+            default:
+                break;
             }
         }
     }
