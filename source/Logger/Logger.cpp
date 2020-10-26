@@ -14,13 +14,15 @@ namespace Duckvil { namespace Logger {
         return _data;
     }
 
-    void log_info(__data* _pData, __log_info& _logInfo)
+    void log(__ftable* _pFTable, __data* _pData, __log_info& _logInfo)
     {
         _logInfo.m_time = std::time(nullptr);
 
         if(_logInfo._flags & __flags::__flags_immediate_log)
         {
-            // Dispatch now
+            _pFTable->format(_pData, _logInfo, _pData->m_buffer);
+
+            printf("%s\n", _pData->m_buffer);
         }
         else
         {
@@ -38,7 +40,7 @@ namespace Duckvil { namespace Logger {
             sprintf(_ppBuffer, "%s %f [%s:%u]{ INFO }: %s", std::ctime(&_logInfo.m_time), _upTime.count(), _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
             break;
         case __verbosity::__verbosity_warning:
-            sprintf(_ppBuffer, "%s %f [%s:%u]{ WARNING }: %s", std::ctime(&_logInfo.m_time), _upTime.count(), _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
+            sprintf(_ppBuffer, "%s %f [%s:%u]{ WARN }: %s", std::ctime(&_logInfo.m_time), _upTime.count(), _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
             break;
         case __verbosity::__verbosity_error:
             sprintf(_ppBuffer, "%s %f [%s:%u]{ ERROR }: %s", std::ctime(&_logInfo.m_time), _upTime.count(), _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
@@ -70,7 +72,7 @@ Duckvil::Logger::__ftable* duckvil_logger_init(Duckvil::Memory::IMemory* _pMemor
     Duckvil::Logger::__ftable* _ftable = (Duckvil::Logger::__ftable*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Duckvil::Logger::__ftable), alignof(Duckvil::Logger::__ftable));
 
     _ftable->init = &Duckvil::Logger::init;
-    _ftable->log_info = &Duckvil::Logger::log_info;
+    _ftable->log = &Duckvil::Logger::log;
     _ftable->format = &Duckvil::Logger::format;
     _ftable->dispatch_logs = &Duckvil::Logger::dispatch_logs;
 

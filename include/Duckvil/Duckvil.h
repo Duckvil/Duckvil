@@ -12,6 +12,8 @@
 
 #include "Logger/Logger.h"
 
+#include "Duckvil/Time.h"
+
 namespace Duckvil {
 
     struct __data
@@ -30,6 +32,10 @@ namespace Duckvil {
 
         Logger::__ftable* m_pLogger;
         Logger::__data* m_pLoggerData;
+
+        __time_ftable m_time;
+        __time_data m_timeData;
+        double m_dOneSecond;
     };
 
     struct __ftable

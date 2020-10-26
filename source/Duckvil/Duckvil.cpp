@@ -1,5 +1,7 @@
 #include "Duckvil/Duckvil.h"
 
+#include <Windows.h>
+
 namespace Duckvil {
 
     bool init_runtime_reflection(__data* _pData, PlugNPlay::module* _pModule)
@@ -47,6 +49,10 @@ namespace Duckvil {
         _pData->m_pMemory = _pMemoryInterface;
         _pData->m_aLoadedModules = 0;
         _pData->m_uiLoadedModulesCount = 0;
+        _pData->m_dOneSecond = 0;
+        _pData->m_time = time_init();
+
+        _pData->m_time.init(&_pData->m_timeData);
 
         PlugNPlay::module _module;
 
@@ -130,8 +136,19 @@ namespace Duckvil {
 
     void update(__data* _pData, __ftable* _pFTable)
     {
-        DUCKVIL_LOG_INFO("AAAAAAA");
-        _pData->m_pLogger->dispatch_logs(_pData->m_pLogger, _pData->m_pLoggerData);
+        Sleep(1);
+
+        if(_pData->m_dOneSecond >= 1000.0)
+        {
+            DUCKVIL_LOG_INFO("AAA %i %f", 10, 0.011f);
+            _pData->m_pLogger->dispatch_logs(_pData->m_pLogger, _pData->m_pLoggerData);
+
+            _pData->m_dOneSecond = 0.0;
+        }
+
+        _pData->m_time.update(&_pData->m_timeData);
+
+        _pData->m_dOneSecond += _pData->m_timeData.m_dDelta;
     }
 
 }
