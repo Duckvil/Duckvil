@@ -1026,6 +1026,106 @@ namespace Duckvil { namespace Parser {
         }
     }
 
+    void process_pending(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, __ast* _pAST, std::string& _sToken, std::string& _sTmpExpression, bool& _bContinue)
+    {
+        if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_namespace)
+        {
+            ((__ast_entity_namespace*)_pAST->m_pPendingScope)->m_sName = _sToken;
+        }
+        else if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure)
+        {
+            ((__ast_entity_structure*)_pAST->m_pPendingScope)->m_sName = _sToken;
+            uint32_t _triBrackets = 0;
+
+            while(_pLexer->next_token(_pLexerData, &_sToken))
+            {
+                if(_sToken == "<")
+                {
+                    _triBrackets++;
+                }
+                else if(_sToken == ">")
+                {
+                    _triBrackets--;
+
+                    if(_triBrackets == 0)
+                    {
+                        break;
+                    }
+                }
+                else if (_sToken == ";" && _triBrackets == 0)
+                {
+                    break;
+                }
+                else if(_sToken != "" && _triBrackets == 0)
+                {
+                    _bContinue = true;
+
+                    break;
+                }
+            }
+        }
+        else if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_enum)
+        {
+            ((__ast_entity_enum*)_pAST->m_pPendingScope)->m_sName = _sToken;
+        }
+        else if(_pAST->m_pCurrentScope != nullptr && _pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure && ((__ast_entity_structure*)_pAST->m_pCurrentScope)->m_sName == _sToken)
+        {
+            std::string _copy = _sToken;
+
+            _pLexer->next_token(_pLexerData, &_sToken);
+
+            if(_sToken == "(")
+            {
+                std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _lexerData.m_sCurrentLine.substr(_lexerData.m_uiCurrentCharacterIndex - 1));
+                __ast_entity_constructor* _scope = nullptr;
+
+                if(_pAST->m_pPendingScope != nullptr)
+                {
+                    _scope = (__ast_entity_constructor*)_pAST->m_pPendingScope;
+                }
+                else
+                {
+                    _scope = new __ast_entity_constructor();
+                }
+
+                _scope->m_pParentScope = _pAST->m_pCurrentScope;
+                _scope->m_accessLevel = _pAST->m_currentAccess;
+
+                _pAST->m_pCurrentScope->m_aScopes.push_back(_scope);
+
+                _scope->m_aArguments.insert(_scope->m_aArguments.begin(), _args.begin(), _args.end());
+
+                skip_body(_pLexer, _pLexerData, _sToken);
+            }
+            else
+            {
+                _sTmpExpression += _copy;
+                _sTmpExpression += _sToken;
+
+                continue;
+            }
+
+            _pAST->m_pPendingScope = nullptr;
+        }
+        else if(_pAST->m_pCurrentScope != nullptr && _pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_enum)
+        {
+            __ast_entity_enum* _enum = (__ast_entity_enum*)_pAST->m_pCurrentScope;
+
+            if(_sToken == ",")
+            {
+
+            }
+            else if(_sToken != "")
+            {
+                _enum->m_aElements.push_back(_sToken);
+            }
+        }
+        else
+        {
+            _sTmpExpression += _sToken;
+        }
+    }
+
     void ast_generate(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data& _lexerData)
     {
         _pAST->m_pCurrentScope = &_pAST->m_main;
@@ -1375,102 +1475,7 @@ namespace Duckvil { namespace Parser {
                 }
                 else
                 {
-                    if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_namespace)
-                    {
-                        ((__ast_entity_namespace*)_pAST->m_pPendingScope)->m_sName = _token;
-                    }
-                    else if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure)
-                    {
-                        ((__ast_entity_structure*)_pAST->m_pPendingScope)->m_sName = _token;
-                        uint32_t _triBrackets = 0;
-
-                        while(_pLexer->next_token(&_lexerData, &_token))
-                        {
-                            if(_token == "<")
-                            {
-                                _triBrackets++;
-                            }
-                            else if(_token == ">")
-                            {
-                                _triBrackets--;
-
-                                if(_triBrackets == 0)
-                                {
-                                    break;
-                                }
-                            }
-                            else if (_token == ";" && _triBrackets == 0)
-                            {
-                                break;
-                            }
-                            else if(_token != "" && _triBrackets == 0)
-                            {
-                                _continue = true;
-
-                                break;
-                            }
-                        }
-                    }
-                    else if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_enum)
-                    {
-                        ((__ast_entity_enum*)_pAST->m_pPendingScope)->m_sName = _token;
-                    }
-                    else if(_pAST->m_pCurrentScope != nullptr && _pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure && ((__ast_entity_structure*)_pAST->m_pCurrentScope)->m_sName == _token)
-                    {
-                        std::string _copy = _token;
-
-                        _pLexer->next_token(&_lexerData, &_token);
-
-                        if(_token == "(")
-                        {
-                            std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, _lexerData, _lexerData.m_sCurrentLine.substr(_lexerData.m_uiCurrentCharacterIndex - 1));
-                            __ast_entity_constructor* _scope = nullptr;
-
-                            if(_pAST->m_pPendingScope != nullptr)
-                            {
-                                _scope = (__ast_entity_constructor*)_pAST->m_pPendingScope;
-                            }
-                            else
-                            {
-                                _scope = new __ast_entity_constructor();
-                            }
-
-                            _scope->m_pParentScope = _pAST->m_pCurrentScope;
-                            _scope->m_accessLevel = _pAST->m_currentAccess;
-
-                            _pAST->m_pCurrentScope->m_aScopes.push_back(_scope);
-
-                            _scope->m_aArguments.insert(_scope->m_aArguments.begin(), _args.begin(), _args.end());
-
-                            skip_body(_pLexer, &_lexerData, _token);
-                        }
-                        else
-                        {
-                            _tmpExpression += _copy;
-                            _tmpExpression += _token;
-
-                            continue;
-                        }
-
-                        _pAST->m_pPendingScope = nullptr;
-                    }
-                    else if(_pAST->m_pCurrentScope != nullptr && _pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_enum)
-                    {
-                        __ast_entity_enum* _enum = (__ast_entity_enum*)_pAST->m_pCurrentScope;
-
-                        if(_token == ",")
-                        {
-
-                        }
-                        else if(_token != "")
-                        {
-                            _enum->m_aElements.push_back(_token);
-                        }
-                    }
-                    else
-                    {
-                        _tmpExpression += _token;
-                    }
+                    process_pending(_pLexer, &_lexerData, _pAST, _token, _tmpExpression, _continue);
                 }
             }
         }
