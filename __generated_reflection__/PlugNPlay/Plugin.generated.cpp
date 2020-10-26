@@ -1,4 +1,4 @@
-#include "PlugNPlay\Plugin.h"
+#include "PlugNPlay/Plugin.h"
 #include "RuntimeReflection/Recorder.h"
 DUCKVIL_RUNTIME_REFLECTION_RECORD(4)
 {

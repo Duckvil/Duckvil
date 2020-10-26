@@ -1,4 +1,4 @@
-#include "Parser\Lexer.h"
+#include "Parser/Lexer.h"
 #include "RuntimeReflection/Recorder.h"
 DUCKVIL_RUNTIME_REFLECTION_RECORD(1)
 {
