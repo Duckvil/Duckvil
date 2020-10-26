@@ -510,222 +510,168 @@ namespace Duckvil { namespace Parser {
 
     void process_open_mustache_bracket(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, __ast* _pAST, std::string& _sToken, std::string& _sTmpExpression, bool _bContinue)
     {
-        if(_pAST->m_pPendingScope == nullptr || (_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_function))
+        if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType != __ast_entity_type::__ast_entity_type_function)
         {
-            uint32_t _mustacheBrackets = 1;
+            _pAST->m_pCurrentScope = _pAST->m_pPendingScope;
+            _pAST->m_pPendingScope = nullptr;
 
-            __lexer_data _exp = {};
+            return;
+        }
 
-            _exp.m_bWasSpace = false;
-            _exp.m_bSpace = false;
-            _exp.m_bEnd = false;
-            _exp.m_bNewLine = false;
-            _exp.m_uiCurrentCharacterIndex = 0;
-            _exp.m_uiCurrentLine = 0;
+        uint32_t _mustacheBrackets = 1;
+        __lexer_data _exp = {};
 
-            _exp.m_aLines.push_back(_sTmpExpression);
-            _exp.m_sCurrentLine = _exp.m_aLines[_exp.m_uiCurrentLine];
+        _exp.m_bWasSpace = false;
+        _exp.m_bSpace = false;
+        _exp.m_bEnd = false;
+        _exp.m_bNewLine = false;
+        _exp.m_uiCurrentCharacterIndex = 0;
+        _exp.m_uiCurrentLine = 0;
 
-            bool _wasType = false;
-            bool _wasName = false;
-            uint32_t _triBrackets = 0;
-            std::string _type;
-            std::string _name;
-            std::string _internalTmp;
-            std::size_t _roundBracketIndex = std::string::npos;
-            std::size_t _quadBrackets = 0;
-            bool _variable = false;
-            bool _skipped = false;
-            __ast_flags _flags = {};
+        _exp.m_aLines.push_back(_sTmpExpression);
+        _exp.m_sCurrentLine = _exp.m_aLines[_exp.m_uiCurrentLine];
 
-            while(_pLexer->next_token(&_exp, &_sToken))
+        bool _wasType = false;
+        bool _wasName = false;
+        uint32_t _triBrackets = 0;
+        std::string _type;
+        std::string _name;
+        std::string _internalTmp;
+        std::size_t _roundBracketIndex = std::string::npos;
+        std::size_t _quadBrackets = 0;
+        bool _variable = false;
+        bool _skipped = false;
+        __ast_flags _flags = {};
+
+        while(_pLexer->next_token(&_exp, &_sToken))
+        {
+            if(_sToken == "")
             {
-                if(_sToken == "")
+                if(_exp.m_bSpace && _triBrackets == 0 && !_wasType && !_skipped)
                 {
-                    if(_exp.m_bSpace && _triBrackets == 0 && !_wasType && !_skipped)
-                    {
-                        _type = _internalTmp;
-                        _wasType = true;
+                    _type = _internalTmp;
+                    _wasType = true;
 
-                        _internalTmp.clear();
-                    }
-                    else if(_exp.m_bSpace && _triBrackets == 0 && _wasType)
-                    {
-                        _name = _internalTmp;
-                        _wasName = true;
-
-                        _internalTmp.clear();
-                    }
-                    else if(_skipped)
-                    {
-                        _skipped = false;
-                    }
+                    _internalTmp.clear();
                 }
-                else if(_sToken == "<")
+                else if(_exp.m_bSpace && _triBrackets == 0 && _wasType)
                 {
-                    _triBrackets++;
-                }
-                else if(_sToken == ">")
-                {
-                    _triBrackets--;
-                }
-                else if(_sToken == "[")
-                {
-                    _quadBrackets++;
-
-                    while(_pLexer->next_token(&_exp, &_sToken))
-                    {
-                        if(_sToken == "]")
-                        {
-                            _quadBrackets--;
-
-                            if(_quadBrackets == 0)
-                            {
-                                break;
-                            }
-                        }
-                    }
-                }
-                else if(_sToken == "(" && _triBrackets == 0)
-                {
-                    _roundBracketIndex = _exp.m_uiCurrentCharacterIndex - 1;
                     _name = _internalTmp;
+                    _wasName = true;
 
-                    break;
+                    _internalTmp.clear();
                 }
-                else if(_sToken == "=" && _wasType && _wasName)
+                else if(_skipped)
                 {
-                    _variable = true;
-
-                    break;
-                }
-                else if(_sToken == "inline")
-                {
-                    _skipped = true;
-                    _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_inline);
-                }
-                else if(_sToken == "static")
-                {
-                    _skipped = true;
-                    _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_static);
-                }
-                else if(_sToken == "const")
-                {
-                    _skipped = true;
-                    _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_const);
-                }
-                else
-                {
-                    _internalTmp += _sToken;
+                    _skipped = false;
                 }
             }
-
-            if(!_variable)
+            else if(_sToken == "<")
             {
-                __ast_entity_function* _entity = nullptr;
+                _triBrackets++;
+            }
+            else if(_sToken == ">")
+            {
+                _triBrackets--;
+            }
+            else if(_sToken == "[")
+            {
+                _quadBrackets++;
 
-                if(_pAST->m_pPendingScope != nullptr)
+                while(_pLexer->next_token(&_exp, &_sToken))
                 {
-                    _entity = (__ast_entity_function*)_pAST->m_pPendingScope;
-                    _pAST->m_pCurrentScope = _pAST->m_pPendingScope;
-                    _pAST->m_pPendingScope = nullptr;
-                }
-                else
-                {
-                    _entity = new __ast_entity_function();
-                }
-
-                _entity->m_accessLevel = _pAST->m_currentAccess;
-                _entity->m_sReturnType = _type;
-                _entity->m_sName = _name;
-                _entity->m_flags = _flags;
-
-                _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
-
-                _entity->m_pParentScope = _pAST->m_pCurrentScope;
-
-                if(_roundBracketIndex != std::string::npos)
-                {
-                    std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _exp.m_sCurrentLine.substr(_roundBracketIndex));
-
-                    _entity->m_aArguments.insert(_entity->m_aArguments.begin(), _args.begin(), _args.end());
-                }
-
-                _pAST->m_pPendingScope = nullptr;
-
-                _sTmpExpression.clear();
-
-                while(_pLexer->next_token(_pLexerData, &_sToken))
-                {
-                    if(_sToken == "{")
+                    if(_sToken == "]")
                     {
-                        _mustacheBrackets++;
-                    }
-                    else if(_sToken == "}")
-                    {
-                        _mustacheBrackets--;
+                        _quadBrackets--;
 
-                        if(_mustacheBrackets == 0)
+                        if(_quadBrackets == 0)
                         {
                             break;
                         }
                     }
                 }
+            }
+            else if(_sToken == "(" && _triBrackets == 0)
+            {
+                _roundBracketIndex = _exp.m_uiCurrentCharacterIndex - 1;
+                _name = _internalTmp;
+
+                break;
+            }
+            else if(_sToken == "=" && _wasType && _wasName)
+            {
+                _variable = true;
+
+                break;
+            }
+            else if(_sToken == "inline")
+            {
+                _skipped = true;
+                _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_inline);
+            }
+            else if(_sToken == "static")
+            {
+                _skipped = true;
+                _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_static);
+            }
+            else if(_sToken == "const")
+            {
+                _skipped = true;
+                _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_const);
             }
             else
             {
-                __ast_entity_variable* _entity = nullptr;
+                _internalTmp += _sToken;
+            }
+        }
 
-                if(_pAST->m_pPendingScope != nullptr)
-                {
-                    _entity = (__ast_entity_variable*)_pAST->m_pPendingScope;
-                    _pAST->m_pCurrentScope = _pAST->m_pPendingScope;
-                    _pAST->m_pPendingScope = nullptr;
-                }
-                else
-                {
-                    _entity = new __ast_entity_variable();
-                }
+        if(!_variable)
+        {
+            __ast_entity_function* _entity = nullptr;
 
-                _entity->m_accessLevel = _pAST->m_currentAccess;
-                _entity->m_sType = _type;
-                _entity->m_sName = _name;
-
-                _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
-
-                _entity->m_pParentScope = _pAST->m_pCurrentScope;
-
+            if(_pAST->m_pPendingScope != nullptr)
+            {
+                _entity = (__ast_entity_function*)_pAST->m_pPendingScope;
+                _pAST->m_pCurrentScope = _pAST->m_pPendingScope;
                 _pAST->m_pPendingScope = nullptr;
+            }
+            else
+            {
+                _entity = new __ast_entity_function();
+            }
 
-                _sTmpExpression.clear();
+            _entity->m_accessLevel = _pAST->m_currentAccess;
+            _entity->m_sReturnType = _type;
+            _entity->m_sName = _name;
+            _entity->m_flags = _flags;
 
-                while(_pLexer->next_token(_pLexerData, &_sToken))
+            _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
+
+            _entity->m_pParentScope = _pAST->m_pCurrentScope;
+
+            if(_roundBracketIndex != std::string::npos)
+            {
+                std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _exp.m_sCurrentLine.substr(_roundBracketIndex));
+
+                _entity->m_aArguments.insert(_entity->m_aArguments.begin(), _args.begin(), _args.end());
+            }
+
+            _pAST->m_pPendingScope = nullptr;
+
+            _sTmpExpression.clear();
+
+            while(_pLexer->next_token(_pLexerData, &_sToken))
+            {
+                if(_sToken == "{")
                 {
-                    if(_sToken == "{")
-                    {
-                        _mustacheBrackets++;
-                    }
-                    else if(_sToken == "}")
-                    {
-                        _mustacheBrackets--;
-
-                        if(_mustacheBrackets == 0)
-                        {
-                            break;
-                        }
-                    }
+                    _mustacheBrackets++;
                 }
-
-                while(_pLexer->next_token(_pLexerData, &_sToken))
+                else if(_sToken == "}")
                 {
-                    if(_sToken == ";")
-                    {
-                        break;
-                    }
-                    else if(_sToken != "")
-                    {
-                        _bContinue = true;
+                    _mustacheBrackets--;
 
+                    if(_mustacheBrackets == 0)
+                    {
                         break;
                     }
                 }
@@ -733,8 +679,61 @@ namespace Duckvil { namespace Parser {
         }
         else
         {
-            _pAST->m_pCurrentScope = _pAST->m_pPendingScope;
+            __ast_entity_variable* _entity = nullptr;
+
+            if(_pAST->m_pPendingScope != nullptr)
+            {
+                _entity = (__ast_entity_variable*)_pAST->m_pPendingScope;
+                _pAST->m_pCurrentScope = _pAST->m_pPendingScope;
+                _pAST->m_pPendingScope = nullptr;
+            }
+            else
+            {
+                _entity = new __ast_entity_variable();
+            }
+
+            _entity->m_accessLevel = _pAST->m_currentAccess;
+            _entity->m_sType = _type;
+            _entity->m_sName = _name;
+
+            _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
+
+            _entity->m_pParentScope = _pAST->m_pCurrentScope;
+
             _pAST->m_pPendingScope = nullptr;
+
+            _sTmpExpression.clear();
+
+            while(_pLexer->next_token(_pLexerData, &_sToken))
+            {
+                if(_sToken == "{")
+                {
+                    _mustacheBrackets++;
+                }
+                else if(_sToken == "}")
+                {
+                    _mustacheBrackets--;
+
+                    if(_mustacheBrackets == 0)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            while(_pLexer->next_token(_pLexerData, &_sToken))
+            {
+                if(_sToken == ";")
+                {
+                    break;
+                }
+                else if(_sToken != "")
+                {
+                    _bContinue = true;
+
+                    break;
+                }
+            }
         }
     }
 
@@ -1076,7 +1075,7 @@ namespace Duckvil { namespace Parser {
 
             if(_sToken == "(")
             {
-                std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _lexerData.m_sCurrentLine.substr(_lexerData.m_uiCurrentCharacterIndex - 1));
+                std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _pLexerData->m_sCurrentLine.substr(_pLexerData->m_uiCurrentCharacterIndex - 1));
                 __ast_entity_constructor* _scope = nullptr;
 
                 if(_pAST->m_pPendingScope != nullptr)
@@ -1102,7 +1101,7 @@ namespace Duckvil { namespace Parser {
                 _sTmpExpression += _copy;
                 _sTmpExpression += _sToken;
 
-                continue;
+                return;
             }
 
             _pAST->m_pPendingScope = nullptr;
