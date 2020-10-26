@@ -270,6 +270,42 @@ namespace Duckvil { namespace Parser {
         return _result;
     }
 
+    bool check_define(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data* _pLexerData, std::string& _sToken)
+    {
+        for(std::string& _define : _pAST->m_aUserDefines)
+        {
+            if(_sToken == _define)
+            {
+                uint32_t _roundBrackets = 0;
+
+                while(_pLexer->next_token(_pLexerData, &_sToken))
+                {
+                    if(_sToken == "(")
+                    {
+                        _roundBrackets++;
+                    }
+                    else if(_sToken == ")")
+                    {
+                        _roundBrackets--;
+
+                        if(_roundBrackets == 0)
+                        {
+                            break;
+                        }
+                    }
+                    else if(_sToken == ";" && _roundBrackets == 0)
+                    {
+                        break;
+                    }
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     void ast_generate(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data& _lexerData)
     {
         _pAST->m_pCurrentScope = &_pAST->m_main;
@@ -1251,42 +1287,42 @@ namespace Duckvil { namespace Parser {
             }
             else
             {
-                bool _skip = false;
+                // bool _skip = false;
 
-                for(std::string& _define : _pAST->m_aUserDefines)
-                {
-                    if(_token == _define)
-                    {
-                        uint32_t _roundBrackets = 0;
+                // for(std::string& _define : _pAST->m_aUserDefines)
+                // {
+                //     if(_token == _define)
+                //     {
+                //         uint32_t _roundBrackets = 0;
 
-                        while(_pLexer->next_token(&_lexerData, &_token))
-                        {
-                            if(_token == "(")
-                            {
-                                _roundBrackets++;
-                            }
-                            else if(_token == ")")
-                            {
-                                _roundBrackets--;
+                //         while(_pLexer->next_token(&_lexerData, &_token))
+                //         {
+                //             if(_token == "(")
+                //             {
+                //                 _roundBrackets++;
+                //             }
+                //             else if(_token == ")")
+                //             {
+                //                 _roundBrackets--;
 
-                                if(_roundBrackets == 0)
-                                {
-                                    break;
-                                }
-                            }
-                            else if(_token == ";" && _roundBrackets == 0)
-                            {
-                                break;
-                            }
-                        }
+                //                 if(_roundBrackets == 0)
+                //                 {
+                //                     break;
+                //                 }
+                //             }
+                //             else if(_token == ";" && _roundBrackets == 0)
+                //             {
+                //                 break;
+                //             }
+                //         }
 
-                        _skip = true;
+                //         _skip = true;
 
-                        break;
-                    }
-                }
+                //         break;
+                //     }
+                // }
 
-                if(_skip)
+                if(check_define(_pAST, _pLexer, &_lexerData, _token))
                 {
                     continue;
                 }
