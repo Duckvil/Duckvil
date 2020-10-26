@@ -61,7 +61,8 @@ namespace Duckvil { namespace Logger {
     struct __data
     {
         Memory::Queue<__log_info> m_logs;
-        std::chrono::steady_clock::time_point m_initTime;
+        // std::chrono::time_point<std::chrono::system_clock> m_initTime;
+        long long m_llInitTime;
         char m_buffer[128];
     };
 

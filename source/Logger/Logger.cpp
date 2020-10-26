@@ -6,7 +6,7 @@ namespace Duckvil { namespace Logger {
     {
         __data* _data = (__data*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__data), alignof(__data));
 
-        _data->m_initTime = std::chrono::high_resolution_clock::now();
+        _data->m_llInitTime = std::chrono::high_resolution_clock::now().time_since_epoch().count();
         _data->m_logs = Memory::Queue<__log_info>(_pMemoryInterface, _pAllocator, 64);
 
         memset(_data->m_buffer, 0, 128);
@@ -32,21 +32,23 @@ namespace Duckvil { namespace Logger {
 
     void format(__data* _pData, const __log_info& _logInfo, char* _ppBuffer)
     {
-        std::chrono::duration<float> _upTime = std::chrono::high_resolution_clock::now() - _pData->m_initTime;
+        long long _upTime = std::chrono::high_resolution_clock::now().time_since_epoch().count() - _pData->m_llInitTime;
+
+    // TODO: I dont understand the whole 'chrono' lib...
 
         switch(_logInfo.m_verbosity)
         {
         case __verbosity::__verbosity_info:
-            sprintf(_ppBuffer, "%s %f [%s:%u]{ INFO }: %s", std::ctime(&_logInfo.m_time), _upTime.count(), _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
+            sprintf(_ppBuffer, "%s %f [%s:%u]{ INFO }: %s", std::ctime(&_logInfo.m_time), _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
             break;
         case __verbosity::__verbosity_warning:
-            sprintf(_ppBuffer, "%s %f [%s:%u]{ WARN }: %s", std::ctime(&_logInfo.m_time), _upTime.count(), _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
+            sprintf(_ppBuffer, "%s %f [%s:%u]{ WARN }: %s", std::ctime(&_logInfo.m_time), _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
             break;
         case __verbosity::__verbosity_error:
-            sprintf(_ppBuffer, "%s %f [%s:%u]{ ERROR }: %s", std::ctime(&_logInfo.m_time), _upTime.count(), _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
+            sprintf(_ppBuffer, "%s %f [%s:%u]{ ERROR }: %s", std::ctime(&_logInfo.m_time), _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
             break;
         case __verbosity::__verbosity_fatal:
-            sprintf(_ppBuffer, "%s %f [%s:%u]{ FATAL }: %s", std::ctime(&_logInfo.m_time), _upTime.count(), _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
+            sprintf(_ppBuffer, "%s %f [%s:%u]{ FATAL }: %s", std::ctime(&_logInfo.m_time), _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
             break;
         }
     }
