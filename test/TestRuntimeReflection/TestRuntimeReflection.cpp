@@ -16,7 +16,7 @@ void* __duckvil_global::m_pHeap;
 DUCKVIL_TEST(RuntimeReflection)
 {
     Duckvil::PlugNPlay::module _module;
-    Duckvil::PlugNPlay::__module_information _memoryModule("Memory.dll");
+    Duckvil::PlugNPlay::__module_information _memoryModule("Memory");
 
     Duckvil::PlugNPlay::module_init(&_module);
 
@@ -33,11 +33,11 @@ DUCKVIL_TEST(RuntimeReflection)
     _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024);
     Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnAllocateFreeListAllocator(&_mainMemoryAllocator, 512 * 1024);
 
-    Duckvil::PlugNPlay::__module_information _runtimeReflectionModule("RuntimeReflection.dll");
+    Duckvil::PlugNPlay::__module_information _runtimeReflectionModule("RuntimeReflection");
 
     _module.load(&_runtimeReflectionModule);
 
-    DUCKVIL_TEST_IS_NOT_NULL(_runtimeReflectionModule.m_pModule, "Could not load 'RuntimeReflection.dll'");
+    DUCKVIL_TEST_IS_NOT_NULL(_runtimeReflectionModule.m_pModule, "Could not load 'RuntimeReflection'");
 
     {
         duckvil_runtime_reflection_init_callback _rr_init;
@@ -60,11 +60,11 @@ DUCKVIL_TEST(RuntimeReflection)
         DUCKVIL_TEST_IS_NOT_NULL(_rr_data, "Could not init runtime reflection data");
 
         {
-            Duckvil::PlugNPlay::__module_information _test_type_module("TestType.dll", DUCKVIL_TEST_OUTPUT);
+            Duckvil::PlugNPlay::__module_information _test_type_module("TestType", DUCKVIL_TEST_OUTPUT);
 
             _module.load(&_test_type_module);
 
-            DUCKVIL_TEST_IS_NOT_NULL(_test_type_module.m_pModule, "Could not load 'TestType.dll'");
+            DUCKVIL_TEST_IS_NOT_NULL(_test_type_module.m_pModule, "Could not load 'TestType'");
 
             uint32_t (*get_recorder_count)();
 
