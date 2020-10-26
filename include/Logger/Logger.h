@@ -17,7 +17,7 @@
 #define DUCKVIL_LOG_WARNING(message, ...) _pData->m_pLogger->log(_pData->m_pLogger, _pData->m_pLoggerData, Logger::__log_info(__LINE__, __FILE__, message, Logger::__verbosity::__verbosity_warning))
 #else
 #ifdef DUCKVIL_PLATFORM_LINUX
-#define DUCKVIL_LOG_INFO(message, args...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_info, args)
+#define DUCKVIL_LOG_INFO(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_info, ## __VA_ARGS__)
 #endif
 #endif
 
@@ -87,7 +87,7 @@ namespace Duckvil { namespace Logger {
         __log_info _log;
         va_start(_argList, _verbosity);
 
-        _vsprintf_l(_log.m_sMessage, _sMessage, nullptr, _argList);
+        vsprintf(_log.m_sMessage, _sMessage, _argList);
 
         _log.m_verbosity = _verbosity;
         _log.m_uiLine = _uiLine;
