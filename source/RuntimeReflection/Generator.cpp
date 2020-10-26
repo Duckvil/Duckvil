@@ -23,193 +23,221 @@ namespace Duckvil { namespace RuntimeReflection {
         return _res;
     }
 
+    void generate_inheritance(const Parser::__ast_entity_structure* _pEntity, std::ofstream& _file)
+    {
+        for(const Parser::__ast_inheritance& _inheritance : _pEntity->m_aInheritance)
+        {
+            _file << "record_inheritance(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, get_type<" + _inheritance.m_sName + ">(_pData), ";
+
+            if(_inheritance.m_protection == Parser::__ast_access::__ast_access_public)
+            {
+                _file << "__protection::__protection_public);\n";
+            }
+            else if(_inheritance.m_protection == Parser::__ast_access::__ast_access_protected)
+            {
+                _file << "__protection::__protection_protected);\n";
+            }
+            else if(_inheritance.m_protection == Parser::__ast_access::__ast_access_private)
+            {
+                _file << "__protection::__protection_private);\n";
+            }
+        }
+    }
+
+    void generate_constructor(const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
+    {
+        const Parser::__ast_entity_constructor* _castedConstructor = (const Parser::__ast_entity_constructor*)_pEntity;
+
+        if(_castedConstructor->m_accessLevel != Parser::__ast_access::__ast_access_public)
+        {
+            return;
+        }
+
+        _file << "_constructor = record_constructor<" + _sNamespace + _pParentEntity->m_sName;
+
+        if(!_castedConstructor->m_aArguments.empty())
+        {
+            _file << ", ";
+
+            for(uint32_t i = 0; i < _castedConstructor->m_aArguments.size(); i++)
+            {
+                _file << _castedConstructor->m_aArguments[i].m_sType;
+
+                if(i < _castedConstructor->m_aArguments.size() - 1)
+                {
+                    _file << ", ";
+                }
+            }
+        }
+
+        _file << ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);\n";
+
+        for(const Parser::__ast_meta& _meta : _castedConstructor->m_aMeta)
+        {
+            _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _constructor, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+        }
+    }
+
+    void generate_variable(const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
+    {
+        const Parser::__ast_entity_variable* _castedVariable = (const Parser::__ast_entity_variable*)_pEntity;
+
+        if(_castedVariable->m_accessLevel != Parser::__ast_access::__ast_access_public)
+        {
+            return;
+        }
+
+        std::string _additionalNamespaceTypedef;
+
+        for(Parser::__ast_entity* _typedefEntity : _pParentEntity->m_aScopes)
+        {
+            if(_typedefEntity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_callback_typedef)
+            {
+                Parser::__ast_entity_callback_typedef* _castedTypedefEntity = (Parser::__ast_entity_callback_typedef*)_typedefEntity;
+
+                if(_castedTypedefEntity->m_sName == _castedVariable->m_sType)
+                {
+                    _additionalNamespaceTypedef += _pParentEntity->m_sName + "::";
+
+                    break;
+                }
+            }
+            else if(_typedefEntity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_typedef)
+            {
+                Parser::__ast_entity_typedef* _castedTypedefEntity = (Parser::__ast_entity_typedef*)_typedefEntity;
+
+                if(_castedTypedefEntity->m_sName == _castedVariable->m_sType)
+                {
+                    _additionalNamespaceTypedef += _pParentEntity->m_sName + "::";
+
+                    break;
+                }
+            }
+        }
+
+        _file << "_property = record_property<" + _additionalNamespaceTypedef + _castedVariable->m_sType + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(" + _sNamespace + _pParentEntity->m_sName + ", " + _castedVariable->m_sName + "), \"" + _castedVariable->m_sName + "\");\n";
+
+        for(const Parser::__ast_meta& _meta : _castedVariable->m_aMeta)
+        {
+            _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _property, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+        }
+    }
+
+    void generate_function(const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
+    {
+        const Parser::__ast_entity_function* _castedFunction = (const Parser::__ast_entity_function*)_pEntity;
+
+        if(_castedFunction->m_accessLevel != Parser::__ast_access::__ast_access_public)
+        {
+            return;
+        }
+
+        _file << "record_function<";
+
+        if(_castedFunction->m_flags & Parser::__ast_flags::__ast_flags_static)
+        {
+            _file << _castedFunction->m_sReturnType;
+        }
+        else
+        {
+            _file << _sNamespace + _pParentEntity->m_sName + ", ";
+            _file << _castedFunction->m_sReturnType;
+        }
+
+        if(!_castedFunction->m_aArguments.empty())
+        {
+            _file << ", ";
+
+            for(uint32_t i = 0; i < _castedFunction->m_aArguments.size(); i++)
+            {
+                _file << _castedFunction->m_aArguments[i].m_sType;
+
+                if(i < _castedFunction->m_aArguments.size() - 1)
+                {
+                    _file << ", ";
+                }
+            }
+        }
+
+        _file << ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &" << _sNamespace + _pParentEntity->m_sName + "::" + _castedFunction->m_sName << ", \"" << _castedFunction->m_sName << "\");\n";
+    }
+
     void generate_structure(__generator_data* _pData, const Parser::__ast_entity* _pEntity, std::ofstream& _file)
     {
         const Parser::__ast_entity_structure* _casted = (const Parser::__ast_entity_structure*)_pEntity;
         const Parser::__ast_entity_structure* _parent = _casted;
         std::string _additionalNamespace;
 
-        if(_casted->m_aTemplates.size() == 0)
+        if(!_casted->m_aTemplates.empty())
         {
-            std::string _combined = combine_namespace(_pData->m_aNamespaces);
+            return;
+        }
 
-            if(_combined.size() > 0)
+        std::string _combined = combine_namespace(_pData->m_aNamespaces);
+
+        if(_combined.size() > 0)
+        {
+            if(!_pData->m_bWasNamespaces)
             {
-                if(!_pData->m_bWasNamespaces)
-                {
-                    _pData->m_bWasNamespaces = true;
+                _pData->m_bWasNamespaces = true;
 
-                    _file << "using namespace " + _combined + ";\n";
-                }
-
-                _additionalNamespace += _combined + "::";
+                _file << "using namespace " + _combined + ";\n";
             }
 
-            while(_parent->m_pParentScope->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_structure)
-            {
-                _additionalNamespace += ((Parser::__ast_entity_structure*)_parent->m_pParentScope)->m_sName + "::";
+            _additionalNamespace += _combined + "::";
+        }
 
-                _parent = (Parser::__ast_entity_structure*)_parent->m_pParentScope;
+        while(_parent->m_pParentScope->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_structure)
+        {
+            _additionalNamespace += ((Parser::__ast_entity_structure*)_parent->m_pParentScope)->m_sName + "::";
+
+            _parent = (Parser::__ast_entity_structure*)_parent->m_pParentScope;
+        }
+
+        _file << "_type = record_type<" + _additionalNamespace + _casted->m_sName + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, \"" + _casted->m_sName + "\");\n";
+
+        Parser::__ast_entity* _namespace = _casted->m_pParentScope;
+        std::stack<Parser::__ast_entity_namespace*> _namespaces;
+
+        while(_namespace->m_scopeType != Parser::__ast_entity_type::__ast_entity_type_main)
+        {
+            if(_namespace->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_namespace)
+            {
+                _namespaces.push((Parser::__ast_entity_namespace*)_namespace);
             }
 
-            _file << "_type = record_type<" + _additionalNamespace + _casted->m_sName + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, \"" + _casted->m_sName + "\");\n";
+            _namespace = _namespace->m_pParentScope;
+        }
 
-            Parser::__ast_entity* _namespace = _casted->m_pParentScope;
-            std::stack<Parser::__ast_entity_namespace*> _namespaces;
+        while(!_namespaces.empty())
+        {
+            Parser::__ast_entity_namespace* _n = _namespaces.top();
 
-            while(_namespace->m_scopeType != Parser::__ast_entity_type::__ast_entity_type_main)
+            _file << "record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, \"" << _n->m_sName << "\");\n";
+
+            _namespaces.pop();
+        }
+
+        for(const Parser::__ast_meta& _meta : _casted->m_aMeta)
+        {
+            _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+        }
+
+        generate_inheritance(_casted, _file);
+
+        for(Parser::__ast_entity* _ent : _pEntity->m_aScopes)
+        {
+            if(_ent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_variable)
             {
-                if(_namespace->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_namespace)
-                {
-                    _namespaces.push((Parser::__ast_entity_namespace*)_namespace);
-                }
-
-                _namespace = _namespace->m_pParentScope;
+                generate_variable(_ent, _casted, _file, _additionalNamespace);
             }
-
-            while(!_namespaces.empty())
+            else if(_ent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_constructor)
             {
-                Parser::__ast_entity_namespace* _n = _namespaces.top();
-
-                _file << "record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, \"" << _n->m_sName << "\");\n";
-
-                _namespaces.pop();
+                generate_constructor(_ent, _casted, _file, _additionalNamespace);
             }
-
-            for(const Parser::__ast_meta& _meta : _casted->m_aMeta)
+            else if(_ent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_function)
             {
-                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
-            }
-
-            for(const Parser::__ast_inheritance& _inheritance : _casted->m_aInheritance)
-            {
-                _file << "record_inheritance(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, get_type<" + _inheritance.m_sName + ">(_pData), ";
-
-                if(_inheritance.m_protection == Parser::__ast_access::__ast_access_public)
-                {
-                    _file << "__protection::__protection_public);\n";
-                }
-                else if(_inheritance.m_protection == Parser::__ast_access::__ast_access_protected)
-                {
-                    _file << "__protection::__protection_protected);\n";
-                }
-                else if(_inheritance.m_protection == Parser::__ast_access::__ast_access_private)
-                {
-                    _file << "__protection::__protection_private);\n";
-                }
-            }
-
-            for(Parser::__ast_entity* _ent : _pEntity->m_aScopes)
-            {
-                if(_ent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_variable)
-                {
-                    const Parser::__ast_entity_variable* _castedVariable = (const Parser::__ast_entity_variable*)_ent;
-
-                    if(_castedVariable->m_accessLevel == Parser::__ast_access::__ast_access_public)
-                    {
-                        std::string _additionalNamespaceTypedef;
-
-                        for(Parser::__ast_entity* _typedefEntity : _casted->m_aScopes)
-                        {
-                            if(_typedefEntity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_callback_typedef)
-                            {
-                                Parser::__ast_entity_callback_typedef* _castedTypedefEntity = (Parser::__ast_entity_callback_typedef*)_typedefEntity;
-
-                                if(_castedTypedefEntity->m_sName == _castedVariable->m_sType)
-                                {
-                                    _additionalNamespaceTypedef += ((Parser::__ast_entity_structure*)_casted)->m_sName + "::";
-
-                                    break;
-                                }
-                            }
-                            else if(_typedefEntity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_typedef)
-                            {
-                                Parser::__ast_entity_typedef* _castedTypedefEntity = (Parser::__ast_entity_typedef*)_typedefEntity;
-
-                                if(_castedTypedefEntity->m_sName == _castedVariable->m_sType)
-                                {
-                                    _additionalNamespaceTypedef += ((Parser::__ast_entity_structure*)_casted)->m_sName + "::";
-
-                                    break;
-                                }
-                            }
-                        }
-
-                        _file << "_property = record_property<" + _additionalNamespaceTypedef + _castedVariable->m_sType + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(" + _additionalNamespace + _casted->m_sName + ", " + _castedVariable->m_sName + "), \"" + _castedVariable->m_sName + "\");\n";
-
-                        for(const Parser::__ast_meta& _meta : _castedVariable->m_aMeta)
-                        {
-                            _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _property, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
-                        }
-                    }
-                }
-                else if(_ent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_constructor)
-                {
-                    const Parser::__ast_entity_constructor* _castedConstructor = (const Parser::__ast_entity_constructor*)_ent;
-
-                    if(_castedConstructor->m_accessLevel == Parser::__ast_access::__ast_access_public)
-                    {
-                        _file << "_constructor = record_constructor<" + _additionalNamespace + _casted->m_sName;
-
-                        if(!_castedConstructor->m_aArguments.empty())
-                        {
-                            _file << ", ";
-
-                            for(uint32_t i = 0; i < _castedConstructor->m_aArguments.size(); i++)
-                            {
-                                _file << _castedConstructor->m_aArguments[i].m_sType;
-
-                                if(i < _castedConstructor->m_aArguments.size() - 1)
-                                {
-                                    _file << ", ";
-                                }
-                            }
-                        }
-
-                        _file << ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);\n";
-
-                        for(const Parser::__ast_meta& _meta : _castedConstructor->m_aMeta)
-                        {
-                            _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _constructor, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
-                        }
-                    }
-                }
-                else if(_ent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_function)
-                {
-                    const Parser::__ast_entity_function* _castedFunction = (const Parser::__ast_entity_function*)_ent;
-
-                    if(_castedFunction->m_accessLevel == Parser::__ast_access::__ast_access_public)
-                    {
-                        _file << "record_function<";
-
-                        if(_castedFunction->m_flags & Parser::__ast_flags::__ast_flags_static)
-                        {
-                            _file << _castedFunction->m_sReturnType;
-                        }
-                        else
-                        {
-                            _file << _additionalNamespace + _casted->m_sName + ", ";
-                            _file << _castedFunction->m_sReturnType;
-                        }
-
-                        if(!_castedFunction->m_aArguments.empty())
-                        {
-                            _file << ", ";
-
-                            for(uint32_t i = 0; i < _castedFunction->m_aArguments.size(); i++)
-                            {
-                                _file << _castedFunction->m_aArguments[i].m_sType;
-
-                                if(i < _castedFunction->m_aArguments.size() - 1)
-                                {
-                                    _file << ", ";
-                                }
-                            }
-                        }
-
-                        _file << ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &" << _additionalNamespace + _casted->m_sName + "::" + _castedFunction->m_sName << ", \"" << _castedFunction->m_sName << "\");\n";
-                    }
-                }
+                generate_function(_ent, _casted, _file, _additionalNamespace);
             }
         }
     }
