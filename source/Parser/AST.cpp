@@ -975,6 +975,57 @@ namespace Duckvil { namespace Parser {
         _sTmpExpression.clear();
     }
 
+    void process_inheritance(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, __ast* _pAST, std::string& _sToken, bool& _bContinue)
+    {
+        __ast_entity_structure* _structure = (__ast_entity_structure*)_pAST->m_pPendingScope;
+        __ast_access _access = __ast_access::__ast_access_not_specified;
+        std::string _name;
+
+        while(_pLexer->next_token(_pLexerData, &_sToken))
+        {
+            if(_sToken == "public")
+            {
+                _access = __ast_access::__ast_access_public;
+            }
+            else if(_sToken == "protected")
+            {
+                _access = __ast_access::__ast_access_protected;
+            }
+            else if(_sToken == "private")
+            {
+                _access = __ast_access::__ast_access_private;
+            }
+            else if(_sToken == ",")
+            {
+                __ast_inheritance _inheritance;
+
+                _inheritance.m_protection = _access;
+                _inheritance.m_sName = _name;
+
+                _structure->m_aInheritance.push_back(_inheritance);
+
+                _name.clear();
+            }
+            else if(_sToken == "{")
+            {
+                __ast_inheritance _inheritance;
+
+                _inheritance.m_protection = _access;
+                _inheritance.m_sName = _name;
+
+                _structure->m_aInheritance.push_back(_inheritance);
+
+                _bContinue = true;
+
+                break;
+            }
+            else if(_sToken != "")
+            {
+                _name += _sToken;
+            }
+        }
+    }
+
     void ast_generate(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data& _lexerData)
     {
         _pAST->m_pCurrentScope = &_pAST->m_main;
@@ -1289,53 +1340,7 @@ namespace Duckvil { namespace Parser {
             }
             else if(_token == ":" && _pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure)
             {
-                __ast_entity_structure* _structure = (__ast_entity_structure*)_pAST->m_pPendingScope;
-                __ast_access _access = __ast_access::__ast_access_not_specified;
-                std::string _name;
-
-                while(_pLexer->next_token(&_lexerData, &_token))
-                {
-                    if(_token == "public")
-                    {
-                        _access = __ast_access::__ast_access_public;
-                    }
-                    else if(_token == "protected")
-                    {
-                        _access = __ast_access::__ast_access_protected;
-                    }
-                    else if(_token == "private")
-                    {
-                        _access = __ast_access::__ast_access_private;
-                    }
-                    else if(_token == ",")
-                    {
-                        __ast_inheritance _inheritance;
-
-                        _inheritance.m_protection = _access;
-                        _inheritance.m_sName = _name;
-
-                        _structure->m_aInheritance.push_back(_inheritance);
-
-                        _name.clear();
-                    }
-                    else if(_token == "{")
-                    {
-                        __ast_inheritance _inheritance;
-
-                        _inheritance.m_protection = _access;
-                        _inheritance.m_sName = _name;
-
-                        _structure->m_aInheritance.push_back(_inheritance);
-
-                        _continue = true;
-
-                        break;
-                    }
-                    else if(_token != "")
-                    {
-                        _name += _token;
-                    }
-                }
+                process_inheritance(_pLexer, &_lexerData, _pAST, _token, _continue);
             }
             else if(_token == ":" && _pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_enum)
             {
