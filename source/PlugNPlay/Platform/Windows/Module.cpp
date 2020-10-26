@@ -13,7 +13,7 @@ namespace Duckvil { namespace PlugNPlay { namespace Platform {
     {
         Utils::string _buffer;
 
-        Utils::join(_buffer, _pModule->m_sPath, "/", _pModule->m_sName);
+        Utils::join(_buffer, _pModule->m_sPath, "/", _pModule->m_sName, ".dll");
 
         _pModule->m_pModule = LoadLibraryA(_buffer.m_sText);
 

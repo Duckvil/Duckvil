@@ -19,10 +19,21 @@ namespace Duckvil { namespace PlugNPlay {
 
         for(auto& p : std::filesystem::directory_iterator(m_sLoadPath))
         {
+#ifdef DUCKVIL_PLATFORM_WINDOWS
             if(p.path().filename().extension() != ".dll")
             {
                 continue;
             }
+#else
+#ifdef DUCKVIL_PLATFORM_LINUX
+            if(p.path().filename().extension() != ".so")
+            {
+                continue;
+            }
+#endif
+#endif
+
+            p.path().filename().replace_extension("");
 
             const std::string& _filename = p.path().filename().string();
             const std::string& _path = p.path().parent_path().string();

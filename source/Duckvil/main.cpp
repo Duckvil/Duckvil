@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
     }
 
     Duckvil::PlugNPlay::module _module;
-    Duckvil::PlugNPlay::__module_information _memoryModule("Memory.dll");
+    Duckvil::PlugNPlay::__module_information _memoryModule("Memory");
 
     Duckvil::PlugNPlay::module_init(&_module);
 

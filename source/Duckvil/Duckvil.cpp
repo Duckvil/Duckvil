@@ -8,7 +8,7 @@ namespace Duckvil {
 
     bool init_runtime_reflection(__data* _pData, PlugNPlay::module* _pModule)
     {
-        PlugNPlay::__module_information _runtimeReflectionModule("RuntimeReflection.dll");
+        PlugNPlay::__module_information _runtimeReflectionModule("RuntimeReflection");
 
         _pModule->load(&_runtimeReflectionModule);
 
@@ -27,7 +27,7 @@ namespace Duckvil {
 
     bool init_logger(__data* _pData, PlugNPlay::module* _pModule)
     {
-        PlugNPlay::__module_information _loggerModule("Logger.dll");
+        PlugNPlay::__module_information _loggerModule("Logger");
 
         _pModule->load(&_loggerModule);
 
@@ -142,7 +142,7 @@ namespace Duckvil {
         Sleep(1);
 #endif
 
-        if(_pData->m_dOneSecond >= 1000.0)
+        if(_pData->m_dOneSecond >= 1.0)
         {
             DUCKVIL_LOG_INFO("AAA %i %f", 10, 0.011f);
             _pData->m_pLogger->dispatch_logs(_pData->m_pLogger, _pData->m_pLoggerData);

@@ -10,9 +10,9 @@
 int main(int argc, char* argv[])
 {
     Duckvil::PlugNPlay::module _module;
-    Duckvil::PlugNPlay::__module_information _reflectionModule("RuntimeReflection.dll");
-    Duckvil::PlugNPlay::__module_information _memoryModule("Memory.dll");
-    Duckvil::PlugNPlay::__module_information _parser("Parser.dll");
+    Duckvil::PlugNPlay::__module_information _reflectionModule("RuntimeReflection");
+    Duckvil::PlugNPlay::__module_information _memoryModule("Memory");
+    Duckvil::PlugNPlay::__module_information _parser("Parser");
 
     Duckvil::PlugNPlay::module_init(&_module);
 
