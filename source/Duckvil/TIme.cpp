@@ -4,18 +4,18 @@ namespace Duckvil {
 
     bool time_init(__time_data* _pData)
     {
-        _pData->m_previousTime = std::chrono::high_resolution_clock::now();
+        _pData->m_llPreviousTime = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 
         return true;
     }
 
     void time_update(__time_data* _pData)
     {
-        std::chrono::steady_clock::time_point _now = std::chrono::high_resolution_clock::now();
-        auto& _durationTime = std::chrono::duration<double, std::milli>(_now - _pData->m_previousTime);
+        long long _now = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+        long long _durationTime = _now - _pData->m_llPreviousTime;
 
-        _pData->m_previousTime = _now;
-        _pData->m_dDelta = _durationTime.count();
+        _pData->m_llPreviousTime = _now;
+        _pData->m_dDelta = _durationTime * 0.000000001;
     }
 
     __time_ftable time_init()

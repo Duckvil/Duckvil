@@ -6,7 +6,8 @@ namespace Duckvil {
 
     struct __time_data
     {
-        std::chrono::steady_clock::time_point m_previousTime;
+        // std::chrono::steady_clock::time_point m_previousTime;
+        long long m_llPreviousTime;
         double m_dDelta;
     };
 
