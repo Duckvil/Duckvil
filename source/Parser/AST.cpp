@@ -306,6 +306,52 @@ namespace Duckvil { namespace Parser {
         return false;
     }
 
+    void skip_body(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, std::string& _sToken)
+    {
+        uint32_t _mustacheBrackets = 0;
+        uint32_t _roundBrackets = 1;
+        bool _end = false;
+
+        while(_pLexer->next_token(_pLexerData, &_sToken))
+        {
+            if((_sToken == ";" && _mustacheBrackets == 0) || _end)
+            {
+                break;
+            }
+            else if(_sToken == "(")
+            {
+                _roundBrackets++;
+            }
+            else if(_sToken == ")")
+            {
+                _roundBrackets--;
+            }
+            else if(_sToken == "{" && _roundBrackets == 0)
+            {
+                _mustacheBrackets++;
+
+                while(_pLexer->next_token(_pLexerData, &_sToken))
+                {
+                    if(_sToken == "{")
+                    {
+                        _mustacheBrackets++;
+                    }
+                    else if(_sToken == "}")
+                    {
+                        _mustacheBrackets--;
+
+                        if(_mustacheBrackets == 0)
+                        {
+                            _end = true;
+
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     void ast_generate(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data& _lexerData)
     {
         _pAST->m_pCurrentScope = &_pAST->m_main;
@@ -1287,41 +1333,6 @@ namespace Duckvil { namespace Parser {
             }
             else
             {
-                // bool _skip = false;
-
-                // for(std::string& _define : _pAST->m_aUserDefines)
-                // {
-                //     if(_token == _define)
-                //     {
-                //         uint32_t _roundBrackets = 0;
-
-                //         while(_pLexer->next_token(&_lexerData, &_token))
-                //         {
-                //             if(_token == "(")
-                //             {
-                //                 _roundBrackets++;
-                //             }
-                //             else if(_token == ")")
-                //             {
-                //                 _roundBrackets--;
-
-                //                 if(_roundBrackets == 0)
-                //                 {
-                //                     break;
-                //                 }
-                //             }
-                //             else if(_token == ";" && _roundBrackets == 0)
-                //             {
-                //                 break;
-                //             }
-                //         }
-
-                //         _skip = true;
-
-                //         break;
-                //     }
-                // }
-
                 if(check_define(_pAST, _pLexer, &_lexerData, _token))
                 {
                     continue;
@@ -1388,9 +1399,6 @@ namespace Duckvil { namespace Parser {
                         if(_token == "(")
                         {
                             std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, _lexerData, _lexerData.m_sCurrentLine.substr(_lexerData.m_uiCurrentCharacterIndex - 1));
-                            uint32_t _mustacheBrackets = 0;
-                            uint32_t _roundBrackets = 1;
-                            bool _end = false;
                             __ast_entity_constructor* _scope = nullptr;
 
                             if(_pAST->m_pPendingScope != nullptr)
@@ -1409,44 +1417,7 @@ namespace Duckvil { namespace Parser {
 
                             _scope->m_aArguments.insert(_scope->m_aArguments.begin(), _args.begin(), _args.end());
 
-                            while(_pLexer->next_token(&_lexerData, &_token))
-                            {
-                                if((_token == ";" && _mustacheBrackets == 0) || _end)
-                                {
-                                    break;
-                                }
-                                else if(_token == "(")
-                                {
-                                    _roundBrackets++;
-                                }
-                                else if(_token == ")")
-                                {
-                                    _roundBrackets--;
-                                }
-                                else if(_token == "{" && _roundBrackets == 0)
-                                {
-                                    _mustacheBrackets++;
-
-                                    while(_pLexer->next_token(&_lexerData, &_token))
-                                    {
-                                        if(_token == "{")
-                                        {
-                                            _mustacheBrackets++;
-                                        }
-                                        else if(_token == "}")
-                                        {
-                                            _mustacheBrackets--;
-
-                                            if(_mustacheBrackets == 0)
-                                            {
-                                                _end = true;
-
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            skip_body(_pLexer, &_lexerData, _token);
                         }
                         else
                         {
