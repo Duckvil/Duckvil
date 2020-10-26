@@ -24,7 +24,7 @@ struct __duckvil_slot_array_base
         s->m_base.m_handleIndices[_free_index] = DUCKVIL_DYNAMIC_ARRAY_SIZE(s->m_data) - 1; \
         return _free_index; \
     } \
-    _inline __duckvil_slot_array_##t duckvil_slot_array_##t##_new(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator) \
+    static inline __duckvil_slot_array_##t duckvil_slot_array_##t##_new(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator) \
     { \
         __duckvil_slot_array_##t _slot_array; \
         _slot_array.m_data = DUCKVIL_DYNAMIC_ARRAY_NEW(_pMemoryInterface, _pAllocator, t); \

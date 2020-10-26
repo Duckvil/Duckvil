@@ -9,7 +9,7 @@
 #elif ( defined __APPLE__ || defined _APPLE )
 #define _force_inline 		static __attribute__((always_inline))
 #else
-#define _force_inline 		_inline
+#define _force_inline 		static inline
 #endif
 
 struct __duckvil_dynamic_array
