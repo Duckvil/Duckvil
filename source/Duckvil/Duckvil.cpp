@@ -1,6 +1,8 @@
 #include "Duckvil/Duckvil.h"
 
+#ifdef DUCKVIL_PLATFORM_WINDOWS
 #include <Windows.h>
+#endif
 
 namespace Duckvil {
 
@@ -136,7 +138,9 @@ namespace Duckvil {
 
     void update(__data* _pData, __ftable* _pFTable)
     {
+#ifdef DUCKVIL_PLATFORM_WINDOWS
         Sleep(1);
+#endif
 
         if(_pData->m_dOneSecond >= 1000.0)
         {

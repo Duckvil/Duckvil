@@ -62,12 +62,12 @@ namespace Duckvil { namespace Memory {
             fixed_queue_pop(m_pMemoryInterface, m_pAllocator);
         }
 
-        inline size_t GetSize() const
+        inline std::size_t GetSize() const
         {
             return fixed_queue_size(m_pAllocator);
         }
 
-        inline size_t GetCapacity() const
+        inline std::size_t GetCapacity() const
         {
             return fixed_queue_capacity(m_pAllocator);
         }
