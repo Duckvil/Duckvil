@@ -9,8 +9,10 @@
 #include <ctime>
 #include <cstdarg>
 
-#define DUCKVIL_LOGGER_MESSAGE_LENGTH_MAX 32
+#define DUCKVIL_LOGGER_MESSAGE_LENGTH_MAX 256
 #define DUCKVIL_LOGGER_PATH_LENGTH_MAX 256
+#define DUCKVIL_LOGGER_OUT_FILE_PATH_LENGTH_MAX 128
+#define DUCKVIL_LOGGER_BUFFER_MAX 256
 
 #ifdef DUCKVIL_PLATFORM_WINDOWS
 #define DUCKVIL_LOG_INFO(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_info, __VA_ARGS__)
@@ -25,9 +27,6 @@
 #define DUCKVIL_LOG_FATAL(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_fatal, ## __VA_ARGS__)
 #endif
 #endif
-
-#define DUCKVIL_LOGGER_OUT_FILE_PATH_LENGTH_MAX 128
-#define DUCKVIL_LOGGER_BUFFER_MAX 128
 
 namespace Duckvil { namespace Logger {
 
@@ -78,6 +77,7 @@ namespace Duckvil { namespace Logger {
         long long m_llInitTime;
         char m_buffer[DUCKVIL_LOGGER_BUFFER_MAX];
         char m_sPathFile[DUCKVIL_LOGGER_OUT_FILE_PATH_LENGTH_MAX];
+        time_t m_lastTime;
     };
 
     struct __ftable

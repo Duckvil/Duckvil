@@ -42,7 +42,8 @@ namespace Duckvil {
 
         memcpy(_pData->m_pLoggerData->m_sPathFile, _outLog.c_str(), _outLog.size());
 
-        DUCKVIL_LOG_INFO("AAAAAAA");
+        DUCKVIL_LOG_INFO("Logger initialization complete!");
+        DUCKVIL_LOG_INFO("Logger file output: %s", _outLog.c_str());
 
         return true;
     }

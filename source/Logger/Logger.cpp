@@ -39,23 +39,47 @@ namespace Duckvil { namespace Logger {
     void format(__data* _pData, const __log_info& _logInfo, char* _ppBuffer)
     {
         long long _upTime = std::chrono::high_resolution_clock::now().time_since_epoch().count() - _pData->m_llInitTime;
+        const time_t& _time = _logInfo.m_time;
 
     // TODO: I dont understand the whole 'chrono' lib...
 
-        switch(_logInfo.m_verbosity)
+        if(_pData->m_lastTime != _time)
         {
-        case __verbosity::__verbosity_info:
-            sprintf(_ppBuffer, "%s %f [%s:%u]{ INFO }: %s", std::ctime(&_logInfo.m_time), _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
-            break;
-        case __verbosity::__verbosity_warning:
-            sprintf(_ppBuffer, "%s %f [%s:%u]{ WARN }: %s", std::ctime(&_logInfo.m_time), _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
-            break;
-        case __verbosity::__verbosity_error:
-            sprintf(_ppBuffer, "%s %f [%s:%u]{ ERROR }: %s", std::ctime(&_logInfo.m_time), _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
-            break;
-        case __verbosity::__verbosity_fatal:
-            sprintf(_ppBuffer, "%s %f [%s:%u]{ FATAL }: %s", std::ctime(&_logInfo.m_time), _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
-            break;
+            _pData->m_lastTime = _time;
+
+            switch(_logInfo.m_verbosity)
+            {
+            case __verbosity::__verbosity_info:
+                sprintf(_ppBuffer, "%s %f [%s:%u]{ INFO }: %s", std::ctime(&_time), _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
+                break;
+            case __verbosity::__verbosity_warning:
+                sprintf(_ppBuffer, "%s %f [%s:%u]{ WARN }: %s", std::ctime(&_time), _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
+                break;
+            case __verbosity::__verbosity_error:
+                sprintf(_ppBuffer, "%s %f [%s:%u]{ ERROR }: %s", std::ctime(&_time), _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
+                break;
+            case __verbosity::__verbosity_fatal:
+                sprintf(_ppBuffer, "%s %f [%s:%u]{ FATAL }: %s", std::ctime(&_time), _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
+                break;
+            }
+        }
+        else
+        {
+            switch(_logInfo.m_verbosity)
+            {
+            case __verbosity::__verbosity_info:
+                sprintf(_ppBuffer, " %f [%s:%u]{ INFO }: %s", _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
+                break;
+            case __verbosity::__verbosity_warning:
+                sprintf(_ppBuffer, " %f [%s:%u]{ WARN }: %s", _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
+                break;
+            case __verbosity::__verbosity_error:
+                sprintf(_ppBuffer, " %f [%s:%u]{ ERROR }: %s", _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
+                break;
+            case __verbosity::__verbosity_fatal:
+                sprintf(_ppBuffer, " %f [%s:%u]{ FATAL }: %s", _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
+                break;
+            }
         }
     }
 
