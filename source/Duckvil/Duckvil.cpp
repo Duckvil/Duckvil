@@ -145,6 +145,9 @@ namespace Duckvil {
         if(_pData->m_dOneSecond >= 1.0)
         {
             DUCKVIL_LOG_INFO("AAA %i %f", 10, 0.011f);
+            DUCKVIL_LOG_WARNING("BBB %i %f", 11, 1.011f);
+            DUCKVIL_LOG_ERROR("CCC %i %f", 22, 2.011f);
+            DUCKVIL_LOG_FATAL("DDD %i %f", 33, 3.011f);
             _pData->m_pLogger->dispatch_logs(_pData->m_pLogger, _pData->m_pLoggerData);
 
             _pData->m_dOneSecond = 0.0;

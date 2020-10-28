@@ -1,5 +1,7 @@
 #include "Logger/Logger.h"
 
+#include <Windows.h>
+
 namespace Duckvil { namespace Logger {
 
     __data* init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator)
@@ -58,10 +60,37 @@ namespace Duckvil { namespace Logger {
         while(!_pData->m_logs.Empty())
         {
             const __log_info& _log = _pData->m_logs.Begin();
+            uint32_t _color = 0;
 
             _pFTable->format(_pData, _log, _pData->m_buffer);
 
+            switch(_log.m_verbosity)
+            {
+            case __verbosity::__verbosity_info:
+                _color = 15;
+                break;
+            case __verbosity::__verbosity_warning:
+                _color = 14;
+                break;
+            case __verbosity::__verbosity_error:
+                _color = 12;
+                break;
+            case __verbosity::__verbosity_fatal:
+                _color = 12 * 16;
+                break;
+            default:
+                break;
+            }
+
+#ifdef DUCKVIL_PLATFORM_WINDOWS
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), _color);
             printf("%s\n", _pData->m_buffer);
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+#else
+#ifdef DUCKVIL_PLATFORM_LINUX
+            printf("%s\n", _pData->m_buffer);
+#endif
+#endif
 
             _pData->m_logs.Pop();
         }

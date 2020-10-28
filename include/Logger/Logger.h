@@ -14,10 +14,15 @@
 
 #ifdef DUCKVIL_PLATFORM_WINDOWS
 #define DUCKVIL_LOG_INFO(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_info, __VA_ARGS__)
-#define DUCKVIL_LOG_WARNING(message, ...) _pData->m_pLogger->log(_pData->m_pLogger, _pData->m_pLoggerData, Logger::__log_info(__LINE__, __FILE__, message, Logger::__verbosity::__verbosity_warning))
+#define DUCKVIL_LOG_WARNING(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_warning, __VA_ARGS__)
+#define DUCKVIL_LOG_ERROR(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_error, __VA_ARGS__)
+#define DUCKVIL_LOG_FATAL(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_fatal, __VA_ARGS__)
 #else
 #ifdef DUCKVIL_PLATFORM_LINUX
 #define DUCKVIL_LOG_INFO(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_info, ## __VA_ARGS__)
+#define DUCKVIL_LOG_WARNING(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_warning, ## __VA_ARGS__)
+#define DUCKVIL_LOG_ERROR(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_error, ## __VA_ARGS__)
+#define DUCKVIL_LOG_FATAL(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_fatal, ## __VA_ARGS__)
 #endif
 #endif
 
@@ -67,7 +72,6 @@ namespace Duckvil { namespace Logger {
     struct __data
     {
         Memory::Queue<__log_info> m_logs;
-        // std::chrono::time_point<std::chrono::system_clock> m_initTime;
         long long m_llInitTime;
         char m_buffer[128];
     };
@@ -91,6 +95,7 @@ namespace Duckvil { namespace Logger {
 
         _log.m_verbosity = _verbosity;
         _log.m_uiLine = _uiLine;
+        _log._flags = {};
         strcpy(_log.m_sFile, _sFile);
 
         _pFTable->log(_pFTable, _pData, _log);
