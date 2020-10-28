@@ -1,6 +1,8 @@
 #include "Logger/Logger.h"
 
+#ifdef DUCKVIL_PLATFORM_WINDOWS
 #include <Windows.h>
+#endif
 
 namespace Duckvil { namespace Logger {
 
