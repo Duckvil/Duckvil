@@ -62,9 +62,11 @@ namespace Duckvil { namespace Logger {
         while(!_pData->m_logs.Empty())
         {
             const __log_info& _log = _pData->m_logs.Begin();
-            uint32_t _color = 0;
 
             _pFTable->format(_pData, _log, _pData->m_buffer);
+
+#ifdef DUCKVIL_PLATFORM_WINDOWS
+            uint32_t _color = 0;
 
             switch(_log.m_verbosity)
             {
@@ -84,13 +86,28 @@ namespace Duckvil { namespace Logger {
                 break;
             }
 
-#ifdef DUCKVIL_PLATFORM_WINDOWS
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), _color);
             printf("%s\n", _pData->m_buffer);
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 #else
 #ifdef DUCKVIL_PLATFORM_LINUX
-            printf("%s\n", _pData->m_buffer);
+            switch(_log.m_verbosity)
+            {
+            case __verbosity::__verbosity_info:
+                printf("\033[97m%s\033[0m\n", _pData->m_buffer);
+                break;
+            case __verbosity::__verbosity_warning:
+                printf("\033[93m%s\033[0m\n", _pData->m_buffer);
+                break;
+            case __verbosity::__verbosity_error:
+                printf("\033[31m%s\033[0m\n", _pData->m_buffer);
+                break;
+            case __verbosity::__verbosity_fatal:
+                printf("\033[41m%s\033[0m\n", _pData->m_buffer);
+                break;
+            default:
+                break;
+            }
 #endif
 #endif
 
