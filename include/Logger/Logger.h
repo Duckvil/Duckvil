@@ -26,6 +26,9 @@
 #endif
 #endif
 
+#define DUCKVIL_LOGGER_OUT_FILE_PATH_LENGTH_MAX 128
+#define DUCKVIL_LOGGER_BUFFER_MAX 128
+
 namespace Duckvil { namespace Logger {
 
     enum __verbosity
@@ -73,7 +76,8 @@ namespace Duckvil { namespace Logger {
     {
         Memory::Queue<__log_info> m_logs;
         long long m_llInitTime;
-        char m_buffer[128];
+        char m_buffer[DUCKVIL_LOGGER_BUFFER_MAX];
+        char m_sPathFile[DUCKVIL_LOGGER_OUT_FILE_PATH_LENGTH_MAX];
     };
 
     struct __ftable

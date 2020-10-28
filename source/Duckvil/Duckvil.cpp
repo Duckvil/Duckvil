@@ -38,7 +38,9 @@ namespace Duckvil {
         _pData->m_pLogger = _loggerInit(_pData->m_pMemory, _pData->m_pHeap);
         _pData->m_pLoggerData = _pData->m_pLogger->init(_pData->m_pMemory, _pData->m_pHeap);
 
-        // _pData->m_pLogger->log_info(_pData->m_pLoggerData, Logger::__log_info{});
+        std::string _outLog = (std::filesystem::path(DUCKVIL_OUTPUT) / "log.log").string();
+
+        memcpy(_pData->m_pLoggerData->m_sPathFile, _outLog.c_str(), _outLog.size());
 
         DUCKVIL_LOG_INFO("AAAAAAA");
 

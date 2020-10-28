@@ -4,6 +4,8 @@
 #include <Windows.h>
 #endif
 
+#include <fstream>
+
 namespace Duckvil { namespace Logger {
 
     __data* init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator)
@@ -59,6 +61,8 @@ namespace Duckvil { namespace Logger {
 
     void dispatch_logs(__ftable* _pFTable, __data* _pData)
     {
+        std::ofstream _logOutFile(_pData->m_sPathFile, std::ios::app);
+
         while(!_pData->m_logs.Empty())
         {
             const __log_info& _log = _pData->m_logs.Begin();
@@ -111,8 +115,12 @@ namespace Duckvil { namespace Logger {
 #endif
 #endif
 
+            _logOutFile << _pData->m_buffer << "\n";
+
             _pData->m_logs.Pop();
         }
+
+        _logOutFile.close();
     }
 
 }}
