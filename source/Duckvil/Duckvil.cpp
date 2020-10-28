@@ -41,6 +41,7 @@ namespace Duckvil {
         std::string _outLog = (std::filesystem::path(DUCKVIL_OUTPUT) / "log.log").string();
 
         memcpy(_pData->m_pLoggerData->m_sPathFile, _outLog.c_str(), _outLog.size());
+        _pData->m_pLoggerData->m_flags = static_cast<Logger::__logger_flags>(Logger::__logger_flags::__logger_flags_console_output | Logger::__logger_flags::__logger_flags_file_output);
 
         DUCKVIL_LOG_INFO("Logger initialization complete!");
         DUCKVIL_LOG_INFO("Logger file output: %s", _outLog.c_str());

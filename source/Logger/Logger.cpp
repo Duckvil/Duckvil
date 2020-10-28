@@ -14,6 +14,7 @@ namespace Duckvil { namespace Logger {
 
         _data->m_llInitTime = std::chrono::high_resolution_clock::now().time_since_epoch().count();
         _data->m_logs = Memory::Queue<__log_info>(_pMemoryInterface, _pAllocator, 64);
+        _data->m_flags = {};
 
         memset(_data->m_buffer, 0, 128);
 
@@ -24,15 +25,29 @@ namespace Duckvil { namespace Logger {
     {
         _logInfo.m_time = std::time(nullptr);
 
-        if(_logInfo._flags & __flags::__flags_immediate_log)
+        if(_pData->m_flags & __logger_flags::__logger_flags_console_output)
         {
-            _pFTable->format(_pData, _logInfo, _pData->m_buffer);
+            if(_logInfo._flags & __log_flags::__flags_immediate_log)
+            {
+                _pFTable->format(_pData, _logInfo, _pData->m_buffer);
 
-            printf("%s\n", _pData->m_buffer);
+                printf("%s\n", _pData->m_buffer);
+            }
+            else
+            {
+                _pData->m_logs.Allocate(_logInfo);
+            }
         }
-        else
+        else if(_pData->m_flags & __logger_flags::__logger_flags_file_output)
         {
-            _pData->m_logs.Allocate(_logInfo);
+            if(_logInfo._flags & __log_flags::__flags_immediate_log)
+            {
+                // TODO: Print some error?
+            }
+            else
+            {
+                _pData->m_logs.Allocate(_logInfo);
+            }
         }
     }
 
@@ -45,8 +60,6 @@ namespace Duckvil { namespace Logger {
 
         if(_pData->m_lastTime != _time)
         {
-            _pData->m_lastTime = _time;
-
             switch(_logInfo.m_verbosity)
             {
             case __verbosity::__verbosity_info:
@@ -62,6 +75,8 @@ namespace Duckvil { namespace Logger {
                 sprintf(_ppBuffer, "%s %f [%s:%u]{ FATAL }: %s", std::ctime(&_time), _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
                 break;
             }
+
+            _pData->m_lastTime = _time;
         }
         else
         {
@@ -85,7 +100,12 @@ namespace Duckvil { namespace Logger {
 
     void dispatch_logs(__ftable* _pFTable, __data* _pData)
     {
-        std::ofstream _logOutFile(_pData->m_sPathFile, std::ios::app);
+        std::ofstream _logOutFile;
+
+        if(_pData->m_flags & __logger_flags::__logger_flags_file_output)
+        {
+            _logOutFile.open(_pData->m_sPathFile, std::ios::app);
+        }
 
         while(!_pData->m_logs.Empty())
         {
@@ -93,58 +113,67 @@ namespace Duckvil { namespace Logger {
 
             _pFTable->format(_pData, _log, _pData->m_buffer);
 
-#ifdef DUCKVIL_PLATFORM_WINDOWS
-            uint32_t _color = 0;
-
-            switch(_log.m_verbosity)
+            if(_pData->m_flags & __logger_flags::__logger_flags_console_output)
             {
-            case __verbosity::__verbosity_info:
-                _color = 15;
-                break;
-            case __verbosity::__verbosity_warning:
-                _color = 14;
-                break;
-            case __verbosity::__verbosity_error:
-                _color = 12;
-                break;
-            case __verbosity::__verbosity_fatal:
-                _color = 12 * 16;
-                break;
-            default:
-                break;
-            }
+#ifdef DUCKVIL_PLATFORM_WINDOWS
+                uint32_t _color = 0;
 
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), _color);
-            printf("%s\n", _pData->m_buffer);
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+                switch(_log.m_verbosity)
+                {
+                case __verbosity::__verbosity_info:
+                    _color = 15;
+                    break;
+                case __verbosity::__verbosity_warning:
+                    _color = 14;
+                    break;
+                case __verbosity::__verbosity_error:
+                    _color = 12;
+                    break;
+                case __verbosity::__verbosity_fatal:
+                    _color = 12 * 16;
+                    break;
+                default:
+                    break;
+                }
+
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), _color);
+                printf("%s\n", _pData->m_buffer);
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 #else
 #ifdef DUCKVIL_PLATFORM_LINUX
-            switch(_log.m_verbosity)
-            {
-            case __verbosity::__verbosity_info:
-                printf("\033[97m%s\033[0m\n", _pData->m_buffer);
-                break;
-            case __verbosity::__verbosity_warning:
-                printf("\033[93m%s\033[0m\n", _pData->m_buffer);
-                break;
-            case __verbosity::__verbosity_error:
-                printf("\033[31m%s\033[0m\n", _pData->m_buffer);
-                break;
-            case __verbosity::__verbosity_fatal:
-                printf("\033[41m%s\033[0m\n", _pData->m_buffer);
-                break;
-            default:
-                break;
+                switch(_log.m_verbosity)
+                {
+                case __verbosity::__verbosity_info:
+                    printf("\033[97m%s\033[0m\n", _pData->m_buffer);
+                    break;
+                case __verbosity::__verbosity_warning:
+                    printf("\033[93m%s\033[0m\n", _pData->m_buffer);
+                    break;
+                case __verbosity::__verbosity_error:
+                    printf("\033[31m%s\033[0m\n", _pData->m_buffer);
+                    break;
+                case __verbosity::__verbosity_fatal:
+                    printf("\033[41m%s\033[0m\n", _pData->m_buffer);
+                    break;
+                default:
+                    break;
+                }
+#endif
+#endif
             }
-#endif
-#endif
 
-            _logOutFile << _pData->m_buffer << "\n";
+            if(_pData->m_flags & __logger_flags::__logger_flags_file_output)
+            {
+                _logOutFile << _pData->m_buffer << "\n";
+            }
 
             _pData->m_logs.Pop();
         }
 
-        _logOutFile.close();
+        if(_pData->m_flags & __logger_flags::__logger_flags_file_output)
+        {
+            _logOutFile.close();
+        }
     }
 
 }}

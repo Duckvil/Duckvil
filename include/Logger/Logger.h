@@ -38,11 +38,15 @@ namespace Duckvil { namespace Logger {
         __verbosity_fatal
     };
 
-    enum __flags : uint8_t
+    enum __log_flags : uint8_t
     {
-        __flags_dump_to_file = 1 << 0,
-        __flags_log_to_console = 1 << 1,
-        __flags_immediate_log = 1 << 2
+        __flags_immediate_log = 1 << 0
+    };
+
+    enum __logger_flags : uint8_t
+    {
+        __logger_flags_file_output = 1 << 0,
+        __logger_flags_console_output = 1 << 1
     };
 
     struct __log_info
@@ -67,7 +71,7 @@ namespace Duckvil { namespace Logger {
         char m_sFile[DUCKVIL_LOGGER_PATH_LENGTH_MAX];
         char m_sMessage[DUCKVIL_LOGGER_MESSAGE_LENGTH_MAX];
         __verbosity m_verbosity;
-        __flags _flags;
+        __log_flags _flags;
         std::time_t m_time;
     };
 
@@ -78,6 +82,7 @@ namespace Duckvil { namespace Logger {
         char m_buffer[DUCKVIL_LOGGER_BUFFER_MAX];
         char m_sPathFile[DUCKVIL_LOGGER_OUT_FILE_PATH_LENGTH_MAX];
         time_t m_lastTime;
+        __logger_flags m_flags;
     };
 
     struct __ftable
