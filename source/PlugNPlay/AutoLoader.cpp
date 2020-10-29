@@ -33,10 +33,11 @@ namespace Duckvil { namespace PlugNPlay {
 #endif
 #endif
 
-            p.path().filename().replace_extension("");
-
-            const std::string& _filename = p.path().filename().string();
+            std::string _filename = p.path().filename().string();
             const std::string& _path = p.path().parent_path().string();
+
+            size_t _lastindex = _filename.find_last_of(".");
+            _filename = _filename.substr(0, _lastindex);
 
             __module_information _module(Utils::string(_filename.c_str(), _filename.size() + 1));
 
