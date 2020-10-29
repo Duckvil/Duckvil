@@ -49,7 +49,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         const Parser::__ast_entity_constructor* _castedConstructor = (const Parser::__ast_entity_constructor*)_pEntity;
 
-        if(_castedConstructor->m_accessLevel != Parser::__ast_access::__ast_access_public)
+        if(_castedConstructor->m_accessLevel != Parser::__ast_access::__ast_access_public || !_castedConstructor->m_aTemplates.empty())
         {
             return;
         }
@@ -83,7 +83,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         const Parser::__ast_entity_variable* _castedVariable = (const Parser::__ast_entity_variable*)_pEntity;
 
-        if(_castedVariable->m_accessLevel != Parser::__ast_access::__ast_access_public)
+        if(_castedVariable->m_accessLevel != Parser::__ast_access::__ast_access_public || !_castedVariable->m_aTemplates.empty())
         {
             return;
         }
@@ -128,7 +128,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         const Parser::__ast_entity_function* _castedFunction = (const Parser::__ast_entity_function*)_pEntity;
 
-        if(_castedFunction->m_accessLevel != Parser::__ast_access::__ast_access_public)
+        if(_castedFunction->m_accessLevel != Parser::__ast_access::__ast_access_public || !_castedFunction->m_aTemplates.empty())
         {
             return;
         }
