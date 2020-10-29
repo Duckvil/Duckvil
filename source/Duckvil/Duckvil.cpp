@@ -71,6 +71,8 @@ namespace Duckvil {
 
         _autoLoader.LoadAll(_pMemoryInterface, _pAllocator, &_pData->m_aLoadedModules, &_pData->m_uiLoadedModulesCount);
 
+        DUCKVIL_LOG_INFO("Modules to load %i", _pData->m_uiLoadedModulesCount);
+
         for(uint32_t i = 0; i < _pData->m_uiLoadedModulesCount; i++)
         {
             const PlugNPlay::__module_information& _loadedModule = _pData->m_aLoadedModules[i];
@@ -80,12 +82,12 @@ namespace Duckvil {
 
             if(get_recorder_count == nullptr)
             {
-                printf("%s\n", _loadedModule.m_sName.m_sText);
+                DUCKVIL_LOG_INFO("No recorder for %s", _loadedModule.m_sName.m_sText);
 
                 continue;
             }
 
-            printf("Module: %s is present\n", _loadedModule.m_sName.m_sText);
+            DUCKVIL_LOG_INFO("Module %s is present", _loadedModule.m_sName.m_sText);
 
             uint32_t _recordersCount = get_recorder_count();
 
@@ -148,10 +150,6 @@ namespace Duckvil {
 
         if(_pData->m_dOneSecond >= 1.0)
         {
-            DUCKVIL_LOG_INFO("AAA %i %f", 10, 0.011f);
-            DUCKVIL_LOG_WARNING("BBB %i %f", 11, 1.011f);
-            DUCKVIL_LOG_ERROR("CCC %i %f", 22, 2.011f);
-            DUCKVIL_LOG_FATAL("DDD %i %f", 33, 3.011f);
             _pData->m_pLogger->dispatch_logs(_pData->m_pLogger, _pData->m_pLoggerData);
 
             _pData->m_dOneSecond = 0.0;
