@@ -83,7 +83,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         const Parser::__ast_entity_variable* _castedVariable = (const Parser::__ast_entity_variable*)_pEntity;
 
-        if(_castedVariable->m_accessLevel != Parser::__ast_access::__ast_access_public || !_castedVariable->m_aTemplates.empty())
+        if(_castedVariable->m_accessLevel != Parser::__ast_access::__ast_access_public)
         {
             return;
         }
