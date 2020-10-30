@@ -263,7 +263,14 @@ namespace Duckvil { namespace RuntimeReflection {
 
         for(const Parser::__ast_meta& _meta : _casted->m_aMeta)
         {
-            _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+            if(!_meta.m_sValue.empty())
+            {
+                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+            }
+            else
+            {
+                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, " + _meta.m_sKey + ", true);\n";
+            }
         }
 
         generate_inheritance(_casted, _file);
