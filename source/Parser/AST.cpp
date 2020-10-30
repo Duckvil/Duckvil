@@ -221,6 +221,7 @@ namespace Duckvil { namespace Parser {
         uint32_t _roundBrackets = 0;
         std::string _tmp_expression;
         std::string _key;
+        bool _wasEqual = false;
 
         while(_pLexer->next_token(&_lexerData, &_token))
         {
@@ -236,8 +237,15 @@ namespace Duckvil { namespace Parser {
                 {
                     __ast_meta _meta = {};
 
-                    _meta.m_sKey = _key;
-                    _meta.m_sValue = _tmp_expression;
+                    if(_wasEqual)
+                    {
+                        _meta.m_sKey = _key;
+                        _meta.m_sValue = _tmp_expression;
+                    }
+                    else
+                    {
+                        _meta.m_sKey = _tmp_expression;
+                    }
 
                     _result.push_back(_meta);
 
@@ -248,16 +256,25 @@ namespace Duckvil { namespace Parser {
             {
                 __ast_meta _meta = {};
 
-                _meta.m_sKey = _key;
-                _meta.m_sValue = _tmp_expression;
+                if(_wasEqual)
+                {
+                    _meta.m_sKey = _key;
+                    _meta.m_sValue = _tmp_expression;
+                }
+                else
+                {
+                    _meta.m_sKey = _tmp_expression;
+                }
 
                 _result.push_back(_meta);
 
                 _tmp_expression.clear();
+                _wasEqual = false;
             }
             else if(_token == "=")
             {
                 _key = _tmp_expression;
+                _wasEqual = true;
 
                 _tmp_expression.clear();
             }
