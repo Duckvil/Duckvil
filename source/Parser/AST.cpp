@@ -1025,7 +1025,7 @@ namespace Duckvil { namespace Parser {
         }
     }
 
-    void process_pending(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, __ast* _pAST, std::string& _sToken, std::string& _sTmpExpression, bool& _bContinue)
+    void process_pending(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, __ast* _pAST, std::string& _sToken, std::string& _sTmpExpression, bool& _bContinue, std::vector<__ast_template>& _aTemplates)
     {
         if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_namespace)
         {
@@ -1087,6 +1087,10 @@ namespace Duckvil { namespace Parser {
                     _scope = new __ast_entity_constructor();
                 }
 
+                _scope->m_aTemplates.insert(_scope->m_aTemplates.begin(), _aTemplates.begin(), _aTemplates.end());
+
+                _aTemplates.clear();
+
                 _scope->m_pParentScope = _pAST->m_pCurrentScope;
                 _scope->m_accessLevel = _pAST->m_currentAccess;
 
@@ -1129,6 +1133,7 @@ namespace Duckvil { namespace Parser {
     {
         _pAST->m_pCurrentScope = &_pAST->m_main;
         _pAST->m_pPendingScope = _pAST->m_pCurrentScope;
+        _pAST->m_currentAccess = __ast_access::__ast_access_not_specified;
 
         std::string _token;
         std::string _tmpExpression;
@@ -1474,7 +1479,7 @@ namespace Duckvil { namespace Parser {
                 }
                 else
                 {
-                    process_pending(_pLexer, &_lexerData, _pAST, _token, _tmpExpression, _continue);
+                    process_pending(_pLexer, &_lexerData, _pAST, _token, _tmpExpression, _continue, _templates);
                 }
             }
         }
