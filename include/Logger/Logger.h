@@ -78,7 +78,7 @@ namespace Duckvil { namespace Logger {
     struct __data
     {
         Memory::Queue<__log_info> m_logs;
-        long long m_llInitTime;
+        int64_t m_llInitTime;
         char m_buffer[DUCKVIL_LOGGER_BUFFER_MAX];
         char m_sPathFile[DUCKVIL_LOGGER_OUT_FILE_PATH_LENGTH_MAX];
         time_t m_lastTime;
