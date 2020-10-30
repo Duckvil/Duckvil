@@ -48,8 +48,22 @@ namespace Duckvil { namespace RuntimeReflection {
     void generate_constructor(const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
         const Parser::__ast_entity_constructor* _castedConstructor = (const Parser::__ast_entity_constructor*)_pEntity;
+        bool _skip = false;
 
-        if(_castedConstructor->m_accessLevel != Parser::__ast_access::__ast_access_public || !_castedConstructor->m_aTemplates.empty())
+        if(_pParentEntity->m_structureType == Parser::__ast_structure_type_class && _castedConstructor->m_accessLevel == Parser::__ast_access_not_specified)
+        {
+            _skip = true;
+        }
+        else if(_pParentEntity->m_structureType == Parser::__ast_structure_type_struct && _castedConstructor->m_accessLevel == Parser::__ast_access_not_specified)
+        {
+            _skip = false;
+        }
+        else if(_castedConstructor->m_accessLevel != Parser::__ast_access_public)
+        {
+            _skip = true;
+        }
+
+        if(_skip || !_castedConstructor->m_aTemplates.empty())
         {
             return;
         }
@@ -82,8 +96,22 @@ namespace Duckvil { namespace RuntimeReflection {
     void generate_variable(const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
         const Parser::__ast_entity_variable* _castedVariable = (const Parser::__ast_entity_variable*)_pEntity;
+        bool _skip = false;
 
-        if(_castedVariable->m_accessLevel != Parser::__ast_access::__ast_access_public)
+        if(_pParentEntity->m_structureType == Parser::__ast_structure_type_class && _castedVariable->m_accessLevel == Parser::__ast_access_not_specified)
+        {
+            _skip = true;
+        }
+        else if(_pParentEntity->m_structureType == Parser::__ast_structure_type_struct && _castedVariable->m_accessLevel == Parser::__ast_access_not_specified)
+        {
+            _skip = false;
+        }
+        else if(_castedVariable->m_accessLevel != Parser::__ast_access_public)
+        {
+            _skip = true;
+        }
+
+        if(_skip)
         {
             return;
         }
@@ -127,8 +155,22 @@ namespace Duckvil { namespace RuntimeReflection {
     void generate_function(const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
         const Parser::__ast_entity_function* _castedFunction = (const Parser::__ast_entity_function*)_pEntity;
+        bool _skip = false;
 
-        if(_castedFunction->m_accessLevel != Parser::__ast_access::__ast_access_public || !_castedFunction->m_aTemplates.empty())
+        if(_pParentEntity->m_structureType == Parser::__ast_structure_type_class && _castedFunction->m_accessLevel == Parser::__ast_access_not_specified)
+        {
+            _skip = true;
+        }
+        else if(_pParentEntity->m_structureType == Parser::__ast_structure_type_struct && _castedFunction->m_accessLevel == Parser::__ast_access_not_specified)
+        {
+            _skip = false;
+        }
+        else if(_castedFunction->m_accessLevel != Parser::__ast_access_public)
+        {
+            _skip = true;
+        }
+
+        if(_skip || !_castedFunction->m_aTemplates.empty())
         {
             return;
         }
