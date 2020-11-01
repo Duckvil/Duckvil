@@ -13,8 +13,18 @@
 #include "Logger/Logger.h"
 
 #include "Duckvil/Time.h"
+#include "Duckvil/ReflectionFlags.h"
+#include "Duckvil/ISystem.h"
 
 namespace Duckvil {
+
+    struct system
+    {
+        RuntimeReflection::__duckvil_resource_type_t m_type;
+        ISystem* m_pObject;
+        void (ISystem::*m_fnUpdateCallback)();
+        bool (ISystem::*m_fnInitCallback)();
+    };
 
     struct __data
     {
@@ -36,6 +46,8 @@ namespace Duckvil {
         __time_ftable m_time;
         __time_data m_timeData;
         double m_dOneSecond;
+
+        Memory::Vector<system> m_aEngineSystems;
     };
 
     struct __ftable
