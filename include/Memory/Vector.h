@@ -23,12 +23,6 @@ namespace Duckvil { namespace Memory {
             m_pAllocator = 0;
         }
 
-        Vector(IMemory* _pMemoryInterface, __allocator* _pAllocator, std::size_t _ullCount) :
-            m_pMemoryInterface(_pMemoryInterface)
-        {
-            m_pAllocator = m_pMemoryInterface->m_fnAllocateFixedArrayAllocator(_pAllocator, _ullCount * sizeof(Type), sizeof(Type));
-        }
-
         Vector(IMemory* _pMemoryInterface, __free_list_allocator* _pAllocator, std::size_t _ullCount) :
             m_pMemoryInterface(_pMemoryInterface)
         {
@@ -132,5 +126,87 @@ namespace Duckvil { namespace Memory {
             return ConstIterator((Type*)(m_pAllocator->memory + m_pAllocator->used));
         }
     };
+
+    // template <typename Type, typename Allocator>
+    // class Vector : public BaseVector<Type, Allocator>
+    // {
+    // public:
+    //     Vector()
+    //     {
+    //         m_pAllocator = 0;
+    //         m_pMemoryInterface = 0;
+    //     }
+
+    //     Vector(IMemory* _pMemoryInterface, Allocator* _pAllocator, std::size_t _ullCount)
+    //     {
+    //         m_pMemoryInterface = _pMemoryInterface;
+    //         m_pAllocator = m_pMemoryInterface->m_fnFreeListAllocateVectorAllocator(_pMemoryInterface, _pAllocator, sizeof(Type) * _ullCount, sizeof(Type), alignof(Type));
+    //     }
+
+    //     Vector(const Vector<Type, Allocator>& _vector)
+    //     {
+
+    //     }
+    // };
+
+    // template <typename Type>
+    // class Vector<Type, __free_list_allocator> : public BaseVector<Type, __free_list_allocator>
+    // {
+    //     __free_list_allocator* m_pAlloc;
+    // public:
+    //     Vector()
+    //     {
+    //         m_pAllocator = 0;
+    //         m_pMemoryInterface = 0;
+    //     }
+
+    //     Vector(__free_list_allocator* _pAllocator)
+    //     {
+    //         m_pAlloc = _pAllocator;
+    //     }
+
+    //     Vector(IMemory* _pMemoryInterface, __free_list_allocator* _pAllocator, std::size_t _ullCount)
+    //     {
+    //         m_pMemoryInterface = _pMemoryInterface;
+    //         m_pAllocator = m_pMemoryInterface->m_fnFreeListAllocateVectorAllocator(_pMemoryInterface, _pAllocator, sizeof(Type) * _ullCount, sizeof(Type), alignof(Type));
+    //     }
+
+    //     Vector(const Vector& _vector)
+    //     {
+
+    //     }
+    // };
+
+    // template <typename Type>
+    // class Vector<Type, __linear_allocator> : public BaseVector<Type, __linear_allocator>
+    // {
+    // public:
+    //     Vector()
+    //     {
+    //         m_pAllocator = 0;
+    //         m_pMemoryInterface = 0;
+    //     }
+
+    //     Vector(IMemory* _pMemoryInterface, __linear_allocator* _pAllocator, std::size_t _ullCount)
+    //     {
+    //         m_pMemoryInterface = _pMemoryInterface;
+    //         // m_pAllocator = m_pMemoryInterface->m_fnFreeListAllocateVectorAllocator(_pMemoryInterface, _pAllocator, sizeof(Type) * _ullCount, sizeof(Type), alignof(Type));
+    //     }
+
+    //     Vector(const Vector& _vector)
+    //     {
+
+    //     }
+    // };
+
+    // template <typename Type>
+    // struct VectorFactory
+    // {
+    //     template <typename Allocator>
+    //     static auto Create(IMemory* _pMemoryInterface, Allocator* _pAllocator, std::size_t _ullCount)
+    //     {
+    //         return Vector<Type, Allocator>(_pMemoryInterface, _pAllocator, _ullCount);
+    //     }
+    // };
 
 }}
