@@ -4,6 +4,8 @@
 #include <Windows.h>
 #endif
 
+#undef max
+
 namespace Duckvil {
 
     bool init_runtime_reflection(__data* _pData, PlugNPlay::module* _pModule)
@@ -58,6 +60,8 @@ namespace Duckvil {
         _pData->m_dOneSecond = 0;
         _pData->m_time = time_init();
 
+        _pData->m_aEngineSystems = Memory::Vector<system>(_pData->m_pMemory, _pData->m_pHeap, 1);
+
         _pData->m_time.init(&_pData->m_timeData);
 
         PlugNPlay::module _module;
@@ -110,6 +114,50 @@ namespace Duckvil {
 
         _pData->m_bRunning = false;
 
+        {
+            auto _types = RuntimeReflection::get_types(_pData->m_pRuntimeReflectionData, _pData->m_pMemory, _pData->m_pHeap);
+
+            for(uint32_t i = 0; i < _types.Size(); i++)
+            {
+                const RuntimeReflection::__duckvil_resource_type_t& _type = _types[i];
+                const RuntimeReflection::__variant& _variant = RuntimeReflection::get_meta(_pData->m_pRuntimeReflectionData, _type, ReflectionFlags::ReflectionFlags_EngineSystem);
+
+                if(_variant.m_ullTypeID != std::numeric_limits<std::size_t>::max())
+                {
+                    if((uint8_t)_variant.m_traits & (uint8_t)RuntimeReflection::__traits::is_bool)
+                    {
+                        if(_pData->m_aEngineSystems.Full())
+                        {
+                            _pData->m_aEngineSystems.Resize(_pData->m_pHeap, _pData->m_aEngineSystems.Size() * 2);
+                        }
+
+                        ISystem* _obj = (ISystem*)RuntimeReflection::create(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pRuntimeReflectionData, _type, 10);
+                        system _system = {};
+
+                        _system.m_type = _type;
+                        _system.m_pObject = _obj;
+                        _system.m_fnUpdateCallback = RuntimeReflection::get_function_callback<ISystem>(_pData->m_pRuntimeReflectionData, _type, "Update")->m_fnFunction;
+                        _system.m_fnInitCallback = RuntimeReflection::get_function_callback<bool, ISystem>(_pData->m_pRuntimeReflectionData, _type, "Init")->m_fnFunction;
+
+                        _obj->m_pLogger = _pData->m_pLogger;
+                        _obj->m_pLoggerData = _pData->m_pLoggerData;
+
+                        _pData->m_aEngineSystems.Allocate(_system);
+                    }
+                }
+            }
+
+            for(uint32_t i = 0; i < _pData->m_aEngineSystems.Size(); i++)
+            {
+                const system& _system = _pData->m_aEngineSystems[i];
+
+                if(!(_system.m_pObject->*_system.m_fnInitCallback)())
+                {
+                    return false;
+                }
+            }
+        }
+
         return true;
     }
 
@@ -144,20 +192,29 @@ namespace Duckvil {
 
     void update(__data* _pData, __ftable* _pFTable)
     {
-#ifdef DUCKVIL_PLATFORM_WINDOWS
-        Sleep(1);
-#endif
+        _pData->m_time.update(&_pData->m_timeData);
+
+        _pData->m_dOneSecond += _pData->m_timeData.m_dDelta;
+
+        for(uint32_t i = 0; i < _pData->m_aEngineSystems.Size(); i++)
+        {
+            const system& _system = _pData->m_aEngineSystems[i];
+
+            (_system.m_pObject->*_system.m_fnUpdateCallback)();
+        }
 
         if(_pData->m_dOneSecond >= 1.0)
         {
             _pData->m_pLogger->dispatch_logs(_pData->m_pLogger, _pData->m_pLoggerData);
 
+            DUCKVIL_LOG_INFO("Delta: %f ms", _pData->m_timeData.m_dDelta * 1000.0);
+
             _pData->m_dOneSecond = 0.0;
         }
 
-        _pData->m_time.update(&_pData->m_timeData);
-
-        _pData->m_dOneSecond += _pData->m_timeData.m_dDelta;
+#ifdef DUCKVIL_PLATFORM_WINDOWS
+        // Sleep(1);
+#endif
     }
 
 }
