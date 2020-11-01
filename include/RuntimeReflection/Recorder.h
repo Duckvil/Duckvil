@@ -15,6 +15,13 @@
 #define DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF _pMemoryInterface, _pAllocator, _pRecorder, _pData
 #define DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(type, trait) (std::trait<type>::value ? static_cast<__traits>((uint8_t)_traits | (uint8_t)__traits::trait) : _traits)
 
+namespace std {
+
+    template <typename Type>
+    struct is_bool : std::is_same<bool, typename std::remove_cv<Type>::type> {};
+
+}
+
 namespace Duckvil { namespace RuntimeReflection {
 
     struct __recorder_meta_info
@@ -43,6 +50,7 @@ namespace Duckvil { namespace RuntimeReflection {
         _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_integral);
         _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_floating_point);
         _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_enum);
+        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_bool);
 
         return _traits;
     }
