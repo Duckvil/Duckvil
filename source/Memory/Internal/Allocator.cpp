@@ -98,24 +98,6 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    __fixed_queue_allocator* allocate_fixed_queue_allocator(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
-    {
-        __fixed_queue_allocator* _allocator = (__fixed_queue_allocator*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(__fixed_queue_allocator) + _ullSize, alignof(__fixed_queue_allocator));
-
-        std::size_t _size = sizeof(__fixed_queue_allocator);
-
-        _allocator->capacity = _ullSize;
-        _allocator->memory = (uint8_t*)_allocator + _size;
-        _allocator->used = 0;
-        _allocator->m_ullBlockSize = _ullTypeSize;
-        _allocator->m_ullTail = 0;
-        _allocator->m_ullHead = 0;
-
-        memset(_allocator->memory, 0, _ullSize);
-
-        return _allocator;
-    }
-
     __queue_allocator* allocate_queue_allocator(__linear_allocator* _pAllocator, std::size_t _ullSize)
     {
         if(_pAllocator->capacity < _ullSize + _pAllocator->used)
@@ -212,6 +194,24 @@ namespace Duckvil { namespace Memory {
         _pAllocator->used += _size + _ullSize;
 
         return _memory;
+    }
+
+    __fixed_queue_allocator* allocate_fixed_queue_allocator(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
+    {
+        __fixed_queue_allocator* _allocator = (__fixed_queue_allocator*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(__fixed_queue_allocator) + _ullSize, alignof(__fixed_queue_allocator));
+
+        std::size_t _size = sizeof(__fixed_queue_allocator);
+
+        _allocator->capacity = _ullSize;
+        _allocator->memory = (uint8_t*)_allocator + _size;
+        _allocator->used = 0;
+        _allocator->m_ullBlockSize = _ullTypeSize;
+        _allocator->m_ullTail = 0;
+        _allocator->m_ullHead = 0;
+
+        memset(_allocator->memory, 0, _ullSize);
+
+        return _allocator;
     }
 
 }}
