@@ -321,6 +321,11 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             recursive(_pData, _ent, _file);
         }
+
+        if(_entity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_namespace)
+        {
+            _pData->m_aNamespaces.pop();
+        }
     }
 
     __generator_data* init(Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator)
