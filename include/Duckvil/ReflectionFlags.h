@@ -2,9 +2,9 @@
 
 namespace Duckvil {
 
-    enum __flags
+    enum ReflectionFlags
     {
-        
+        ReflectionFlags_EngineSystem
     };
 
 }
