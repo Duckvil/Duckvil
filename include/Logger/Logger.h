@@ -15,10 +15,15 @@
 #define DUCKVIL_LOGGER_BUFFER_MAX 256
 
 #ifdef DUCKVIL_PLATFORM_WINDOWS
-#define DUCKVIL_LOG_INFO(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_info, __VA_ARGS__)
-#define DUCKVIL_LOG_WARNING(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_warning, __VA_ARGS__)
-#define DUCKVIL_LOG_ERROR(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_error, __VA_ARGS__)
-#define DUCKVIL_LOG_FATAL(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_fatal, __VA_ARGS__)
+#define DUCKVIL_LOG_INFO_(logger, loggerData, message, ...) Logger::log(logger, loggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_info, __VA_ARGS__)
+#define DUCKVIL_LOG_WARNING_(logger, loggerData, message, ...) Logger::log(logger, loggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_warning, __VA_ARGS__)
+#define DUCKVIL_LOG_ERROR_(logger, loggerData, message, ...) Logger::log(logger, loggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_error, __VA_ARGS__)
+#define DUCKVIL_LOG_FATAL_(logger, loggerData, message, ...) Logger::log(logger, loggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_fatal, __VA_ARGS__)
+
+#define DUCKVIL_LOG_INFO(message, ...) DUCKVIL_LOG_INFO_(_pData->m_pLogger, _pData->m_pLoggerData, message, __VA_ARGS__)
+#define DUCKVIL_LOG_WARNING(message, ...) DUCKVIL_LOG_WARNING_(_pData->m_pLogger, _pData->m_pLoggerData, message, __VA_ARGS__)
+#define DUCKVIL_LOG_ERROR(message, ...) DUCKVIL_LOG_ERROR_(_pData->m_pLogger, _pData->m_pLoggerData, message, __VA_ARGS__)
+#define DUCKVIL_LOG_FATAL(message, ...) DUCKVIL_LOG_FATAL_(_pData->m_pLogger, _pData->m_pLoggerData, message, __VA_ARGS__)
 #else
 #ifdef DUCKVIL_PLATFORM_LINUX
 #define DUCKVIL_LOG_INFO(message, ...) Logger::log(_pData->m_pLogger, _pData->m_pLoggerData, __LINE__, __FILE__, message, Logger::__verbosity::__verbosity_info, ## __VA_ARGS__)
