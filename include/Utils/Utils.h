@@ -14,8 +14,10 @@ namespace Duckvil { namespace Utils {
     {
         string()
         {
-            m_sText = 0;
+            m_sText = nullptr;
             m_ullLength = 0;
+            m_pMemory = nullptr;
+            m_pAllocator = nullptr;
         }
 
         string(const string& _string, Memory::IMemory* _pMemory = 0, Memory::__free_list_allocator* _pAllocator = 0)
@@ -30,9 +32,9 @@ namespace Duckvil { namespace Utils {
             m_pMemory(std::move(_string.m_pMemory)),
             m_pAllocator(std::move(_string.m_pAllocator))
         {
-            _string.m_pAllocator = 0;
-            _string.m_pMemory = 0;
-            _string.m_sText = 0;
+            _string.m_pAllocator = nullptr;
+            _string.m_pMemory = nullptr;
+            _string.m_sText = nullptr;
             _string.m_ullLength = 0;
         }
 
@@ -76,6 +78,26 @@ namespace Duckvil { namespace Utils {
         {
             Allocate(Length);
             memcpy(m_sText, _sText, Length);
+
+            return *this;
+        }
+
+        string& operator=(string&& _string)
+        {
+            if(&_string == this)
+            {
+                return *this;
+            }
+
+            m_sText = std::move(_string.m_sText);
+            m_ullLength = std::move(_string.m_ullLength);
+            m_pMemory = std::move(_string.m_pMemory);
+            m_pAllocator = std::move(_string.m_pAllocator);
+
+            _string.m_sText = nullptr;
+            _string.m_ullLength = 0;
+            _string.m_pMemory = nullptr;
+            _string.m_pAllocator = nullptr;
 
             return *this;
         }
