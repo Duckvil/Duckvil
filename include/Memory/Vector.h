@@ -17,6 +17,7 @@ namespace Duckvil { namespace Memory {
         IMemory* m_pMemoryInterface;
         void (*m_fnCopy)(IMemory* _pMemoryInterface, const Vector& _vector, Vector* _pThis);
         void (*m_fnDestruct)(IMemory* _pMemoryInterface, __allocator*, __fixed_vector_allocator* _pThis);
+        void (*m_fnResize)(IMemory* _pMemoryInterface, __allocator* _pAllocator, __fixed_vector_allocator** _pContainer, std::size_t _ullNewSize);
         __allocator* m_pAllocator;
 
         static void free_list_copy(IMemory* _pMemoryInterface, const Vector& _vector, Vector* _pThis)
@@ -36,14 +37,21 @@ namespace Duckvil { namespace Memory {
             _pMemoryInterface->m_fnFreeListFree_(_allocator, _pThis);
         }
 
+        static void free_list_resize(IMemory* _pMemoryInterface, __allocator* _pAllocator, __fixed_vector_allocator** _pContainer, std::size_t _ullNewSize)
+        {
+            __free_list_allocator* _allocator = (__free_list_allocator*)_pAllocator;
+
+            fixed_vector_resize(_pMemoryInterface, _allocator, _pContainer, _ullNewSize);
+        }
+
     public:
         Vector()
         {
             m_pMemoryInterface = nullptr;
             m_pContainer = nullptr;
             m_pAllocator = nullptr;
-            m_fnCopy = &free_list_copy;
-            m_fnDestruct = &free_list_destruct;
+            // m_fnCopy = &free_list_copy;
+            // m_fnDestruct = &free_list_destruct;
         }
 
         Vector(IMemory* _pMemoryInterface, __free_list_allocator* _pAllocator, std::size_t _ullCount) :
@@ -52,6 +60,7 @@ namespace Duckvil { namespace Memory {
         {
             m_fnCopy = &free_list_copy;
             m_fnDestruct = &free_list_destruct;
+            m_fnResize = &free_list_resize;
             m_pContainer = m_pMemoryInterface->m_fnFreeListAllocateVectorAllocator(_pMemoryInterface, _pAllocator, sizeof(Type) * _ullCount, sizeof(Type), alignof(Type));
         }
 
@@ -75,11 +84,11 @@ namespace Duckvil { namespace Memory {
             m_fnDestruct(std::move(_vector.m_fnDestruct)),
             m_pAllocator(std::move(_vector.m_pAllocator))
         {
-            _vector.m_pMemoryInterface = 0;
-            _vector.m_pContainer = 0;
-            _vector.m_pAllocator = 0;
-            _vector.m_fnCopy = 0;
-            _vector.m_fnDestruct = 0;
+            _vector.m_pMemoryInterface = nullptr;
+            _vector.m_pContainer = nullptr;
+            _vector.m_pAllocator = nullptr;
+            _vector.m_fnCopy = nullptr;
+            _vector.m_fnDestruct = nullptr;
         }
 
         ~Vector()
@@ -105,11 +114,11 @@ namespace Duckvil { namespace Memory {
             m_fnDestruct = std::move(_vector.m_fnDestruct);
             m_pAllocator = std::move(_vector.m_pAllocator);
 
-            _vector.m_pContainer = 0;
-            _vector.m_pMemoryInterface = 0;
-            _vector.m_fnCopy = 0;
-            _vector.m_fnDestruct = 0;
-            _vector.m_pAllocator = 0;
+            _vector.m_pContainer = nullptr;
+            _vector.m_pMemoryInterface = nullptr;
+            _vector.m_fnCopy = nullptr;
+            _vector.m_fnDestruct = nullptr;
+            _vector.m_pAllocator = nullptr;
 
             return *this;
         }
@@ -123,87 +132,87 @@ namespace Duckvil { namespace Memory {
             return *this;
         }
 
-        inline void* Allocate(const Type& _value)
+        void* Allocate(const Type& _value)
         {
             return fixed_vector_allocate(m_pMemoryInterface, m_pContainer, _value);
         }
 
-        inline const Type& At(std::size_t _ullIndex) const
+        const Type& At(std::size_t _ullIndex) const
         {
             return *(Type*)fixed_vector_at(m_pMemoryInterface, m_pContainer, _ullIndex);
         }
 
-        inline Type& At(std::size_t _ullIndex)
+        Type& At(std::size_t _ullIndex)
         {
             return *(Type*)fixed_vector_at(m_pMemoryInterface, m_pContainer, _ullIndex);
         }
 
-        inline std::size_t Size() const
+        std::size_t Size() const
         {
             return fixed_vector_size(m_pMemoryInterface, m_pContainer) / sizeof(Type);
         }
 
-        inline const Type& operator[](std::size_t _ullIndex) const
+        const Type& operator[](std::size_t _ullIndex) const
         {
             return At(_ullIndex);
         }
 
-        inline Type& operator[](std::size_t _ullIndex)
+        Type& operator[](std::size_t _ullIndex)
         {
             return At(_ullIndex);
         }
 
-        inline const Type& Begin() const
+        const Type& Begin() const
         {
             return *(Type*)fixed_vector_begin(m_pMemoryInterface, m_pContainer);
         }
 
-        inline Type& Begin()
+        Type& Begin()
         {
             return *(Type*)fixed_vector_begin(m_pMemoryInterface, m_pContainer);
         }
 
-        inline const Type& Back() const
+        const Type& Back() const
         {
             return *(Type*)fixed_vector_back(m_pMemoryInterface, m_pContainer);
         }
 
-        inline Type& Back()
+        Type& Back()
         {
             return *(Type*)fixed_vector_back(m_pMemoryInterface, m_pContainer);
         }
 
-        inline bool Empty() const
+        bool Empty() const
         {
             return fixed_vector_empty(m_pMemoryInterface, m_pContainer);
         }
 
-        inline bool Full() const
+        bool Full() const
         {
             return fixed_vector_full(m_pMemoryInterface, m_pContainer);
         }
 
-        inline void Resize(__free_list_allocator* _pParentAllocator, std::size_t _ullNewSize)
+        void Resize(std::size_t _ullNewSize)
         {
-            fixed_vector_resize(m_pMemoryInterface, _pParentAllocator, &m_pContainer, _ullNewSize);
+            m_fnResize(m_pMemoryInterface, m_pAllocator, &m_pContainer, _ullNewSize);
         }
 
-        inline Iterator begin()
+        Iterator begin()
         {
             return Iterator((Type*)m_pContainer->memory);
         }
 
-        inline Iterator end()
+        Iterator end()
         {
             return Iterator((Type*)(m_pContainer->memory + m_pContainer->used));
         }
 
-        inline ConstIterator cbegin()
+        ConstIterator cbegin()
         {
             return ConstIterator((Type*)m_pContainer->memory);
         }
 
-        inline ConstIterator cend()
+        ConstIterator cend()
         {
             return ConstIterator((Type*)(m_pContainer->memory + m_pContainer->used));
         }

@@ -128,7 +128,7 @@ namespace Duckvil {
                     {
                         if(_pData->m_aEngineSystems.Full())
                         {
-                            _pData->m_aEngineSystems.Resize(_pData->m_pHeap, _pData->m_aEngineSystems.Size() * 2);
+                            _pData->m_aEngineSystems.Resize(_pData->m_aEngineSystems.Size() * 2);
                         }
 
                         ISystem* _obj = (ISystem*)RuntimeReflection::create(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pRuntimeReflectionData, _type, 10);
@@ -208,6 +208,7 @@ namespace Duckvil {
             _pData->m_pLogger->dispatch_logs(_pData->m_pLogger, _pData->m_pLoggerData);
 
             DUCKVIL_LOG_INFO("Delta: %f ms", _pData->m_timeData.m_dDelta * 1000.0);
+            DUCKVIL_LOG_INFO("Used memory: %f of %f", (float)_pData->m_pHeap->used / 1024.f, (float)_pData->m_pHeap->capacity / 1024.f);
 
             _pData->m_dOneSecond = 0.0;
         }
