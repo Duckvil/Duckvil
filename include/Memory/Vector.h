@@ -13,93 +13,134 @@ namespace Duckvil { namespace Memory {
         typedef Memory::Iterator<const Type> ConstIterator;
 
     private:
-        __fixed_vector_allocator* m_pAllocator;
+        __fixed_vector_allocator* m_pContainer;
         IMemory* m_pMemoryInterface;
-        void (*m_fnCopy)(IMemory* _pMemoryInterface, __allocator*, const Vector& _vector, Vector* _pThis);
+        void (*m_fnCopy)(IMemory* _pMemoryInterface, const Vector& _vector, Vector* _pThis);
         void (*m_fnDestruct)(IMemory* _pMemoryInterface, __allocator*, __fixed_vector_allocator* _pThis);
-        __allocator* m_pAllocator_;
+        __allocator* m_pAllocator;
+
+        static void free_list_copy(IMemory* _pMemoryInterface, const Vector& _vector, Vector* _pThis)
+        {
+            __free_list_allocator* _allocator = (__free_list_allocator*)_vector.m_pAllocator;
+
+            _pThis->m_pContainer = _pMemoryInterface->m_fnFreeListAllocateVectorAllocator(_pMemoryInterface, _allocator, sizeof(Type) * _vector.Size(), sizeof(Type), alignof(Type));
+            _pThis->m_fnCopy = _vector.m_fnCopy;
+            _pThis->m_fnDestruct = _vector.m_fnDestruct;
+            _pThis->m_pAllocator = _vector.m_pAllocator;
+        }
+
+        static void free_list_destruct(IMemory* _pMemoryInterface, __allocator* _pAllocator, __fixed_vector_allocator* _pThis)
+        {
+            __free_list_allocator* _allocator = (__free_list_allocator*)_pAllocator;
+
+            _pMemoryInterface->m_fnFreeListFree_(_allocator, _pThis);
+        }
 
     public:
         Vector()
         {
-            m_pMemoryInterface = 0;
-            m_pAllocator = 0;
-            m_pAllocator_ = 0;
+            m_pMemoryInterface = nullptr;
+            m_pContainer = nullptr;
+            m_pAllocator = nullptr;
+            m_fnCopy = &free_list_copy;
+            m_fnDestruct = &free_list_destruct;
         }
 
         Vector(IMemory* _pMemoryInterface, __free_list_allocator* _pAllocator, std::size_t _ullCount) :
             m_pMemoryInterface(_pMemoryInterface),
-            m_pAllocator_(_pAllocator)
-        {
-            m_pAllocator = m_pMemoryInterface->m_fnFreeListAllocateVectorAllocator(_pMemoryInterface, _pAllocator, sizeof(Type) * _ullCount, sizeof(Type), alignof(Type));
-            m_fnCopy = [](IMemory* _pMemoryInterface, __allocator* _pAllocator, const Vector& _vector, Vector* _pThis)
-            {
-                __free_list_allocator* _allocator = (__free_list_allocator*)_pAllocator;
-
-                _pThis->m_pAllocator = _pMemoryInterface->m_fnFreeListAllocateVectorAllocator(_pMemoryInterface, _allocator, sizeof(Type) * _vector.Size(), sizeof(Type), alignof(Type));
-                _pThis->m_fnCopy = _vector.m_fnCopy;
-                _pThis->m_fnDestruct = _vector.m_fnDestruct;
-                _pThis->m_pAllocator_ = _vector.m_pAllocator_;
-            };
-            m_fnDestruct = [](IMemory* _pMemoryInterface, __allocator* _pAllocator, __fixed_vector_allocator* _pThis)
-            {
-                __free_list_allocator* _allocator = (__free_list_allocator*)_pAllocator;
-
-                _pMemoryInterface->m_fnFreeListFree_(_allocator, _pThis);
-            };
-        }
-
-        Vector(IMemory* _pMemoryInterface, __fixed_vector_allocator* _pAllocator) :
-            m_pMemoryInterface(_pMemoryInterface),
             m_pAllocator(_pAllocator)
         {
-            m_pAllocator_ = 0;
+            m_fnCopy = &free_list_copy;
+            m_fnDestruct = &free_list_destruct;
+            m_pContainer = m_pMemoryInterface->m_fnFreeListAllocateVectorAllocator(_pMemoryInterface, _pAllocator, sizeof(Type) * _ullCount, sizeof(Type), alignof(Type));
         }
 
-        Vector(const Vector& _vector)
-        {
-            m_pMemoryInterface = _vector.m_pMemoryInterface;
+        // Vector(IMemory* _pMemoryInterface, __fixed_vector_allocator* _pAllocator) :
+        //     m_pMemoryInterface(_pMemoryInterface),
+        //     m_pContainer(_pAllocator)
+        // {
+        //     m_pAllocator = 0;
+        // }
 
-            _vector.m_fnCopy(m_pMemoryInterface, _vector.m_pAllocator_, _vector, this);
+        Vector(const Vector& _vector) :
+            m_pMemoryInterface(_vector.m_pMemoryInterface)
+        {
+            _vector.m_fnCopy(m_pMemoryInterface, _vector, this);
+        }
+
+        Vector(Vector&& _vector) noexcept :
+            m_pContainer(std::move(_vector.m_pContainer)),
+            m_pMemoryInterface(std::move(_vector.m_pMemoryInterface)),
+            m_fnCopy(std::move(_vector.m_fnCopy)),
+            m_fnDestruct(std::move(_vector.m_fnDestruct)),
+            m_pAllocator(std::move(_vector.m_pAllocator))
+        {
+            _vector.m_pMemoryInterface = 0;
+            _vector.m_pContainer = 0;
+            _vector.m_pAllocator = 0;
+            _vector.m_fnCopy = 0;
+            _vector.m_fnDestruct = 0;
         }
 
         ~Vector()
         {
-            if(m_pAllocator_ == nullptr)
+            if(m_pAllocator == nullptr)
             {
                 return;
             }
 
-            m_fnDestruct(m_pMemoryInterface, m_pAllocator_, m_pAllocator);
+            m_fnDestruct(m_pMemoryInterface, m_pAllocator, m_pContainer);
+        }
+
+        Vector& operator=(Vector&& _vector)
+        {
+            if(&_vector == this)
+            {
+                return *this;
+            }
+
+            m_pContainer = std::move(_vector.m_pContainer);
+            m_pMemoryInterface = std::move(_vector.m_pMemoryInterface);
+            m_fnCopy = std::move(_vector.m_fnCopy);
+            m_fnDestruct = std::move(_vector.m_fnDestruct);
+            m_pAllocator = std::move(_vector.m_pAllocator);
+
+            _vector.m_pContainer = 0;
+            _vector.m_pMemoryInterface = 0;
+            _vector.m_fnCopy = 0;
+            _vector.m_fnDestruct = 0;
+            _vector.m_pAllocator = 0;
+
+            return *this;
         }
 
         Vector& operator=(const Vector& _vector)
         {
             m_pMemoryInterface = _vector.m_pMemoryInterface;
 
-            _vector.m_fnCopy(m_pMemoryInterface, _vector.m_pAllocator_, _vector, this);
+            _vector.m_fnCopy(m_pMemoryInterface, _vector, this);
 
             return *this;
         }
 
         inline void* Allocate(const Type& _value)
         {
-            return fixed_vector_allocate(m_pMemoryInterface, m_pAllocator, _value);
+            return fixed_vector_allocate(m_pMemoryInterface, m_pContainer, _value);
         }
 
         inline const Type& At(std::size_t _ullIndex) const
         {
-            return *(Type*)fixed_vector_at(m_pMemoryInterface, m_pAllocator, _ullIndex);
+            return *(Type*)fixed_vector_at(m_pMemoryInterface, m_pContainer, _ullIndex);
         }
 
         inline Type& At(std::size_t _ullIndex)
         {
-            return *(Type*)fixed_vector_at(m_pMemoryInterface, m_pAllocator, _ullIndex);
+            return *(Type*)fixed_vector_at(m_pMemoryInterface, m_pContainer, _ullIndex);
         }
 
         inline std::size_t Size() const
         {
-            return fixed_vector_size(m_pMemoryInterface, m_pAllocator) / sizeof(Type);
+            return fixed_vector_size(m_pMemoryInterface, m_pContainer) / sizeof(Type);
         }
 
         inline const Type& operator[](std::size_t _ullIndex) const
@@ -114,57 +155,57 @@ namespace Duckvil { namespace Memory {
 
         inline const Type& Begin() const
         {
-            return *(Type*)fixed_vector_begin(m_pMemoryInterface, m_pAllocator);
+            return *(Type*)fixed_vector_begin(m_pMemoryInterface, m_pContainer);
         }
 
         inline Type& Begin()
         {
-            return *(Type*)fixed_vector_begin(m_pMemoryInterface, m_pAllocator);
+            return *(Type*)fixed_vector_begin(m_pMemoryInterface, m_pContainer);
         }
 
         inline const Type& Back() const
         {
-            return *(Type*)fixed_vector_back(m_pMemoryInterface, m_pAllocator);
+            return *(Type*)fixed_vector_back(m_pMemoryInterface, m_pContainer);
         }
 
         inline Type& Back()
         {
-            return *(Type*)fixed_vector_back(m_pMemoryInterface, m_pAllocator);
+            return *(Type*)fixed_vector_back(m_pMemoryInterface, m_pContainer);
         }
 
         inline bool Empty() const
         {
-            return fixed_vector_empty(m_pMemoryInterface, m_pAllocator);
+            return fixed_vector_empty(m_pMemoryInterface, m_pContainer);
         }
 
         inline bool Full() const
         {
-            return fixed_vector_full(m_pMemoryInterface, m_pAllocator);
+            return fixed_vector_full(m_pMemoryInterface, m_pContainer);
         }
 
         inline void Resize(__free_list_allocator* _pParentAllocator, std::size_t _ullNewSize)
         {
-            fixed_vector_resize(m_pMemoryInterface, _pParentAllocator, &m_pAllocator, _ullNewSize);
+            fixed_vector_resize(m_pMemoryInterface, _pParentAllocator, &m_pContainer, _ullNewSize);
         }
 
         inline Iterator begin()
         {
-            return Iterator((Type*)m_pAllocator->memory);
+            return Iterator((Type*)m_pContainer->memory);
         }
 
         inline Iterator end()
         {
-            return Iterator((Type*)(m_pAllocator->memory + m_pAllocator->used));
+            return Iterator((Type*)(m_pContainer->memory + m_pContainer->used));
         }
 
         inline ConstIterator cbegin()
         {
-            return ConstIterator((Type*)m_pAllocator->memory);
+            return ConstIterator((Type*)m_pContainer->memory);
         }
 
         inline ConstIterator cend()
         {
-            return ConstIterator((Type*)(m_pAllocator->memory + m_pAllocator->used));
+            return ConstIterator((Type*)(m_pContainer->memory + m_pContainer->used));
         }
     };
 
@@ -174,14 +215,14 @@ namespace Duckvil { namespace Memory {
     // public:
     //     Vector()
     //     {
-    //         m_pAllocator = 0;
+    //         m_pContainer = 0;
     //         m_pMemoryInterface = 0;
     //     }
 
     //     Vector(IMemory* _pMemoryInterface, Allocator* _pAllocator, std::size_t _ullCount)
     //     {
     //         m_pMemoryInterface = _pMemoryInterface;
-    //         m_pAllocator = m_pMemoryInterface->m_fnFreeListAllocateVectorAllocator(_pMemoryInterface, _pAllocator, sizeof(Type) * _ullCount, sizeof(Type), alignof(Type));
+    //         m_pContainer = m_pMemoryInterface->m_fnFreeListAllocateVectorAllocator(_pMemoryInterface, _pAllocator, sizeof(Type) * _ullCount, sizeof(Type), alignof(Type));
     //     }
 
     //     Vector(const Vector<Type, Allocator>& _vector)
@@ -197,7 +238,7 @@ namespace Duckvil { namespace Memory {
     // public:
     //     Vector()
     //     {
-    //         m_pAllocator = 0;
+    //         m_pContainer = 0;
     //         m_pMemoryInterface = 0;
     //     }
 
@@ -209,7 +250,7 @@ namespace Duckvil { namespace Memory {
     //     Vector(IMemory* _pMemoryInterface, __free_list_allocator* _pAllocator, std::size_t _ullCount)
     //     {
     //         m_pMemoryInterface = _pMemoryInterface;
-    //         m_pAllocator = m_pMemoryInterface->m_fnFreeListAllocateVectorAllocator(_pMemoryInterface, _pAllocator, sizeof(Type) * _ullCount, sizeof(Type), alignof(Type));
+    //         m_pContainer = m_pMemoryInterface->m_fnFreeListAllocateVectorAllocator(_pMemoryInterface, _pAllocator, sizeof(Type) * _ullCount, sizeof(Type), alignof(Type));
     //     }
 
     //     Vector(const Vector& _vector)
@@ -224,14 +265,14 @@ namespace Duckvil { namespace Memory {
     // public:
     //     Vector()
     //     {
-    //         m_pAllocator = 0;
+    //         m_pContainer = 0;
     //         m_pMemoryInterface = 0;
     //     }
 
     //     Vector(IMemory* _pMemoryInterface, __linear_allocator* _pAllocator, std::size_t _ullCount)
     //     {
     //         m_pMemoryInterface = _pMemoryInterface;
-    //         // m_pAllocator = m_pMemoryInterface->m_fnFreeListAllocateVectorAllocator(_pMemoryInterface, _pAllocator, sizeof(Type) * _ullCount, sizeof(Type), alignof(Type));
+    //         // m_pContainer = m_pMemoryInterface->m_fnFreeListAllocateVectorAllocator(_pMemoryInterface, _pAllocator, sizeof(Type) * _ullCount, sizeof(Type), alignof(Type));
     //     }
 
     //     Vector(const Vector& _vector)
