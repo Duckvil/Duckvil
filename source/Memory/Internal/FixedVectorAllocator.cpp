@@ -10,7 +10,7 @@ namespace Duckvil { namespace Memory {
     {
         void* _memory = nullptr;
 
-        if(_pAllocator->used > _pAllocator->capacity || _pAllocator->m_ullBlockSize < _ullSize)
+        if(_pAllocator->used >= _pAllocator->capacity || _pAllocator->m_ullBlockSize < _ullSize)
         {
             return _memory;
         }
