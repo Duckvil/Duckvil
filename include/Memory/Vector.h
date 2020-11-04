@@ -64,13 +64,6 @@ namespace Duckvil { namespace Memory {
             m_pContainer = m_pMemoryInterface->m_fnFreeListAllocateVectorAllocator(_pMemoryInterface, _pAllocator, sizeof(Type) * _ullCount, sizeof(Type), alignof(Type));
         }
 
-        Vector(IMemory* _pMemoryInterface, __fixed_vector_allocator* _pAllocator) :
-            m_pMemoryInterface(_pMemoryInterface),
-            m_pContainer(_pAllocator)
-        {
-            m_pAllocator = 0;
-        }
-
         Vector(const Vector& _vector) :
             m_pMemoryInterface(_vector.m_pMemoryInterface)
         {
