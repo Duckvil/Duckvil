@@ -20,4 +20,23 @@ namespace Duckvil { namespace Memory {
         _pMemory->m_fnFreeListFree_(_pAllocator, _pointer);
     }
 
+    template <typename Allocator>
+    static __fixed_vector_allocator* free_list_allocate_allocator(IMemory* _pMemoryInterface, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize, uint8_t _ucAlignment)
+    {
+        return nullptr;
+    }
+
+    template <>
+    static __fixed_vector_allocator* free_list_allocate_allocator<__fixed_vector_allocator>(IMemory* _pMemoryInterface, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize, uint8_t _ucAlignment)
+    {
+        __fixed_vector_allocator* _vector_allocator = (__fixed_vector_allocator*)free_list_allocate(_pMemoryInterface, _pAllocator, sizeof(__fixed_vector_allocator) + _ullSize, _ucAlignment);
+
+        _vector_allocator->capacity = _ullSize;
+        _vector_allocator->used = 0;
+        _vector_allocator->m_ullBlockSize = _ullTypeSize;
+        _vector_allocator->memory = (uint8_t*)_vector_allocator + sizeof(__fixed_vector_allocator);
+
+        return _vector_allocator;
+    }
+
 }}

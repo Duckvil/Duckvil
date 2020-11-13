@@ -9,15 +9,9 @@
 namespace Duckvil { namespace Memory {
 
     template <typename Type>
-    inline Type* fixed_vector_allocate(IMemory* _pMemory, __fixed_vector_allocator* _pAllocator, const Type& _pData)
+    inline Type* fixed_vector_allocate(IMemory* _pMemory, __fixed_vector_allocator* _pAllocator, const Type& _data)
     {
-        return (Type*)_pMemory->m_fnFixedVectorAllocate_(_pAllocator, &_pData, sizeof(Type), alignof(Type));
-    }
-
-    template <std::size_t Length>
-    inline const char* fixed_vector_allocate(IMemory* _pMemory, __fixed_vector_allocator* _pAllocator, const char (&_pData)[Length])
-    {
-        return _pMemory->m_fnFixedVectorAllocateCStr_(_pAllocator, _pData, Length);
+        return (Type*)_pMemory->m_fnFixedVectorAllocate_(_pAllocator, &_data, sizeof(Type), alignof(Type));
     }
 
     inline void* fixed_vector_begin(IMemory* _pMemory, __fixed_vector_allocator* _pAllocator)
@@ -53,6 +47,11 @@ namespace Duckvil { namespace Memory {
     inline std::size_t fixed_vector_size(IMemory* _pMemory, __fixed_vector_allocator* _pAllocator)
     {
         return _pMemory->m_fnFixedVectorSize_(_pAllocator);
+    }
+
+    inline std::size_t fixed_vector_capacity(IMemory* _pMemory, __fixed_vector_allocator* _pAllocator)
+    {
+        return _pMemory->m_fnFixedVectorCapacity_(_pAllocator);
     }
 
 }}

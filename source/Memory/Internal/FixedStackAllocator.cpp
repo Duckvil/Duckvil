@@ -23,24 +23,6 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    const char* fixed_stack_allocate(__fixed_stack_allocator* _pAllocator, const char* _pData, std::size_t _ullLength)
-    {
-        void* _memory = nullptr;
-
-        if(_pAllocator->capacity < _pAllocator->used + _ullLength)
-        {
-            return (const char*)_memory;
-        }
-
-        _memory = (void*)(_pAllocator->memory + _pAllocator->used);
-
-        memcpy(_memory, _pData, _ullLength);
-
-        _pAllocator->used += _ullLength;
-
-        return (const char*)_memory;
-    }
-
     void* fixed_stack_allocator_top(__fixed_stack_allocator* _pAllocator)
     {
         uint8_t* _current_memory = _pAllocator->memory + _pAllocator->used;

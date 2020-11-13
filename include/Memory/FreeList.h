@@ -2,31 +2,55 @@
 
 #include "Memory/Memory.h"
 #include "Memory/FreeListAllocator.h"
-
 #include "Memory/Vector.h"
+#include "Memory/Stack.h"
 
 namespace Duckvil { namespace Memory {
+
+// Copied FreeList will share the same memory region from which we copied it
 
     class FreeList
     {
     private:
-        __allocator* m_pAllocator;
         IMemory* m_pMemory;
         __free_list_allocator* m_pContainer;
 
     public:
-        FreeList(IMemory* _pMemory, __linear_allocator* _pAllocator, std::size_t _ullSize) :
-            m_pAllocator(_pAllocator),
-            m_pMemory(_pMemory)
+        FreeList()
         {
-            m_pContainer = _pMemory->m_fnAllocateFreeListAllocator(_pAllocator, _ullSize);
+            m_pContainer = nullptr;
+            m_pMemory = nullptr;
         }
 
-        FreeList(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize) :
-            m_pAllocator(_pAllocator),
-            m_pMemory(_pMemory)
+    // Allocate FreeList allocator uisng LinearAllocator with specified size
+        FreeList(IMemory* _pMemory, __linear_allocator* _pAllocator, std::size_t _ullSize) :
+            m_pMemory(_pMemory),
+            m_pContainer(_pMemory->m_fnAllocateFreeListAllocator(_pAllocator, _ullSize))
         {
-            // m_pContainer = _pMemory->m_fnAllocateFreeListAllocator(_pAllocator, _ullSize);
+
+        }
+
+    // Use existing FreeList allocator
+        FreeList(IMemory* _pMemory, __free_list_allocator* _pAllocator) :
+            m_pMemory(_pMemory),
+            m_pContainer(_pAllocator)
+        {
+
+        }
+
+        FreeList(const FreeList& _freeList) :
+            m_pMemory(_freeList.m_pMemory),
+            m_pContainer(_freeList.m_pContainer)
+        {
+
+        }
+
+        FreeList(FreeList&& _freeList) noexcept:
+            m_pMemory(std::move(_freeList.m_pMemory)),
+            m_pContainer(std::move(_freeList.m_pContainer))
+        {
+            _freeList.m_pMemory = nullptr;
+            _freeList.m_pContainer = nullptr;
         }
 
         ~FreeList()
@@ -34,10 +58,57 @@ namespace Duckvil { namespace Memory {
 
         }
 
+        FreeList& operator=(const FreeList& _freeList)
+        {
+            m_pMemory = _freeList.m_pMemory;
+            m_pContainer = _freeList.m_pContainer;
+
+            return *this;
+        }
+
+        FreeList& operator=(FreeList&& _freeList)
+        {
+            m_pMemory = std::move(_freeList.m_pMemory);
+            m_pContainer = std::move(_freeList.m_pContainer);
+
+            _freeList.m_pMemory = nullptr;
+            _freeList.m_pContainer = nullptr;
+
+            return *this;
+        }
+
         template <typename Type>
         void Allocate(Vector<Type>& _container, std::size_t _ullCount)
         {
             _container = Vector<Type>(m_pMemory, m_pContainer, _ullCount);
+        }
+
+        // template <typename Type>
+        // void Allocate(Vector<Type>* _container, std::size_t _ullCount)
+        // {
+        //     *_container = Vector<Type>(m_pMemory, m_pContainer, _ullCount);
+        // }
+
+        // template <typename Type>
+        // void Allocate(Vector<Type>** _container, std::size_t _ullCount)
+        // {
+        //     Vector<Type>* _vec = (Vector<Type>*)free_list_allocate(m_pMemory, m_pContainer, sizeof(Vector<Type>) + (_ullCount * sizeof(Type)), alignof(Vector<Type>));
+
+        //     *_vec = Vector<Type>(m_pMemory, m_pContainer, _ullCount);
+
+        //     *_container = _vec;
+        // }
+
+        template <typename Type>
+        void Free(Vector<Type>& _container)
+        {
+            _container.~Vector<Type>();
+        }
+
+        template <typename Type>
+        void Allocate(Stack<Type>& _container, std::size_t _ullCount)
+        {
+            // _container = Vector<Type>(m_pMemory, m_pContainer, _ullCount);
         }
 
     };

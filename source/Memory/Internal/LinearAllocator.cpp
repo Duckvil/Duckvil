@@ -23,24 +23,6 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    const char* linear_allocate(__linear_allocator& _allocator, const char* _pData, std::size_t _ullLength)
-    {
-        void* _memory = nullptr;
-
-        if(_allocator.capacity < _allocator.used + _ullLength)
-        {
-            return (const char*)_memory;
-        }
-
-        _memory = (void*)(_allocator.memory + _allocator.used);
-
-        memcpy(_memory, _pData, _ullLength);
-
-        _allocator.used += _ullLength;
-
-        return (const char*)_memory;
-    }
-
     void linear_clear(__linear_allocator& _allocator)
     {
         memset(_allocator.memory, 0, _allocator.capacity);
@@ -64,24 +46,6 @@ namespace Duckvil { namespace Memory {
         _pAllocator->used += _ullSize + _padding;
 
         return _memory;
-    }
-
-    const char* linear_allocate(__linear_allocator* _pAllocator, const char* _pData, std::size_t _ullLength)
-    {
-        void* _memory = nullptr;
-
-        if(_pAllocator->capacity < _pAllocator->used + _ullLength)
-        {
-            return (const char*)_memory;
-        }
-
-        _memory = (void*)(_pAllocator->memory + _pAllocator->used);
-
-        memcpy(_memory, _pData, _ullLength);
-
-        _pAllocator->used += _ullLength;
-
-        return (const char*)_memory;
     }
 
     void linear_clear(__linear_allocator* _pAllocator)

@@ -76,52 +76,6 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    __stack_allocator* allocate_stack_allocator(__linear_allocator* _pAllocator, std::size_t _ullSize)
-    {
-        if(_pAllocator->capacity < _ullSize + _pAllocator->used)
-        {
-            return 0;
-        }
-
-        uint8_t _padding = 0;
-        __stack_allocator* _memory = (__stack_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__stack_allocator), _padding);
-        std::size_t _size = sizeof(__stack_allocator);
-
-        _memory->capacity = _ullSize;
-        _memory->memory = (uint8_t*)_memory + _size;
-        _memory->used = 0;
-
-        memset(_memory->memory, 0, _ullSize);
-
-        _pAllocator->used += _size + _ullSize;
-
-        return _memory;
-    }
-
-    __queue_allocator* allocate_queue_allocator(__linear_allocator* _pAllocator, std::size_t _ullSize)
-    {
-        if(_pAllocator->capacity < _ullSize + _pAllocator->used)
-        {
-            return 0;
-        }
-
-        uint8_t _padding = 0;
-        __queue_allocator* _memory = (__queue_allocator*)calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, alignof(__queue_allocator), _padding);
-        std::size_t _size = sizeof(__queue_allocator);
-
-        _memory->capacity = _ullSize;
-        _memory->memory = (uint8_t*)_memory + _size;
-        _memory->used = 0;
-        _memory->m_ullTail = 0;
-        _memory->m_ullHead = 0;
-
-        memset(_memory->memory, 0, _ullSize);
-
-        _pAllocator->used += _size + _ullSize;
-
-        return _memory;
-    }
-
     __fixed_array_allocator* allocate_fixed_array_allocator(__linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
         if(_pAllocator->capacity < _ullSize + _pAllocator->used)

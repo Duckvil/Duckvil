@@ -64,8 +64,6 @@ Duckvil::Utils::CommandArgumentsParser::Descriptor* g_pDescriptors = { 0 };
 // template <typename Type>
 // Test(alloc2, Type) -> Test<Type, alloc2>;
 
-#include "Memory/FreeList.h"
-
 int main(int argc, char* argv[])
 {
     Duckvil::Utils::CommandArgumentsParser _parser(argc, argv);
@@ -91,16 +89,6 @@ int main(int argc, char* argv[])
     Duckvil::Memory::__linear_allocator _mainMemoryAllocator;
 
     _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024);
-
-    Duckvil::Memory::FreeList _free(_memoryInterface, &_mainMemoryAllocator, 1024);
-
-    Duckvil::Memory::Vector<float> _vec;
-
-    _free.Allocate(_vec, 2);
-
-    float* _a = (float*)_vec.Allocate(10.f);
-    float* _b = (float*)_vec.Allocate(20.f);
-    float* _c = (float*)_vec.Allocate(40.f);
 
     Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnAllocateFreeListAllocator(&_mainMemoryAllocator, 512 * 1024);
 
