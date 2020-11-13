@@ -1,14 +1,15 @@
 #pragma once
 
 #include "Memory/Memory.h"
+#include "Memory/SlotArray.h"
+#include "Memory/FreeList.h"
+#include "Memory/Vector.h"
 
 #include "RuntimeReflection/RuntimeReflection.h"
 #include "RuntimeReflection/Recorder.h"
 
 #include "PlugNPlay/Module.h"
 #include "PlugNPlay/AutoLoader.h"
-
-#include "Memory/SlotArray.h"
 
 #include "Logger/Logger.h"
 
@@ -32,6 +33,8 @@ namespace Duckvil {
 
         Memory::IMemory* m_pMemory;
         Memory::__free_list_allocator* m_pHeap;
+
+        Memory::FreeList m_heap;
 
         RuntimeReflection::__ftable* m_pRuntimeReflection;
         RuntimeReflection::__recorder_ftable* m_pRuntimeReflectionRecorder;

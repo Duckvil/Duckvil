@@ -55,12 +55,117 @@ namespace Duckvil {
     {
         _pData->m_pHeap = _pAllocator;
         _pData->m_pMemory = _pMemoryInterface;
-        _pData->m_aLoadedModules = 0;
+        _pData->m_aLoadedModules = nullptr;
         _pData->m_uiLoadedModulesCount = 0;
         _pData->m_dOneSecond = 0;
         _pData->m_time = time_init();
+        _pData->m_heap = Memory::FreeList(_pData->m_pMemory, _pData->m_pHeap);
 
-        _pData->m_aEngineSystems = Memory::Vector<system>(_pData->m_pMemory, _pData->m_pHeap, 1);
+        // {
+        //     Memory::Vector<Memory::Vector<float>> _vec;
+
+        //     _pData->m_heap.Allocate(_vec, 1);
+        //     _pData->m_heap.Allocate(_vec[0], 1);
+
+        //     Memory::Vector<float>& _vecc = _vec[0];
+
+        //     // _vec[0].Allocate(1.f);
+        // }
+
+        // {
+        //     Memory::Vector<Memory::Vector<float>> _vec;
+
+        //     _pData->m_heap.Allocate(_vec, 2);
+
+        //     {
+        //         Memory::Vector<float> _vec2;
+
+        //         _pData->m_heap.Allocate(_vec2, 3);
+
+        //         _vec2.Resize(2);
+
+        //         _vec2.Allocate(1.f);
+        //         _vec.Allocate(_vec2);
+        //     }
+
+        //     _vec.Resize(2);
+
+        //     {
+        //         Memory::Vector<float> _vec2;
+
+        //         _pData->m_heap.Allocate(_vec2, 1);
+
+        //         _vec2.Resize(2);
+
+        //         _vec2.Allocate(4.f);
+        //         _vec.Allocate(_vec2);
+        //     }
+
+        //     _vec[0].Resize(3);
+
+        //     _vec[0].Allocate(2.f);
+        //     _vec[0].Allocate(3.f);
+
+        //     printf("%f\n", _vec[0][0]);
+        //     printf("%f\n", _vec[0][1]);
+        //     printf("%f\n", _vec[0][2]);
+        //     printf("%f\n", _vec[1][0]);
+
+        //     // Memory::Vector<float> _vec2;
+
+        //     // _pData->m_heap.Allocate(_vec2, 1);
+        //     // _vec2.Resize(2);
+        //     // _vec2.Allocate(1.f);
+        // }
+
+        // {
+        //     Memory::Vector<Memory::Vector<float>> _vec;
+
+        //     _pData->m_heap.Allocate(_vec, 2);
+
+        //     {
+        //         Memory::Vector<float> _vec2;
+
+        //         _pData->m_heap.Allocate(_vec2, 1);
+
+        //         _vec2.Allocate(1.f);
+
+        //         _vec2.Resize(2);
+
+        //         _vec2.Allocate(11.f);
+
+        //         _vec.Allocate(_vec2);
+        //     }
+
+        //     {
+        //         Memory::Vector<float> _vec3;
+
+        //         _pData->m_heap.Allocate(_vec3, 1);
+
+        //         _vec3.Allocate(2.f);
+
+        //         _vec.Allocate(_vec3);
+        //     }
+
+        //     _vec.Resize(3);
+
+        //     {
+        //         Memory::Vector<float> _vec4;
+
+        //         _pData->m_heap.Allocate(_vec4, 1);
+
+        //         _vec4.Allocate(3.f);
+
+        //         _vec.Allocate(_vec4);
+        //     }
+
+        //     printf("%f\n", _vec[0][0]);
+        //     printf("%f\n", _vec[0][1]);
+        //     printf("%f\n", _vec[1][0]);
+        //     printf("%f\n", _vec[2][0]);
+        // }
+
+        _pData->m_heap.Allocate(_pData->m_aEngineSystems, 1);
 
         _pData->m_time.init(&_pData->m_timeData);
 
