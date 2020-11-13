@@ -1,6 +1,6 @@
 #include "Memory\Internal\FixedStackAllocator.h"
 #include "RuntimeReflection/Recorder.h"
-DUCKVIL_RUNTIME_REFLECTION_RECORD(10)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(11)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;

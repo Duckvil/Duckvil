@@ -19,6 +19,7 @@ _property = record_property<std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STA
 _property = record_property<Memory::IMemory*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Utils::string, m_pMemory), "m_pMemory");
 _property = record_property<Memory::__free_list_allocator*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Utils::string, m_pAllocator), "m_pAllocator");
 record_function<Duckvil::Utils::string, string&, const char>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::string::operator=, "operator=");
+record_function<Duckvil::Utils::string, string&, string&&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::string::operator=, "operator=");
 record_function<Duckvil::Utils::string, string&, const string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::string::operator=, "operator=");
 record_function<Duckvil::Utils::string, void, std::size_t, Memory::IMemory*, Memory::__free_list_allocator*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::string::Allocate, "Allocate");
 }

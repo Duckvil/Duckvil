@@ -1,6 +1,6 @@
 #include "Memory\Internal\FreeListAllocator.h"
 #include "RuntimeReflection/Recorder.h"
-DUCKVIL_RUNTIME_REFLECTION_RECORD(12)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(13)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;

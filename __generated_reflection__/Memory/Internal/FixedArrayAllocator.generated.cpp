@@ -1,6 +1,6 @@
 #include "Memory\Internal\FixedArrayAllocator.h"
 #include "RuntimeReflection/Recorder.h"
-DUCKVIL_RUNTIME_REFLECTION_RECORD(8)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(9)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
