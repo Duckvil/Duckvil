@@ -22,22 +22,22 @@ namespace Duckvil { namespace Memory {
 
     inline bool fixed_stack_empty(__fixed_stack_allocator* _pAllocator)
     {
-        return _pAllocator->used == 0;
+        return _pAllocator->m_ullUsed == 0;
     }
 
     inline bool fixed_stack_full(__fixed_stack_allocator* _pAllocator)
     {
-        return _pAllocator->used == _pAllocator->capacity;
+        return _pAllocator->m_ullUsed == _pAllocator->m_ullCapacity;
     }
 
     inline std::size_t fixed_stack_size(__fixed_stack_allocator* _pAllocator)
     {
-        return _pAllocator->used;
+        return _pAllocator->m_ullUsed;
     }
 
     inline std::size_t fixed_stack_capacity(__fixed_stack_allocator* _pAllocator)
     {
-        return _pAllocator->capacity;
+        return _pAllocator->m_ullCapacity;
     }
 
 }}

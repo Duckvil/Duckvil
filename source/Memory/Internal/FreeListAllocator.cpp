@@ -58,7 +58,7 @@ namespace Duckvil { namespace Memory {
             _header->m_ullSize = _total_size;
             _header->m_ucPadding = _padding;
 
-            _pAllocator->used += _total_size;
+            _pAllocator->m_ullUsed += _total_size;
 
             return (void*)_aligned_address;
         }
@@ -120,7 +120,7 @@ namespace Duckvil { namespace Memory {
             _header->m_ullSize = _total_size;
             _header->m_ucPadding = _padding;
 
-            _pAllocator->used += _total_size;
+            _pAllocator->m_ullUsed += _total_size;
 
             __free_list_node* _new_node = (__free_list_node*)_aligned_address;
 
@@ -186,7 +186,7 @@ namespace Duckvil { namespace Memory {
             _header->m_ullSize = _total_size;
             _header->m_ucPadding = _padding;
 
-            _pAllocator->used += _total_size;
+            _pAllocator->m_ullUsed += _total_size;
 
             __free_list_node* _new_node = (__free_list_node*)_aligned_address;
 
@@ -249,13 +249,13 @@ namespace Duckvil { namespace Memory {
             _previous_node->m_pNext = _iterator->m_pNext;
         }
 
-        _pAllocator->used -= _block_size;
+        _pAllocator->m_ullUsed -= _block_size;
     }
 
     void free_list_clear(__free_list_allocator* _pAllocator)
     {
-        memset(_pAllocator->memory, 0, _pAllocator->capacity);
-        _pAllocator->used = 0;
+        memset(_pAllocator->m_pMemory, 0, _pAllocator->m_ullCapacity);
+        _pAllocator->m_ullUsed = 0;
     }
 
 }}

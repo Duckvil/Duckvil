@@ -31,10 +31,10 @@ namespace Duckvil { namespace Memory {
     {
         __fixed_vector_allocator* _vector_allocator = (__fixed_vector_allocator*)free_list_allocate(_pMemoryInterface, _pAllocator, sizeof(__fixed_vector_allocator) + _ullSize, _ucAlignment);
 
-        _vector_allocator->capacity = _ullSize;
-        _vector_allocator->used = 0;
+        _vector_allocator->m_ullCapacity = _ullSize;
+        _vector_allocator->m_ullUsed = 0;
         _vector_allocator->m_ullBlockSize = _ullTypeSize;
-        _vector_allocator->memory = (uint8_t*)_vector_allocator + sizeof(__fixed_vector_allocator);
+        _vector_allocator->m_pMemory = (uint8_t*)_vector_allocator + sizeof(__fixed_vector_allocator);
 
         return _vector_allocator;
     }

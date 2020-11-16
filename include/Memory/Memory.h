@@ -11,9 +11,9 @@ namespace Duckvil { namespace Memory {
 
     struct __allocator
     {
-        std::size_t capacity = 0;
-        std::size_t used = 0;
-        uint8_t* memory = 0;
+        std::size_t m_ullCapacity = 0;
+        std::size_t m_ullUsed = 0;
+        uint8_t* m_pMemory = 0; // It always points to the end of whole structure where the data is stored
     };
 
     struct __linear_allocator : public __allocator

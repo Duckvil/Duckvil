@@ -8,56 +8,56 @@ namespace Duckvil { namespace Memory {
     {
         void* _memory = nullptr;
 
-        if(_pAllocator->capacity < _pAllocator->used + _ullSize || _pAllocator->m_ullBlockSize < _ullSize)
+        if(_pAllocator->m_ullCapacity < _pAllocator->m_ullUsed + _ullSize || _pAllocator->m_ullBlockSize < _ullSize)
         {
             return _memory;
         }
 
         uint8_t _padding = 0;
-        _memory = calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, _ucAlignment, _padding);
+        _memory = calculate_aligned_pointer(_pAllocator->m_pMemory + _pAllocator->m_ullUsed, _ucAlignment, _padding);
 
         memcpy(_memory, _pData, _ullSize);
 
-        _pAllocator->used += _pAllocator->m_ullBlockSize + _padding;
+        _pAllocator->m_ullUsed += _pAllocator->m_ullBlockSize + _padding;
 
         return _memory;
     }
 
     void* fixed_stack_allocator_top(__fixed_stack_allocator* _pAllocator)
     {
-        uint8_t* _current_memory = _pAllocator->memory + _pAllocator->used;
+        uint8_t* _current_memory = _pAllocator->m_pMemory + _pAllocator->m_ullUsed;
 
         return _current_memory - _pAllocator->m_ullBlockSize;
     }
 
     void fixed_stack_allocator_pop(__fixed_stack_allocator* _pAllocator)
     {
-        if(_pAllocator->used == 0)
+        if(_pAllocator->m_ullUsed == 0)
         {
             return;
         }
 
-        uint8_t* _current_memory = _pAllocator->memory + _pAllocator->used;
+        uint8_t* _current_memory = _pAllocator->m_pMemory + _pAllocator->m_ullUsed;
 
         memset(_current_memory - _pAllocator->m_ullBlockSize, 0, _pAllocator->m_ullBlockSize);
 
-        _pAllocator->used -= _pAllocator->m_ullBlockSize;
+        _pAllocator->m_ullUsed -= _pAllocator->m_ullBlockSize;
     }
 
     bool fixed_stack_allocator_empty(__fixed_stack_allocator* _pAlloctor)
     {
-        return _pAlloctor->used == 0;
+        return _pAlloctor->m_ullUsed == 0;
     }
 
     bool fixed_stack_allocator_full(__fixed_stack_allocator* _pAllocator)
     {
-        return _pAllocator->used == _pAllocator->capacity;
+        return _pAllocator->m_ullUsed == _pAllocator->m_ullCapacity;
     }
 
     void fixed_stack_clear(__fixed_stack_allocator* _pAllocator)
     {
-        memset(_pAllocator->memory, 0, _pAllocator->capacity);
-        _pAllocator->used = 0;
+        memset(_pAllocator->m_pMemory, 0, _pAllocator->m_ullCapacity);
+        _pAllocator->m_ullUsed = 0;
     }
 
 }}

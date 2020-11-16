@@ -92,22 +92,22 @@ namespace Duckvil { namespace Memory {
 
         inline Iterator begin()
         {
-            return Iterator((Type*)m_pAllocator->memory);
+            return Iterator((Type*)m_pAllocator->m_pMemory);
         }
 
         inline Iterator end()
         {
-            return Iterator((Type*)(m_pAllocator->memory + m_pAllocator->used));
+            return Iterator((Type*)(m_pAllocator->m_pMemory + m_pAllocator->m_ullUsed));
         }
 
         inline ConstIterator cbegin()
         {
-            return ConstIterator((Type*)m_pAllocator->memory);
+            return ConstIterator((Type*)m_pAllocator->m_pMemory);
         }
 
         inline ConstIterator cend()
         {
-            return ConstIterator((Type*)(m_pAllocator->memory + m_pAllocator->used));
+            return ConstIterator((Type*)(m_pAllocator->m_pMemory + m_pAllocator->m_ullUsed));
         }
     };
 

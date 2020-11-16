@@ -8,55 +8,55 @@ namespace Duckvil { namespace Memory {
     {
         void* _memory = nullptr;
 
-        if(_pAllocator->used > _pAllocator->capacity || _pAllocator->m_ullBlockSize < _ullSize)
+        if(_pAllocator->m_ullUsed > _pAllocator->m_ullCapacity || _pAllocator->m_ullBlockSize < _ullSize)
         {
             return _memory;
         }
 
         uint8_t _padding = 0;
-        _memory = calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, _ucAlignment, _padding);
+        _memory = calculate_aligned_pointer(_pAllocator->m_pMemory + _pAllocator->m_ullUsed, _ucAlignment, _padding);
 
         memcpy(_memory, _pData, _ullSize);
 
-        _pAllocator->used += _pAllocator->m_ullBlockSize + _padding;
+        _pAllocator->m_ullUsed += _pAllocator->m_ullBlockSize + _padding;
 
         return _memory;
     }
 
     void* fixed_array_begin(__fixed_array_allocator* _pAllocator)
     {
-        return _pAllocator->memory;
+        return _pAllocator->m_pMemory;
     }
 
     void* fixed_array_back(__fixed_array_allocator* _pAllocator)
     {
-        return _pAllocator->memory + _pAllocator->used - _pAllocator->m_ullBlockSize;
+        return _pAllocator->m_pMemory + _pAllocator->m_ullUsed - _pAllocator->m_ullBlockSize;
     }
 
     void* fixed_array_at(__fixed_array_allocator* _pAllocator, std::size_t _ullIndex)
     {
-        return _pAllocator->memory + (_ullIndex * _pAllocator->m_ullBlockSize);
+        return _pAllocator->m_pMemory + (_ullIndex * _pAllocator->m_ullBlockSize);
     }
 
     std::size_t fixed_array_size(__fixed_array_allocator* _pAllocator)
     {
-        return _pAllocator->used;
+        return _pAllocator->m_ullUsed;
     }
 
     bool fixed_array_empty(__fixed_array_allocator* _pAllocator)
     {
-        return _pAllocator->used == 0;
+        return _pAllocator->m_ullUsed == 0;
     }
 
     bool fixed_array_full(__fixed_array_allocator* _pAllocator)
     {
-        return _pAllocator->used == _pAllocator->capacity;
+        return _pAllocator->m_ullUsed == _pAllocator->m_ullCapacity;
     }
 
     void fixed_array_clear(__fixed_array_allocator* _pAllocator)
     {
-        memset(_pAllocator->memory, 0, _pAllocator->capacity);
-        _pAllocator->used = 0;
+        memset(_pAllocator->m_pMemory, 0, _pAllocator->m_ullCapacity);
+        _pAllocator->m_ullUsed = 0;
     }
 
 }}

@@ -10,71 +10,71 @@ namespace Duckvil { namespace Memory {
     {
         void* _memory = nullptr;
 
-        if(_pAllocator->used >= _pAllocator->capacity || _pAllocator->m_ullBlockSize < _ullSize)
+        if(_pAllocator->m_ullUsed >= _pAllocator->m_ullCapacity || _pAllocator->m_ullBlockSize < _ullSize)
         {
             return _memory;
         }
 
         uint8_t _padding = 0;
-        _memory = calculate_aligned_pointer(_pAllocator->memory + _pAllocator->used, _ucAlignment, _padding);
+        _memory = calculate_aligned_pointer(_pAllocator->m_pMemory + _pAllocator->m_ullUsed, _ucAlignment, _padding);
 
         memcpy(_memory, _pData, _ullSize);
 
-        _pAllocator->used += _pAllocator->m_ullBlockSize + _padding;
+        _pAllocator->m_ullUsed += _pAllocator->m_ullBlockSize + _padding;
 
         return _memory;
     }
 
     void* fixed_vector_begin(__fixed_vector_allocator* _pAllocator)
     {
-        return _pAllocator->memory;
+        return _pAllocator->m_pMemory;
     }
 
     void* fixed_vector_back(__fixed_vector_allocator* _pAllocator)
     {
-        return _pAllocator->memory + _pAllocator->used - _pAllocator->m_ullBlockSize;
+        return _pAllocator->m_pMemory + _pAllocator->m_ullUsed - _pAllocator->m_ullBlockSize;
     }
 
     void* fixed_vector_at(__fixed_vector_allocator* _pAllocator, std::size_t _ullIndex)
     {
-        return _pAllocator->memory + (_ullIndex * _pAllocator->m_ullBlockSize);
+        return _pAllocator->m_pMemory + (_ullIndex * _pAllocator->m_ullBlockSize);
     }
 
     std::size_t fixed_vector_size(__fixed_vector_allocator* _pAllocator)
     {
-        return _pAllocator->used;
+        return _pAllocator->m_ullUsed;
     }
 
     std::size_t fixed_vector_capacity(__fixed_vector_allocator* _pAllocator)
     {
-        return _pAllocator->capacity;
+        return _pAllocator->m_ullCapacity;
     }
 
     bool fixed_vector_empty(__fixed_vector_allocator* _pAllocator)
     {
-        return _pAllocator->used == 0;
+        return _pAllocator->m_ullUsed == 0;
     }
 
     bool fixed_vector_full(__fixed_vector_allocator* _pAllocator)
     {
-        return _pAllocator->used == _pAllocator->capacity;
+        return _pAllocator->m_ullUsed == _pAllocator->m_ullCapacity;
     }
 
     void fixed_vector_resize(IMemory* _pInterface, __free_list_allocator* _pParentAllocator, __fixed_vector_allocator** _pAllocator, std::size_t _ullNewSize)
     {
-        if(_pParentAllocator->capacity < _ullNewSize + _pParentAllocator->used)
+        if(_pParentAllocator->m_ullCapacity < _ullNewSize + _pParentAllocator->m_ullUsed)
         {
             return;
         }
 
         __fixed_vector_allocator* _allocator = (__fixed_vector_allocator*)free_list_allocate(_pInterface, _pParentAllocator, sizeof(__fixed_vector_allocator) + (_ullNewSize * (*_pAllocator)->m_ullBlockSize), alignof(__fixed_vector_allocator));
 
-        _allocator->memory = (uint8_t*)_allocator + sizeof(__fixed_vector_allocator);
-        _allocator->capacity = _ullNewSize * (*_pAllocator)->m_ullBlockSize;
-        _allocator->used = (*_pAllocator)->used;
+        _allocator->m_pMemory = (uint8_t*)_allocator + sizeof(__fixed_vector_allocator);
+        _allocator->m_ullCapacity = _ullNewSize * (*_pAllocator)->m_ullBlockSize;
+        _allocator->m_ullUsed = (*_pAllocator)->m_ullUsed;
         _allocator->m_ullBlockSize = (*_pAllocator)->m_ullBlockSize;
 
-        memcpy(_allocator->memory, (*_pAllocator)->memory, (*_pAllocator)->used);
+        memcpy(_allocator->m_pMemory, (*_pAllocator)->m_pMemory, (*_pAllocator)->m_ullUsed);
 
         __fixed_vector_allocator* _ptr = *_pAllocator;
 
@@ -85,8 +85,8 @@ namespace Duckvil { namespace Memory {
 
     void fixed_vector_clear(__fixed_vector_allocator* _pAllocator)
     {
-        memset(_pAllocator->memory, 0, _pAllocator->capacity);
-        _pAllocator->used = 0;
+        memset(_pAllocator->m_pMemory, 0, _pAllocator->m_ullCapacity);
+        _pAllocator->m_ullUsed = 0;
     }
 
 }}

@@ -18,22 +18,22 @@ namespace Duckvil { namespace Memory {
 
     bool linear_empty(__linear_allocator* _pAllocator)
     {
-        return _pAllocator->used == 0;
+        return _pAllocator->m_ullUsed == 0;
     }
 
     bool linear_full(__linear_allocator* _pAllocator)
     {
-        return _pAllocator->used == _pAllocator->capacity;
+        return _pAllocator->m_ullUsed == _pAllocator->m_ullCapacity;
     }
 
     std::size_t linear_size(__linear_allocator* _pAllocator)
     {
-        return _pAllocator->used;
+        return _pAllocator->m_ullUsed;
     }
 
     std::size_t linear_capacity(__linear_allocator* _pAllocator)
     {
-        return _pAllocator->capacity;
+        return _pAllocator->m_ullCapacity;
     }
 
 }}
