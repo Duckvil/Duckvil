@@ -25,7 +25,7 @@ DUCKVIL_TEST(VectorAllocation)
         DUCKVIL_TEST_EQUAL(_vec.At(0), 10.f, "Wrong value");
         DUCKVIL_TEST_EQUAL(_vec.At(1), 20.f, "Wrong value");
 
-        _vec.Resize(16);
+        _vec.Resize(4);
 
         DUCKVIL_TEST_EXP(!_vec.Full(), "Vector is full");
 
