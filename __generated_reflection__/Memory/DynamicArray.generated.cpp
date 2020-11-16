@@ -1,6 +1,6 @@
 #include "Memory\DynamicArray.h"
 #include "RuntimeReflection/Recorder.h"
-DUCKVIL_RUNTIME_REFLECTION_RECORD(1)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(2)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;

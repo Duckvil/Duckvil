@@ -1,6 +1,6 @@
 #include "Memory\Queue.h"
 #include "RuntimeReflection/Recorder.h"
-DUCKVIL_RUNTIME_REFLECTION_RECORD(18)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(19)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
