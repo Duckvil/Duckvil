@@ -65,57 +65,13 @@ namespace Duckvil {
         //     Memory::Vector<Memory::Vector<float>> _vec;
 
         //     _pData->m_heap.Allocate(_vec, 1);
+            // TODO: Here is problem...
+            // Details: We are allocating '_vec[0]' using heap not '_vec'
         //     _pData->m_heap.Allocate(_vec[0], 1);
 
         //     Memory::Vector<float>& _vecc = _vec[0];
 
         //     // _vec[0].Allocate(1.f);
-        // }
-
-        // {
-        //     Memory::Vector<Memory::Vector<float>> _vec;
-
-        //     _pData->m_heap.Allocate(_vec, 2);
-
-        //     {
-        //         Memory::Vector<float> _vec2;
-
-        //         _pData->m_heap.Allocate(_vec2, 3);
-
-        //         _vec2.Resize(2);
-
-        //         _vec2.Allocate(1.f);
-        //         _vec.Allocate(_vec2);
-        //     }
-
-        //     _vec.Resize(2);
-
-        //     {
-        //         Memory::Vector<float> _vec2;
-
-        //         _pData->m_heap.Allocate(_vec2, 1);
-
-        //         _vec2.Resize(2);
-
-        //         _vec2.Allocate(4.f);
-        //         _vec.Allocate(_vec2);
-        //     }
-
-        //     _vec[0].Resize(3);
-
-        //     _vec[0].Allocate(2.f);
-        //     _vec[0].Allocate(3.f);
-
-        //     printf("%f\n", _vec[0][0]);
-        //     printf("%f\n", _vec[0][1]);
-        //     printf("%f\n", _vec[0][2]);
-        //     printf("%f\n", _vec[1][0]);
-
-        //     // Memory::Vector<float> _vec2;
-
-        //     // _pData->m_heap.Allocate(_vec2, 1);
-        //     // _vec2.Resize(2);
-        //     // _vec2.Allocate(1.f);
         // }
 
         // {
@@ -312,8 +268,54 @@ namespace Duckvil {
         {
             _pData->m_pLogger->dispatch_logs(_pData->m_pLogger, _pData->m_pLoggerData);
 
+            {
+                Memory::Vector<Memory::Vector<float>> _vec;
+
+                _pData->m_heap.Allocate(_vec, 2);
+
+                {
+                    Memory::Vector<float> _vec2;
+
+                    _pData->m_heap.Allocate(_vec2, 3);
+
+                    _vec2.Resize(2);
+
+                    _vec2.Allocate(1.f);
+                    _vec.Allocate(_vec2);
+                }
+
+                _vec.Resize(2);
+
+                {
+                    Memory::Vector<float> _vec2;
+
+                    _pData->m_heap.Allocate(_vec2, 1);
+
+                    _vec2.Resize(2);
+
+                    _vec2.Allocate(4.f);
+                    _vec.Allocate(_vec2);
+                }
+
+                _vec[0].Resize(3);
+
+                _vec[0].Allocate(2.f);
+                _vec[0].Allocate(3.f);
+
+                printf("%f\n", _vec[0][0]);
+                printf("%f\n", _vec[0][1]);
+                printf("%f\n", _vec[0][2]);
+                printf("%f\n", _vec[1][0]);
+
+                // Memory::Vector<float> _vec2;
+
+                // _pData->m_heap.Allocate(_vec2, 1);
+                // _vec2.Resize(2);
+                // _vec2.Allocate(1.f);
+            }
+
             DUCKVIL_LOG_INFO("Delta: %f ms", _pData->m_timeData.m_dDelta * 1000.0);
-            DUCKVIL_LOG_INFO("Used memory: %f of %f", (float)_pData->m_pHeap->used / 1024.f, (float)_pData->m_pHeap->capacity / 1024.f);
+            DUCKVIL_LOG_INFO("Used memory: %f of %f", (float)_pData->m_pHeap->m_ullUsed / 1024.f, (float)_pData->m_pHeap->m_ullCapacity / 1024.f);
 
             _pData->m_dOneSecond = 0.0;
         }
