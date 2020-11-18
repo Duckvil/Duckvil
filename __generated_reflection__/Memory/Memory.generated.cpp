@@ -77,6 +77,7 @@ _property = record_property<IMemory::_fixed_array_back_>(DUCKVIL_RUNTIME_REFLECT
 _property = record_property<IMemory::_fixed_array_at_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnFixedArrayAt_), "m_fnFixedArrayAt_");
 _property = record_property<IMemory::_fixed_array_empty_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnFixedArrayEmpty_), "m_fnFixedArrayEmpty_");
 _property = record_property<IMemory::_fixed_array_full_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnFixedArrayFull_), "m_fnFixedArrayFull_");
+_property = record_property<IMemory::_fixed_array_size_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnFixedArraySize_), "m_fnFixedArraySize_");
 _property = record_property<IMemory::_fixed_array_clear_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnFixedArrayClear_), "m_fnFixedArrayClear_");
 _property = record_property<IMemory::_free_list_allocate_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnFreeListAllocate_), "m_fnFreeListAllocate_");
 _property = record_property<IMemory::_free_list_allocate_d_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnFreeListAllocate_D_), "m_fnFreeListAllocate_D_");
