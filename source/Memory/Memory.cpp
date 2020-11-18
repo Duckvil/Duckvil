@@ -106,6 +106,7 @@ Duckvil::Memory::IMemory* duckvil_memory_init()
     memory->m_fnFixedArrayAt_ = &fixed_array_at;
     memory->m_fnFixedArrayEmpty_ = &fixed_array_empty;
     memory->m_fnFixedArrayFull_ = &fixed_array_full;
+    memory->m_fnFixedArraySize_ = &fixed_array_size;
     memory->m_fnFixedArrayClear_ = &fixed_array_clear;
 
     memory->m_fnFreeListAllocate_ = &free_list_allocate;

@@ -37,4 +37,9 @@ namespace Duckvil { namespace Memory {
         return _pMemory->m_fnFixedArrayFull_(_pAllocator);
     }
 
+    inline std::size_t fixed_array_size(IMemory* _pMemory, __fixed_array_allocator* _pAllocator)
+    {
+        return _pMemory->m_fnFixedArraySize_(_pAllocator);
+    }
+
 }}

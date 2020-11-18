@@ -4,6 +4,7 @@
 #include "Memory/FreeListAllocator.h"
 #include "Memory/Vector.h"
 #include "Memory/Stack.h"
+#include "Memory/Array.h"
 
 namespace Duckvil { namespace Memory {
 
@@ -93,6 +94,12 @@ namespace Duckvil { namespace Memory {
         void Allocate(Stack<Type>& _container, std::size_t _ullCount)
         {
             // _container = Vector<Type>(m_pMemory, m_pContainer, _ullCount);
+        }
+
+        template <typename Type>
+        void Allocate(Array<Type>& _container, std::size_t _ullCount)
+        {
+            _container = Array<Type>(m_pMemory, m_pContainer, _ullCount);
         }
 
     };
