@@ -268,6 +268,25 @@ namespace Duckvil {
         {
             _pData->m_pLogger->dispatch_logs(_pData->m_pLogger, _pData->m_pLoggerData);
 
+            // {
+            //     Memory::Array<Memory::Array<float>> _array;
+
+            //     _pData->m_heap.Allocate(_array, 1);
+
+            //     Memory::Array<float> _array2;
+
+            //     _pData->m_heap.Allocate(_array2, 2);
+
+            //     _array2.Allocate(1.f);
+
+            //     _array.Allocate(_array2);
+
+            //     _array[0].Allocate(2.f);
+
+            //     printf("%f\n", _array[0][0]);
+            //     printf("%f\n", _array[0][1]);
+            // }
+
             {
                 Memory::Vector<Memory::Vector<float>> _vec;
 
@@ -302,16 +321,53 @@ namespace Duckvil {
                 _vec[0].Allocate(2.f);
                 _vec[0].Allocate(3.f);
 
-                printf("%f\n", _vec[0][0]);
-                printf("%f\n", _vec[0][1]);
-                printf("%f\n", _vec[0][2]);
-                printf("%f\n", _vec[1][0]);
+                // printf("%f\n", _vec[0][0]);
+                // printf("%f\n", _vec[0][1]);
+                // printf("%f\n", _vec[0][2]);
+                // printf("%f\n", _vec[1][0]);
 
                 // Memory::Vector<float> _vec2;
 
                 // _pData->m_heap.Allocate(_vec2, 1);
                 // _vec2.Resize(2);
                 // _vec2.Allocate(1.f);
+            }
+
+            {
+                Memory::Vector<Memory::Array<float>> _vec;
+
+                _pData->m_heap.Allocate(_vec, 1);
+
+                {
+                    Memory::Array<float> _arr2;
+
+                    _pData->m_heap.Allocate(_arr2, 2);
+
+                    _arr2.Allocate(1.f);
+                    // _arr2.Allocate(2.f);
+                    _vec.Allocate(_arr2);
+                }
+
+                _vec[0].Allocate(2.f);
+
+                _vec.Resize(2);
+
+                {
+                    Memory::Array<float> _arr2;
+
+                    _pData->m_heap.Allocate(_arr2, 2);
+
+                    _arr2.Allocate(3.f);
+                    // _arr2.Allocate(4.f);
+                    _vec.Allocate(_arr2);
+                }
+
+                _vec[1].Allocate(4.f);
+
+                printf("%f\n", _vec[0][0]);
+                printf("%f\n", _vec[0][1]);
+                printf("%f\n", _vec[1][0]);
+                printf("%f\n", _vec[1][1]);
             }
 
             DUCKVIL_LOG_INFO("Delta: %f ms", _pData->m_timeData.m_dDelta * 1000.0);
