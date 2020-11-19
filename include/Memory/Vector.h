@@ -171,11 +171,14 @@ namespace Duckvil { namespace Memory {
         {
             if constexpr(std::is_base_of<Container, Type>::value)
             {
-                if(std::is_base_of<SpecifiedResizableContainer<typename Type::container, typename Type::type>, Type>::value)
+                if constexpr(std::is_base_of<SpecifiedResizableContainer<typename Type::container, typename Type::type>, Type>::value)
                 {
-                    const SpecifiedResizableContainer<typename Type::container, typename Type::type>& _container = (const SpecifiedResizableContainer<typename Type::container, typename Type::type>&)_value;
+                    typedef SpecifiedResizableContainer<typename Type::container, typename Type::type> ContainerType;
 
-                    SpecifiedResizableContainer<typename Type::container, typename Type::type> _container2;
+                    const ContainerType& _container =
+                        (const ContainerType&)_value;
+
+                    ContainerType _container2;
 
                     _container2.m_fnCopy = _container.m_fnCopy;
                     _container2.m_fnDestruct = _container.m_fnDestruct;
@@ -204,7 +207,8 @@ namespace Duckvil { namespace Memory {
                 }
                 else
                 {
-                    const SpecifiedContainer<typename Type::container, typename Type::type>& _container = (const SpecifiedContainer<typename Type::container, typename Type::type>&)_value;
+                    const SpecifiedContainer<typename Type::container, typename Type::type>& _container =
+                        (const SpecifiedContainer<typename Type::container, typename Type::type>&)_value;
 
                     SpecifiedContainer<typename Type::container, typename Type::type> _container2;
 

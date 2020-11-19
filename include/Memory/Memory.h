@@ -13,6 +13,8 @@ namespace Duckvil { namespace Memory {
     {
         std::size_t m_ullCapacity = 0;
         std::size_t m_ullUsed = 0;
+    // TODO: Remove for release build, it is needed only for debugging/dumping memory
+    // Note: Not sure why, but when trying to dump memory without the pointer like: "AllocatorPointer + sizeof(AllocatorType)" (to get the stored data) program is crashing
         uint8_t* m_pMemory = 0; // It always points to the end of whole structure where the data is stored
     };
 
