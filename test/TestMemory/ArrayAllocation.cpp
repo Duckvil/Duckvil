@@ -9,7 +9,9 @@
 DUCKVIL_TEST(ArrayAllocation)
 {
     {
-        Duckvil::Memory::Array<int> _array(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::__linear_allocator*)__duckvil_global::m_pMemoryChunk, 4);
+        Duckvil::Memory::Array<int> _array;
+
+        __duckvil_global::m_freeList.Allocate(_array, 4);
 
         DUCKVIL_TEST_EXP(_array.Empty(), "Array is not empty");
 

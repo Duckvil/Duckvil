@@ -3,6 +3,7 @@
 #include "PlugNPlay/Module.h"
 
 #include "Memory/Memory.h"
+#include "Memory/FreeList.h"
 
 struct __duckvil_global
 {
@@ -11,4 +12,5 @@ struct __duckvil_global
     static Duckvil::Memory::IMemory* m_pMemoryInterface;
     static void* m_pMemoryChunk;
     static void* m_pHeap;
+    static Duckvil::Memory::FreeList m_freeList;
 };
