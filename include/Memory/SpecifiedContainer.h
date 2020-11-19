@@ -16,19 +16,24 @@ namespace Duckvil { namespace Memory {
         SpecifiedContainer()
         {
             m_pContainer = nullptr;
+            m_fnCopy = nullptr;
+            m_fnDestruct = nullptr;
         }
 
         SpecifiedContainer(IMemory* _pMemory, __allocator* _pAllocator) :
             Container(_pMemory, _pAllocator)
         {
-
+            m_pContainer = nullptr;
+            m_fnCopy = nullptr;
+            m_fnDestruct = nullptr;
         }
 
         SpecifiedContainer(IMemory* _pMemory, __allocator* _pAllocator, Type* _pSpecifiedContainer) :
             Container(_pMemory, _pAllocator),
             m_pContainer(_pSpecifiedContainer)
         {
-
+            m_fnCopy = nullptr;
+            m_fnDestruct = nullptr;
         }
 
         SpecifiedContainer(IMemory* _pMemory, __allocator* _pAllocator, Type* _pContainer, const copy_callback& _fnCopy, const destruct_callback& _fnDestruct) :
@@ -46,6 +51,11 @@ namespace Duckvil { namespace Memory {
         destruct_callback m_fnDestruct;
 
         Type* m_pContainer; // Like fixed_vector_allocator, fixed_stack_allocator, fixed_queue_allocator, etc.
+
+        static destruct_callback GetDestructFunction(const SpecifiedContainer* _pSpecifiedContainer)
+        {
+            return _pSpecifiedContainer->m_fnDestruct;
+        }
     };
 
 }}
