@@ -1,6 +1,6 @@
-#include "Memory\Vector.h"
+#include "Memory\SpecifiedResizableContainer.h"
 #include "RuntimeReflection/Recorder.h"
-DUCKVIL_RUNTIME_REFLECTION_RECORD(24)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(22)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
