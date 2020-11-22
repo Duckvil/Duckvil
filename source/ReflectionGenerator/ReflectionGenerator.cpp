@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
         _astData.m_aUserDefines.push_back("DUCKVIL_RESOURCE_DECLARE");
 
         _ast->ast_generate(&_astData, _lexerFtable, _data);
-        _ast->ast_print(_astData);
+        // _ast->ast_print(_astData);
 
         Duckvil::RuntimeReflection::__generator_data _generatorData;
         std::filesystem::path _relativePath = std::filesystem::relative(_path.path(), std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include");
