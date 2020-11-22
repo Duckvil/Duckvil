@@ -192,7 +192,7 @@ namespace Duckvil {
                             _pData->m_aEngineSystems.Resize(_pData->m_aEngineSystems.Size() * 2);
                         }
 
-                        ISystem* _obj = (ISystem*)RuntimeReflection::create(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pRuntimeReflectionData, _type, 10);
+                        ISystem* _obj = (ISystem*)RuntimeReflection::create<int, const Memory::FreeList&>(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pRuntimeReflectionData, _type, 10, _pData->m_heap, _pData->m_pRuntimeReflectionData);
                         system _system = {};
 
                         _system.m_type = _type;
@@ -364,10 +364,10 @@ namespace Duckvil {
 
                 _vec[1].Allocate(4.f);
 
-                printf("%f\n", _vec[0][0]);
-                printf("%f\n", _vec[0][1]);
-                printf("%f\n", _vec[1][0]);
-                printf("%f\n", _vec[1][1]);
+                DUCKVIL_LOG_INFO("%f", _vec[0][0]);
+                DUCKVIL_LOG_INFO("%f", _vec[0][1]);
+                DUCKVIL_LOG_INFO("%f", _vec[1][0]);
+                DUCKVIL_LOG_INFO("%f", _vec[1][1]);
             }
 
             DUCKVIL_LOG_INFO("Delta: %f ms", _pData->m_timeData.m_dDelta * 1000.0);
