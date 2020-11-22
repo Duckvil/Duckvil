@@ -75,6 +75,13 @@ namespace Duckvil { namespace Memory {
             fixed_vector_resize(_pMemoryInterface, _allocator, &_pThis->m_pContainer, _ullNewSize);
         }
 
+        static void free_list_erase(IMemory* _pMemoryInterface, SContainer* _pThis, uint32_t _uiIndex)
+        {
+            __free_list_allocator* _allocator = (__free_list_allocator*)_pThis->m_pAllocator;
+
+            fixed_vector_erase(_pMemoryInterface, _allocator, &_pThis->m_pContainer, _uiIndex);
+        }
+
     public:
         Vector()
         {
@@ -87,6 +94,7 @@ namespace Duckvil { namespace Memory {
             SContainer::m_fnCopy = &free_list_copy;
             SContainer::m_fnDestruct = &free_list_destruct;
             SContainer::m_fnResize = &free_list_resize;
+            SContainer::m_fnErase = &free_list_erase;
             SContainer::m_pContainer = (__fixed_vector_allocator*)free_list_allocate(_pMemoryInterface, _pAllocator, sizeof(__fixed_vector_allocator) + (sizeof(Type) * _ullCount), alignof(__fixed_vector_allocator)); // free_list_allocate_allocator<__fixed_vector_allocator>(_pMemoryInterface, _pAllocator, sizeof(Type) * _ullCount, sizeof(Type), alignof(Type));
 
             SContainer::m_pContainer->m_ullCapacity = sizeof(Type) * _ullCount;
@@ -102,20 +110,14 @@ namespace Duckvil { namespace Memory {
         }
 
         Vector(Vector&& _vector) noexcept :
-            /*SpecifiedContainer(
-                std::move(_vector.m_pMemoryInterface),
-                std::move(_vector.m_pAllocator),
-                std::move(_vector.m_pContainer),
-                std::move(_vector.m_fnCopy),
-                std::move(_vector.m_fnDestruct)
-            ),*/
             SContainer(
                 std::move(_vector.m_pMemoryInterface),
                 std::move(_vector.m_pAllocator),
                 std::move(_vector.m_pContainer),
                 std::move(_vector.m_fnCopy),
                 std::move(_vector.m_fnDestruct),
-                std::move(_vector.m_fnResize)
+                std::move(_vector.m_fnResize),
+                std::move(_vector.m_fnErase)
             )
         {
             _vector.m_pMemoryInterface = nullptr;
@@ -124,6 +126,7 @@ namespace Duckvil { namespace Memory {
             _vector.m_fnCopy = nullptr;
             _vector.m_fnDestruct = nullptr;
             _vector.m_fnResize = nullptr;
+            _vector.m_fnErase = nullptr;
         }
 
         ~Vector()
@@ -152,6 +155,7 @@ namespace Duckvil { namespace Memory {
             SContainer::m_fnDestruct = std::move(_vector.m_fnDestruct);
             SContainer::m_fnResize = std::move(_vector.m_fnResize);
             SContainer::m_pAllocator = std::move(_vector.m_pAllocator);
+            SContainer::m_fnErase = std::move(_vector.m_fnErase);
 
             _vector.m_pContainer = nullptr;
             _vector.m_pMemoryInterface = nullptr;
@@ -159,6 +163,7 @@ namespace Duckvil { namespace Memory {
             _vector.m_fnDestruct = nullptr;
             _vector.m_fnResize = nullptr;
             _vector.m_pAllocator = nullptr;
+            _vector.m_fnErase = nullptr;
 
             return *this;
         }
@@ -318,6 +323,11 @@ namespace Duckvil { namespace Memory {
             }
 
             SContainer::m_fnResize(SContainer::m_pMemoryInterface, this, _ullNewSize);
+        }
+
+        void Erase(uint32_t _uiIndex)
+        {
+            SContainer::m_fnErase(SContainer::m_pMemoryInterface, this, _uiIndex);
         }
 
         Iterator begin()

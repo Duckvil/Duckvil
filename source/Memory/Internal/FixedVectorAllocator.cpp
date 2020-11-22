@@ -83,6 +83,39 @@ namespace Duckvil { namespace Memory {
         _pInterface->m_fnFreeListFree_(_pParentAllocator, _ptr);
     }
 
+    void fixed_vector_erase(IMemory* _pInterface, __free_list_allocator* _pParentAllocator, __fixed_vector_allocator** _pAllocator, uint32_t _uiIndex)
+    {
+        uint32_t _newSize = (*_pAllocator)->m_ullCapacity - (*_pAllocator)->m_ullBlockSize;
+        __fixed_vector_allocator* _allocator = (__fixed_vector_allocator*)free_list_allocate(_pInterface, _pParentAllocator, sizeof(__fixed_vector_allocator) + _newSize, alignof(__fixed_vector_allocator));
+
+        _allocator->m_pMemory = (uint8_t*)_allocator + sizeof(__fixed_vector_allocator);
+        _allocator->m_ullCapacity = _newSize;
+        _allocator->m_ullUsed = (*_pAllocator)->m_ullUsed - (*_pAllocator)->m_ullBlockSize;
+        _allocator->m_ullBlockSize = (*_pAllocator)->m_ullBlockSize;
+
+    // Edge case: if it is the first index we have nothing to copy before it
+        if((_uiIndex + 1) * (*_pAllocator)->m_ullBlockSize > (*_pAllocator)->m_ullBlockSize)
+        {
+            memcpy(_allocator->m_pMemory, (*_pAllocator)->m_pMemory, _uiIndex * (*_pAllocator)->m_ullBlockSize);
+        }
+
+    // Egde case: if it is the last index we have nothing to copy behind it
+        if((_uiIndex + 1) * (*_pAllocator)->m_ullBlockSize < (*_pAllocator)->m_ullCapacity)
+        {
+            memcpy(
+                _allocator->m_pMemory + (_uiIndex * (*_pAllocator)->m_ullBlockSize),
+                (*_pAllocator)->m_pMemory + ((_uiIndex + 1) * (*_pAllocator)->m_ullBlockSize),
+                (*_pAllocator)->m_ullCapacity - ((_uiIndex + 1) * (*_pAllocator)->m_ullBlockSize)
+            );
+        }
+
+        __fixed_vector_allocator* _ptr = *_pAllocator;
+
+        *_pAllocator = _allocator;
+
+        _pInterface->m_fnFreeListFree_(_pParentAllocator, _ptr);
+    }
+
     void fixed_vector_clear(__fixed_vector_allocator* _pAllocator)
     {
         memset(_pAllocator->m_pMemory, 0, _pAllocator->m_ullCapacity);

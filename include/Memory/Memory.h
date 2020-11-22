@@ -113,6 +113,7 @@ namespace Duckvil { namespace Memory {
         typedef void (*_fixed_vector_resize_)(IMemory* _pInterface, __free_list_allocator* _pParentAllocator, __fixed_vector_allocator** _pAllocator, std::size_t _ullNewSize);
         typedef std::size_t (*_fixed_vector_size_)(__fixed_vector_allocator* _pAllocator);
         typedef std::size_t (*_fixed_vector_capacity_)(__fixed_vector_allocator* _pAllocator);
+        typedef void (*_fixed_vector_erase_)(IMemory* _pInterface, __free_list_allocator* _pParentAllocator, __fixed_vector_allocator** _pAllocator, uint32_t _uiIndex);
 
         typedef __linear_allocator* (*_allocate_linear_allocator)(__linear_allocator* _pAllocator, std::size_t _ullSize);
         typedef __fixed_stack_allocator* (*_allocate_fixed_stack_allocator)(__linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
@@ -174,6 +175,7 @@ namespace Duckvil { namespace Memory {
         _fixed_vector_resize_           m_fnFixedVectorResize_;
         _fixed_vector_size_             m_fnFixedVectorSize_;
         _fixed_vector_capacity_         m_fnFixedVectorCapacity_;
+        _fixed_vector_erase_            m_fnFixedVectorErase_;
 
         _allocate_linear_allocator          m_fnAllocateLinearAllocator;
         _allocate_fixed_stack_allocator     m_fnAllocateFixedStackAllocator;
