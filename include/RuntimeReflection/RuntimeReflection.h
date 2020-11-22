@@ -654,26 +654,27 @@ namespace Duckvil { namespace RuntimeReflection {
         return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
     }
 
-    // template <typename... Args>
-    // static __function<void(*)(Args...)>* get_function_callback(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX])
-    // {
-    //     const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
-    //     static const std::size_t& _argsTypeID = typeid(void(Args...)).hash_code();
+// TODO: Check it
+    template <typename... Args>
+    static __function<void(*)(Args...)>* get_static_function_callback(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX])
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+        static const std::size_t& _argsTypeID = typeid(void(Args...)).hash_code();
 
-    //     for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); i++)
-    //     {
-    //         const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, i);
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); i++)
+        {
+            const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, i);
 
-    //         if(strcmp(_function.m_sFunctionName, _sName) == 0 && _function.m_ullArgumentsTypeID == _argsTypeID)
-    //         {
-    //             __function<void(*)(Args...)>* _func = (__function<void(*)(Args...)>*)_function.m_pFunction;
+            if(strcmp(_function.m_sFunctionName, _sName) == 0 && _function.m_ullArgumentsTypeID == _argsTypeID)
+            {
+                __function<void(*)(Args...)>* _func = (__function<void(*)(Args...)>*)_function.m_pFunction;
 
-    //             return _func;
-    //         }
-    //     }
+                return _func;
+            }
+        }
 
-    //     return 0;
-    // }
+        return 0;
+    }
 
     template <typename Type, typename... Args>
     static __function<void(Type::*)(Args...)>* get_function_callback(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX])
