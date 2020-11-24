@@ -13,12 +13,12 @@ namespace Duckvil { namespace LOL {
 
     struct test
     {
-
+        int a;
     };
 
     struct test2
     {
-
+        int a;
     };
 
     struct aaa

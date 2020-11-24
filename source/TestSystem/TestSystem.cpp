@@ -27,13 +27,63 @@ namespace Duckvil { namespace LOL {
 
         Event::Pool _pool(_heap, _pReflectionData);
 
-        _pool.Add<test>(this);
-        _pool.Add<test2>(this);
+        _pool.Add<test>(); // When broadcasted, it is invoking the function immediately
+        _pool.Add<test2>(this); // When broadcasted, it is added to a buffer, and then we need to get it
 
-        _pool.Remove<test>();
+        // _pool.Remove<test2>();
 
-        _pool.Broadcast(test{});
-        _pool.Broadcast(test2{});
+        test2 _aa;
+
+        _aa.a = 10;
+
+        test2 _aa2;
+
+        _aa2.a = 40;
+
+        test _aaa;
+
+        _aaa.a = 20;
+
+        _pool.Broadcast(_aaa);
+        _pool.Broadcast(_aa2);
+        _pool.Broadcast(_aa);
+
+        test2 _mess;
+        test _mess2;
+
+        while(_pool.AnyEvents())
+        {
+            if(_pool.GetMessage(&_mess))
+            {
+                _pool.EventHandled<test2>();
+            }
+            // else if(_pool.GetMessage(&_mess2))
+            // {
+            //     _pool.EventHandled<test>();
+            // }
+        }
+
+        _pool.Reset();
+
+        while(_pool.AnyEvents())
+        {
+            if(_pool.GetMessage(&_mess2))
+            {
+                _pool.EventHandled(_mess2);
+            }
+        }
+
+        _pool.Reset();
+
+        while(_pool.AnyEvents())
+        {
+            if(_pool.GetMessage(&_mess2))
+            {
+                _pool.EventHandled<test>();
+            }
+        }
+
+        printf("VVV\n");
     }
 
     Test::~Test()
