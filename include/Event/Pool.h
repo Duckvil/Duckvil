@@ -48,13 +48,13 @@ namespace Duckvil { namespace Event {
 
                 if(_channel->m_ullTypeID == typeid(Message).hash_code())
                 {
-                    if(_channel->m_bBlocking == mode::immediate)
+                    if(_channel->m_mode == mode::immediate)
                     {
                         Channel<Message, mode::immediate>* _right = (Channel<Message, mode::immediate>*)_channel;
 
                         _right->Add(_pHandler);
                     }
-                    else if(_channel->m_bBlocking == mode::buffered)
+                    else if(_channel->m_mode == mode::buffered)
                     {
                         Channel<Message, mode::buffered>* _right = (Channel<Message, mode::buffered>*)_channel;
 
@@ -112,13 +112,13 @@ namespace Duckvil { namespace Event {
 
                 if(_channel->m_ullTypeID == typeid(Message).hash_code())
                 {
-                    if(_channel->m_bBlocking == mode::immediate)
+                    if(_channel->m_mode == mode::immediate)
                     {
                         Channel<Message, mode::immediate>* _right = (Channel<Message, mode::immediate>*)_channel;
 
                         _right->Remove(_pHandler);
                     }
-                    else if(_channel->m_bBlocking == mode::buffered)
+                    else if(_channel->m_mode == mode::buffered)
                     {
                         Channel<Message, mode::buffered>* _right = (Channel<Message, mode::buffered>*)_channel;
 
@@ -155,13 +155,13 @@ namespace Duckvil { namespace Event {
 
                 if(_channel->m_ullTypeID == typeid(Message).hash_code())
                 {
-                    if(_channel->m_bBlocking == mode::immediate)
+                    if(_channel->m_mode == mode::immediate)
                     {
                         Channel<Message, mode::immediate>* _right = (Channel<Message, mode::immediate>*)_channel;
 
                         _right->Broadcast(_message);
                     }
-                    else if(_channel->m_bBlocking == mode::buffered)
+                    else if(_channel->m_mode == mode::buffered)
                     {
                         Channel<Message, mode::buffered>* _right = (Channel<Message, mode::buffered>*)_channel;
 
@@ -180,7 +180,7 @@ namespace Duckvil { namespace Event {
             {
                 _channel = m_aChannels[i];
 
-                if(_channel->m_bBlocking != mode::immediate)
+                if(_channel->m_mode != mode::immediate)
                 {
                     BufferedChannel* _right = (BufferedChannel*)_channel;
 
@@ -204,7 +204,7 @@ namespace Duckvil { namespace Event {
             {
                 _channel = m_aChannels[i];
 
-                if(_channel->m_ullTypeID == typeid(Message).hash_code() && _channel->m_bBlocking == mode::buffered)
+                if(_channel->m_ullTypeID == typeid(Message).hash_code() && _channel->m_mode == mode::buffered)
                 {
                     Channel<Message, mode::buffered>* _right = (Channel<Message, mode::buffered>*)_channel;
 
@@ -226,7 +226,7 @@ namespace Duckvil { namespace Event {
             {
                 _channel = m_aChannels[i];
 
-                if(_channel->m_ullTypeID == typeid(Message).hash_code())
+                if(_channel->m_mode == mode::buffered && _channel->m_ullTypeID == typeid(Message).hash_code())
                 {
                     Channel<Message, mode::buffered>* _right = (Channel<Message, mode::buffered>*)_channel;
 
@@ -264,12 +264,11 @@ namespace Duckvil { namespace Event {
             {
                 _channel = m_aChannels[i];
 
-                if(_channel->m_bBlocking == Event::mode::buffered)
+                if(_channel->m_mode == Event::mode::buffered)
                 {
                     Event::BufferedChannel* _right = (Event::BufferedChannel*)_channel;
 
                     _right->m_uiIndex = 0;
-                    _right->m_fnReset(_right);
                 }
             }
         }

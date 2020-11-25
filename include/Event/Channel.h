@@ -35,7 +35,7 @@ namespace Duckvil { namespace Event {
 
         std::mutex m_mutex;
         std::size_t m_ullTypeID;
-        mode m_bBlocking;
+        mode m_mode;
 
         RuntimeReflection::__data* m_pReflectionData;
     };
@@ -76,7 +76,7 @@ namespace Duckvil { namespace Event {
             IChannel(_pReflectionData)
         {
             m_ullTypeID = typeid(Message).hash_code();
-            m_bBlocking = mode::immediate;
+            m_mode = mode::immediate;
 
             _heap.Allocate(m_aHandlers, 1);
         }
@@ -142,7 +142,6 @@ namespace Duckvil { namespace Event {
         }
 
         bool (*m_fnAnyEvents)(BufferedChannel* _pChannel);
-        void (*m_fnReset)(BufferedChannel* _pChannel);
 
         uint32_t m_uiIndex;
         uint32_t m_uiEventsCount;
@@ -154,7 +153,6 @@ namespace Duckvil { namespace Event {
     {
     private:
         std::queue<Message> m_aMessages;
-        std::stack<Message> m_aNotHandledMessages;
 
         static bool AnyEvents(BufferedChannel* _pChannel)
         {
@@ -163,7 +161,7 @@ namespace Duckvil { namespace Event {
                 return false;
             }
 
-            bool _any = _pChannel->m_uiIndex != _pChannel->m_uiEventsCount;
+            bool _any = _pChannel->m_uiIndex < _pChannel->m_uiEventsCount;
 
             if(_any)
             {
@@ -173,26 +171,13 @@ namespace Duckvil { namespace Event {
             return _any;
         }
 
-        static void Reset(BufferedChannel* _pChannel)
-        {
-            Channel<Message, mode::buffered>* _channel = (Channel<Message, mode::buffered>*)_pChannel;
-
-            while(!_channel->m_aNotHandledMessages.empty())
-            {
-                _channel->m_aMessages.push(_channel->m_aNotHandledMessages.top());
-
-                _channel->m_aNotHandledMessages.pop();
-            }
-        }
-
     public:
         Channel(const Memory::FreeList& _heap, RuntimeReflection::__data* _pReflectionData) :
             BufferedChannel(_pReflectionData)
         {
             m_ullTypeID = typeid(Message).hash_code();
-            m_bBlocking = mode::buffered;
+            m_mode = mode::buffered;
             m_fnAnyEvents = &AnyEvents;
-            m_fnReset = &Reset;
             m_uiIndex = 0;
             m_uiEventsCount = 0;
         }
@@ -242,11 +227,13 @@ namespace Duckvil { namespace Event {
             m_aMessages.pop();
 
             m_uiEventsCount--;
+            m_uiIndex--;
         }
 
         void EventHandled(const Message& _message)
         {
-            m_aNotHandledMessages.push(_message);
+            m_aMessages.pop();
+            m_aMessages.push(_message);
         }
     };
 

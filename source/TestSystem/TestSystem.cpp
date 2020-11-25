@@ -44,9 +44,14 @@ namespace Duckvil { namespace LOL {
 
         _aaa.a = 20;
 
+        test _aaa2;
+
+        _aaa2.a = 30;
+
         _pool.Broadcast(_aaa);
         _pool.Broadcast(_aa2);
         _pool.Broadcast(_aa);
+        _pool.Broadcast(_aaa2);
 
         test2 _mess;
         test _mess2;
@@ -69,7 +74,16 @@ namespace Duckvil { namespace LOL {
         {
             if(_pool.GetMessage(&_mess2))
             {
-                _pool.EventHandled(_mess2);
+                if(_mess2.a == 30)
+                {
+                    _pool.EventHandled<test>();
+                    // _pool.EventHandled(_mess2);
+                }
+                else
+                {
+                    // _pool.EventHandled(_mess2);
+                    _pool.EventHandled<test>();
+                }
             }
         }
 
