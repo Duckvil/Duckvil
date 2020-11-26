@@ -6,16 +6,28 @@ namespace Duckvil { namespace Event {
 
     // TODO: Maybe specific channel type pool? Then it could be used to grouping event channels
 
-    // Mixed container for any channel type(immediate, buffered, buffer_invoked) and any event
+    enum pool_specification
+    {
+        pool_specification_any,
+        pool_specification_immediate,
+        pool_specification_buffered
+    };
+
+    template <pool_specification Specification>
     class Pool
+    {
+
+    };
+
+    // Mixed container for any channel type(immediate, buffered, buffer_invoked) and any event
+    template <>
+    class Pool<pool_specification::pool_specification_any>
     {
     private:
         Memory::Vector<IChannel*> m_aChannels;
 
         Memory::FreeList m_heap;
         RuntimeReflection::__data* m_pReflectionData;
-
-        uint32_t m_uiIndex;
 
     public:
         Pool()
@@ -28,8 +40,6 @@ namespace Duckvil { namespace Event {
             m_pReflectionData(_pReflectionData)
         {
             _heap.Allocate(m_aChannels, 2);
-
-            m_uiIndex = 0;
         }
 
         ~Pool()
@@ -271,6 +281,34 @@ namespace Duckvil { namespace Event {
                     _right->m_uiIndex = 0;
                 }
             }
+        }
+    };
+
+    template <>
+    class Pool<pool_specification::pool_specification_immediate>
+    {
+    private:
+        Memory::Vector<IChannel*> m_aChannels;
+
+        Memory::FreeList m_heap;
+        RuntimeReflection::__data* m_pReflectionData;
+
+    public:
+        Pool()
+        {
+            m_pReflectionData = nullptr;
+        }
+
+        Pool(const Memory::FreeList& _heap, RuntimeReflection::__data* _pReflectionData) :
+            m_heap(_heap),
+            m_pReflectionData(_pReflectionData)
+        {
+            _heap.Allocate(m_aChannels, 2);
+        }
+
+        ~Pool()
+        {
+
         }
     };
 
