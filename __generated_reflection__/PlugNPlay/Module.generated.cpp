@@ -16,7 +16,7 @@ _constructor = record_constructor<Duckvil::PlugNPlay::__module_information, cons
 _property = record_property<Utils::string>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::PlugNPlay::__module_information, m_sName), "m_sName");
 _property = record_property<void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::PlugNPlay::__module_information, m_pModule), "m_pModule");
 _property = record_property<Utils::string>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::PlugNPlay::__module_information, m_sPath), "m_sPath");
-_type = record_type<Duckvil::PlugNPlay::module>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "module");
+_type = record_type<Duckvil::PlugNPlay::__module>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__module");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "PlugNPlay");
 }
