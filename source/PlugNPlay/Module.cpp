@@ -5,7 +5,7 @@
 
 namespace Duckvil { namespace PlugNPlay {
 
-    bool module_init(module* _pModule)
+    bool module_init(__module* _pModule)
     {
 #if defined(DUCKVIL_PLATFORM_WINDOWS)
         _pModule->load = &Platform::windows_load;

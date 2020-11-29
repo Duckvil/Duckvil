@@ -4,7 +4,7 @@
 
 #include <cstring>
 
-static Duckvil::PlugNPlay::module g_module;
+static Duckvil::PlugNPlay::__module g_module;
 static Duckvil::PlugNPlay::__module_information g_memoryModule("Memory");
 static void* g_fnInit;
 
@@ -19,7 +19,7 @@ DUCKVIL_TEST(ModuleLoad)
     printf("Trying to load: %s\n", g_memoryModule.m_sName.m_sText);
 
     g_module.load(&g_memoryModule);
-    DUCKVIL_TEST_IS_NOT_NULL(g_memoryModule.m_pModule, "Memory module is NULL");
+    DUCKVIL_TEST_IS_NOT_NULL(g_memoryModule.m_pModule, "Memory __module is NULL");
 
     DUCKVIL_TEST_SUCCESS_PASS;
 }
@@ -38,7 +38,7 @@ DUCKVIL_TEST(ModuleFunctionPointers)
 DUCKVIL_TEST(ModuleRelease)
 {
     g_module.free(&g_memoryModule);
-    DUCKVIL_TEST_IS_NULL(g_memoryModule.m_pModule, "Failed to free memory module");
+    DUCKVIL_TEST_IS_NULL(g_memoryModule.m_pModule, "Failed to free memory __module");
 
     DUCKVIL_TEST_SUCCESS_PASS;
 }
@@ -50,7 +50,7 @@ DUCKVIL_TEST(ModuleLoadFail)
     printf("Trying to load: %s\n", g_memoryFailModule.m_sName.m_sText);
 
     g_module.load(&g_memoryFailModule);
-    DUCKVIL_TEST_IS_NULL(g_memoryFailModule.m_pModule, "Memory module is not NULL");
+    DUCKVIL_TEST_IS_NULL(g_memoryFailModule.m_pModule, "Memory __module is not NULL");
 
     DUCKVIL_TEST_SUCCESS_PASS;
 }
@@ -60,7 +60,7 @@ DUCKVIL_TEST(ModuleGetFail)
     void* _fnMemoryInit;
 
     DUCKVIL_TEST_EXP(g_module.get(g_memoryFailModule, "whatever", (void**)&_fnMemoryInit) == false, "Loaded function, but how!?");
-    DUCKVIL_TEST_IS_NULL((void*)_fnMemoryInit, "Memory module is not NULL");
+    DUCKVIL_TEST_IS_NULL((void*)_fnMemoryInit, "Memory __module is not NULL");
 
     DUCKVIL_TEST_SUCCESS_PASS;
 }
@@ -68,7 +68,7 @@ DUCKVIL_TEST(ModuleGetFail)
 DUCKVIL_TEST(ModuleFreeFail)
 {
     DUCKVIL_TEST_EXP(g_module.free(&g_memoryFailModule) == false, "LOL");
-    DUCKVIL_TEST_IS_NULL(g_memoryModule.m_pModule, "Failed to free memory module");
+    DUCKVIL_TEST_IS_NULL(g_memoryModule.m_pModule, "Failed to free memory __module");
 
     DUCKVIL_TEST_SUCCESS_PASS;
 }

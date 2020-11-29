@@ -7,7 +7,7 @@
 #define DUCKVIL_RUNTIME_REFLECTION_RECORD(index) \
     DUCKVIL_EXPORT void duckvil_runtime_reflection_record_##index(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData)
 
-// Each plugin/module will be created file which contains total count of recorders
+// Each plugin/__module will be created file which contains total count of recorders
 
 #define DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(count) \
     DUCKVIL_EXPORT uint32_t duckvil_get_runtime_reflection_recorder_count() { return count; }

@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    Duckvil::PlugNPlay::module _module;
+    Duckvil::PlugNPlay::__module _module;
     Duckvil::PlugNPlay::__module_information _memoryModule("Memory");
 
     Duckvil::PlugNPlay::module_init(&_module);

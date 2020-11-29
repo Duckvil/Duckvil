@@ -7,7 +7,7 @@
 
 #include "TestType//TestType.h"
 
-Duckvil::PlugNPlay::module __duckvil_global::m_module;
+Duckvil::PlugNPlay::__module __duckvil_global::m_module;
 Duckvil::PlugNPlay::__module_information __duckvil_global::m_memoryModule = Duckvil::PlugNPlay::__module_information("Memory");
 Duckvil::Memory::IMemory* __duckvil_global::m_pMemoryInterface;
 void* __duckvil_global::m_pMemoryChunk;
@@ -15,7 +15,7 @@ void* __duckvil_global::m_pHeap;
 
 DUCKVIL_TEST(RuntimeReflection)
 {
-    Duckvil::PlugNPlay::module _module;
+    Duckvil::PlugNPlay::__module _module;
     Duckvil::PlugNPlay::__module_information _memoryModule("Memory");
 
     Duckvil::PlugNPlay::module_init(&_module);

@@ -28,10 +28,10 @@ namespace Duckvil { namespace PlugNPlay {
         free_callback       m_pDeallocator;
     };
 
-    void* instantiate_plugin(const module& _module, const __module_information& _module_info);
-    void* instantiate_plugin(const module& _module, const __module_information& _module_info, Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator);
+    void* instantiate_plugin(const __module& _module, const __module_information& _module_info);
+    void* instantiate_plugin(const __module& _module, const __module_information& _module_info, Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator);
 
-    void delete_plugin_instance(const module& _module, const __module_information& _module_info, Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, void* _pointer);
+    void delete_plugin_instance(const __module& _module, const __module_information& _module_info, Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, void* _pointer);
 
 }}
 

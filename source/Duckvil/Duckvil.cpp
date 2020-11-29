@@ -8,7 +8,7 @@
 
 namespace Duckvil {
 
-    bool init_runtime_reflection(__data* _pData, PlugNPlay::module* _pModule)
+    bool init_runtime_reflection(__data* _pData, PlugNPlay::__module* _pModule)
     {
         PlugNPlay::__module_information _runtimeReflectionModule("RuntimeReflection");
 
@@ -27,7 +27,7 @@ namespace Duckvil {
         return true;
     }
 
-    bool init_logger(__data* _pData, PlugNPlay::module* _pModule)
+    bool init_logger(__data* _pData, PlugNPlay::__module* _pModule)
     {
         PlugNPlay::__module_information _loggerModule("Logger");
 
@@ -125,7 +125,7 @@ namespace Duckvil {
 
         _pData->m_time.init(&_pData->m_timeData);
 
-        PlugNPlay::module _module;
+        PlugNPlay::__module _module;
 
         PlugNPlay::module_init(&_module);
 

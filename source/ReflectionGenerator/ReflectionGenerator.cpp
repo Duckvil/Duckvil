@@ -9,7 +9,7 @@
 
 int main(int argc, char* argv[])
 {
-    Duckvil::PlugNPlay::module _module;
+    Duckvil::PlugNPlay::__module _module;
     Duckvil::PlugNPlay::__module_information _reflectionModule("RuntimeReflection");
     Duckvil::PlugNPlay::__module_information _memoryModule("Memory");
     Duckvil::PlugNPlay::__module_information _parser("Parser");

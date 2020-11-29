@@ -10,7 +10,7 @@ namespace Duckvil { namespace PlugNPlay {
     {
     private:
         std::filesystem::path m_sLoadPath;
-        module m_module;
+        __module m_module;
 
     public:
         AutoLoader(const std::filesystem::path& _sLoadPath);
