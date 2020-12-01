@@ -14,6 +14,21 @@ namespace Duckvil { namespace Utils {
 
     }
 
+    CommandArgumentsParser::CommandArgumentsParser(int _iArgc, const char* _spArgv[]) :
+        m_iArgc(_iArgc)
+    {
+        m_spArgv = new char*[_iArgc];
+
+        for(uint32_t i = 0; i < _iArgc; i++)
+        {
+            const char* _current = _spArgv[i];
+
+            m_spArgv[i] = new char[strlen(_current)];
+
+            strcpy(m_spArgv[i], _current);
+        }
+    }
+
     CommandArgumentsParser::~CommandArgumentsParser()
     {
 
@@ -32,7 +47,7 @@ namespace Duckvil { namespace Utils {
 
         for(uint32_t i = 0; i < m_iArgc; i++)
         {
-            char* argv = m_spArgv[i];
+            const char* argv = m_spArgv[i];
             std::size_t _len = std::strlen(argv);
 
             if(_len > 0 && argv[0] == '-')
@@ -40,7 +55,7 @@ namespace Duckvil { namespace Utils {
                 argv++;
 
                 std::size_t _index = Utils::find(argv, ' ', _len - 1);
-                char* _optionRes = 0;
+                const char* _optionRes = 0;
 
                 if(_index != std::numeric_limits<std::size_t>::max())
                 {

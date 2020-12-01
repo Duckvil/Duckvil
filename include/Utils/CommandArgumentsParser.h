@@ -37,6 +37,7 @@ namespace Duckvil { namespace Utils {
 
     public:
         CommandArgumentsParser(int _iArgc, char* _spArgv[]);
+        CommandArgumentsParser(int _iArgc, const char* _spArgv[]);
         ~CommandArgumentsParser();
 
         bool Parse(Descriptor* _pDescriptors, std::size_t _ullDescriptorsCount);
