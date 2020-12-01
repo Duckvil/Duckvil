@@ -19,7 +19,7 @@ DUCKVIL_TEST(CommandLineParser)
     };
 
     {
-        char* commands[] =
+        const char* commands[] =
         {
             "test.exe",
             "-test",
@@ -37,19 +37,19 @@ DUCKVIL_TEST(CommandLineParser)
     }
 
     {
-        char* commands[] =
+        const char* commands[] =
         {
             "test.exe",
             "does_not_exists"
         };
 
-        Duckvil::Utils::CommandArgumentsParser _parser(3, commands);
+        Duckvil::Utils::CommandArgumentsParser _parser(2, commands);
 
         DUCKVIL_TEST_EQUAL(_parser.Parse(_desc, DUCKVIL_ARRAY_SIZE(_desc)), false, "Parse passed");
     }
 
     {
-        char* commands[] =
+        const char* commands[] =
         {
             "test.exe",
             "-test",
