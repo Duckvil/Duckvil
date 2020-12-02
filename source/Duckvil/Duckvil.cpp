@@ -4,6 +4,8 @@
 #include <Windows.h>
 #endif
 
+#include "Process/Process.h"
+
 #undef max
 
 namespace Duckvil {
@@ -131,6 +133,30 @@ namespace Duckvil {
 
         init_logger(_pData, &_module);
         init_runtime_reflection(_pData, &_module);
+
+        {
+            PlugNPlay::__module_information _processModuleInfo("Process");
+
+            _module.load(&_processModuleInfo);
+
+            void (*_duckvilProcessInit)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator, Duckvil::Process::ftable* _pFTable);
+
+            _module.get(_processModuleInfo, "duckvil_process_init", (void**)&_duckvilProcessInit);
+
+            Process::ftable _processFTable;
+            void* _processImplementation;
+
+            _duckvilProcessInit(_pData->m_pMemory, _pData->m_pHeap, &_processFTable);
+
+            Process::data _processData = {};
+
+            _processFTable.m_fnInit(_pData->m_pMemory, _pData->m_pHeap, &_processImplementation);
+            _processFTable.m_fnSetup(&_processData, _processImplementation);
+            _processFTable.m_fnWrite(_processImplementation, "vcvarsall x86_amd64\n");
+            _processFTable.m_fnStart(_processImplementation);
+
+            _processFTable.m_fnWrite(_processImplementation, "cl\n_COMPLETION_TOKEN_\n");
+        }
 
         PlugNPlay::AutoLoader _autoLoader(DUCKVIL_OUTPUT);
 
