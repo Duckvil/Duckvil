@@ -128,7 +128,7 @@ namespace Duckvil { namespace Event {
 
             for(event& _event : m_aHandlers)
             {
-                RuntimeReflection::invoke<void, const Message&>(m_pReflectionData, _event.m_typeHandle, _event.m_functionHandle, _event.m_pObject, _message);
+                RuntimeReflection::invoke_member<const Message&>(m_pReflectionData, _event.m_typeHandle, _event.m_functionHandle, _event.m_pObject, _message);
             }
         }
     };
