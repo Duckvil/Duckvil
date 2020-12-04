@@ -86,6 +86,14 @@ namespace Duckvil { namespace Memory {
             return new(_pointer) Type(_vArgs...); // (Type*)free_list_allocate(m_pContainer, sizeof(Type), alignof(Type));
         }
 
+        template <typename Type, typename... Args>
+        Type* Allocate(const Args&... _vArgs) const
+        {
+            void* _pointer = m_pMemory->m_fnFreeListAllocate_(m_pContainer, sizeof(Type), alignof(Type));
+
+            return new(_pointer) Type(_vArgs...); // (Type*)free_list_allocate(m_pContainer, sizeof(Type), alignof(Type));
+        }
+
         template <typename Type>
         void Allocate(Vector<Type>& _container, std::size_t _ullCount)
         {
@@ -114,6 +122,16 @@ namespace Duckvil { namespace Memory {
         void Allocate(Array<Type>& _container, std::size_t _ullCount)
         {
             _container = Array<Type>(m_pMemory, m_pContainer, _ullCount);
+        }
+
+        IMemory* GetMemoryInterface() const
+        {
+            return m_pMemory;
+        }
+
+        __free_list_allocator* GetAllocator() const
+        {
+            return m_pContainer;
         }
 
     };
