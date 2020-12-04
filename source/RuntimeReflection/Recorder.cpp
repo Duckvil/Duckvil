@@ -4,6 +4,25 @@ namespace Duckvil { namespace RuntimeReflection {
 
     DUCKVIL_RESOURCE(type_t) record_type(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, __data* _pData, std::size_t _ullTypeID, const char _sTypeName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX])
     {
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+        {
+            __type_t _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
+
+            if(_type.m_ullTypeID == _ullTypeID)
+            {
+                DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_constructors);
+                DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_properties);
+                DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_namespaces);
+                DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_inheritances);
+                DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_functions);
+                DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_variantKeys);
+                DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_variantValues);
+                DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_metas);
+
+                return _type.m_uiSlotIndex;
+            }
+        }
+
         __type_t _type = {};
 
         _type.m_ullTypeID = _ullTypeID;
