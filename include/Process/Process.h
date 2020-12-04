@@ -14,15 +14,16 @@ namespace Duckvil { namespace Process {
     {
         bool m_bComplete;
         bool m_bRunning;
+        void* m_pImplementationData;
     };
 
     struct ftable
     {
-        void (*m_fnInit)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator, void** _pImplementationData);
-        bool (*m_fnSetup)(void* _pData, void* _pImplementationData);
-        void (*m_fnStart)(void* _pImplementationData);
-        void (*m_fnStop)(void* _pImplementationData);
-        void (*m_fnWrite)(void* _pImplementationData, const char* _csMessage);
+        void (*m_fnInit)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator, data* _pData);
+        bool (*m_fnSetup)(data* _pData);
+        void (*m_fnStart)(data* _pData);
+        void (*m_fnStop)(data* _pData);
+        void (*m_fnWrite)(data* _pData, const char* _csMessage);
     };
 
 }}

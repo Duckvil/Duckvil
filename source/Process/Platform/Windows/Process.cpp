@@ -74,6 +74,8 @@ namespace Duckvil { namespace Process {
                         {
                             // pImpl->m_ErrorMessage.append(buffer + "\n");
                             // pImpl->m_Error = true;
+
+                            printf("%s\n", buffer.c_str());
                         }
                         else
                         {
@@ -85,25 +87,25 @@ namespace Duckvil { namespace Process {
         }
     }
 
-    void windows_init(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator, void** _pImplementationData)
+    void windows_init(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator, data* _pData)
     {
         windows_data* _data = (windows_data*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(windows_data), alignof(windows_data));
 
-        *_pImplementationData = _data;
+        _pData->m_pImplementationData = _data;
     }
 
-    void windows_write(void* _pImplementationData, const char* _csMessage)
+    void windows_write(data* _pData, const char* _csMessage)
     {
-        if(!((data*)((windows_data*)_pImplementationData)->m_pData)->m_bRunning)
+        if(!_pData->m_bRunning)
         {
             return;
         }
 
         DWORD nBytesWritten;
         DWORD length = (DWORD)strlen(_csMessage);
-        windows_data* _data = (windows_data*)_pImplementationData;
+        windows_data* _data = (windows_data*)_pData->m_pImplementationData;
 
-        ((data*)_data->m_pData)->m_bComplete = false;
+        _pData->m_bComplete = false;
 
         WriteFile(
             _data->m_pCommandProcessInputWrite,
@@ -114,9 +116,10 @@ namespace Duckvil { namespace Process {
         );
     }
 
-    bool windows_setup(void* _pData, void* _pImplementationData)
+    bool windows_setup(data* _pData)
     {
-        ((windows_data*)_pImplementationData)->m_pData = _pData;
+        ((windows_data*)_pData->m_pImplementationData)->m_pData = _pData;
+        _pData->m_bRunning = true;
 
         STARTUPINFOW _si;
 
@@ -167,7 +170,7 @@ namespace Duckvil { namespace Process {
                 GetCurrentProcess(),
                 _outputReadTmp,
                 GetCurrentProcess(),
-                &(((windows_data*)_pImplementationData)->m_pCommandProcessOutputRead),
+                &(((windows_data*)_pData->m_pImplementationData)->m_pCommandProcessOutputRead),
                 0,
                 FALSE,
                 DUPLICATE_SAME_ACCESS))
@@ -200,7 +203,7 @@ namespace Duckvil { namespace Process {
                 GetCurrentProcess(),
                 _inputWriteTmp,
                 GetCurrentProcess(),
-                &(((windows_data*)_pImplementationData)->m_pCommandProcessInputWrite),
+                &(((windows_data*)_pData->m_pImplementationData)->m_pCommandProcessInputWrite),
                 0,
                 FALSE,
                 DUPLICATE_SAME_ACCESS))
@@ -224,23 +227,24 @@ namespace Duckvil { namespace Process {
             nullptr,
             nullptr,
             &_si,
-            &((windows_data*)_pImplementationData)->m_commandProcessInfo
+            &((windows_data*)_pData->m_pImplementationData)->m_commandProcessInfo
         );
 
-        // WriteInput("vcvarsall x86_amd64\n");
+        windows_write(_pData, "vcvarsall x86_amd64\n");
+        _beginthread(readAndHandleOutputThread, 0, _pData->m_pImplementationData);
 
         return true;
     }
 
-    void windows_start(void* _pImplementationData)
+    void windows_start(data* _pData)
     {
-        ((data*)((windows_data*)_pImplementationData)->m_pData)->m_bRunning = true;
-        _beginthread(readAndHandleOutputThread, 0, _pImplementationData);
+        _pData->m_bRunning = true;
+        _beginthread(readAndHandleOutputThread, 0, _pData->m_pImplementationData);
     }
 
-    void windows_stop(void* _pImplementationData)
+    void windows_stop(data* _pData)
     {
-        ((data*)((windows_data*)_pImplementationData)->m_pData)->m_bRunning = false;
+        _pData->m_bRunning = false;
         // TODO: Something else?
     }
 
