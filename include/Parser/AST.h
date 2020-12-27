@@ -20,7 +20,8 @@ namespace Duckvil { namespace Parser {
         __ast_entity_type_enum,
         __ast_entity_type_main,
         __ast_entity_type_typedef,
-        __ast_entity_type_callback_typedef
+        __ast_entity_type_callback_typedef,
+        __ast_entity_type_define
     };
 
     enum __ast_structure_type
@@ -79,6 +80,17 @@ namespace Duckvil { namespace Parser {
         std::vector<__ast_entity*> m_aScopes;
         __ast_entity* m_pParentScope;
         std::vector<__ast_meta> m_aMeta;
+    };
+
+    struct __ast_entity_define : public __ast_entity
+    {
+        __ast_entity_define(__ast_entity_type _entityType = __ast_entity_type::__ast_entity_type_define) :
+            __ast_entity(_entityType)
+        {
+
+        }
+
+        std::string m_sName;
     };
 
     struct __ast_entity_argument : public __ast_entity

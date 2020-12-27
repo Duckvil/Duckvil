@@ -310,11 +310,18 @@ namespace Duckvil { namespace Parser {
                             break;
                         }
                     }
-                    else if(_sToken == ";" && _roundBrackets == 0)
+                    else if((_pLexerData->m_bNewLine || _sToken == ";") && _roundBrackets == 0)
                     {
                         break;
                     }
                 }
+
+                __ast_entity_define* _defineEntity = new __ast_entity_define();
+
+                _defineEntity->m_sName = _define;
+                _defineEntity->m_pParentScope = _pAST->m_pCurrentScope;
+
+                _pAST->m_pCurrentScope->m_aScopes.push_back(_defineEntity);
 
                 return true;
             }
@@ -1068,8 +1075,10 @@ namespace Duckvil { namespace Parser {
                         break;
                     }
                 }
-                else if (_sToken == ";" && _triBrackets == 0)
+                else if(_sToken == ";" && _triBrackets == 0)
                 {
+                    _pAST->m_pPendingScope = nullptr;
+
                     break;
                 }
                 else if(_sToken != "" && _triBrackets == 0)
