@@ -25,7 +25,7 @@ namespace Duckvil { namespace RuntimeCompiler {
         void* m_pUserData;
 
     public:
-        FileWatcher(ActionCallback _action, void* _pUserData);
+        FileWatcher(FileWatcher::ActionCallback _action, void* _pUserData);
         ~FileWatcher();
 
         void Watch(const std::filesystem::path& _path);
