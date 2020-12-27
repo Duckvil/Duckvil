@@ -8,6 +8,7 @@ DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
 using namespace Duckvil::Test;
+Duckvil::Memory::Vector<DUCKVIL_RESOURCE(type_t)> _types(_pMemoryInterface, _pAllocator, 1);
 _type = record_type<Duckvil::Test::TestType>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "TestType");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Test");
@@ -31,4 +32,5 @@ record_function<Duckvil::Test::TestType, void>(DUCKVIL_RUNTIME_REFLECTION_RECORD
 record_function<Duckvil::Test::TestType, void, int>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Test::TestType::test7, "test7");
 record_function<void>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Test::TestType::test8, "test8");
 record_function<void, int>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Test::TestType::test8, "test8");
+return _types;
 }

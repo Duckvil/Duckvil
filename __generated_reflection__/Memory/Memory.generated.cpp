@@ -7,6 +7,7 @@ using namespace Duckvil;
 DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
+Duckvil::Memory::Vector<DUCKVIL_RESOURCE(type_t)> _types(_pMemoryInterface, _pAllocator, 1);
 using namespace Duckvil::Memory;
 _type = record_type<Duckvil::Memory::__allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__allocator");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
@@ -14,15 +15,21 @@ record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Mem
 _property = record_property<std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::__allocator, m_ullCapacity), "m_ullCapacity");
 _property = record_property<std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::__allocator, m_ullUsed), "m_ullUsed");
 _property = record_property<uint8_t*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::__allocator, m_pMemory), "m_pMemory");
+if(_types.Full()) _types.Resize(_types.Size() * 2);
+_types.Allocate(_type);
 _type = record_type<Duckvil::Memory::__linear_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__linear_allocator");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Memory");
 record_inheritance(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, get_type<__allocator>(_pData), __protection::__protection_public);
+if(_types.Full()) _types.Resize(_types.Size() * 2);
+_types.Allocate(_type);
 _type = record_type<Duckvil::Memory::__fixed_stack_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__fixed_stack_allocator");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Memory");
 record_inheritance(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, get_type<__allocator>(_pData), __protection::__protection_public);
 _property = record_property<std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::__fixed_stack_allocator, m_ullBlockSize), "m_ullBlockSize");
+if(_types.Full()) _types.Resize(_types.Size() * 2);
+_types.Allocate(_type);
 _type = record_type<Duckvil::Memory::__fixed_queue_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__fixed_queue_allocator");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Memory");
@@ -30,21 +37,29 @@ record_inheritance(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, ge
 _property = record_property<std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::__fixed_queue_allocator, m_ullBlockSize), "m_ullBlockSize");
 _property = record_property<std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::__fixed_queue_allocator, m_ullTail), "m_ullTail");
 _property = record_property<std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::__fixed_queue_allocator, m_ullHead), "m_ullHead");
+if(_types.Full()) _types.Resize(_types.Size() * 2);
+_types.Allocate(_type);
 _type = record_type<Duckvil::Memory::__fixed_array_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__fixed_array_allocator");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Memory");
 record_inheritance(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, get_type<__allocator>(_pData), __protection::__protection_public);
 _property = record_property<std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::__fixed_array_allocator, m_ullBlockSize), "m_ullBlockSize");
+if(_types.Full()) _types.Resize(_types.Size() * 2);
+_types.Allocate(_type);
 _type = record_type<Duckvil::Memory::__free_list_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__free_list_allocator");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Memory");
 record_inheritance(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, get_type<__allocator>(_pData), __protection::__protection_public);
 _property = record_property<void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::__free_list_allocator, m_pHead), "m_pHead");
+if(_types.Full()) _types.Resize(_types.Size() * 2);
+_types.Allocate(_type);
 _type = record_type<Duckvil::Memory::__fixed_vector_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__fixed_vector_allocator");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Memory");
 record_inheritance(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, get_type<__allocator>(_pData), __protection::__protection_public);
 _property = record_property<std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::__fixed_vector_allocator, m_ullBlockSize), "m_ullBlockSize");
+if(_types.Full()) _types.Resize(_types.Size() * 2);
+_types.Allocate(_type);
 _type = record_type<Duckvil::Memory::IMemory>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "IMemory");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Memory");
@@ -101,4 +116,13 @@ _property = record_property<IMemory::_allocate_fixed_queue_allocator>(DUCKVIL_RU
 _property = record_property<IMemory::_allocate_fixed_array_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnAllocateFixedArrayAllocator), "m_fnAllocateFixedArrayAllocator");
 _property = record_property<IMemory::_allocate_free_list_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnAllocateFreeListAllocator), "m_fnAllocateFreeListAllocator");
 _property = record_property<IMemory::_allocate_fixed_vector_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnAllocateFixedVectorAllocator), "m_fnAllocateFixedVectorAllocator");
+if(_types.Full()) _types.Resize(_types.Size() * 2);
+_types.Allocate(_type);
+return _types;
 }
+#ifdef DUCKVIL_RUNTIME_COMPILE
+DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
+{
+return 18;
+}
+#endif
