@@ -554,6 +554,11 @@ namespace Duckvil { namespace RuntimeReflection {
         return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
     }
 
+    static const __type_t& get_type(__data* _pData, const DUCKVIL_RESOURCE(type_t)& _typeHandle)
+    {
+        return DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+    }
+
     static Memory::Vector<DUCKVIL_RESOURCE(type_t)> get_types(__data* _pData, Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator)
     {
         std::size_t _size = DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data);
@@ -697,6 +702,16 @@ namespace Duckvil { namespace RuntimeReflection {
         }
 
         return 0;
+    }
+
+    template <typename Type, typename... Args>
+    static __function<void(Type::*)(Args...)>* get_function_callback(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+        static const std::size_t& _argsTypeID = typeid(void(Args...)).hash_code();
+        const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, _functionHandle.m_ID);
+
+        return (__function<void(Type::*)(Args...)>*)_function.m_pFunction;
     }
 
     template <typename ReturnType, typename Type, typename... Args>
