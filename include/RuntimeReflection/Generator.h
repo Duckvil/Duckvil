@@ -8,6 +8,7 @@
 
 #include <stack>
 #include <queue>
+#include <fstream>
 
 #define DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX 256
 
@@ -32,7 +33,7 @@ namespace Duckvil { namespace RuntimeReflection {
     struct __generator_ftable
     {
         __generator_data* (*init)(Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator);
-        void (*generate)(__generator_data* _pData, const char _sPath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const Parser::__ast& _ast);
+        void (*generate)(__generator_data* _pData, const char _sSourcePath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const char _sHeaderPath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const Parser::__ast& _ast, void (*_fnGenerate)(std::ofstream& _file));
     };
 
 }}

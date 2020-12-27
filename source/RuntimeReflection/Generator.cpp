@@ -1,6 +1,5 @@
 #include "RuntimeReflection/Generator.h"
 
-#include <fstream>
 #include <cstring>
 
 namespace Duckvil { namespace RuntimeReflection {
@@ -292,6 +291,9 @@ namespace Duckvil { namespace RuntimeReflection {
                 break;
             }
         }
+
+        _file << "if(_types.Full()) _types.Resize(_types.Size() * 2);\n";
+        _file << "_types.Allocate(_type);\n";
     }
 
     void recursive(__generator_data* _pData, const Parser::__ast_entity* _entity, std::ofstream& _file)
@@ -339,28 +341,46 @@ namespace Duckvil { namespace RuntimeReflection {
         return _data;
     }
 
-    void generate(__generator_data* _pData, const char _sPath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const Parser::__ast& _ast)
+    void generate(__generator_data* _pData, const char _sSourcePath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const char _sHeaderPath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const Parser::__ast& _ast, void (*_fnGenerate)(std::ofstream& _file))
     {
-        std::ofstream _file(_sPath);
+        {
+            std::ofstream _file(_sHeaderPath);
 
-        _file << "#include \"" << _pData->m_sInclude << "\"\n";
-        _file << "#include \"RuntimeReflection/Recorder.h\"\n";
-        // TODO: Include generated .h file
+            _fnGenerate(_file);
 
-        _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD(" << _pData->m_uiRecorderIndex << ")\n";
-        _file << "{\n";
+            _file.close();
+        }
 
-        _file << "using namespace Duckvil::RuntimeReflection;\n";
-        _file << "using namespace Duckvil;\n";
-        _file << "DUCKVIL_RESOURCE(type_t) _type;\n";
-        _file << "DUCKVIL_RESOURCE(property_t) _property;\n";
-        _file << "DUCKVIL_RESOURCE(constructor_t) _constructor;\n";
+        {
+            std::ofstream _file(_sSourcePath);
 
-        recursive(_pData, &_ast.m_main, _file);
+            _file << "#include \"" << _pData->m_sInclude << "\"\n";
+            _file << "#include \"RuntimeReflection/Recorder.h\"\n";
 
-        _file << "}\n";
+            _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD(" << _pData->m_uiRecorderIndex << ")\n";
+            _file << "{\n";
 
-        _file.close();
+            _file << "using namespace Duckvil::RuntimeReflection;\n";
+            _file << "using namespace Duckvil;\n";
+            _file << "DUCKVIL_RESOURCE(type_t) _type;\n";
+            _file << "DUCKVIL_RESOURCE(property_t) _property;\n";
+            _file << "DUCKVIL_RESOURCE(constructor_t) _constructor;\n";
+            _file << "Duckvil::Memory::Vector<DUCKVIL_RESOURCE(type_t)> _types(_pMemoryInterface, _pAllocator, 1);\n";
+
+            recursive(_pData, &_ast.m_main, _file);
+
+            _file << "return _types;\n";
+            _file << "}\n";
+
+            _file << "#ifdef DUCKVIL_RUNTIME_COMPILE\n";
+            _file << "DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()\n";
+            _file << "{\n";
+            _file << "return " << _pData->m_uiRecorderIndex << ";\n";
+            _file << "}\n";
+            _file << "#endif\n";
+
+            _file.close();
+        }
     }
 
 }}
