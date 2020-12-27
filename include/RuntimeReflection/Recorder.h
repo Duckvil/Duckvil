@@ -5,7 +5,7 @@
 // Index will be incremented each source file to avoid function name collision
 
 #define DUCKVIL_RUNTIME_REFLECTION_RECORD(index) \
-    DUCKVIL_EXPORT void duckvil_runtime_reflection_record_##index(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData)
+    DUCKVIL_EXPORT Duckvil::Memory::Vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> duckvil_runtime_reflection_record_##index(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData)
 
 // Each plugin/__module will be created file which contains total count of recorders
 

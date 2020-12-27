@@ -4,7 +4,18 @@
 
 namespace Duckvil { namespace LOL {
 
-    Test::Test(int a, const Memory::FreeList& _heap, RuntimeReflection::__data* _pReflectionData) :
+    Test::Test()
+    {
+        m_iA = 20;
+    }
+
+    Test::Test(
+        int a,
+        const Memory::FreeList& _heap,
+        RuntimeReflection::__data* _pReflectionData,
+        RuntimeReflection::__recorder_ftable* _pReflectionRecorderFTable,
+        RuntimeReflection::__ftable* _pReflectionFTable
+    ) :
         m_iA(a)
     {
         // Event::Channel<test> aa(_heap, _pReflectionData);
@@ -112,8 +123,9 @@ namespace Duckvil { namespace LOL {
 
     void Test::Update()
     {
-        // DUCKVIL_LOG_INFO_(m_pLogger, m_pLoggerData, "AAAAAA");
+        // DUCKVIL_LOG_INFO_(m_pLogger, m_pLoggerData, "AAAAAA %i", m_iA);
         // printf("%i\n", m_iA);
+        // printf("AAAAAA\n");
     }
 
     void Test::OnEvent(const test& _event)

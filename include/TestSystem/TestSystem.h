@@ -4,10 +4,15 @@
 #include "Duckvil/ReflectionFlags.h"
 
 #include "RuntimeReflection/Markers.h"
+#include "RuntimeReflection/Recorder.h"
 
 #include "Memory/FreeList.h"
 
 #include "Event/Pool.h"
+
+#include "RuntimeCompiler/HotObject.h"
+
+#include "TestSystem/TestSystem.generated.h"
 
 namespace Duckvil { namespace LOL {
 
@@ -38,13 +43,15 @@ namespace Duckvil { namespace LOL {
     };
 
     DUCKVIL_CLASS(ReflectionFlags::ReflectionFlags_EngineSystem)
-    class Test : public ISystem
+    class Test : public ISystem, public RuntimeCompiler::HotObject
     {
+        DUCKVIL_GENERATED_BODY
     private:
         int m_iA;
 
     public:
-        Test(int a, const Memory::FreeList& _heap, RuntimeReflection::__data* _pReflectionData);
+        Test();
+        Test(int a, const Memory::FreeList& _heap, RuntimeReflection::__data* _pReflectionData, RuntimeReflection::__recorder_ftable* _pReflectionRecorderFTable, RuntimeReflection::__ftable* _pReflectionFTable);
         ~Test();
 
         bool Init();

@@ -17,12 +17,15 @@
 #include "Duckvil/ReflectionFlags.h"
 #include "Duckvil/ISystem.h"
 
+#include "RuntimeCompiler/RuntimeCompilerSystem.h"
+
 namespace Duckvil {
 
     struct system
     {
         RuntimeReflection::__duckvil_resource_type_t m_type;
-        ISystem* m_pObject;
+        void** m_pObject;
+        ISystem* m_pISystem;
         void (ISystem::*m_fnUpdateCallback)();
         bool (ISystem::*m_fnInitCallback)();
     };
@@ -42,6 +45,10 @@ namespace Duckvil {
 
         PlugNPlay::__module_information* m_aLoadedModules;
         uint32_t m_uiLoadedModulesCount;
+
+        RuntimeCompiler::RuntimeCompilerSystem* m_pRuntimeCompiler;
+        void (ISystem::*m_fnRuntimeCompilerUpdate)();
+        bool (ISystem::*m_fnRuntimeCompilerInit)();
 
         Logger::__ftable* m_pLogger;
         Logger::__data* m_pLoggerData;
