@@ -11,7 +11,12 @@ namespace Duckvil { namespace PlugNPlay {
         __module_information(const Utils::string& _sName) :
             m_sName(_sName)
         {
+// TODO: Find a way to pass the project bin folder(while runtime compiling)
+#ifdef DUCKVIL_OUTPUT
             m_sPath = DUCKVIL_OUTPUT;
+#else
+            m_sPath = "F:/Projects/C++/Duckvil/bin";
+#endif
         }
 
         __module_information(const Utils::string& _sName, const Utils::string& _sPath) :
