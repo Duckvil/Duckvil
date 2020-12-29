@@ -125,7 +125,7 @@ namespace Duckvil { namespace LOL {
     {
         // DUCKVIL_LOG_INFO_(m_pLogger, m_pLoggerData, "AAAAAA %i", m_iA);
         // printf("%i\n", m_iA);
-        // printf("AAAAAA\n");
+        printf("AAAAAA\n");
     }
 
     void Test::OnEvent(const test& _event)

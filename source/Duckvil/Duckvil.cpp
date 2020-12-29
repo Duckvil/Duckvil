@@ -242,7 +242,7 @@ namespace Duckvil {
                             _pData->m_pRuntimeReflection
                         );
                         RuntimeReflection::__duckvil_resource_function_t _castFunctionHandle = RuntimeReflection::get_function_handle<void*>(_pData->m_pRuntimeReflectionData, _typeHandle, "Cast");
-                        ISystem* _systemInheritance = (ISystem*)RuntimeReflection::invoke_member_result<void*, void*>(_pData->m_pRuntimeReflectionData, _typeHandle, _castFunctionHandle, _testSystem, _testSystem);
+                        ISystem* _systemInheritance = (ISystem*)RuntimeReflection::invoke_static_result<void*, void*>(_pData->m_pRuntimeReflectionData, _typeHandle, _castFunctionHandle, _testSystem);
 
                         _systemInheritance->m_pLogger = _pData->m_pLogger;
                         _systemInheritance->m_pLoggerData = _pData->m_pLoggerData;
@@ -275,7 +275,7 @@ namespace Duckvil {
                 if(_system.m_pISystem != *_system.m_pObject)
                 {
                     RuntimeReflection::__duckvil_resource_function_t _castFunctionHandle = RuntimeReflection::get_function_handle<void*>(_pData->m_pRuntimeReflectionData, _system.m_type, "Cast");
-                    _system.m_pISystem = (ISystem*)RuntimeReflection::invoke_member_result<void*, void*>(_pData->m_pRuntimeReflectionData, _system.m_type, _castFunctionHandle, *_system.m_pObject, *_system.m_pObject);
+                    _system.m_pISystem = (ISystem*)RuntimeReflection::invoke_static_result<void*, void*>(_pData->m_pRuntimeReflectionData, _system.m_type, _castFunctionHandle, *_system.m_pObject);
                 }
 
                 if(!(_system.m_pISystem->*_system.m_fnInitCallback)())
@@ -336,7 +336,7 @@ namespace Duckvil {
             {
                 RuntimeReflection::__duckvil_resource_function_t _castFunctionHandle = RuntimeReflection::get_function_handle<void*>(_pData->m_pRuntimeReflectionData, _system.m_type, "Cast");
                 _system.m_fnUpdateCallback = RuntimeReflection::get_function_callback<ISystem>(_pData->m_pRuntimeReflectionData, _system.m_type, "Update")->m_fnFunction;
-                _system.m_pISystem = (ISystem*)RuntimeReflection::invoke_member_result<void*, void*>(_pData->m_pRuntimeReflectionData, _system.m_type, _castFunctionHandle, *_system.m_pObject, *_system.m_pObject);
+                _system.m_pISystem = (ISystem*)RuntimeReflection::invoke_static_result<void*, void*>(_pData->m_pRuntimeReflectionData, _system.m_type, _castFunctionHandle, *_system.m_pObject);
             }
 
             (_system.m_pISystem->*_system.m_fnUpdateCallback)();

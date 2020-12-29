@@ -205,7 +205,7 @@ namespace Duckvil { namespace RuntimeCompiler {
     void RuntimeCompilerSystem::AddHotObject(void** _pHotObject, RuntimeReflection::__duckvil_resource_type_t _typeHandle)
     {
         RuntimeReflection::__duckvil_resource_function_t _castHotObjectFunctionHandle = RuntimeReflection::get_function_handle<void*>(m_pReflectionData, _typeHandle, "Cast");
-        RuntimeCompiler::HotObject* _systemInheritance2 = (RuntimeCompiler::HotObject*)RuntimeReflection::invoke_member_result<void*, void*>(m_pReflectionData, _typeHandle, _castHotObjectFunctionHandle, *_pHotObject, *_pHotObject);
+        RuntimeCompiler::HotObject* _systemInheritance2 = (RuntimeCompiler::HotObject*)RuntimeReflection::invoke_static_result<void*, void*>(m_pReflectionData, _typeHandle, _castHotObjectFunctionHandle, *_pHotObject);
 
         _systemInheritance2->m_ullHotObjectID++;
 

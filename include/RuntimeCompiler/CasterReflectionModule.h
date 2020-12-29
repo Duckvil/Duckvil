@@ -44,7 +44,7 @@ namespace Duckvil {
             _file << " \\\n";
             _file << "public: \\\n";
 
-            _file << "void* Cast(void* _pObject) { return static_cast<" << m_sTypeName << "*>(_pObject); }";
+            _file << "static void* Cast(void* _pObject) { return static_cast<" << m_sTypeName << "*>(_pObject); }";
         }
 
         void Clear()
@@ -80,7 +80,7 @@ namespace Duckvil {
                 _func->m_sName = "Cast";
                 _func->m_pParentScope = _struct;
                 _func->m_accessLevel = Parser::__ast_access::__ast_access_public;
-                _func->m_flags = (Parser::__ast_flags)0;
+                _func->m_flags = static_cast<Parser::__ast_flags>(Parser::__ast_flags::__ast_flags_static);
 
                 {
                     Parser::__ast_entity_argument _arg;
