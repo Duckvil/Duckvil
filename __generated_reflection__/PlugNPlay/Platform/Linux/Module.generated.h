@@ -2,4 +2,4 @@
 
 #define DUCKVIL_GENERATED_BODY \
 public: \
-void* Cast(void* _pObject) { return static_cast<__module*>(_pObject); }
+static void* Cast(void* _pObject) { return static_cast<__module*>(_pObject); }

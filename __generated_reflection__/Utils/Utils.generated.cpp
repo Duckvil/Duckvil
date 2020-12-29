@@ -23,7 +23,7 @@ record_function<Duckvil::Utils::string, string&, const char>(DUCKVIL_RUNTIME_REF
 record_function<Duckvil::Utils::string, string&, string&&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::string::operator=, "operator=");
 record_function<Duckvil::Utils::string, string&, const string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::string::operator=, "operator=");
 record_function<Duckvil::Utils::string, void, std::size_t, Memory::IMemory*, Memory::__free_list_allocator*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::string::Allocate, "Allocate");
-record_function<Duckvil::Utils::string, void*, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::string::Cast, "Cast");
+record_function<void*, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::string::Cast, "Cast");
 if(_types.Full()) _types.Resize(_types.Size() * 2);
 _types.Allocate(_type);
 return _types;

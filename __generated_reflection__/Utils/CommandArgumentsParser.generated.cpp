@@ -17,7 +17,7 @@ _constructor = record_constructor<Duckvil::Utils::CommandArgumentsParser, int, c
 record_function<Duckvil::Utils::CommandArgumentsParser, bool, Descriptor*, std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::CommandArgumentsParser::Parse, "Parse");
 record_function<Duckvil::Utils::CommandArgumentsParser, Descriptor&, A>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::CommandArgumentsParser::operator, "operator");
 record_function<Duckvil::Utils::CommandArgumentsParser, Descriptor&, A>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::CommandArgumentsParser::operator, "operator");
-record_function<Duckvil::Utils::CommandArgumentsParser, void*, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::CommandArgumentsParser::Cast, "Cast");
+record_function<void*, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::CommandArgumentsParser::Cast, "Cast");
 if(_types.Full()) _types.Resize(_types.Size() * 2);
 _types.Allocate(_type);
 _type = record_type<Duckvil::Utils::CommandArgumentsParser::Descriptor>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "Descriptor");
@@ -28,7 +28,7 @@ _property = record_property<uint32_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDA
 _property = record_property<const char*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Utils::CommandArgumentsParser::Descriptor, m_sOption), "m_sOption");
 _property = record_property<const char*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Utils::CommandArgumentsParser::Descriptor, m_sResult), "m_sResult");
 _property = record_property<bool>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Utils::CommandArgumentsParser::Descriptor, m_bIsSet), "m_bIsSet");
-record_function<Duckvil::Utils::CommandArgumentsParser::Descriptor, void*, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::CommandArgumentsParser::Descriptor::Cast, "Cast");
+record_function<void*, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::CommandArgumentsParser::Descriptor::Cast, "Cast");
 if(_types.Full()) _types.Resize(_types.Size() * 2);
 _types.Allocate(_type);
 return _types;
