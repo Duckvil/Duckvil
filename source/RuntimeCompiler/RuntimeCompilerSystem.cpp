@@ -63,6 +63,7 @@ namespace Duckvil { namespace RuntimeCompiler {
 
         m_aDefines.push_back("DUCKVIL_PLATFORM_WINDOWS");
         m_aDefines.push_back("DUCKVIL_RUNTIME_COMPILE");
+        m_aDefines.push_back(std::string("DUCKVIL_OUTPUT=\"") + DUCKVIL_OUTPUT + "\"");
 
         m_aLibrariesPaths.push_back(DUCKVIL_OUTPUT);
 
@@ -159,7 +160,7 @@ namespace Duckvil { namespace RuntimeCompiler {
 
         PlugNPlay::module_init(&_module);
 
-        PlugNPlay::__module_information _testModule("test", "F:/Projects/C++/Duckvil/bin/Swap");
+        PlugNPlay::__module_information _testModule("test", DUCKVIL_SWAP_OUTPUT);
         uint32_t (*get_recorder_index)();
         Memory::Vector<RuntimeReflection::__duckvil_resource_type_t> (*record)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);
 

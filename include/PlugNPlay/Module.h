@@ -4,6 +4,8 @@
 
 #include <filesystem>
 
+#define DUCKVIL_TO_STRING(str) #str
+
 namespace Duckvil { namespace PlugNPlay {
 
     struct __module_information
@@ -11,11 +13,18 @@ namespace Duckvil { namespace PlugNPlay {
         __module_information(const Utils::string& _sName) :
             m_sName(_sName)
         {
-// TODO: Find a way to pass the project bin folder(while runtime compiling)
+#ifndef DUCKVIL_RUNTIME_COMPILE
 #ifdef DUCKVIL_OUTPUT
             m_sPath = DUCKVIL_OUTPUT;
 #else
-            m_sPath = "F:/Projects/C++/Duckvil/bin";
+            static_assert(false, "DUCKVIL_OUTPUT is not specified!");
+#endif
+#else
+#ifdef DUCKVIL_OUTPUT
+            m_sPath = DUCKVIL_TO_STRING(DUCKVIL_OUTPUT);
+#else
+            static_assert(false, "DUCKVIL_OUTPUT is not specified!");
+#endif
 #endif
         }
 
