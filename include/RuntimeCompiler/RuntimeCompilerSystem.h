@@ -48,6 +48,9 @@ namespace Duckvil { namespace RuntimeCompiler {
         std::vector<std::string> m_aLibrariesPaths;
         std::vector<std::string> m_aLibraries;
 
+        // std::filesystem::path m_sModuleName;
+        std::string m_sModuleName;
+
         static void Action(const std::filesystem::path& _file, FileWatcher::FileStatus _status, void* _pUserData)
         {
             user_data* _userData = (user_data*)_pUserData;

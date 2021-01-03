@@ -55,8 +55,6 @@ namespace Duckvil { namespace RuntimeCompiler {
         m_aFlags.push_back("/MDd");
         m_aFlags.push_back("/LD");
         m_aFlags.push_back("/FC");
-        m_aFlags.push_back("/Fe" + std::string(DUCKVIL_OUTPUT) + "/Swap/test.dll");
-        m_aFlags.push_back("/Fd" + std::string(DUCKVIL_OUTPUT) + "/Swap/test.pdb");
 
         m_aIncludes.push_back((std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include").string());
         m_aIncludes.push_back((std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__").string());
@@ -70,20 +68,6 @@ namespace Duckvil { namespace RuntimeCompiler {
         m_aLibraries.push_back("Utils.lib");
         m_aLibraries.push_back("UniTestFramework.lib");
         m_aLibraries.push_back("PlugNPlay.lib");
-
-        // m_aFlags.push_back("/c");
-        // m_aFlags.push_back("/std:c++latest");
-        // m_aFlags.push_back("/Fo" + std::string(DUCKVIL_OUTPUT) + "/Swap/test.obj");
-
-        // m_aIncludes.push_back((std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include").string());
-
-        // m_aDefines.push_back("DUCKVIL_PLATFORM_WINDOWS");
-
-        // m_aLibrariesPaths.push_back(DUCKVIL_OUTPUT);
-
-        // m_aLibraries.push_back("Utils.lib");
-        // m_aLibraries.push_back("UniTestFramework.lib");
-        // m_aLibraries.push_back("PlugNPlay.lib");
 
         m_pFileWatcher->Watch("F:/Projects/C++/Duckvil/source");
 
@@ -103,6 +87,16 @@ namespace Duckvil { namespace RuntimeCompiler {
         {
             _command.append(" " + _flag);
         }
+
+        // m_aFlags.push_back("/Fe" + std::string(DUCKVIL_OUTPUT) + "/Swap/test.dll");
+        // m_aFlags.push_back("/Fd" + std::string(DUCKVIL_OUTPUT) + "/Swap/test.pdb");
+
+        std::filesystem::path _path = std::tmpnam(nullptr);
+
+        m_sModuleName = _path.filename().string();
+
+        _command.append(" /Fe" + std::string(DUCKVIL_SWAP_OUTPUT) + "/" + m_sModuleName + ".dll");
+        _command.append(" /Fd" + std::string(DUCKVIL_SWAP_OUTPUT) + "/" + m_sModuleName + ".pdb");
 
         for(const auto& _define : m_aDefines)
         {
@@ -160,7 +154,8 @@ namespace Duckvil { namespace RuntimeCompiler {
 
         PlugNPlay::module_init(&_module);
 
-        PlugNPlay::__module_information _testModule("test", DUCKVIL_SWAP_OUTPUT);
+        // PlugNPlay::__module_information _testModule("test", DUCKVIL_SWAP_OUTPUT);
+        PlugNPlay::__module_information _testModule(Utils::string(m_sModuleName.c_str(), strlen(m_sModuleName.c_str()) + 1), DUCKVIL_SWAP_OUTPUT);
         uint32_t (*get_recorder_index)();
         Memory::Vector<RuntimeReflection::__duckvil_resource_type_t> (*record)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);
 
