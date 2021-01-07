@@ -341,12 +341,12 @@ namespace Duckvil { namespace RuntimeReflection {
         return _data;
     }
 
-    void generate(__generator_data* _pData, const char _sSourcePath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const char _sHeaderPath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const Parser::__ast& _ast, void (*_fnGenerate)(std::ofstream& _file))
+    void generate(__generator_data* _pData, const char _sSourcePath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const char _sHeaderPath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const Parser::__ast& _ast, void (*_fnGenerate)(std::ofstream& _file, void* _pUserData), void* _pUserData)
     {
         {
             std::ofstream _file(_sHeaderPath);
 
-            _fnGenerate(_file);
+            _fnGenerate(_file, _pUserData);
 
             _file.close();
         }

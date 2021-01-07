@@ -196,7 +196,6 @@ namespace Duckvil {
                         if(_type.m_ullTypeID == typeid(RuntimeCompiler::RuntimeCompilerSystem).hash_code())
                         {
                             _pData->m_pRuntimeCompiler = (RuntimeCompiler::RuntimeCompilerSystem*)RuntimeReflection::create<
-                                int,
                                 const Memory::FreeList&,
                                 RuntimeReflection::__data*,
                                 RuntimeReflection::__recorder_ftable*,
@@ -206,7 +205,6 @@ namespace Duckvil {
                                 _pData->m_pHeap,
                                 _pData->m_pRuntimeReflectionData,
                                 _typeHandle,
-                                10,
                                 _pData->m_heap,
                                 _pData->m_pRuntimeReflectionData,
                                 _pData->m_pRuntimeReflectionRecorder,
@@ -225,7 +223,6 @@ namespace Duckvil {
                         }
 
                         void* _testSystem = RuntimeReflection::create<
-                            int,
                             const Memory::FreeList&,
                             RuntimeReflection::__data*,
                             RuntimeReflection::__recorder_ftable*,
@@ -235,7 +232,6 @@ namespace Duckvil {
                             _pData->m_pHeap,
                             _pData->m_pRuntimeReflectionData,
                             _typeHandle,
-                            10,
                             _pData->m_heap,
                             _pData->m_pRuntimeReflectionData,
                             _pData->m_pRuntimeReflectionRecorder,

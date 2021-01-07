@@ -8,8 +8,20 @@
 
 namespace Duckvil { namespace RuntimeCompiler {
 
+    void generate(std::ofstream& _file, void* _pUserData)
+    {
+        _file << "#include \"Serializer/Runtime/ISerializer.h\"\n\n";
+        _file << "#define DUCKVIL_GENERATED_BODY";
+
+        RuntimeCompilerSystem* _system = (RuntimeCompilerSystem*)_pUserData;
+
+        for(auto& _module : _system->m_aModules)
+        {
+            Duckvil::RuntimeReflection::invoke_member<std::ofstream&>(_system->m_pReflectionData, _module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _file);
+        }
+    }
+
     RuntimeCompilerSystem::RuntimeCompilerSystem(
-        int a,
         const Memory::FreeList& _heap,
         RuntimeReflection::__data* _pReflectionData,
         RuntimeReflection::__recorder_ftable* _pReflectionRecorderFTable,
@@ -21,6 +33,7 @@ namespace Duckvil { namespace RuntimeCompiler {
         m_pReflectionRecorderFTable(_pReflectionRecorderFTable)
     {
         _heap.Allocate(m_aHotObjects, 1);
+        _heap.Allocate(m_aModules, 1);
 
         PlugNPlay::__module _module;
 
@@ -51,6 +64,33 @@ namespace Duckvil { namespace RuntimeCompiler {
 
     bool RuntimeCompilerSystem::Init()
     {
+        {
+            auto _types = Duckvil::RuntimeReflection::get_types(m_pReflectionData, m_heap.GetMemoryInterface(), m_heap.GetAllocator());
+
+            for(auto& _typeHandle : _types)
+            {
+                const Duckvil::RuntimeReflection::__variant& _variant = Duckvil::RuntimeReflection::get_meta(m_pReflectionData, _typeHandle, Duckvil::ReflectionFlags::ReflectionFlags_ReflectionModule);
+
+                if(_variant.m_ullTypeID != std::numeric_limits<std::size_t>::max() && (uint8_t)_variant.m_traits & (uint8_t)Duckvil::RuntimeReflection::__traits::is_bool)
+                {
+                    reflection_module _module = {};
+
+                    _module.m_pObject = Duckvil::RuntimeReflection::create(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_pReflectionData, _typeHandle);
+                    _module.m_typeHandle = _typeHandle;
+                    _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&>(m_pReflectionData, _typeHandle, "GenerateCustom");
+                    _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(m_pReflectionData, _typeHandle, "Clear");
+                    _module.m_processAST_FunctionHandle = Duckvil::RuntimeReflection::get_function_handle<Duckvil::Parser::__ast*>(m_pReflectionData, _typeHandle, "ProcessAST");
+
+                    if(m_aModules.Full())
+                    {
+                        m_aModules.Resize(m_aModules.Size() * 2);
+                    }
+
+                    m_aModules.Allocate(_module);
+                }
+            }
+        }
+
         m_aFlags.push_back("/Zi");
         m_aFlags.push_back("/MDd");
         m_aFlags.push_back("/LD");
@@ -71,6 +111,35 @@ namespace Duckvil { namespace RuntimeCompiler {
 
         m_pFileWatcher->Watch("F:/Projects/C++/Duckvil/source");
 
+        PlugNPlay::__module _module;
+
+        PlugNPlay::module_init(&_module);
+
+        PlugNPlay::__module_information _reflectionModule("RuntimeReflection");
+        PlugNPlay::__module_information _parser("Parser");
+
+        _module.load(&_reflectionModule);
+        _module.load(&_parser);
+
+        {
+            RuntimeReflection::__generator_ftable* (*_runtime_reflection_generator)(Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator);
+
+            _module.get(_reflectionModule, "duckvil_runtime_reflection_generator_init", (void**)&_runtime_reflection_generator);
+
+            m_pReflectionGenerator = _runtime_reflection_generator(m_heap.GetMemoryInterface(), m_heap.GetAllocator());
+        }
+
+        {
+            Parser::__lexer_ftable* (*_lexer_init)(Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator);
+            Parser::__ast_ftable* (*_ast_init)(Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator);
+
+            _module.get(_parser, "duckvil_lexer_init", (void**)&_lexer_init);
+            _module.get(_parser, "duckvil_ast_init", (void**)&_ast_init);
+
+            m_pAST_FTable = _ast_init(m_heap.GetMemoryInterface(), m_heap.GetAllocator());
+            m_pLexerFTable = _lexer_init(m_heap.GetMemoryInterface(), m_heap.GetAllocator());
+        }
+
         return true;
     }
 
@@ -81,15 +150,56 @@ namespace Duckvil { namespace RuntimeCompiler {
 
     void RuntimeCompilerSystem::Compile(const std::string& _sFile)
     {
+        {
+            std::filesystem::path _path = std::filesystem::relative(_sFile, std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "source");
+            std::filesystem::path _generatePath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _path;
+            std::filesystem::path _source = _generatePath;
+            std::filesystem::path _header = _generatePath;
+
+        // TODO: Solve problem with reflection recorder count
+
+            _path = _path.replace_extension(".h");
+
+            RuntimeReflection::__generator_data _generatorData;
+
+            strcpy(_generatorData.m_sInclude, _path.string().c_str());
+
+            _source.replace_extension(".generated.cpp");
+            _header.replace_extension(".generated.h");
+
+            _path = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include" / _path;
+
+            Parser::__ast _astData;
+            Parser::__lexer_data _data;
+
+            m_pLexerFTable->load_file(&_data, _path.string().c_str());
+
+            _astData.m_aUserDefines.push_back("DUCKVIL_EXPORT");
+            _astData.m_aUserDefines.push_back("slot");
+            _astData.m_aUserDefines.push_back("DUCKVIL_RESOURCE_DECLARE");
+            _astData.m_aUserDefines.push_back("DUCKVIL_GENERATED_BODY");
+
+            m_pAST_FTable->ast_generate(&_astData, m_pLexerFTable, _data);
+
+            for(auto& _reflectionModule : m_aModules)
+            {
+                Duckvil::RuntimeReflection::invoke_member<Duckvil::Parser::__ast*>(m_pReflectionData, _reflectionModule.m_typeHandle, _reflectionModule.m_processAST_FunctionHandle, _reflectionModule.m_pObject, &_astData);
+            }
+
+            m_pReflectionGenerator->generate(&_generatorData, _source.string().c_str(), _header.string().c_str(), _astData, &generate, this);
+
+            for(auto& _module : m_aModules)
+            {
+                Duckvil::RuntimeReflection::invoke_member(m_pReflectionData, _module.m_typeHandle, _module.m_clearFunctionHandle, _module.m_pObject);
+            }
+        }
+
         std::string _command = "cl";
 
         for(const auto& _flag : m_aFlags)
         {
             _command.append(" " + _flag);
         }
-
-        // m_aFlags.push_back("/Fe" + std::string(DUCKVIL_OUTPUT) + "/Swap/test.dll");
-        // m_aFlags.push_back("/Fd" + std::string(DUCKVIL_OUTPUT) + "/Swap/test.pdb");
 
         std::filesystem::path _path = std::tmpnam(nullptr);
 
@@ -123,7 +233,7 @@ namespace Duckvil { namespace RuntimeCompiler {
                 _filename.erase(_filename.begin() + _dotPosition, _filename.end());
             }
 
-            std::string _generatedFilename = _filename + ".Generated.cpp";
+            std::string _generatedFilename = _filename + ".generated.cpp";
             std::filesystem::path _generatedFile = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _moduleName / _generatedFilename;
 
             _command.append(" " + _generatedFile.string());
@@ -154,7 +264,6 @@ namespace Duckvil { namespace RuntimeCompiler {
 
         PlugNPlay::module_init(&_module);
 
-        // PlugNPlay::__module_information _testModule("test", DUCKVIL_SWAP_OUTPUT);
         PlugNPlay::__module_information _testModule(Utils::string(m_sModuleName.c_str(), strlen(m_sModuleName.c_str()) + 1), DUCKVIL_SWAP_OUTPUT);
         uint32_t (*get_recorder_index)();
         Memory::Vector<RuntimeReflection::__duckvil_resource_type_t> (*record)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);

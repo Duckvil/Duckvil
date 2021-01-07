@@ -27,10 +27,8 @@ std::filesystem::path _relativePath;
 Duckvil::Memory::Vector<reflection_module> _aModules;
 Duckvil::RuntimeReflection::__data* _runtimeReflectionData;
 
-void generate(std::ofstream& _file)
+void generate(std::ofstream& _file, void* _pUserData)
 {
-    // _file << "#include \"" << _relativePath.string() << "\"\n";
-    // _file << "\n";
     _file << "#include \"Serializer/Runtime/ISerializer.h\"\n\n";
     _file << "#define DUCKVIL_GENERATED_BODY";
 
@@ -237,7 +235,7 @@ int main(int argc, char* argv[])
 
         // strcpy(_generatorData.m_sGeneratedHeader, std::filesystem::relative(_header, std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__").string().c_str());
 
-        _generatorFtable->generate(&_generatorData, _source.string().c_str(), _header.string().c_str(), _astData, &generate);
+        _generatorFtable->generate(&_generatorData, _source.string().c_str(), _header.string().c_str(), _astData, &generate, 0);
 
         for(auto& _module : _aModules)
         {

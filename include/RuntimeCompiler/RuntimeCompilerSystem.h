@@ -14,6 +14,11 @@
 
 #include "Process/Process.h"
 
+#include "RuntimeReflection/Generator.h"
+
+#include "Parser/AST.h"
+#include "Parser/Lexer.h"
+
 namespace Duckvil { namespace RuntimeCompiler {
 
     struct hot_object
@@ -31,6 +36,15 @@ namespace Duckvil { namespace RuntimeCompiler {
             RuntimeCompilerSystem* m_pRuntimeCompiler;
         };
 
+        struct reflection_module
+        {
+            void* m_pObject;
+            RuntimeReflection::__duckvil_resource_type_t m_typeHandle;
+            RuntimeReflection::__duckvil_resource_function_t m_generateCustomFunctionHandle;
+            RuntimeReflection::__duckvil_resource_function_t m_processAST_FunctionHandle;
+            RuntimeReflection::__duckvil_resource_function_t m_clearFunctionHandle;
+        };
+
     private:
         FileWatcher* m_pFileWatcher;
         user_data m_userData;
@@ -38,7 +52,6 @@ namespace Duckvil { namespace RuntimeCompiler {
         Process::data m_processData;
 
         Memory::FreeList m_heap;
-        RuntimeReflection::__data* m_pReflectionData;
         RuntimeReflection::__recorder_ftable* m_pReflectionRecorderFTable;
         RuntimeReflection::__ftable* m_pReflectionFTable;
 
@@ -48,8 +61,12 @@ namespace Duckvil { namespace RuntimeCompiler {
         std::vector<std::string> m_aLibrariesPaths;
         std::vector<std::string> m_aLibraries;
 
-        // std::filesystem::path m_sModuleName;
         std::string m_sModuleName;
+
+    // RuntimeReflection generator
+        RuntimeReflection::__generator_ftable* m_pReflectionGenerator;
+        Parser::__ast_ftable* m_pAST_FTable;
+        Parser::__lexer_ftable* m_pLexerFTable;
 
         static void Action(const std::filesystem::path& _file, FileWatcher::FileStatus _status, void* _pUserData)
         {
@@ -69,10 +86,14 @@ namespace Duckvil { namespace RuntimeCompiler {
         }
 
     public:
-        RuntimeCompilerSystem(int a, const Memory::FreeList& _heap, RuntimeReflection::__data* _pReflectionData, RuntimeReflection::__recorder_ftable* _pReflectionRecorderFTable, RuntimeReflection::__ftable* _pReflectionFTable);
+        RuntimeCompilerSystem(const Memory::FreeList& _heap, RuntimeReflection::__data* _pReflectionData, RuntimeReflection::__recorder_ftable* _pReflectionRecorderFTable, RuntimeReflection::__ftable* _pReflectionFTable);
         ~RuntimeCompilerSystem();
 
+        RuntimeReflection::__data* m_pReflectionData;
+
         Memory::Vector<hot_object> m_aHotObjects;
+
+        Memory::Vector<RuntimeCompilerSystem::reflection_module> m_aModules;
 
         bool Init();
         void Update();
