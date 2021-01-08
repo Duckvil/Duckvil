@@ -109,7 +109,7 @@ namespace Duckvil { namespace RuntimeCompiler {
         m_aLibraries.push_back("UniTestFramework.lib");
         m_aLibraries.push_back("PlugNPlay.lib");
 
-        m_pFileWatcher->Watch("F:/Projects/C++/Duckvil/source");
+        m_pFileWatcher->Watch(std::filesystem::path(DUCKVIL_CWD) / "source");
 
         PlugNPlay::__module _module;
 

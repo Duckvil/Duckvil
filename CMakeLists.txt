@@ -30,6 +30,7 @@ endif()
 
 add_definitions(-DDUCKVIL_OUTPUT="${CMAKE_SOURCE_DIR}/bin")
 add_definitions(-DDUCKVIL_SWAP_OUTPUT="${CMAKE_SOURCE_DIR}/bin/Swap")
+add_definitions(-DDUCKVIL_CWD="${CMAKE_SOURCE_DIR}")
 
 add_subdirectory(source)
 list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
