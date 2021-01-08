@@ -10,13 +10,11 @@ namespace Duckvil { namespace LOL {
     }
 
     Test::Test(
-        int a,
         const Memory::FreeList& _heap,
         RuntimeReflection::__data* _pReflectionData,
         RuntimeReflection::__recorder_ftable* _pReflectionRecorderFTable,
         RuntimeReflection::__ftable* _pReflectionFTable
-    ) :
-        m_iA(a)
+    )
     {
         // Event::Channel<test> aa(_heap, _pReflectionData);
         // // Event::Channel<test2> aa2(_heap, _pReflectionData);
@@ -125,7 +123,7 @@ namespace Duckvil { namespace LOL {
     {
         // DUCKVIL_LOG_INFO_(m_pLogger, m_pLoggerData, "AAAAAA %i", m_iA);
         // printf("%i\n", m_iA);
-        printf("AAAAAA\n");
+        // printf("AAAAAA\n");
     }
 
     void Test::OnEvent(const test& _event)
