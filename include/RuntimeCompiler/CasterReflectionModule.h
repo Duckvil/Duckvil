@@ -24,6 +24,7 @@ namespace Duckvil {
         CasterReflectionModule()
         {
             m_bHasGeneratedBody = false;
+            m_bIsStruct = false;
         }
 
         ~CasterReflectionModule()
@@ -33,6 +34,7 @@ namespace Duckvil {
 
         std::string m_sTypeName;
         bool m_bHasGeneratedBody;
+        bool m_bIsStruct;
 
         void ProcessAST(Parser::__ast* _ast)
         {
@@ -41,6 +43,11 @@ namespace Duckvil {
 
         void GenerateCustom(std::ofstream& _file)
         {
+            if(!m_bIsStruct)
+            {
+                return;
+            }
+
             _file << " \\\n";
             _file << "public: \\\n";
 
@@ -49,7 +56,8 @@ namespace Duckvil {
 
         void Clear()
         {
-
+            m_bHasGeneratedBody = false;
+            m_bIsStruct = false;
         }
     };
 
@@ -57,6 +65,8 @@ namespace Duckvil {
     {
         if(_entity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_structure)
         {
+            _pData->m_bIsStruct = true;
+
             Parser::__ast_entity_structure* _struct = (Parser::__ast_entity_structure*)_entity;
 
             for(Parser::__ast_entity* _ent : _struct->m_aScopes)
