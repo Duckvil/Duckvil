@@ -1,5 +1,7 @@
 #include "Memory\Queue.h"
 #include "RuntimeReflection/Recorder.h"
+#include "RuntimeReflection/GeneratedMeta.h"
+
 DUCKVIL_RUNTIME_REFLECTION_RECORD(19)
 {
 using namespace Duckvil::RuntimeReflection;

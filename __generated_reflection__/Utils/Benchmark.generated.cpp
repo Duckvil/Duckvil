@@ -1,5 +1,7 @@
 #include "Utils\Benchmark.h"
 #include "RuntimeReflection/Recorder.h"
+#include "RuntimeReflection/GeneratedMeta.h"
+
 DUCKVIL_RUNTIME_REFLECTION_RECORD(0)
 {
 using namespace Duckvil::RuntimeReflection;

@@ -1,5 +1,7 @@
 #include "Memory\LinearAllocator.h"
 #include "RuntimeReflection/Recorder.h"
+#include "RuntimeReflection/GeneratedMeta.h"
+
 DUCKVIL_RUNTIME_REFLECTION_RECORD(17)
 {
 using namespace Duckvil::RuntimeReflection;

@@ -1,5 +1,7 @@
 #include "Event\Pool.h"
 #include "RuntimeReflection/Recorder.h"
+#include "RuntimeReflection/GeneratedMeta.h"
+
 DUCKVIL_RUNTIME_REFLECTION_RECORD(1)
 {
 using namespace Duckvil::RuntimeReflection;

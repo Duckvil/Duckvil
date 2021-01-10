@@ -1,6 +1,8 @@
 #include "RuntimeReflection\Markers.h"
 #include "RuntimeReflection/Recorder.h"
-DUCKVIL_RUNTIME_REFLECTION_RECORD(1)
+#include "RuntimeReflection/GeneratedMeta.h"
+
+DUCKVIL_RUNTIME_REFLECTION_RECORD(2)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -13,6 +15,6 @@ return _types;
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 1;
+return 2;
 }
 #endif

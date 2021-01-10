@@ -1,5 +1,7 @@
 #include "Memory\FreeListAllocator.h"
 #include "RuntimeReflection/Recorder.h"
+#include "RuntimeReflection/GeneratedMeta.h"
+
 DUCKVIL_RUNTIME_REFLECTION_RECORD(8)
 {
 using namespace Duckvil::RuntimeReflection;

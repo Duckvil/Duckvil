@@ -1,5 +1,7 @@
 #include "Memory\Iterator.h"
 #include "RuntimeReflection/Recorder.h"
+#include "RuntimeReflection/GeneratedMeta.h"
+
 DUCKVIL_RUNTIME_REFLECTION_RECORD(16)
 {
 using namespace Duckvil::RuntimeReflection;
