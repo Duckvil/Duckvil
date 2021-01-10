@@ -260,6 +260,8 @@ namespace Duckvil { namespace RuntimeReflection {
             _namespaces.pop();
         }
 
+        _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, " << _pData->m_uiRecorderIndex << ");\n";
+
         for(const Parser::__ast_meta& _meta : _casted->m_aMeta)
         {
             if(!_meta.m_sValue.empty())
@@ -356,6 +358,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
             _file << "#include \"" << _pData->m_sInclude << "\"\n";
             _file << "#include \"RuntimeReflection/Recorder.h\"\n";
+            _file << "#include \"RuntimeReflection/GeneratedMeta.h\"\n\n";
 
             _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD(" << _pData->m_uiRecorderIndex << ")\n";
             _file << "{\n";
