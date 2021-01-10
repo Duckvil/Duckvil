@@ -268,6 +268,13 @@ namespace Duckvil { namespace RuntimeCompiler {
         uint32_t (*get_recorder_index)();
         Memory::Vector<RuntimeReflection::__duckvil_resource_type_t> (*record)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);
 
+        if(_testModule.m_pModule == nullptr)
+        {
+            printf("Failed to load hot module!\n");
+
+            return;
+        }
+
         _module.load(&_testModule);
         _module.get(_testModule, "duckvil_get_recorder_index", (void**)&get_recorder_index);
         _module.get(_testModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(get_recorder_index())).c_str(), (void**)&record);
