@@ -1,10 +1,9 @@
 #pragma once
 
 #include "Utils/Utils.h"
+#include "Utils/Macro.h"
 
 #include <filesystem>
-
-#define DUCKVIL_TO_STRING(str) #str
 
 namespace Duckvil { namespace PlugNPlay {
 
