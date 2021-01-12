@@ -1,4 +1,5 @@
 #include "RuntimeReflection/Generator.h"
+#include "RuntimeReflection/GeneratedMeta.h"
 
 #include <cstring>
 
@@ -260,7 +261,7 @@ namespace Duckvil { namespace RuntimeReflection {
             _namespaces.pop();
         }
 
-        _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, " << _pData->m_uiRecorderIndex << ");\n";
+        _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, " << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID) << ", " << _pData->m_uiRecorderIndex << ");\n";
 
         for(const Parser::__ast_meta& _meta : _casted->m_aMeta)
         {
