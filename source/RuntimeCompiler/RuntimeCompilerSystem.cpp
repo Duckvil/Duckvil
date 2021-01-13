@@ -160,7 +160,25 @@ namespace Duckvil { namespace RuntimeCompiler {
 
             _path = _path.replace_extension(".h");
 
+            std::string _toCmp = _path.string();
+            uint32_t _foundRecorderID = -1;
             RuntimeReflection::__generator_data _generatorData;
+
+            _generatorData.m_uiRecorderIndex = -1;
+
+            std::replace(_toCmp.begin(), _toCmp.end(), '\\', '/');
+
+            for(size_t i = 0; i < m_ullRecordedTypesCount; i++)
+            {
+                const duckvil_recorderd_types& _types = m_aRecordedTypes[i];
+
+                if(strcmp(_types.m_sFile, _toCmp.c_str()) == 0)
+                {
+                    _generatorData.m_uiRecorderIndex = _types.m_uiRecorderID;
+
+                    break;
+                }
+            }
 
             strcpy(_generatorData.m_sInclude, _path.string().c_str());
 
@@ -266,7 +284,7 @@ namespace Duckvil { namespace RuntimeCompiler {
 
         PlugNPlay::__module_information _testModule(Utils::string(m_sModuleName.c_str(), strlen(m_sModuleName.c_str()) + 1), DUCKVIL_SWAP_OUTPUT);
         uint32_t (*get_recorder_index)();
-        Memory::Vector<RuntimeReflection::__duckvil_resource_type_t> (*record)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);
+        duckvil_recorderd_types (*record)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);
 
         if(_testModule.m_pModule == nullptr)
         {
@@ -279,12 +297,13 @@ namespace Duckvil { namespace RuntimeCompiler {
         _module.get(_testModule, "duckvil_get_recorder_index", (void**)&get_recorder_index);
         _module.get(_testModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(get_recorder_index())).c_str(), (void**)&record);
 
-        Memory::Vector<RuntimeReflection::__duckvil_resource_type_t> _types = record(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_pReflectionRecorderFTable, m_pReflectionFTable, m_pReflectionData);
+        duckvil_recorderd_types _types = record(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_pReflectionRecorderFTable, m_pReflectionFTable, m_pReflectionData);
 
         for(uint32_t i = 0; i < m_aHotObjects.Size(); i++)
         {
-            for(const auto& _type : _types)
+            for(size_t j = 0; j < _types.m_ullCount; j++)
             {
+                const Duckvil::RuntimeReflection::__duckvil_resource_type_t& _type = _types.m_aTypes[j];
                 hot_object aa = m_aHotObjects[i];
 
                 if(aa.m_typeHandle.m_ID == _type.m_ID)

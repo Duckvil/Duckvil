@@ -119,7 +119,7 @@ int main(int argc, char* argv[])
 
         for(uint32_t j = 0; j < _recordersCount; j++)
         {
-            Duckvil::Memory::Vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> (*record)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData);
+            duckvil_recorderd_types (*record)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData);
 
             _module.get(_loadedModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(j)).c_str(), (void**)&record);
 
@@ -190,7 +190,9 @@ int main(int argc, char* argv[])
         }
 
         Duckvil::RuntimeReflection::__generator_data _generatorData;
+
         _relativePath = std::filesystem::relative(_path.path(), std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include");
+
         std::filesystem::path _pluginDirectory = _relativePath;
 
     // At least it is working...

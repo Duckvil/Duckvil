@@ -2,6 +2,7 @@
 #include "RuntimeReflection/GeneratedMeta.h"
 
 #include <cstring>
+#include <algorithm>
 
 namespace Duckvil { namespace RuntimeReflection {
 
@@ -238,6 +239,7 @@ namespace Duckvil { namespace RuntimeReflection {
         }
 
         _file << "_type = record_type<" + _additionalNamespace + _casted->m_sName + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, \"" + _casted->m_sName + "\");\n";
+        _file << "_recordedTypes.push_back(_type);\n";
 
         Parser::__ast_entity* _namespace = _casted->m_pParentScope;
         std::stack<Parser::__ast_entity_namespace*> _namespaces;
@@ -295,8 +297,8 @@ namespace Duckvil { namespace RuntimeReflection {
             }
         }
 
-        _file << "if(_types.Full()) _types.Resize(_types.Size() * 2);\n";
-        _file << "_types.Allocate(_type);\n";
+        // _file << "if(_types.Full()) _types.Resize(_types.Size() * 2);\n";
+        // _file << "_types.Allocate(_type);\n";
     }
 
     void recursive(__generator_data* _pData, const Parser::__ast_entity* _entity, std::ofstream& _file)
@@ -369,11 +371,15 @@ namespace Duckvil { namespace RuntimeReflection {
             _file << "DUCKVIL_RESOURCE(type_t) _type;\n";
             _file << "DUCKVIL_RESOURCE(property_t) _property;\n";
             _file << "DUCKVIL_RESOURCE(constructor_t) _constructor;\n";
-            _file << "Duckvil::Memory::Vector<DUCKVIL_RESOURCE(type_t)> _types(_pMemoryInterface, _pAllocator, 1);\n";
+            _file << "std::vector<" << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) << "> _recordedTypes;\n";
 
             recursive(_pData, &_ast.m_main, _file);
 
-            _file << "return _types;\n";
+            std::replace(_pData->m_sInclude, _pData->m_sInclude + DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX, '\\', '/');
+
+            _file << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) << "* _types = new " << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) <<"[_recordedTypes.size()];\n";
+            _file << "for(size_t i = 0; i < _recordedTypes.size(); i++) { _types[i] = _recordedTypes[i]; }\n";
+            _file << "return duckvil_recorderd_types { _types, _recordedTypes.size(), \"" << _pData->m_sInclude << "\", " << _pData->m_uiRecorderIndex << " };\n";
             _file << "}\n";
 
             _file << "#ifdef DUCKVIL_RUNTIME_COMPILE\n";

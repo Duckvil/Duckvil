@@ -91,6 +91,9 @@ namespace Duckvil { namespace RuntimeCompiler {
 
         RuntimeReflection::__data* m_pReflectionData;
 
+        duckvil_recorderd_types* m_aRecordedTypes;
+        size_t m_ullRecordedTypesCount;
+
         Memory::Vector<hot_object> m_aHotObjects;
 
         Memory::Vector<RuntimeCompilerSystem::reflection_module> m_aModules;

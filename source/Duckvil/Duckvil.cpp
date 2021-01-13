@@ -158,11 +158,12 @@ namespace Duckvil {
 
             DUCKVIL_LOG_INFO("Module %s is present", _loadedModule.m_sName.m_sText);
 
-            uint32_t _recordersCount = get_recorder_count();
+            _pData->m_ullRecordedTypesCount = get_recorder_count();
+            _pData->m_aRecordedTypes = new duckvil_recorderd_types[_pData->m_ullRecordedTypesCount];
 
-            for(uint32_t j = 0; j < _recordersCount; j++)
+            for(uint32_t j = 0; j < _pData->m_ullRecordedTypesCount; j++)
             {
-                Memory::Vector<RuntimeReflection::__duckvil_resource_type_t> (*record)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);
+                duckvil_recorderd_types (*record)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);
 
                 _module.get(_loadedModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(j)).c_str(), (void**)&record);
 
@@ -173,7 +174,7 @@ namespace Duckvil {
                     continue;
                 }
 
-                record(_pMemoryInterface, _pAllocator, _pData->m_pRuntimeReflectionRecorder, _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
+                _pData->m_aRecordedTypes[j] = record(_pMemoryInterface, _pAllocator, _pData->m_pRuntimeReflectionRecorder, _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
             }
         }
 
@@ -213,6 +214,9 @@ namespace Duckvil {
 
                             _pData->m_fnRuntimeCompilerUpdate = RuntimeReflection::get_function_callback<ISystem>(_pData->m_pRuntimeReflectionData, _typeHandle, "Update")->m_fnFunction;
                             _pData->m_fnRuntimeCompilerInit = RuntimeReflection::get_function_callback<bool, ISystem>(_pData->m_pRuntimeReflectionData, _typeHandle, "Init")->m_fnFunction;
+
+                            _pData->m_pRuntimeCompiler->m_aRecordedTypes = _pData->m_aRecordedTypes;
+                            _pData->m_pRuntimeCompiler->m_ullRecordedTypesCount = _pData->m_ullRecordedTypesCount;
 
                             continue;
                         }

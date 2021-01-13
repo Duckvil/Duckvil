@@ -43,6 +43,9 @@ namespace Duckvil {
         RuntimeReflection::__recorder_ftable* m_pRuntimeReflectionRecorder;
         RuntimeReflection::__data* m_pRuntimeReflectionData;
 
+        duckvil_recorderd_types* m_aRecordedTypes;
+        size_t m_ullRecordedTypesCount;
+
         PlugNPlay::__module_information* m_aLoadedModules;
         uint32_t m_uiLoadedModulesCount;
 

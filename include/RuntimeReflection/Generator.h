@@ -26,7 +26,7 @@ namespace Duckvil { namespace RuntimeReflection {
         std::queue<__generator_namespace> m_aNamespaces;
         // const Parser::__ast_entity_structure* m_pCurrent = 0;
         bool m_bWasNamespaces = false;
-        char m_sInclude[256] = { 0 };
+        char m_sInclude[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX] = { 0 };
         uint32_t m_uiRecorderIndex = 0;
     };
 
