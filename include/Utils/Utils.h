@@ -112,6 +112,37 @@ namespace Duckvil { namespace Utils {
             return *this;
         }
 
+        friend bool operator==(const string& _lhs, const string& _rhs)
+        {
+            if(_lhs.m_ullLength == -1 || _rhs.m_ullLength == -1)
+            {
+                return false;
+            }
+
+            return strcmp(_lhs.m_sText, _rhs.m_sText) == 0;
+        }
+
+        template <size_t Length>
+        friend bool operator==(const string& _lhs, const char (&_rhs)[Length])
+        {
+            if(_lhs.m_ullLength == -1 || Length == -1)
+            {
+                return false;
+            }
+
+            return strcmp(_lhs.m_sText, _rhs) == 0;
+        }
+
+        friend bool operator==(const string& _lhs, const char* _rhs)
+        {
+            if(_lhs.m_ullLength == -1)
+            {
+                return false;
+            }
+
+            return strcmp(_lhs.m_sText, _rhs) == 0;
+        }
+
         void Allocate(std::size_t _ullLength, Memory::IMemory* _pMemory = 0, Memory::__free_list_allocator* _pAllocator = 0)
         {
         // TODO: Allow to allocate using Duckvil allocators
