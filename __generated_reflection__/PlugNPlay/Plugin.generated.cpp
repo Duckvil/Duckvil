@@ -1,4 +1,4 @@
-#include "PlugNPlay\Plugin.h"
+#include "PlugNPlay/Plugin.h"
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 

@@ -1,4 +1,4 @@
-#include "PlugNPlay\Platform\Windows\Module.h"
+#include "PlugNPlay/Platform/Windows/Module.h"
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 

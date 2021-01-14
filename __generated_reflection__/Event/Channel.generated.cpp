@@ -1,4 +1,4 @@
-#include "Event\Channel.h"
+#include "Event/Channel.h"
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 

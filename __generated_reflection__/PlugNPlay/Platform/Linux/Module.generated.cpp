@@ -1,4 +1,4 @@
-#include "PlugNPlay\Platform\Linux\Module.h"
+#include "PlugNPlay/Platform/Linux/Module.h"
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
