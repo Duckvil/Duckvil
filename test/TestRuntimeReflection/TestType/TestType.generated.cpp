@@ -32,5 +32,5 @@ record_function<Duckvil::Test::TestType, void>(DUCKVIL_RUNTIME_REFLECTION_RECORD
 record_function<Duckvil::Test::TestType, void, int>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Test::TestType::test7, "test7");
 record_function<void>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Test::TestType::test8, "test8");
 record_function<void, int>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Test::TestType::test8, "test8");
-return _types;
+return duckvil_recorderd_types {  }; // TODO: Fix for new reflection recorder
 }
