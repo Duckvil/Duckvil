@@ -359,6 +359,8 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             std::ofstream _file(_sSourcePath);
 
+            std::replace(_pData->m_sInclude, _pData->m_sInclude + DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX, '\\', '/');
+
             _file << "#include \"" << _pData->m_sInclude << "\"\n";
             _file << "#include \"RuntimeReflection/Recorder.h\"\n";
             _file << "#include \"RuntimeReflection/GeneratedMeta.h\"\n\n";
@@ -374,8 +376,6 @@ namespace Duckvil { namespace RuntimeReflection {
             _file << "std::vector<" << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) << "> _recordedTypes;\n";
 
             recursive(_pData, &_ast.m_main, _file);
-
-            std::replace(_pData->m_sInclude, _pData->m_sInclude + DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX, '\\', '/');
 
             _file << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) << "* _types = new " << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) <<"[_recordedTypes.size()];\n";
             _file << "for(size_t i = 0; i < _recordedTypes.size(); i++) { _types[i] = _recordedTypes[i]; }\n";
