@@ -1,7 +1,5 @@
 #include "RuntimeCompiler/RuntimeCompilerSystem.h"
 
-#include <Windows.h>
-
 #include "Serializer/Runtime/Serializer.h"
 
 #undef max
