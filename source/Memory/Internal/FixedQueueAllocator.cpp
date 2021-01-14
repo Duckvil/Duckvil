@@ -4,7 +4,7 @@
 
 namespace Duckvil { namespace Memory {
 
-    void* fixed_queue_allocate(__fixed_queue_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
+    void* impl_fixed_queue_allocate(__fixed_queue_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
     {
         void* _memory = nullptr;
 
@@ -29,14 +29,14 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    void* fixed_queue_begin(__fixed_queue_allocator* _pAllocator)
+    void* impl_fixed_queue_begin(__fixed_queue_allocator* _pAllocator)
     {
         void* _memory = (void*)(_pAllocator->m_pMemory + _pAllocator->m_ullTail);
 
         return _memory;
     }
 
-    void fixed_queue_pop(__fixed_queue_allocator* _pAllocator)
+    void impl_fixed_queue_pop(__fixed_queue_allocator* _pAllocator)
     {
         if(_pAllocator->m_ullUsed == 0)
         {
@@ -53,17 +53,17 @@ namespace Duckvil { namespace Memory {
         _pAllocator->m_ullUsed -= _pAllocator->m_ullBlockSize;
     }
 
-    bool fixed_queue_empty(__fixed_queue_allocator* _pAllocator)
+    bool impl_fixed_queue_empty(__fixed_queue_allocator* _pAllocator)
     {
         return _pAllocator->m_ullUsed == 0;
     }
 
-    bool fixed_queue_full(__fixed_queue_allocator* _pAllocator)
+    bool impl_fixed_queue_full(__fixed_queue_allocator* _pAllocator)
     {
         return _pAllocator->m_ullUsed == _pAllocator->m_ullCapacity;
     }
 
-    void fixed_queue_clear(__fixed_queue_allocator* _pAllocator)
+    void impl_fixed_queue_clear(__fixed_queue_allocator* _pAllocator)
     {
         memset(_pAllocator->m_pMemory, 0, _pAllocator->m_ullCapacity);
         _pAllocator->m_ullHead = 0;

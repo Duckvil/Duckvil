@@ -4,7 +4,7 @@
 
 namespace Duckvil { namespace Memory {
 
-    void* fixed_array_allocate(__fixed_array_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
+    void* impl_fixed_array_allocate(__fixed_array_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
     {
         void* _memory = nullptr;
 
@@ -23,37 +23,37 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    void* fixed_array_begin(__fixed_array_allocator* _pAllocator)
+    void* impl_fixed_array_begin(__fixed_array_allocator* _pAllocator)
     {
         return _pAllocator->m_pMemory;
     }
 
-    void* fixed_array_back(__fixed_array_allocator* _pAllocator)
+    void* impl_fixed_array_back(__fixed_array_allocator* _pAllocator)
     {
         return _pAllocator->m_pMemory + _pAllocator->m_ullUsed - _pAllocator->m_ullBlockSize;
     }
 
-    void* fixed_array_at(__fixed_array_allocator* _pAllocator, std::size_t _ullIndex)
+    void* impl_fixed_array_at(__fixed_array_allocator* _pAllocator, std::size_t _ullIndex)
     {
         return _pAllocator->m_pMemory + (_ullIndex * _pAllocator->m_ullBlockSize);
     }
 
-    std::size_t fixed_array_size(__fixed_array_allocator* _pAllocator)
+    std::size_t impl_fixed_array_size(__fixed_array_allocator* _pAllocator)
     {
         return _pAllocator->m_ullUsed;
     }
 
-    bool fixed_array_empty(__fixed_array_allocator* _pAllocator)
+    bool impl_fixed_array_empty(__fixed_array_allocator* _pAllocator)
     {
         return _pAllocator->m_ullUsed == 0;
     }
 
-    bool fixed_array_full(__fixed_array_allocator* _pAllocator)
+    bool impl_fixed_array_full(__fixed_array_allocator* _pAllocator)
     {
         return _pAllocator->m_ullUsed == _pAllocator->m_ullCapacity;
     }
 
-    void fixed_array_clear(__fixed_array_allocator* _pAllocator)
+    void impl_fixed_array_clear(__fixed_array_allocator* _pAllocator)
     {
         memset(_pAllocator->m_pMemory, 0, _pAllocator->m_ullCapacity);
         _pAllocator->m_ullUsed = 0;

@@ -4,7 +4,7 @@
 
 namespace Duckvil { namespace Memory {
 
-    void* fixed_stack_allocate(__fixed_stack_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
+    void* impl_fixed_stack_allocate(__fixed_stack_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
     {
         void* _memory = nullptr;
 
@@ -23,14 +23,14 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    void* fixed_stack_allocator_top(__fixed_stack_allocator* _pAllocator)
+    void* impl_fixed_stack_allocator_top(__fixed_stack_allocator* _pAllocator)
     {
         uint8_t* _current_memory = _pAllocator->m_pMemory + _pAllocator->m_ullUsed;
 
         return _current_memory - _pAllocator->m_ullBlockSize;
     }
 
-    void fixed_stack_allocator_pop(__fixed_stack_allocator* _pAllocator)
+    void impl_fixed_stack_allocator_pop(__fixed_stack_allocator* _pAllocator)
     {
         if(_pAllocator->m_ullUsed == 0)
         {
@@ -44,17 +44,17 @@ namespace Duckvil { namespace Memory {
         _pAllocator->m_ullUsed -= _pAllocator->m_ullBlockSize;
     }
 
-    bool fixed_stack_allocator_empty(__fixed_stack_allocator* _pAlloctor)
+    bool impl_fixed_stack_allocator_empty(__fixed_stack_allocator* _pAlloctor)
     {
         return _pAlloctor->m_ullUsed == 0;
     }
 
-    bool fixed_stack_allocator_full(__fixed_stack_allocator* _pAllocator)
+    bool impl_fixed_stack_allocator_full(__fixed_stack_allocator* _pAllocator)
     {
         return _pAllocator->m_ullUsed == _pAllocator->m_ullCapacity;
     }
 
-    void fixed_stack_clear(__fixed_stack_allocator* _pAllocator)
+    void impl_fixed_stack_clear(__fixed_stack_allocator* _pAllocator)
     {
         memset(_pAllocator->m_pMemory, 0, _pAllocator->m_ullCapacity);
         _pAllocator->m_ullUsed = 0;
