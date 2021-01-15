@@ -2,11 +2,14 @@
 
 #include "Process/Process.h"
 
+#ifdef DUCKVIL_PLATFORM_WINDOWS
 #include <process.h>
 #include <Windows.h>
+#endif
 
 namespace Duckvil { namespace Process {
 
+#ifdef DUCKVIL_PLATFORM_WINDOWS
     struct windows_data
     {
         HANDLE m_pCommandProcessOutputRead;
@@ -247,5 +250,6 @@ namespace Duckvil { namespace Process {
         _pData->m_bRunning = false;
         // TODO: Something else?
     }
+#endif
 
 }}
