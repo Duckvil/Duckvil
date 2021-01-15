@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <filesystem>
 #include <chrono>
+#include <vector>
 
 namespace Duckvil { namespace RuntimeCompiler {
 

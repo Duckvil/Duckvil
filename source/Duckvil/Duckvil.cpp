@@ -183,6 +183,30 @@ namespace Duckvil {
         {
             auto _types = RuntimeReflection::get_types(_pData->m_pRuntimeReflectionData, _pData->m_pMemory, _pData->m_pHeap);
 
+            auto _runtimeCompilerType = RuntimeReflection::get_type<RuntimeCompiler::RuntimeCompilerSystem>(_pData->m_pRuntimeReflectionData);
+
+            _pData->m_pRuntimeCompiler = (RuntimeCompiler::RuntimeCompilerSystem*)RuntimeReflection::create<
+                const Memory::FreeList&,
+                RuntimeReflection::__data*,
+                RuntimeReflection::__recorder_ftable*,
+                RuntimeReflection::__ftable*
+            >(
+                _pData->m_pMemory,
+                _pData->m_pHeap,
+                _pData->m_pRuntimeReflectionData,
+                _runtimeCompilerType,
+                _pData->m_heap,
+                _pData->m_pRuntimeReflectionData,
+                _pData->m_pRuntimeReflectionRecorder,
+                _pData->m_pRuntimeReflection
+            );
+
+            _pData->m_fnRuntimeCompilerUpdate = RuntimeReflection::get_function_callback<ISystem>(_pData->m_pRuntimeReflectionData, _runtimeCompilerType, "Update")->m_fnFunction;
+            _pData->m_fnRuntimeCompilerInit = RuntimeReflection::get_function_callback<bool, ISystem>(_pData->m_pRuntimeReflectionData, _runtimeCompilerType, "Init")->m_fnFunction;
+
+            _pData->m_pRuntimeCompiler->m_aRecordedTypes = _pData->m_aRecordedTypes;
+            _pData->m_pRuntimeCompiler->m_ullRecordedTypesCount = _pData->m_ullRecordedTypesCount;
+
             for(uint32_t i = 0; i < _types.Size(); i++)
             {
                 const RuntimeReflection::__duckvil_resource_type_t& _typeHandle = _types[i];
@@ -196,28 +220,6 @@ namespace Duckvil {
 
                         if(_type.m_ullTypeID == typeid(RuntimeCompiler::RuntimeCompilerSystem).hash_code())
                         {
-                            _pData->m_pRuntimeCompiler = (RuntimeCompiler::RuntimeCompilerSystem*)RuntimeReflection::create<
-                                const Memory::FreeList&,
-                                RuntimeReflection::__data*,
-                                RuntimeReflection::__recorder_ftable*,
-                                RuntimeReflection::__ftable*
-                            >(
-                                _pData->m_pMemory,
-                                _pData->m_pHeap,
-                                _pData->m_pRuntimeReflectionData,
-                                _typeHandle,
-                                _pData->m_heap,
-                                _pData->m_pRuntimeReflectionData,
-                                _pData->m_pRuntimeReflectionRecorder,
-                                _pData->m_pRuntimeReflection
-                            );
-
-                            _pData->m_fnRuntimeCompilerUpdate = RuntimeReflection::get_function_callback<ISystem>(_pData->m_pRuntimeReflectionData, _typeHandle, "Update")->m_fnFunction;
-                            _pData->m_fnRuntimeCompilerInit = RuntimeReflection::get_function_callback<bool, ISystem>(_pData->m_pRuntimeReflectionData, _typeHandle, "Init")->m_fnFunction;
-
-                            _pData->m_pRuntimeCompiler->m_aRecordedTypes = _pData->m_aRecordedTypes;
-                            _pData->m_pRuntimeCompiler->m_ullRecordedTypesCount = _pData->m_ullRecordedTypesCount;
-
                             continue;
                         }
 
