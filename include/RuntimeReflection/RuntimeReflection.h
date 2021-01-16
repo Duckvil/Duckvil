@@ -364,6 +364,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _handle.m_ID);
         static const std::size_t& _keyTypeID = typeid(KeyType).hash_code();
         static const std::size_t& _keyTypeSize = sizeof(KeyType);
+        static ValueType _invalid;
 
         for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantKeys.m_data); i++)
         {
@@ -376,6 +377,8 @@ namespace Duckvil { namespace RuntimeReflection {
                 return *(ValueType*)_valueVariant.m_variant.m_pData;
             }
         }
+
+        return _invalid;
     }
 
     template <typename KeyType>
@@ -407,6 +410,7 @@ namespace Duckvil { namespace RuntimeReflection {
     static inline const ValueType& get_meta_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _handle, const char (&_key)[Length])
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _handle.m_ID);
+        static ValueType _invalid;
 
         for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantKeys.m_data); i++)
         {
@@ -419,6 +423,8 @@ namespace Duckvil { namespace RuntimeReflection {
                 return *(ValueType*)_valueVariant.m_variant.m_pData;
             }
         }
+
+        return _invalid;
     }
 
     template <typename ValueType, typename KeyType>
@@ -428,6 +434,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __property_t& _property = DUCKVIL_SLOT_ARRAY_GET(_type.m_properties, _handle.m_ID);
         static const std::size_t& _keyTypeID = typeid(KeyType).hash_code();
         static const std::size_t& _keyTypeSize = sizeof(KeyType);
+        static ValueType _invalid;
 
         for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_property.m_metas.m_data); i++)
         {
@@ -441,6 +448,8 @@ namespace Duckvil { namespace RuntimeReflection {
                 return *(ValueType*)_valueVariant.m_variant.m_pData;
             }
         }
+
+        return _invalid;
     }
 
     template <typename ValueType, std::size_t Length>
@@ -448,6 +457,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         const __property_t& _property = DUCKVIL_SLOT_ARRAY_GET(_type.m_properties, _handle.m_ID);
+        static ValueType _invalid;
 
         for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_property.m_metas.m_data); i++)
         {
@@ -461,6 +471,8 @@ namespace Duckvil { namespace RuntimeReflection {
                 return *(ValueType*)_valueVariant.m_variant.m_pData;
             }
         }
+
+        return _invalid;
     }
 
     template <typename ValueType, typename KeyType>
@@ -470,6 +482,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __constructor_t& _constructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_constructors, _handle.m_ID);
         static const std::size_t& _keyTypeID = typeid(KeyType).hash_code();
         static const std::size_t& _keyTypeSize = sizeof(KeyType);
+        static ValueType _invalid;
 
         for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_constructor.m_metas.m_data); i++)
         {
@@ -483,6 +496,8 @@ namespace Duckvil { namespace RuntimeReflection {
                 return *(ValueType*)_valueVariant.m_variant.m_pData;
             }
         }
+
+        return _invalid;
     }
 
     template <typename ValueType, std::size_t Length>
@@ -490,6 +505,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         const __constructor_t& _constructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_constructors, _handle.m_ID);
+        static ValueType _invalid;
 
         for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_constructor.m_metas.m_data); i++)
         {
@@ -503,6 +519,8 @@ namespace Duckvil { namespace RuntimeReflection {
                 return *(ValueType*)_valueVariant.m_variant.m_pData;
             }
         }
+
+        return _invalid;
     }
 
     static DUCKVIL_RESOURCE(type_t) get_type(__data* _pData, const std::size_t& _ullTypeID)
@@ -680,7 +698,7 @@ namespace Duckvil { namespace RuntimeReflection {
             }
         }
 
-        return 0;
+        return nullptr;
     }
 
     template <typename Type, typename... Args>
@@ -701,7 +719,7 @@ namespace Duckvil { namespace RuntimeReflection {
             }
         }
 
-        return 0;
+        return nullptr;
     }
 
     template <typename Type, typename... Args>
@@ -732,7 +750,7 @@ namespace Duckvil { namespace RuntimeReflection {
             }
         }
 
-        return 0;
+        return nullptr;
     }
 
     template <typename Type>
@@ -833,6 +851,8 @@ namespace Duckvil { namespace RuntimeReflection {
                 }
             }
         }
+
+        return ReturnType();
     }
 
     template <typename... Args>
@@ -863,6 +883,8 @@ namespace Duckvil { namespace RuntimeReflection {
 
             return _func->Invoke(_pObject, _vArgs...);
         }
+
+        return ReturnType();
     }
 
 // Invoke static function
@@ -920,6 +942,8 @@ namespace Duckvil { namespace RuntimeReflection {
                 }
             }
         }
+
+        return ReturnType();
     }
 
     template <typename... Args>
@@ -950,6 +974,8 @@ namespace Duckvil { namespace RuntimeReflection {
 
             return _func->Invoke(_vArgs...);
         }
+
+        return ReturnType();
     }
 
 }}
