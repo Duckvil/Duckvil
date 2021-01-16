@@ -353,6 +353,8 @@ namespace Duckvil { namespace RuntimeReflection {
 
             _fnGenerate(_file, _pUserData);
 
+            _file << "\n";
+
             _file.close();
         }
 
