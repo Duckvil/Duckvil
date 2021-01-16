@@ -10,7 +10,7 @@
 
 #include "Event/Pool.h"
 
-#include "RuntimeCompiler/HotObject.h"
+#include "HotReloader/HotObject.h"
 
 #include "TestSystem/TestSystem.generated.h"
 

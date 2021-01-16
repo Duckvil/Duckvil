@@ -4,7 +4,7 @@
 
 #include <map>
 
-#include "RuntimeCompiler/HotObject.h"
+#include "HotReloader/HotObject.h"
 
 #include "RuntimeReflection/RuntimeReflection.h"
 

@@ -9,8 +9,8 @@
 
 #include "Memory/FreeList.h"
 
-#include "RuntimeCompiler/FileWatcher.h"
-#include "RuntimeCompiler/HotObject.h"
+#include "HotReloader/FileWatcher.h"
+#include "HotReloader/HotObject.h"
 
 #include "Process/Process.h"
 

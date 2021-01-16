@@ -6,7 +6,7 @@
 
 #include "Process/Process.h"
 
-#include "RuntimeCompiler/FileWatcher.h"
+#include "HotReloader/FileWatcher.h"
 
 #undef max
 

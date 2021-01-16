@@ -1,4 +1,4 @@
-#include "RuntimeCompiler/FileWatcher.h"
+#include "HotReloader/FileWatcher.h"
 
 namespace Duckvil { namespace RuntimeCompiler {
 

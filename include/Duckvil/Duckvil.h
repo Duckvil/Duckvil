@@ -17,7 +17,7 @@
 #include "Duckvil/ReflectionFlags.h"
 #include "Duckvil/ISystem.h"
 
-#include "RuntimeCompiler/RuntimeCompilerSystem.h"
+#include "HotReloader/RuntimeCompilerSystem.h"
 
 namespace Duckvil {
 
