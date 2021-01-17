@@ -87,26 +87,47 @@ namespace Duckvil { namespace HotReloader {
 
         (m_pCompiler->*_setup->m_fnFunction)();
 
+#ifdef DUCKVIL_PLATFORM_WINDOWS
         (m_pCompiler->*_addFlag->m_fnFunction)("/Zi");
         (m_pCompiler->*_addFlag->m_fnFunction)("/MDd");
         (m_pCompiler->*_addFlag->m_fnFunction)("/LD");
         (m_pCompiler->*_addFlag->m_fnFunction)("/FC");
-
+#else
+#ifdef DUCKVIL_PLATFORM_LINUX
+        (m_pCompiler->*_addFlag->m_fnFunction)("-g");
+        (m_pCompiler->*_addFlag->m_fnFunction)("-shared");
+        (m_pCompiler->*_addFlag->m_fnFunction)("-fPIC");
+#endif
+#endif
         std::filesystem::path _includePath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include";
         std::filesystem::path _generatedIncludePath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__";
 
         (m_pCompiler->*_addInclude->m_fnFunction)(_includePath.string());
         (m_pCompiler->*_addInclude->m_fnFunction)(_generatedIncludePath.string());
 
+#ifdef DUCKVIL_PLATFORM_WINDOWS
         (m_pCompiler->*_addDefine->m_fnFunction)("DUCKVIL_PLATFORM_WINDOWS");
+#else
+#ifdef DUCKVIL_PLATFORM_LINUX
+        (m_pCompiler->*_addDefine->m_fnFunction)("DUCKVIL_PLATFORM_LINUX");
+#endif
+#endif
         (m_pCompiler->*_addDefine->m_fnFunction)("DUCKVIL_RUNTIME_COMPILE");
         (m_pCompiler->*_addDefine->m_fnFunction)(std::string("DUCKVIL_OUTPUT=\"") + DUCKVIL_OUTPUT + "\"");
 
         (m_pCompiler->*_addLibraryPath->m_fnFunction)(DUCKVIL_OUTPUT);
 
+#ifdef DUCKVIL_PLATFORM_WINDOWS
         (m_pCompiler->*_addLibrary->m_fnFunction)("Utils.lib");
         (m_pCompiler->*_addLibrary->m_fnFunction)("UniTestFramework.lib");
         (m_pCompiler->*_addLibrary->m_fnFunction)("PlugNPlay.lib");
+#else
+#ifdef DUCKVIL_PLATFORM_LINUX
+        (m_pCompiler->*_addLibrary->m_fnFunction)("Utils.a");
+        (m_pCompiler->*_addLibrary->m_fnFunction)("UniTestFramework.a");
+        (m_pCompiler->*_addLibrary->m_fnFunction)("PlugNPlay.a");
+#endif
+#endif
 
         m_pFileWatcher->Watch(std::filesystem::path(DUCKVIL_CWD) / "source");
 
@@ -231,8 +252,14 @@ namespace Duckvil { namespace HotReloader {
 
             RuntimeCompiler::CompilerOptions _options = {};
 
+#ifdef DUCKVIL_PLATFORM_WINDOWS
             _options.m_aFlags.push_back("/Fe" + std::string(DUCKVIL_SWAP_OUTPUT) + "/" + m_sModuleName + ".dll");
             _options.m_aFlags.push_back("/Fd" + std::string(DUCKVIL_SWAP_OUTPUT) + "/" + m_sModuleName + ".pdb");
+#else
+#ifdef DUCKVIL_PLATFORM_LINUX
+            _options.m_aFlags.push_back("-o" + std::string(DUCKVIL_SWAP_OUTPUT) + "/" + m_sModuleName + ".so");
+#endif
+#endif
 
             RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::vector<std::string>&, const RuntimeCompiler::CompilerOptions&)>* _compile = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::vector<std::string>&, const RuntimeCompiler::CompilerOptions&>(m_pReflectionData, m_compilerTypeHandle, "Compile");
 
@@ -247,6 +274,8 @@ namespace Duckvil { namespace HotReloader {
         uint32_t (*get_recorder_index)();
         duckvil_recorderd_types (*record)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);
 
+        _module.load(&_testModule);
+
         if(_testModule.m_pModule == nullptr)
         {
             printf("Failed to load hot module!\n");
@@ -254,7 +283,6 @@ namespace Duckvil { namespace HotReloader {
             return;
         }
 
-        _module.load(&_testModule);
         _module.get(_testModule, "duckvil_get_recorder_index", (void**)&get_recorder_index);
         _module.get(_testModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(get_recorder_index())).c_str(), (void**)&record);
 
