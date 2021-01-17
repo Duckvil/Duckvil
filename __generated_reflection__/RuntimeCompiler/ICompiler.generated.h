@@ -2,4 +2,4 @@
 
 #define DUCKVIL_GENERATED_BODY \
 public: \
-static void* Cast(void* _pObject) { return static_cast<FileWatcher*>(_pObject); }
+static void* Cast(void* _pObject) { return static_cast<ICompiler*>(_pObject); }
