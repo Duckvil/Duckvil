@@ -19,7 +19,9 @@
 #include "Parser/AST.h"
 #include "Parser/Lexer.h"
 
-namespace Duckvil { namespace RuntimeCompiler {
+#include "RuntimeCompiler/RuntimeCompiler.h"
+
+namespace Duckvil { namespace HotReloader {
 
     struct hot_object
     {
@@ -48,20 +50,16 @@ namespace Duckvil { namespace RuntimeCompiler {
     private:
         FileWatcher* m_pFileWatcher;
         user_data m_userData;
-        Process::ftable m_processFTable;
-        Process::data m_processData;
 
         Memory::FreeList m_heap;
         RuntimeReflection::__recorder_ftable* m_pReflectionRecorderFTable;
         RuntimeReflection::__ftable* m_pReflectionFTable;
 
-        std::vector<std::string> m_aFlags;
-        std::vector<std::string> m_aDefines;
-        std::vector<std::string> m_aIncludes;
-        std::vector<std::string> m_aLibrariesPaths;
-        std::vector<std::string> m_aLibraries;
+        RuntimeReflection::__duckvil_resource_type_t m_compilerTypeHandle;
 
         std::string m_sModuleName;
+
+        RuntimeCompiler::Compiler* m_pCompiler;
 
     // RuntimeReflection generator
         RuntimeReflection::__generator_ftable* m_pReflectionGenerator;
@@ -75,8 +73,6 @@ namespace Duckvil { namespace RuntimeCompiler {
             if(_status == FileWatcher::FileStatus::FileStatus_Modified)
             {
                 printf("Modified: %s\n", _file.string().c_str());
-
-                // _userData->m_pProcessFTable->m_fnWrite(_userData->m_pProcessData, "cl\n_COMPLETION_TOKEN_\n");
 
                 if(_file.extension() == ".cpp")
                 {

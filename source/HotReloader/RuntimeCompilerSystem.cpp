@@ -4,7 +4,7 @@
 
 #undef max
 
-namespace Duckvil { namespace RuntimeCompiler {
+namespace Duckvil { namespace HotReloader {
 
     void generate(std::ofstream& _file, void* _pUserData)
     {
@@ -33,26 +33,13 @@ namespace Duckvil { namespace RuntimeCompiler {
         _heap.Allocate(m_aHotObjects, 1);
         _heap.Allocate(m_aModules, 1);
 
-        PlugNPlay::__module _module;
-
-        PlugNPlay::module_init(&_module);
-
-        PlugNPlay::__module_information _processModuleInfo("Process");
-
-        _module.load(&_processModuleInfo);
-
-        void (*_duckvilProcessInit)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator, Duckvil::Process::ftable* _pFTable);
-
-        _module.get(_processModuleInfo, "duckvil_process_init", (void**)&_duckvilProcessInit);
-
-        _duckvilProcessInit(_heap.GetMemoryInterface(), _heap.GetAllocator(), &m_processFTable);
-
-        m_processFTable.m_fnInit(_heap.GetMemoryInterface(), _heap.GetAllocator(), &m_processData);
-        m_processFTable.m_fnSetup(&m_processData);
-
         m_userData.m_pRuntimeCompiler = this;
 
         m_pFileWatcher = _heap.Allocate<FileWatcher, FileWatcher::ActionCallback, void*>(&Action, (void*)&m_userData);
+
+        RuntimeReflection::__duckvil_resource_type_t _runtimeCompilerHandle = RuntimeReflection::get_type<RuntimeCompiler::Compiler>(_pReflectionData);
+
+        m_pCompiler = (RuntimeCompiler::Compiler*)RuntimeReflection::create<const Memory::FreeList&>(_heap.GetMemoryInterface(), _heap.GetAllocator(), _pReflectionData, _runtimeCompilerHandle, _heap);
     }
 
     RuntimeCompilerSystem::~RuntimeCompilerSystem()
@@ -89,23 +76,37 @@ namespace Duckvil { namespace RuntimeCompiler {
             }
         }
 
-        m_aFlags.push_back("/Zi");
-        m_aFlags.push_back("/MDd");
-        m_aFlags.push_back("/LD");
-        m_aFlags.push_back("/FC");
+        m_compilerTypeHandle = RuntimeReflection::get_type<RuntimeCompiler::Compiler>(m_pReflectionData);
 
-        m_aIncludes.push_back((std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include").string());
-        m_aIncludes.push_back((std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__").string());
+        RuntimeReflection::__function<bool(RuntimeCompiler::Compiler::*)()>* _setup = RuntimeReflection::get_function_callback<bool, RuntimeCompiler::Compiler>(m_pReflectionData, m_compilerTypeHandle, "Setup");
+        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addFlag = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_pReflectionData, m_compilerTypeHandle, "AddFlag");
+        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addDefine = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_pReflectionData, m_compilerTypeHandle, "AddDefine");
+        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addInclude = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_pReflectionData, m_compilerTypeHandle, "AddInclude");
+        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addLibraryPath = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_pReflectionData, m_compilerTypeHandle, "AddLibraryPath");
+        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addLibrary = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_pReflectionData, m_compilerTypeHandle, "AddLibrary");
 
-        m_aDefines.push_back("DUCKVIL_PLATFORM_WINDOWS");
-        m_aDefines.push_back("DUCKVIL_RUNTIME_COMPILE");
-        m_aDefines.push_back(std::string("DUCKVIL_OUTPUT=\"") + DUCKVIL_OUTPUT + "\"");
+        (m_pCompiler->*_setup->m_fnFunction)();
 
-        m_aLibrariesPaths.push_back(DUCKVIL_OUTPUT);
+        (m_pCompiler->*_addFlag->m_fnFunction)("/Zi");
+        (m_pCompiler->*_addFlag->m_fnFunction)("/MDd");
+        (m_pCompiler->*_addFlag->m_fnFunction)("/LD");
+        (m_pCompiler->*_addFlag->m_fnFunction)("/FC");
 
-        m_aLibraries.push_back("Utils.lib");
-        m_aLibraries.push_back("UniTestFramework.lib");
-        m_aLibraries.push_back("PlugNPlay.lib");
+        std::filesystem::path _includePath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include";
+        std::filesystem::path _generatedIncludePath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__";
+
+        (m_pCompiler->*_addInclude->m_fnFunction)(_includePath.string());
+        (m_pCompiler->*_addInclude->m_fnFunction)(_generatedIncludePath.string());
+
+        (m_pCompiler->*_addDefine->m_fnFunction)("DUCKVIL_PLATFORM_WINDOWS");
+        (m_pCompiler->*_addDefine->m_fnFunction)("DUCKVIL_RUNTIME_COMPILE");
+        (m_pCompiler->*_addDefine->m_fnFunction)(std::string("DUCKVIL_OUTPUT=\"") + DUCKVIL_OUTPUT + "\"");
+
+        (m_pCompiler->*_addLibraryPath->m_fnFunction)(DUCKVIL_OUTPUT);
+
+        (m_pCompiler->*_addLibrary->m_fnFunction)("Utils.lib");
+        (m_pCompiler->*_addLibrary->m_fnFunction)("UniTestFramework.lib");
+        (m_pCompiler->*_addLibrary->m_fnFunction)("PlugNPlay.lib");
 
         m_pFileWatcher->Watch(std::filesystem::path(DUCKVIL_CWD) / "source");
 
@@ -210,33 +211,9 @@ namespace Duckvil { namespace RuntimeCompiler {
             }
         }
 
-        std::string _command = "cl";
-
-        for(const auto& _flag : m_aFlags)
-        {
-            _command.append(" " + _flag);
-        }
-
         std::filesystem::path _path = std::tmpnam(nullptr);
 
         m_sModuleName = _path.filename().string();
-
-        _command.append(" /Fe" + std::string(DUCKVIL_SWAP_OUTPUT) + "/" + m_sModuleName + ".dll");
-        _command.append(" /Fd" + std::string(DUCKVIL_SWAP_OUTPUT) + "/" + m_sModuleName + ".pdb");
-
-        for(const auto& _define : m_aDefines)
-        {
-            _command.append(" /D" + _define);
-        }
-
-        for(const auto& _include : m_aIncludes)
-        {
-            _command.append(" /I\"" + _include + "\"");
-        }
-
-        // add generated reflection file source and other compiled .objs
-
-        _command.append(" " + _sFile);
 
         {
             std::filesystem::path _file = _sFile;
@@ -252,28 +229,14 @@ namespace Duckvil { namespace RuntimeCompiler {
             std::string _generatedFilename = _filename + ".generated.cpp";
             std::filesystem::path _generatedFile = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _moduleName / _generatedFilename;
 
-            _command.append(" " + _generatedFile.string());
-        }
+            RuntimeCompiler::CompilerOptions _options = {};
 
-        _command.append(" /link");
+            _options.m_aFlags.push_back("/Fe" + std::string(DUCKVIL_SWAP_OUTPUT) + "/" + m_sModuleName + ".dll");
+            _options.m_aFlags.push_back("/Fd" + std::string(DUCKVIL_SWAP_OUTPUT) + "/" + m_sModuleName + ".pdb");
 
-        for(const auto& _libPath : m_aLibrariesPaths)
-        {
-            _command.append(" /LIBPATH:\"" + _libPath + "\"");
-        }
+            RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::vector<std::string>&, const RuntimeCompiler::CompilerOptions&)>* _compile = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::vector<std::string>&, const RuntimeCompiler::CompilerOptions&>(m_pReflectionData, m_compilerTypeHandle, "Compile");
 
-        for(const auto& _lib : m_aLibraries)
-        {
-            _command.append(" " + _lib);
-        }
-
-        _command.append("\n_COMPLETION_TOKEN_\n");
-
-        m_processFTable.m_fnWrite(&m_processData, _command.c_str());
-
-        while(!m_processData.m_bComplete)
-        {
-
+            (m_pCompiler->*_compile->m_fnFunction)({ _sFile, _generatedFile.string() }, _options);
         }
 
         PlugNPlay::__module _module;
@@ -334,7 +297,7 @@ namespace Duckvil { namespace RuntimeCompiler {
     void RuntimeCompilerSystem::AddHotObject(void** _pHotObject, RuntimeReflection::__duckvil_resource_type_t _typeHandle)
     {
         RuntimeReflection::__duckvil_resource_function_t _castHotObjectFunctionHandle = RuntimeReflection::get_function_handle<void*>(m_pReflectionData, _typeHandle, "Cast");
-        RuntimeCompiler::HotObject* _systemInheritance2 = (RuntimeCompiler::HotObject*)RuntimeReflection::invoke_static_result<void*, void*>(m_pReflectionData, _typeHandle, _castHotObjectFunctionHandle, *_pHotObject);
+        HotReloader::HotObject* _systemInheritance2 = (HotReloader::HotObject*)RuntimeReflection::invoke_static_result<void*, void*>(m_pReflectionData, _typeHandle, _castHotObjectFunctionHandle, *_pHotObject);
 
         _systemInheritance2->m_ullHotObjectID++;
 

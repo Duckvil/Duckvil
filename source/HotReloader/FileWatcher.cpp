@@ -1,6 +1,6 @@
 #include "HotReloader/FileWatcher.h"
 
-namespace Duckvil { namespace RuntimeCompiler {
+namespace Duckvil { namespace HotReloader {
 
     FileWatcher::FileWatcher(ActionCallback _action, void* _pUserData) :
         m_fnAction(_action),

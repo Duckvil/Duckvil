@@ -9,7 +9,7 @@
 
 #include <fstream>
 
-namespace Duckvil { namespace RuntimeCompiler {
+namespace Duckvil { namespace HotReloader {
 
     class RuntimeCompilerReflectionModule;
 

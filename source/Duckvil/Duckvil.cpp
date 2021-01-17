@@ -183,9 +183,9 @@ namespace Duckvil {
         {
             auto _types = RuntimeReflection::get_types(_pData->m_pRuntimeReflectionData, _pData->m_pMemory, _pData->m_pHeap);
 
-            auto _runtimeCompilerType = RuntimeReflection::get_type<RuntimeCompiler::RuntimeCompilerSystem>(_pData->m_pRuntimeReflectionData);
+            auto _runtimeCompilerType = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>(_pData->m_pRuntimeReflectionData);
 
-            _pData->m_pRuntimeCompiler = (RuntimeCompiler::RuntimeCompilerSystem*)RuntimeReflection::create<
+            _pData->m_pRuntimeCompiler = (HotReloader::RuntimeCompilerSystem*)RuntimeReflection::create<
                 const Memory::FreeList&,
                 RuntimeReflection::__data*,
                 RuntimeReflection::__recorder_ftable*,
@@ -218,7 +218,7 @@ namespace Duckvil {
                     {
                         RuntimeReflection::__type_t _type = RuntimeReflection::get_type(_pData->m_pRuntimeReflectionData, _typeHandle);
 
-                        if(_type.m_ullTypeID == typeid(RuntimeCompiler::RuntimeCompilerSystem).hash_code())
+                        if(_type.m_ullTypeID == typeid(HotReloader::RuntimeCompilerSystem).hash_code())
                         {
                             continue;
                         }
@@ -263,7 +263,7 @@ namespace Duckvil {
 
                         _pData->m_aEngineSystems.Allocate(_system);
 
-                        RuntimeReflection::__duckvil_resource_type_t _rcTypeHandle = RuntimeReflection::get_type<RuntimeCompiler::RuntimeCompilerSystem>(_pData->m_pRuntimeReflectionData);
+                        RuntimeReflection::__duckvil_resource_type_t _rcTypeHandle = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>(_pData->m_pRuntimeReflectionData);
                         RuntimeReflection::__duckvil_resource_function_t _addHotObjectHandle = RuntimeReflection::get_function_handle<void**, RuntimeReflection::__duckvil_resource_type_t>(_pData->m_pRuntimeReflectionData, _rcTypeHandle, "AddHotObject");
                         RuntimeReflection::invoke_member(_pData->m_pRuntimeReflectionData, _rcTypeHandle, _addHotObjectHandle, _pData->m_pRuntimeCompiler, aaa, _typeHandle);
                     }

@@ -43,7 +43,7 @@ namespace Duckvil { namespace LOL {
     };
 
     DUCKVIL_CLASS(ReflectionFlags::ReflectionFlags_EngineSystem)
-    class Test : public ISystem, public RuntimeCompiler::HotObject
+    class Test : public ISystem, public HotReloader::HotObject
     {
         DUCKVIL_GENERATED_BODY
     private:

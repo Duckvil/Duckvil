@@ -5,7 +5,7 @@
 #include <chrono>
 #include <vector>
 
-namespace Duckvil { namespace RuntimeCompiler {
+namespace Duckvil { namespace HotReloader {
 
     class FileWatcher
     {

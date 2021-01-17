@@ -41,7 +41,7 @@ namespace Duckvil { namespace RuntimeSerializer {
 
         }
 
-        void Serialize(void* _pHotObject, RuntimeReflection::__function<void(RuntimeCompiler::HotObject::*)(RuntimeSerializer::ISerializer*)>* _fnSerialize)
+        void Serialize(void* _pHotObject, RuntimeReflection::__function<void(HotReloader::HotObject::*)(RuntimeSerializer::ISerializer*)>* _fnSerialize)
         {
             _fnSerialize->Invoke(_pHotObject, this);
         }

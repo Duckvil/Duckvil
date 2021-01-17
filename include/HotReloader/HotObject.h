@@ -4,7 +4,7 @@
 
 #include "RuntimeReflection/RuntimeReflection.h"
 
-namespace Duckvil { namespace RuntimeCompiler {
+namespace Duckvil { namespace HotReloader {
 
     struct HotObject
     {

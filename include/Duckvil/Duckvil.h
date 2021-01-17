@@ -49,7 +49,7 @@ namespace Duckvil {
         PlugNPlay::__module_information* m_aLoadedModules;
         uint32_t m_uiLoadedModulesCount;
 
-        RuntimeCompiler::RuntimeCompilerSystem* m_pRuntimeCompiler;
+        HotReloader::RuntimeCompilerSystem* m_pRuntimeCompiler;
         void (ISystem::*m_fnRuntimeCompilerUpdate)();
         bool (ISystem::*m_fnRuntimeCompilerInit)();
 
