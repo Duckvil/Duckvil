@@ -34,8 +34,8 @@ namespace Duckvil { namespace Memory {
             IMemory* _pMemory,
             __allocator* _pAllocator,
             Type* _pContainer,
-            const SpecifiedContainer<ContainerType, Type>::copy_callback& _fnCopy,
-            const SpecifiedContainer<ContainerType, Type>::destruct_callback& _fnDestruct,
+            const typename SpecifiedContainer<ContainerType, Type>::copy_callback& _fnCopy,
+            const typename SpecifiedContainer<ContainerType, Type>::destruct_callback& _fnDestruct,
             const resize_callback& _fnResize,
             const erase_callback& _fnErase
         ) :
