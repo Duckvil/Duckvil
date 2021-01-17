@@ -1,6 +1,7 @@
 #include "RuntimeCompiler/RuntimeCompiler.h"
 
 #include "RuntimeCompiler/Platform/Windows/Compiler.h"
+#include "RuntimeCompiler/Platform/Linux/Compiler.h"
 
 #include "Utils/Macro.h"
 
@@ -40,7 +41,13 @@ namespace Duckvil { namespace RuntimeCompiler {
 
         return true;
 #else
+#ifdef DUCKVIL_PLATFORM_LINUX
+        m_pCompiler = new LinuxCompiler(m_processFTable, &m_processData);
+
+        return true;
+#else
         return false;
+#endif
 #endif
     }
 
