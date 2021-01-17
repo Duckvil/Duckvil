@@ -131,10 +131,14 @@ namespace Duckvil { namespace Parser {
             else if(_token == "<")
             {
                 _triBrackets++;
+
+                _tmp += _token;
             }
             else if(_token == ">")
             {
                 _triBrackets--;
+
+                _tmp += _token;
             }
             else if(_token == "const")
             {
@@ -643,6 +647,11 @@ namespace Duckvil { namespace Parser {
                 _skipped = true;
                 _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_const);
             }
+            else if(_sToken == "virtual")
+            {
+                _skipped = true;
+                _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_virtual);
+            }
             else
             {
                 _internalTmp += _sToken;
@@ -895,6 +904,10 @@ namespace Duckvil { namespace Parser {
                 _internalTmp += _sToken;
                 _wasKeyword = true;
                 _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_const);
+            }
+            else if(_sToken == "virtual")
+            {
+                _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_virtual);
             }
             else if(_sToken == "=")
             {
