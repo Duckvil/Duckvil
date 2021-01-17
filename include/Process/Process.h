@@ -23,6 +23,7 @@ namespace Duckvil { namespace Process {
         bool (*m_fnSetup)(data* _pData);
         void (*m_fnStart)(data* _pData);
         void (*m_fnStop)(data* _pData);
+        void (*m_fnWait)(data* _pData);
         void (*m_fnWrite)(data* _pData, const char* _csMessage);
     };
 

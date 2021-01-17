@@ -78,11 +78,7 @@ namespace Duckvil { namespace RuntimeCompiler {
         _command.append("\n_COMPLETION_TOKEN_\n");
 
         m_processFTable.m_fnWrite(m_pProcessData, _command.c_str());
-
-        while(!m_pProcessData->m_bComplete)
-        {
-
-        }
+        m_processFTable.m_fnWait(m_pProcessData);
     }
 
     void WindowsCompiler::AddDefine(const std::string& _sDefine)

@@ -14,6 +14,7 @@ namespace Duckvil { namespace Process {
     void windows_write(data* _pData, const char* _csMessage);
     void windows_start(data* _pData);
     void windows_stop(data* _pData);
+    void windows_wait(data* _pData);
 #endif
 
 }}

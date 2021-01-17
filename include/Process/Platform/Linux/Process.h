@@ -12,6 +12,7 @@ namespace Duckvil { namespace Process {
     void linux_write(data* _pData, const char* _csMessage);
     void linux_start(data* _pData);
     void linux_stop(data* _pData);
+    void linux_wait(data* _pData);
 #endif
 
 }}

@@ -14,6 +14,7 @@ void duckvil_process_init(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::_
     _pFTable->m_fnSetup = &Duckvil::Process::windows_setup;
     _pFTable->m_fnStart = &Duckvil::Process::windows_start;
     _pFTable->m_fnStop = &Duckvil::Process::windows_stop;
+    _pFTable->m_fnStop = &Duckvil::Process::windows_wait;
     _pFTable->m_fnWrite = &Duckvil::Process::windows_write;
 #else
 #ifdef DUCKVIL_PLATFORM_LINUX
@@ -21,6 +22,7 @@ void duckvil_process_init(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::_
     _pFTable->m_fnSetup = &Duckvil::Process::linux_setup;
     _pFTable->m_fnStart = &Duckvil::Process::linux_start;
     _pFTable->m_fnStop = &Duckvil::Process::linux_stop;
+    _pFTable->m_fnStop = &Duckvil::Process::linux_wait;
     _pFTable->m_fnWrite = &Duckvil::Process::linux_write;
 #endif
 #endif

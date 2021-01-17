@@ -1,6 +1,7 @@
 #include "Process/Platform/Linux/Process.h"
 
 #ifdef DUCKVIL_PLATFORM_LINUX
+#include <sys/wait.h>
 #include <unistd.h>
 #endif
 
@@ -22,10 +23,6 @@ namespace Duckvil { namespace Process {
 
     bool linux_setup(data* _pData)
     {
-        // linux_data* _data = (linux_data*)_pData->m_pImplementationData;
-
-        // _data->m_pid = fork();
-
         return true;
     }
 
@@ -35,9 +32,19 @@ namespace Duckvil { namespace Process {
 
         _data->m_pid = fork();
 
-        if(_data->m_pid == 0)
+    // TODO: It is currently blocking the parent process
+
+        switch(_data->m_pid)
         {
-            execl(_csMessage, _csMessage, nullptr);
+        case -1:
+            break;
+        case 0:
+            execl("/bin/sh", "/bin/sh", "-c", _csMessage, nullptr);
+            break;
+        default:
+            int _status;
+            waitpid(_data->m_pid, &_status, 0);
+            break;
         }
     }
 
@@ -49,6 +56,11 @@ namespace Duckvil { namespace Process {
     void linux_stop(data* _pData)
     {
 
+    }
+
+    void linux_wait(data* _pData)
+    {
+        // wait(nullptr);
     }
 #endif
 

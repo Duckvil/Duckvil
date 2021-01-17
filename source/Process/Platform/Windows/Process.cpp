@@ -250,6 +250,14 @@ namespace Duckvil { namespace Process {
         _pData->m_bRunning = false;
         // TODO: Something else?
     }
+
+    void windows_wait(data* _pData)
+    {
+        while(!_pData->m_bComplete)
+        {
+
+        }
+    }
 #endif
 
 }}
