@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(1)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(2)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -15,7 +15,7 @@ _type = record_type<Duckvil::RuntimeCompiler::WindowsCompiler>(DUCKVIL_RUNTIME_R
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "RuntimeCompiler");
-record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
+record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
 record_inheritance(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, get_type<ICompiler>(_pData), __protection::__protection_public);
 _constructor = record_constructor<Duckvil::RuntimeCompiler::WindowsCompiler, const Process::ftable&, Process::data*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
 record_function<Duckvil::RuntimeCompiler::WindowsCompiler, void, const std::vector<std::string>&, const CompilerOptions&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::Compile, "Compile");
@@ -26,11 +26,11 @@ record_function<Duckvil::RuntimeCompiler::WindowsCompiler, void, const std::stri
 record_function<Duckvil::RuntimeCompiler::WindowsCompiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::AddLibrary, "AddLibrary");
 Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
 for(size_t i = 0; i < _recordedTypes.size(); i++) { _types[i] = _recordedTypes[i]; }
-return duckvil_recorderd_types { _types, _recordedTypes.size(), "RuntimeCompiler/Platform/Windows/Compiler.h", 1 };
+return duckvil_recorderd_types { _types, _recordedTypes.size(), "RuntimeCompiler/Platform/Windows/Compiler.h", 2 };
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 1;
+return 2;
 }
 #endif
