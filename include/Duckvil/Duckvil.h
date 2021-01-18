@@ -23,11 +23,15 @@ namespace Duckvil {
 
     struct system
     {
+    // TODO: Currently it is workaround for member callbacks, need to be fixed(Reflection recorder)
+        typedef void (ISystem::*UpdateCallback)();
+        typedef bool (ISystem::*InitCallback)();
+
         RuntimeReflection::__duckvil_resource_type_t m_type;
         void** m_pObject;
         ISystem* m_pISystem;
-        void (ISystem::*m_fnUpdateCallback)();
-        bool (ISystem::*m_fnInitCallback)();
+        UpdateCallback m_fnUpdateCallback;
+        InitCallback m_fnInitCallback;
     };
 
     struct __data
@@ -50,8 +54,8 @@ namespace Duckvil {
         uint32_t m_uiLoadedModulesCount;
 
         HotReloader::RuntimeCompilerSystem* m_pRuntimeCompiler;
-        void (ISystem::*m_fnRuntimeCompilerUpdate)();
-        bool (ISystem::*m_fnRuntimeCompilerInit)();
+        system::UpdateCallback m_fnRuntimeCompilerUpdate;
+        system::InitCallback m_fnRuntimeCompilerInit;
 
         Logger::__ftable* m_pLogger;
         Logger::__data* m_pLoggerData;
