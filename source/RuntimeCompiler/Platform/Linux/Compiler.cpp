@@ -14,7 +14,7 @@ namespace Duckvil { namespace RuntimeCompiler {
 
     }
 
-    void LinuxCompiler::Compile(const std::vector<std::string>& _aFiles, const CompilerOptions& _compilerOptions)
+    void LinuxCompiler::Compile(const std::vector<std::string>& _aFiles, const Options& _compilerOptions)
     {
         std::string _command = "gcc";
 
@@ -84,6 +84,19 @@ namespace Duckvil { namespace RuntimeCompiler {
     void LinuxCompiler::AddFlag(const std::string& _sFlag)
     {
         m_compilerOptions.m_aFlags.push_back(_sFlag);
+    }
+
+    void LinuxCompiler::AddFlag(Flag _flags)
+    {
+        if(_flags & Flag::Flag_SharedLibrary)
+        {
+            m_compilerOptions.m_aFlags.push_back("-shared");
+        }
+
+        if(_flags & Flag::Flag_SharedLibrary)
+        {
+            m_compilerOptions.m_aFlags.push_back("-g");
+        }
     }
 
     void LinuxCompiler::AddInclude(const std::string& _sInclude)

@@ -14,7 +14,7 @@ namespace Duckvil { namespace RuntimeCompiler {
 
     }
 
-    void WindowsCompiler::Compile(const std::vector<std::string>& _aFiles, const CompilerOptions& _compilerOptions)
+    void WindowsCompiler::Compile(const std::vector<std::string>& _aFiles, const Options& _compilerOptions)
     {
         std::string _command = "cl";
 
@@ -89,6 +89,19 @@ namespace Duckvil { namespace RuntimeCompiler {
     void WindowsCompiler::AddFlag(const std::string& _sFlag)
     {
         m_compilerOptions.m_aFlags.push_back(_sFlag);
+    }
+
+    void WindowsCompiler::AddFlag(Flag _flags)
+    {
+        if(_flags & Flag::Flag_SharedLibrary)
+        {
+            m_compilerOptions.m_aFlags.push_back("/LD");
+        }
+
+        if(_flags & Flag::Flag_DebugInfo)
+        {
+            m_compilerOptions.m_aFlags.push_back("/Zi");
+        }
     }
 
     void WindowsCompiler::AddInclude(const std::string& _sInclude)

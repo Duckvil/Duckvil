@@ -80,6 +80,7 @@ namespace Duckvil { namespace HotReloader {
 
         RuntimeReflection::__function<bool(RuntimeCompiler::Compiler::*)()>* _setup = RuntimeReflection::get_function_callback<bool, RuntimeCompiler::Compiler>(m_pReflectionData, m_compilerTypeHandle, "Setup");
         RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addFlag = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_pReflectionData, m_compilerTypeHandle, "AddFlag");
+        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(RuntimeCompiler::Flag)>* _addFlag2 = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, RuntimeCompiler::Flag>(m_pReflectionData, m_compilerTypeHandle, "AddFlag");
         RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addDefine = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_pReflectionData, m_compilerTypeHandle, "AddDefine");
         RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addInclude = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_pReflectionData, m_compilerTypeHandle, "AddInclude");
         RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addLibraryPath = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_pReflectionData, m_compilerTypeHandle, "AddLibraryPath");
@@ -87,15 +88,18 @@ namespace Duckvil { namespace HotReloader {
 
         (m_pCompiler->*_setup->m_fnFunction)();
 
+        (m_pCompiler->*_addFlag2->m_fnFunction)(RuntimeCompiler::Flag::Flag_SharedLibrary);
+        (m_pCompiler->*_addFlag2->m_fnFunction)(RuntimeCompiler::Flag::Flag_DebugInfo);
+
 #ifdef DUCKVIL_PLATFORM_WINDOWS
-        (m_pCompiler->*_addFlag->m_fnFunction)("/Zi");
+        // (m_pCompiler->*_addFlag->m_fnFunction)("/Zi");
         (m_pCompiler->*_addFlag->m_fnFunction)("/MDd");
-        (m_pCompiler->*_addFlag->m_fnFunction)("/LD");
+        // (m_pCompiler->*_addFlag->m_fnFunction)("/LD");
         (m_pCompiler->*_addFlag->m_fnFunction)("/FC");
 #else
 #ifdef DUCKVIL_PLATFORM_LINUX
-        (m_pCompiler->*_addFlag->m_fnFunction)("-g");
-        (m_pCompiler->*_addFlag->m_fnFunction)("-shared");
+        // (m_pCompiler->*_addFlag->m_fnFunction)("-g");
+        // (m_pCompiler->*_addFlag->m_fnFunction)("-shared");
         (m_pCompiler->*_addFlag->m_fnFunction)("-fPIC");
 #endif
 #endif
@@ -250,7 +254,7 @@ namespace Duckvil { namespace HotReloader {
             std::string _generatedFilename = _filename + ".generated.cpp";
             std::filesystem::path _generatedFile = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _moduleName / _generatedFilename;
 
-            RuntimeCompiler::CompilerOptions _options = {};
+            RuntimeCompiler::Options _options = {};
 
 #ifdef DUCKVIL_PLATFORM_WINDOWS
             _options.m_aFlags.push_back("/Fe" + std::string(DUCKVIL_SWAP_OUTPUT) + "/" + m_sModuleName + ".dll");
@@ -261,7 +265,7 @@ namespace Duckvil { namespace HotReloader {
 #endif
 #endif
 
-            RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::vector<std::string>&, const RuntimeCompiler::CompilerOptions&)>* _compile = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::vector<std::string>&, const RuntimeCompiler::CompilerOptions&>(m_pReflectionData, m_compilerTypeHandle, "Compile");
+            RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::vector<std::string>&, const RuntimeCompiler::Options&)>* _compile = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::vector<std::string>&, const RuntimeCompiler::Options&>(m_pReflectionData, m_compilerTypeHandle, "Compile");
 
             (m_pCompiler->*_compile->m_fnFunction)({ _sFile, _generatedFile.string() }, _options);
         }

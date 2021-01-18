@@ -21,10 +21,11 @@ namespace Duckvil { namespace RuntimeCompiler {
         ~Compiler();
 
         bool Setup();
-        void Compile(const std::vector<std::string>& _aFiles, const CompilerOptions& _compilerOptions);
+        void Compile(const std::vector<std::string>& _aFiles, const Options& _compilerOptions);
 
         void AddDefine(const std::string& _sDefine);
         void AddFlag(const std::string& _sFlag);
+        void AddFlag(Flag _flags);
         void AddInclude(const std::string& _sInclude);
         void AddLibraryPath(const std::string& _sLibraryPath);
         void AddLibrary(const std::string& _sLibrary);

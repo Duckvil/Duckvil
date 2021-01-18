@@ -51,7 +51,7 @@ namespace Duckvil { namespace RuntimeCompiler {
 #endif
     }
 
-    void Compiler::Compile(const std::vector<std::string>& _aFiles, const CompilerOptions& _compilerOptions)
+    void Compiler::Compile(const std::vector<std::string>& _aFiles, const Options& _compilerOptions)
     {
         m_pCompiler->Compile(_aFiles, _compilerOptions);
     }
@@ -64,6 +64,11 @@ namespace Duckvil { namespace RuntimeCompiler {
     void Compiler::AddFlag(const std::string& _sFlag)
     {
         m_pCompiler->AddFlag(_sFlag);
+    }
+
+    void Compiler::AddFlag(Flag _flags)
+    {
+        m_pCompiler->AddFlag(_flags);
     }
 
     void Compiler::AddInclude(const std::string& _sInclude)
