@@ -18,9 +18,10 @@ record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Run
 record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
 _constructor = record_constructor<Duckvil::RuntimeCompiler::Compiler, const Memory::FreeList&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
 record_function<Duckvil::RuntimeCompiler::Compiler, bool>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::Compiler::Setup, "Setup");
-record_function<Duckvil::RuntimeCompiler::Compiler, void, const std::vector<std::string>&, const CompilerOptions&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::Compiler::Compile, "Compile");
+record_function<Duckvil::RuntimeCompiler::Compiler, void, const std::vector<std::string>&, const Options&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::Compiler::Compile, "Compile");
 record_function<Duckvil::RuntimeCompiler::Compiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::Compiler::AddDefine, "AddDefine");
 record_function<Duckvil::RuntimeCompiler::Compiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::Compiler::AddFlag, "AddFlag");
+record_function<Duckvil::RuntimeCompiler::Compiler, void, Flag>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::Compiler::AddFlag, "AddFlag");
 record_function<Duckvil::RuntimeCompiler::Compiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::Compiler::AddInclude, "AddInclude");
 record_function<Duckvil::RuntimeCompiler::Compiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::Compiler::AddLibraryPath, "AddLibraryPath");
 record_function<Duckvil::RuntimeCompiler::Compiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::Compiler::AddLibrary, "AddLibrary");
