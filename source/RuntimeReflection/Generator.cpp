@@ -153,6 +153,44 @@ namespace Duckvil { namespace RuntimeReflection {
         }
     }
 
+    void generate_callback(const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
+    {
+        const Parser::__ast_entity_callback* _castedCallback = (const Parser::__ast_entity_callback*)_pEntity;
+        bool _skip = false;
+
+        if(_pParentEntity->m_structureType == Parser::__ast_structure_type_class && _castedCallback->m_accessLevel == Parser::__ast_access_not_specified)
+        {
+            _skip = true;
+        }
+        else if(_pParentEntity->m_structureType == Parser::__ast_structure_type_struct && _castedCallback->m_accessLevel == Parser::__ast_access_not_specified)
+        {
+            _skip = false;
+        }
+        else if(_castedCallback->m_accessLevel != Parser::__ast_access_public)
+        {
+            _skip = true;
+        }
+
+        if(_skip)
+        {
+            return;
+        }
+
+        _file << "_property = record_property<" << _castedCallback->m_sReturnType << "(" << _castedCallback->m_sMemberType << ")(";
+
+        for(uint32_t i = 0; i < _castedCallback->m_aArguments.size(); i++)
+        {
+            _file << _castedCallback->m_aArguments[i].m_sType;
+
+            if(i < _castedCallback->m_aArguments.size() - 1)
+            {
+                _file << ", ";
+            }
+        }
+
+        _file << ")>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(" << _sNamespace + _pParentEntity->m_sName << ", " << _castedCallback->m_sName << "), \"" << _castedCallback->m_sName << "\");\n";
+    }
+
     void generate_function(const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
         const Parser::__ast_entity_function* _castedFunction = (const Parser::__ast_entity_function*)_pEntity;
@@ -285,6 +323,9 @@ namespace Duckvil { namespace RuntimeReflection {
             {
             case Parser::__ast_entity_type::__ast_entity_type_variable:
                 generate_variable(_ent, _casted, _file, _additionalNamespace);
+                break;
+            case Parser::__ast_entity_type::__ast_entity_type_callback:
+                generate_callback(_ent, _casted, _file, _additionalNamespace);
                 break;
             case Parser::__ast_entity_type::__ast_entity_type_constructor:
                 generate_constructor(_ent, _casted, _file, _additionalNamespace);
