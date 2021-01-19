@@ -92,10 +92,10 @@ namespace Duckvil { namespace Logger {
 
     struct __ftable
     {
-        __data* (*init)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator);
-        void (*log)(__ftable* _pFTable, __data* _pData, __log_info& _logInfo);
-        void (*format)(__data* _pData, const __log_info& _logInfo, char* _ppBuffer);
-        void (*dispatch_logs)(__ftable* _pFTable, __data* _pData);
+        Logger::__data* (*init)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator);
+        void (*log)(Logger::__ftable* _pFTable, Logger::__data* _pData, __log_info& _logInfo);
+        void (*format)(Logger::__data* _pData, const __log_info& _logInfo, char* _ppBuffer);
+        void (*dispatch_logs)(Logger::__ftable* _pFTable, Logger::__data* _pData);
     };
 
     template <std::size_t Length, std::size_t Length2>
