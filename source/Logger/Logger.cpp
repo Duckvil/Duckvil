@@ -62,7 +62,13 @@ namespace Duckvil { namespace Logger {
         {
             char _timeStr[26];
 
+#ifdef DUCKVIL_PLATFORM_WINDOWS
             ctime_s(_timeStr, sizeof(_timeStr), &_time);
+#else
+#ifdef DUCKVIL_PLATFORM_LINUX
+            ctime_r(&_time, _timeStr);
+#endif
+#endif
 
             switch(_logInfo.m_verbosity)
             {
