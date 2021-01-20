@@ -60,19 +60,23 @@ namespace Duckvil { namespace Logger {
 
         if(_pData->m_lastTime != _time)
         {
+            char _timeStr[26];
+
+            ctime_s(_timeStr, sizeof(_timeStr), &_time);
+
             switch(_logInfo.m_verbosity)
             {
             case __verbosity::__verbosity_info:
-                sprintf(_ppBuffer, "%s %f [%s:%u]{ INFO }: %s", std::ctime(&_time), _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
+                sprintf(_ppBuffer, "%s %f [%s:%u]{ INFO }: %s", _timeStr, _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
                 break;
             case __verbosity::__verbosity_warning:
-                sprintf(_ppBuffer, "%s %f [%s:%u]{ WARN }: %s", std::ctime(&_time), _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
+                sprintf(_ppBuffer, "%s %f [%s:%u]{ WARN }: %s", _timeStr, _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
                 break;
             case __verbosity::__verbosity_error:
-                sprintf(_ppBuffer, "%s %f [%s:%u]{ ERROR }: %s", std::ctime(&_time), _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
+                sprintf(_ppBuffer, "%s %f [%s:%u]{ ERROR }: %s", _timeStr, _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
                 break;
             case __verbosity::__verbosity_fatal:
-                sprintf(_ppBuffer, "%s %f [%s:%u]{ FATAL }: %s", std::ctime(&_time), _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
+                sprintf(_ppBuffer, "%s %f [%s:%u]{ FATAL }: %s", _timeStr, _upTime * 0.000000001f, _logInfo.m_sFile, _logInfo.m_uiLine, _logInfo.m_sMessage);
                 break;
             }
 
