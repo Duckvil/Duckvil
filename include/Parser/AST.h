@@ -204,6 +204,7 @@ namespace Duckvil { namespace Parser {
 
         std::string m_sName;
         std::string m_sReturnType;
+        std::string m_sMemberType;
     };
 
     struct __ast_entity_constructor : public __ast_entity_callable

@@ -73,7 +73,7 @@ namespace Duckvil { namespace Parser {
         return 0;
     }
 
-    std::vector<__ast_entity_argument> process_arguments(__lexer_ftable* _pLexer, __lexer_data& _lexerData, const std::string& _sArgs)
+    std::vector<__ast_entity_argument> process_arguments(__lexer_ftable* _pLexer, __lexer_data& _lexerData, __ast* _pAST, const std::string& _sArgs)
     {
         std::vector<__ast_entity_argument> _res;
 
@@ -95,6 +95,7 @@ namespace Duckvil { namespace Parser {
         uint32_t _triBrackets = 0;
         std::string _tmp;
         std::string _type;
+        std::string _callbackMemberType;
         bool _keyword = false;
         bool _continue = false;
         bool _wasType = false;
@@ -106,6 +107,38 @@ namespace Duckvil { namespace Parser {
             if(_token == "(")
             {
                 _roundBrackets++;
+
+                // if(_triBrackets == 0 && _wasType)
+                // {
+                //     if(_tmp == "")
+                //     {
+                //         _pLexer->next_token(&_exp, &_token);
+
+                //         if(_token == "*")
+                //         {
+                //             printf("POSSIBLE CALLBACK!\n");
+
+                //             _tmp += _token;
+                //             _callbackMemberType = _tmp;
+
+                //             _pLexer->next_token(&_exp, &_token); // name
+
+                //             _tmp = _token;
+
+                //             _pLexer->next_token(&_exp, &_token); // )
+
+                //             std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, _lexerData, _pLexerData->m_sCurrentLine.substr(_openBracketIndex));
+                //         }
+                //         else
+                //         {
+                //             _continue = true;
+                //         }
+                //     }
+                //     else
+                //     {
+
+                //     }
+                // }
             }
             else if(_token == ")")
             {
@@ -211,6 +244,14 @@ namespace Duckvil { namespace Parser {
             }
             else
             {
+                for(const std::string& _define : _pAST->m_aUserDefines)
+                {
+                    if(_token == _define)
+                    {
+                        printf("%s DEFINE!\n", _define.c_str());
+                    }
+                }
+
                 _tmp += _token;
             }
         }
@@ -380,7 +421,7 @@ namespace Duckvil { namespace Parser {
         }
     }
 
-    void parse_template(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, std::string& _sToken, std::vector<__ast_template>& _templates)
+    void parse_template(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, __ast* _pAST, std::string& _sToken, std::vector<__ast_template>& _templates)
     {
         uint32_t _triBrackets = 0;
         bool _wasType = false;
@@ -526,7 +567,7 @@ namespace Duckvil { namespace Parser {
             _entity->m_sName = _internal;
             _entity->m_sType = _type;
 
-            std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _pLexerData->m_sCurrentLine.substr(_openBracketIndex));
+            std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _pAST, _pLexerData->m_sCurrentLine.substr(_openBracketIndex));
 
             _entity->m_aArguments.insert(_entity->m_aArguments.begin(), _args.begin(), _args.end());
 
@@ -684,7 +725,7 @@ namespace Duckvil { namespace Parser {
 
             if(_roundBracketIndex != std::string::npos)
             {
-                std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _exp.m_sCurrentLine.substr(_roundBracketIndex));
+                std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _pAST, _exp.m_sCurrentLine.substr(_roundBracketIndex));
 
                 _entity->m_aArguments.insert(_entity->m_aArguments.begin(), _args.begin(), _args.end());
             }
@@ -792,6 +833,7 @@ namespace Duckvil { namespace Parser {
         bool _wasType = false;
         std::string _internalTmp;
         std::string _type;
+        std::string _callbackMemberType;
         uint32_t _triBrackets = 0;
         uint32_t _roundBrackets = 0;
         uint32_t _quadBrackets = 0;
@@ -858,28 +900,36 @@ namespace Duckvil { namespace Parser {
                 _wasOpenBracket = true;
                 _roundBracketBeginIndex = _exp.m_uiCurrentCharacterIndex - 1;
 
-                while(_pLexer->next_token(&_exp, &_sToken))
+                if(_internalTmp == "")
                 {
-                    if(_sToken == "*")
-                    {
-                        _callback = true;
-                        _end = true;
+                    // callback
 
-                        _pLexer->next_token(&_exp, &_sToken);
-                        _internalTmp += _sToken;
+                    _callback = true;
 
-                        break;
-                    }
-                    else if(_sToken == "")
+                    while(_pLexer->next_token(&_exp, &_sToken))
                     {
-                        continue;
-                    }
-                    else
-                    {
-                        _end = true;
+                        if(_sToken == "*")
+                        {
+                            _end = true;
 
-                        break;
+                            _internalTmp += _sToken;
+                            _callbackMemberType = _internalTmp;
+
+                            _pLexer->next_token(&_exp, &_sToken);
+
+                            _internalTmp = _sToken;
+
+                            break;
+                        }
+                        else
+                        {
+                            _internalTmp += _sToken;
+                        }
                     }
+                }
+                else
+                {
+                    _end = true;
                 }
             }
             else if(_sToken == ")" && _triBrackets == 0)
@@ -919,32 +969,69 @@ namespace Duckvil { namespace Parser {
             }
         }
 
-        if(!_callback && !_wasOpenBracket)
+        if(!_callback)
         {
-            // Variable
-
-            __ast_entity_variable* _entity = nullptr;
-
-            if(_pAST->m_pPendingScope != nullptr)
+            if(_wasOpenBracket)
             {
-                _entity = (__ast_entity_variable*)_pAST->m_pPendingScope;
+                // Function
+
+                __ast_entity_function* _entity = nullptr;
+
+                if(_pAST->m_pPendingScope != nullptr)
+                {
+                    _entity = (__ast_entity_function*)_pAST->m_pPendingScope;
+                }
+                else
+                {
+                    _entity = new __ast_entity_function();
+                }
+
+                _entity->m_aTemplates.insert(_entity->m_aTemplates.begin(), _templates.begin(), _templates.end());
+
+                _templates.clear();
+
+                _entity->m_accessLevel = _pAST->m_currentAccess;
+                _entity->m_sReturnType = _type;
+                _entity->m_sName = _internalTmp;
+                _entity->m_flags = _flags;
+
+                _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
+
+                _entity->m_pParentScope = _pAST->m_pCurrentScope;
+
+                std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _pAST, _exp.m_sCurrentLine.substr(_roundBracketBeginIndex));
+
+                _entity->m_aArguments.insert(_entity->m_aArguments.begin(), _args.begin(), _args.end());
+
+                _pAST->m_pPendingScope = nullptr;
             }
             else
             {
-                _entity = new __ast_entity_variable();
+                // Variable
+
+                __ast_entity_variable* _entity = nullptr;
+
+                if(_pAST->m_pPendingScope != nullptr)
+                {
+                    _entity = (__ast_entity_variable*)_pAST->m_pPendingScope;
+                }
+                else
+                {
+                    _entity = new __ast_entity_variable();
+                }
+
+                _entity->m_sName = _internalTmp;
+                _entity->m_sType = _type;
+                _entity->m_accessLevel = _pAST->m_currentAccess;
+
+                _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
+
+                _entity->m_pParentScope = _pAST->m_pCurrentScope;
+
+                _pAST->m_pPendingScope = nullptr;
             }
-
-            _entity->m_sName = _internalTmp;
-            _entity->m_sType = _type;
-            _entity->m_accessLevel = _pAST->m_currentAccess;
-
-            _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
-
-            _entity->m_pParentScope = _pAST->m_pCurrentScope;
-
-            _pAST->m_pPendingScope = nullptr;
         }
-        else if(_callback)
+        else
         {
             // Callback
 
@@ -962,48 +1049,15 @@ namespace Duckvil { namespace Parser {
             _entity->m_sReturnType = _type;
             _entity->m_accessLevel = _pAST->m_currentAccess;
             _entity->m_sName = _internalTmp;
+            _entity->m_sMemberType = _callbackMemberType;
 
-            std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _exp.m_sCurrentLine.substr(_exp.m_uiCurrentCharacterIndex + 1));
+            std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _pAST, _exp.m_sCurrentLine.substr(_exp.m_uiCurrentCharacterIndex + 1));
 
             _entity->m_aArguments.insert(_entity->m_aArguments.begin(), _args.begin(), _args.end());
 
             _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
 
             _entity->m_pParentScope = _pAST->m_pCurrentScope;
-
-            _pAST->m_pPendingScope = nullptr;
-        }
-        else if(_wasOpenBracket && !_callback)
-        {
-            // Function
-
-            __ast_entity_function* _entity = nullptr;
-
-            if(_pAST->m_pPendingScope != nullptr)
-            {
-                _entity = (__ast_entity_function*)_pAST->m_pPendingScope;
-            }
-            else
-            {
-                _entity = new __ast_entity_function();
-            }
-
-            _entity->m_aTemplates.insert(_entity->m_aTemplates.begin(), _templates.begin(), _templates.end());
-
-            _templates.clear();
-
-            _entity->m_accessLevel = _pAST->m_currentAccess;
-            _entity->m_sReturnType = _type;
-            _entity->m_sName = _internalTmp;
-            _entity->m_flags = _flags;
-
-            _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
-
-            _entity->m_pParentScope = _pAST->m_pCurrentScope;
-
-            std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _exp.m_sCurrentLine.substr(_roundBracketBeginIndex));
-
-            _entity->m_aArguments.insert(_entity->m_aArguments.begin(), _args.begin(), _args.end());
 
             _pAST->m_pPendingScope = nullptr;
         }
@@ -1114,7 +1168,7 @@ namespace Duckvil { namespace Parser {
 
             if(_sToken == "(")
             {
-                std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _pLexerData->m_sCurrentLine.substr(_pLexerData->m_uiCurrentCharacterIndex - 1));
+                std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _pAST, _pLexerData->m_sCurrentLine.substr(_pLexerData->m_uiCurrentCharacterIndex - 1));
                 __ast_entity_constructor* _scope = nullptr;
 
                 if(_pAST->m_pPendingScope != nullptr)
@@ -1367,7 +1421,7 @@ namespace Duckvil { namespace Parser {
             }
             else if(_token == "template")
             {
-                parse_template(_pLexer, &_lexerData, _token, _templates);
+                parse_template(_pLexer, &_lexerData, _pAST, _token, _templates);
             }
             else if(_token == "typedef")
             {
