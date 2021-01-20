@@ -87,8 +87,8 @@ jobs:
       shell: bash
       run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.info -t ${{secrets.CODACY_PROJECT_TOKEN}}
 
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.COVERALLS_PROJECT_TOKEN }}
-        path-to-lcov: ${{runner.workspace}}/build/coverage.info
+#     - name: Coveralls
+#       uses: coverallsapp/github-action@master
+#       with:
+#         github-token: ${{ secrets.COVERALLS_PROJECT_TOKEN }}
+#         path-to-lcov: ${{runner.workspace}}/build/coverage.info
