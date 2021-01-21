@@ -69,6 +69,32 @@ namespace Duckvil { namespace RuntimeReflection {
         return recorder_generate_traits<Type>();
     }
 
+    template <typename KeyType, typename ValueType>
+    __recorder_meta_info recorder_generate_meta_info(const KeyType& _key, size_t _ullKeySize, const ValueType& _value, size_t _ullValueSize)
+    {
+        __recorder_meta_info _meta = {};
+
+        _meta.m_ullKeyTypeID = typeid(KeyType).hash_code();
+        _meta.m_ullKeyTypeSize = _ullKeySize;
+        _meta.m_ucKeyTypeAlignment = alignof(KeyType);
+        _meta.m_pKeyData = &_key;
+        _meta.m_keyTraits = recorder_generate_traits<KeyType>();
+
+        _meta.m_ullValueTypeID = typeid(ValueType).hash_code();
+        _meta.m_ullValueTypeSize = _ullValueSize;
+        _meta.m_ucValueTypeAlignment = alignof(ValueType);
+        _meta.m_pValueData = &_value;
+        _meta.m_valueTraits = recorder_generate_traits<ValueType>();
+
+        return _meta;
+    }
+
+    template <typename KeyType, typename ValueType>
+    __recorder_meta_info recorder_generate_meta_info(const KeyType& _key, const ValueType& _value)
+    {
+        return recorder_generate_meta_info(_key, sizeof(KeyType), _value, sizeof(ValueType));
+    }
+
     struct __recorder_ftable
     {
         DUCKVIL_RESOURCE(type_t) (*m_fnRecordType)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, std::size_t _ullTypeID, const char _sTypeName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX]);
@@ -116,19 +142,7 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename KeyType, typename ValueType>
     static DUCKVIL_RESOURCE(meta_t) record_meta(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _handle, const KeyType& _key, const ValueType& _value)
     {
-        __recorder_meta_info _meta = {};
-
-        _meta.m_ullKeyTypeID = typeid(KeyType).hash_code();
-        _meta.m_ullKeyTypeSize = sizeof(KeyType);
-        _meta.m_ucKeyTypeAlignment = alignof(KeyType);
-        _meta.m_pKeyData = &_key;
-        _meta.m_keyTraits = recorder_generate_traits<KeyType>();
-
-        _meta.m_ullValueTypeID = typeid(ValueType).hash_code();
-        _meta.m_ullValueTypeSize = sizeof(ValueType);
-        _meta.m_ucValueTypeAlignment = alignof(ValueType);
-        _meta.m_pValueData = &_value;
-        _meta.m_valueTraits = recorder_generate_traits<ValueType>();
+        __recorder_meta_info _meta = recorder_generate_meta_info(_key, _value);
 
         return _pFunctions->m_fnRecordTypeMeta(_pMemoryInterface, _pAllocator, _pData, _handle, _meta);
     }
@@ -136,19 +150,7 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename ValueType, std::size_t Length>
     static DUCKVIL_RESOURCE(meta_t) record_meta(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _handle, const char (&_key)[Length], const ValueType& _value)
     {
-        __recorder_meta_info _meta = {};
-
-        _meta.m_ullKeyTypeID = typeid(const char*).hash_code();
-        _meta.m_ullKeyTypeSize = Length;
-        _meta.m_ucKeyTypeAlignment = alignof(const char*);
-        _meta.m_pKeyData = &_key;
-        _meta.m_keyTraits = recorder_generate_traits(_key);
-
-        _meta.m_ullValueTypeID = typeid(ValueType).hash_code();
-        _meta.m_ullValueTypeSize = sizeof(ValueType);
-        _meta.m_ucValueTypeAlignment = alignof(ValueType);
-        _meta.m_pValueData = &_value;
-        _meta.m_valueTraits = recorder_generate_traits<ValueType>();
+        __recorder_meta_info _meta = recorder_generate_meta_info<const char*, ValueType>(_key, Length, _value, sizeof(ValueType));
 
         return _pFunctions->m_fnRecordTypeMeta(_pMemoryInterface, _pAllocator, _pData, _handle, _meta);
     }
@@ -156,19 +158,7 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename KeyType, typename ValueType>
     static DUCKVIL_RESOURCE(meta_t) record_meta(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _type, DUCKVIL_RESOURCE(property_t) _handle, const KeyType& _key, const ValueType& _value)
     {
-        __recorder_meta_info _meta = {};
-
-        _meta.m_ullKeyTypeID = typeid(KeyType).hash_code();
-        _meta.m_ullKeyTypeSize = sizeof(KeyType);
-        _meta.m_ucKeyTypeAlignment = alignof(KeyType);
-        _meta.m_pKeyData = &_key;
-        _meta.m_keyTraits = recorder_generate_traits<KeyType>();
-
-        _meta.m_ullValueTypeID = typeid(ValueType).hash_code();
-        _meta.m_ullValueTypeSize = sizeof(ValueType);
-        _meta.m_ucValueTypeAlignment = alignof(ValueType);
-        _meta.m_pValueData = &_value;
-        _meta.m_valueTraits = recorder_generate_traits<ValueType>();
+        __recorder_meta_info _meta = recorder_generate_meta_info(_key, _value);
 
         return _pFunctions->m_fnRecordPropertyMeta(_pMemoryInterface, _pAllocator, _pData, _type, _handle, _meta);
     }
@@ -176,19 +166,7 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename ValueType, std::size_t Length>
     static DUCKVIL_RESOURCE(meta_t) record_meta(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _type, DUCKVIL_RESOURCE(property_t) _handle, const char (&_key)[Length], const ValueType& _value)
     {
-        __recorder_meta_info _meta = {};
-
-        _meta.m_ullKeyTypeID = typeid(const char*).hash_code();
-        _meta.m_ullKeyTypeSize = Length;
-        _meta.m_ucKeyTypeAlignment = alignof(const char*);
-        _meta.m_pKeyData = &_key;
-        _meta.m_keyTraits = recorder_generate_traits(_key);
-
-        _meta.m_ullValueTypeID = typeid(ValueType).hash_code();
-        _meta.m_ullValueTypeSize = sizeof(ValueType);
-        _meta.m_ucValueTypeAlignment = alignof(ValueType);
-        _meta.m_pValueData = &_value;
-        _meta.m_valueTraits = recorder_generate_traits<ValueType>();
+        __recorder_meta_info _meta = recorder_generate_meta_info<const char*, ValueType>(_key, Length, _value, sizeof(ValueType));
 
         return _pFunctions->m_fnRecordPropertyMeta(_pMemoryInterface, _pAllocator, _pData, _type, _handle, _meta);
     }
@@ -196,19 +174,7 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename KeyType, typename ValueType>
     static DUCKVIL_RESOURCE(meta_t) record_meta(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _type, DUCKVIL_RESOURCE(constructor_t) _handle, const KeyType& _key, const ValueType& _value)
     {
-        __recorder_meta_info _meta = {};
-
-        _meta.m_ullKeyTypeID = typeid(KeyType).hash_code();
-        _meta.m_ullKeyTypeSize = sizeof(KeyType);
-        _meta.m_ucKeyTypeAlignment = alignof(KeyType);
-        _meta.m_pKeyData = &_key;
-        _meta.m_keyTraits = recorder_generate_traits<KeyType>();
-
-        _meta.m_ullValueTypeID = typeid(ValueType).hash_code();
-        _meta.m_ullValueTypeSize = sizeof(ValueType);
-        _meta.m_ucValueTypeAlignment = alignof(ValueType);
-        _meta.m_pValueData = &_value;
-        _meta.m_valueTraits = recorder_generate_traits<ValueType>();
+        __recorder_meta_info _meta = recorder_generate_meta_info(_key, _value);
 
         return _pFunctions->m_fnRecordConstructorMeta(_pMemoryInterface, _pAllocator, _pData, _type, _handle, _meta);
     }
@@ -216,19 +182,7 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename ValueType, std::size_t Length>
     static DUCKVIL_RESOURCE(meta_t) record_meta(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _type, DUCKVIL_RESOURCE(constructor_t) _handle, const char (&_key)[Length], const ValueType& _value)
     {
-        __recorder_meta_info _meta = {};
-
-        _meta.m_ullKeyTypeID = typeid(const char*).hash_code();
-        _meta.m_ullKeyTypeSize = Length;
-        _meta.m_ucKeyTypeAlignment = alignof(const char*);
-        _meta.m_pKeyData = &_key;
-        _meta.m_keyTraits = recorder_generate_traits(_key);
-
-        _meta.m_ullValueTypeID = typeid(ValueType).hash_code();
-        _meta.m_ullValueTypeSize = sizeof(ValueType);
-        _meta.m_ucValueTypeAlignment = alignof(ValueType);
-        _meta.m_pValueData = &_value;
-        _meta.m_valueTraits = recorder_generate_traits<ValueType>();
+        __recorder_meta_info _meta = recorder_generate_meta_info<const char*, ValueType>(_key, Length, _value, sizeof(ValueType));
 
         return _pFunctions->m_fnRecordConstructorMeta(_pMemoryInterface, _pAllocator, _pData, _type, _handle, _meta);
     }
