@@ -91,6 +91,15 @@ jobs:
       shell: bash
       run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.info -t ${{secrets.CODACY_PROJECT_TOKEN}}
 
+    - name: Upload coverage to Codecov
+      working-directory: ${{runner.workspace}}/build
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_PROJECT_TOKEN }}
+      run: |
+        wget https://codecov.io/bash -O codecov
+        chmod +x codecov
+        ./codecov -t $CODECOV_TOKEN -B $GITHUB_REF -s .
+
 #     - name: Coveralls
 #       uses: coverallsapp/github-action@master
 #       with:
