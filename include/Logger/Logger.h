@@ -66,8 +66,15 @@ namespace Duckvil { namespace Logger {
             m_uiLine(_uiLine),
             m_verbosity(_verbosity)
         {
-            memcpy(m_sFile, _sFile, Length);
-            memcpy(m_sMessage, _sMessage, Length2);
+            if(Length < DUCKVIL_LOGGER_PATH_LENGTH_MAX)
+            {
+                memcpy(m_sFile, _sFile, Length);
+            }
+
+            if(Length2 < DUCKVIL_LOGGER_PATH_LENGTH_MAX)
+            {
+                memcpy(m_sMessage, _sMessage, Length2);
+            }
 
             _flags = {};
         }
@@ -110,7 +117,11 @@ namespace Duckvil { namespace Logger {
         _log.m_verbosity = _verbosity;
         _log.m_uiLine = _uiLine;
         _log._flags = {};
-        strcpy(_log.m_sFile, _sFile);
+
+        if(Length < DUCKVIL_LOGGER_PATH_LENGTH_MAX)
+        {
+            strcpy(_log.m_sFile, _sFile);
+        }
 
         _pFTable->log(_pFTable, _pData, _log);
 
