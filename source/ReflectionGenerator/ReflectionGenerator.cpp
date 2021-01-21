@@ -12,6 +12,8 @@
 
 #include "Duckvil/ReflectionFlags.h"
 
+#include "Utils/AST.h"
+
 #include <fstream>
 
 struct reflection_module
@@ -176,10 +178,11 @@ int main(int argc, char* argv[])
 
         Duckvil::Parser::__ast _astData;
 
-        _astData.m_aUserDefines.push_back("DUCKVIL_EXPORT");
-        _astData.m_aUserDefines.push_back("slot");
-        _astData.m_aUserDefines.push_back("DUCKVIL_RESOURCE_DECLARE");
-        _astData.m_aUserDefines.push_back("DUCKVIL_GENERATED_BODY");
+        _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_EXPORT", &Duckvil::Utils::user_define_behavior });
+        _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "slot", &Duckvil::Utils::user_define_behavior });
+        _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_RESOURCE_DECLARE", &Duckvil::Utils::user_define_behavior });
+        _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_GENERATED_BODY", &Duckvil::Utils::user_define_behavior });
+        _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_RESOURCE", &Duckvil::Utils::user_define_resource_behavior });
 
         _ast->ast_generate(&_astData, _lexerFtable, _data);
         // _ast->ast_print(_astData);

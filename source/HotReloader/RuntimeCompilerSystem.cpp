@@ -2,6 +2,8 @@
 
 #include "Serializer/Runtime/Serializer.h"
 
+#include "Utils/AST.h"
+
 #undef max
 
 namespace Duckvil { namespace HotReloader {
@@ -216,10 +218,11 @@ namespace Duckvil { namespace HotReloader {
 
             m_pLexerFTable->load_file(&_data, _path.string().c_str());
 
-            _astData.m_aUserDefines.push_back("DUCKVIL_EXPORT");
-            _astData.m_aUserDefines.push_back("slot");
-            _astData.m_aUserDefines.push_back("DUCKVIL_RESOURCE_DECLARE");
-            _astData.m_aUserDefines.push_back("DUCKVIL_GENERATED_BODY");
+            _astData.m_aUserDefines.push_back(Parser::user_define{ "DUCKVIL_EXPORT", &Utils::user_define_behavior });
+            _astData.m_aUserDefines.push_back(Parser::user_define{ "slot", &Utils::user_define_behavior });
+            _astData.m_aUserDefines.push_back(Parser::user_define{ "DUCKVIL_RESOURCE_DECLARE", &Utils::user_define_behavior });
+            _astData.m_aUserDefines.push_back(Parser::user_define{ "DUCKVIL_GENERATED_BODY", &Utils::user_define_behavior });
+            _astData.m_aUserDefines.push_back(Parser::user_define{ "DUCKVIL_RESOURCE", &Utils::user_define_resource_behavior });
 
             m_pAST_FTable->ast_generate(&_astData, m_pLexerFTable, _data);
 
