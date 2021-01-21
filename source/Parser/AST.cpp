@@ -183,6 +183,55 @@ namespace Duckvil { namespace Parser {
             {
                 break;
             }
+            else if(_token == "*" && _wasType)
+            {
+                std::string _tmpName;
+
+                _tmp += _token;
+                _callbackMemberType = _tmp;
+                _tmp.clear();
+
+                _pLexer->next_token(&_exp, &_token); // name
+
+                _tmpName = _token;
+
+                _pLexer->next_token(&_exp, &_token); // )
+
+                uint32_t _roundBracketsCallback = 0;
+                std::string _callbackArguments;
+
+                while(_pLexer->next_token(&_exp, &_token))
+                {
+                    if(_token == "(")
+                    {
+                        _roundBracketsCallback++;
+                    }
+                    else if(_token == ")")
+                    {
+                        _roundBracketsCallback--;
+
+                        if(_roundBracketsCallback == 0)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        _callbackArguments += _token;
+
+                        if(_exp.m_bWasSpace)
+                        {
+                            _callbackArguments += " ";
+                        }
+                    }
+                }
+
+                _type = _type + "(" + _callbackMemberType + ")(" + _callbackArguments + ")";
+
+                _tmp = _tmpName;
+
+                _wasType = false;
+            }
             else if(_token == ",")
             {
                 if(_type.size() <= 0 && _tmp.size() <= 0)
@@ -244,15 +293,53 @@ namespace Duckvil { namespace Parser {
             }
             else
             {
-                for(const std::string& _define : _pAST->m_aUserDefines)
+                bool _internalContinue = false;
+
+                for(const user_define& _define : _pAST->m_aUserDefines)
                 {
-                    if(_token == _define)
+                    if(_internalContinue)
                     {
-                        printf("%s DEFINE!\n", _define.c_str());
+                        break;
+                    }
+
+                    if(_token == _define.m_sUserDefine)
+                    {
+                        _internalContinue = true;
+
+                        _tmp += _token;
+
+                        bool _end = false;
+                        uint32_t _internalRoundBrackets = 0;
+
+                        while(!_end && _pLexer->next_token(&_exp, &_token))
+                        {
+                            if(_token == "(")
+                            {
+                                _internalRoundBrackets++;
+                            }
+                            else if(_token == ")")
+                            {
+                                _internalRoundBrackets--;
+
+                                if(_internalRoundBrackets == 0)
+                                {
+                                    _end = true;
+                                }
+                            }
+                            else if((_exp.m_bNewLine || _token == ";") && _internalRoundBrackets == 0)
+                            {
+                                break;
+                            }
+
+                            _tmp += _token;
+                        }
                     }
                 }
 
-                _tmp += _token;
+                if(!_internalContinue)
+                {
+                    _tmp += _token;
+                }
             }
         }
 
@@ -332,43 +419,43 @@ namespace Duckvil { namespace Parser {
         return _result;
     }
 
-    bool check_define(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data* _pLexerData, std::string& _sToken)
+    bool check_define(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data* _pLexerData, std::string& _sToken, std::string* _spCurrent)
     {
-        for(std::string& _define : _pAST->m_aUserDefines)
+        for(const user_define& _define : _pAST->m_aUserDefines)
         {
-            if(_sToken == _define)
+            if(_sToken == _define.m_sUserDefine)
             {
-                uint32_t _roundBrackets = 0;
+                // uint32_t _roundBrackets = 0;
 
-                while(_pLexer->next_token(_pLexerData, &_sToken))
-                {
-                    if(_sToken == "(")
-                    {
-                        _roundBrackets++;
-                    }
-                    else if(_sToken == ")")
-                    {
-                        _roundBrackets--;
+                // while(_pLexer->next_token(_pLexerData, &_sToken))
+                // {
+                //     if(_sToken == "(")
+                //     {
+                //         _roundBrackets++;
+                //     }
+                //     else if(_sToken == ")")
+                //     {
+                //         _roundBrackets--;
 
-                        if(_roundBrackets == 0)
-                        {
-                            break;
-                        }
-                    }
-                    else if((_pLexerData->m_bNewLine || _sToken == ";") && _roundBrackets == 0)
-                    {
-                        break;
-                    }
-                }
+                //         if(_roundBrackets == 0)
+                //         {
+                //             break;
+                //         }
+                //     }
+                //     else if((_pLexerData->m_bNewLine || _sToken == ";") && _roundBrackets == 0)
+                //     {
+                //         break;
+                //     }
+                // }
 
-                __ast_entity_define* _defineEntity = new __ast_entity_define();
+                // __ast_entity_define* _defineEntity = new __ast_entity_define();
 
-                _defineEntity->m_sName = _define;
-                _defineEntity->m_pParentScope = _pAST->m_pCurrentScope;
+                // _defineEntity->m_sName = _define.m_sUserDefine;
+                // _defineEntity->m_pParentScope = _pAST->m_pCurrentScope;
 
-                _pAST->m_pCurrentScope->m_aScopes.push_back(_defineEntity);
+                // _pAST->m_pCurrentScope->m_aScopes.push_back(_defineEntity);
 
-                return true;
+                return _define.m_fnBehavior(_pAST, _pLexer, _pLexerData, _sToken, _spCurrent);
             }
         }
 
@@ -1555,7 +1642,7 @@ namespace Duckvil { namespace Parser {
             }
             else
             {
-                if(check_define(_pAST, _pLexer, &_lexerData, _token))
+                if(check_define(_pAST, _pLexer, &_lexerData, _token, &_tmpExpression))
                 {
                     continue;
                 }

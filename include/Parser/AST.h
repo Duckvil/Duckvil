@@ -232,13 +232,21 @@ namespace Duckvil { namespace Parser {
         __ast_flags m_flags;
     };
 
+    struct __ast;
+
+    struct user_define
+    {
+        std::string m_sUserDefine;
+        bool (*m_fnBehavior)(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data* _pLexerData, const std::string& _sUserDefine, std::string* _spResult);
+    };
+
     struct __ast
     {
         __ast_entity m_main;
         __ast_entity* m_pCurrentScope;
         __ast_entity* m_pPendingScope;
         __ast_access m_currentAccess;
-        std::vector<std::string> m_aUserDefines;
+        std::vector<user_define> m_aUserDefines;
     };
 
     struct __ast_ftable
