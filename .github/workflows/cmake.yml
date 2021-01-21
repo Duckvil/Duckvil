@@ -7,6 +7,7 @@ on:
     paths:
       - '**.h'
       - '**.cpp'
+      - '.github/workflows/cmake.yml'
   schedule:
     - cron: '00 8 * * 4'
 
@@ -38,6 +39,7 @@ jobs:
       uses: github/codeql-action/init@v1
       with:
         languages: cpp
+        queries: +security-extended, security-and-quality
 
     - name: Create Build Environment
       # Some projects don't allow in-source building, so create a separate build directory
@@ -64,7 +66,7 @@ jobs:
       run: cmake --build . --config $BUILD_TYPE
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v1
+      uses: github/codeql-action/analyze@v1      
 
     - name: Coverage init
       working-directory: ${{runner.workspace}}/build
