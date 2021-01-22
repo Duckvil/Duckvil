@@ -4,6 +4,8 @@
 
 #include "Utils/AST.h"
 
+#include <cassert>
+
 #undef max
 
 namespace Duckvil { namespace HotReloader {
@@ -206,7 +208,14 @@ namespace Duckvil { namespace HotReloader {
                 }
             }
 
-            strcpy(_generatorData.m_sInclude, _path.string().c_str());
+            if(_path.string().size() < DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX)
+            {
+                strcpy(_generatorData.m_sInclude, _path.string().c_str());
+            }
+            else
+            {
+                assert(false && "Path is too long!");
+            }
 
             _source.replace_extension(".generated.cpp");
             _header.replace_extension(".generated.h");

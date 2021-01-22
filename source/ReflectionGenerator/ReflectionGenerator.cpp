@@ -15,6 +15,7 @@
 #include "Utils/AST.h"
 
 #include <fstream>
+#include <cassert>
 
 struct reflection_module
 {
@@ -222,7 +223,15 @@ int main(int argc, char* argv[])
             _lastPath = _pluginDirectory;
         }
 
-        strcpy(_generatorData.m_sInclude, _relativePath.string().c_str());
+        if(_relativePath.string().size() < DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX)
+        {
+            strcpy(_generatorData.m_sInclude, _relativePath.string().c_str());
+        }
+        else
+        {
+            assert(false && "Path is too long!");
+        }
+
         _generatorData.m_uiRecorderIndex = _index++;
 
         std::filesystem::path _generatePath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _relativePath;

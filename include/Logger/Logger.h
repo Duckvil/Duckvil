@@ -8,6 +8,7 @@
 #include <chrono>
 #include <ctime>
 #include <cstdarg>
+#include <cassert>
 
 #define DUCKVIL_LOGGER_MESSAGE_LENGTH_MAX 256
 #define DUCKVIL_LOGGER_PATH_LENGTH_MAX 256
@@ -70,10 +71,18 @@ namespace Duckvil { namespace Logger {
             {
                 memcpy(m_sFile, _sFile, Length);
             }
+            else
+            {
+                assert(false && "Path is too long!");
+            }
 
             if(Length2 < DUCKVIL_LOGGER_PATH_LENGTH_MAX)
             {
                 memcpy(m_sMessage, _sMessage, Length2);
+            }
+            else
+            {
+                assert(false && "Message is too long!");
             }
 
             _flags = {};
@@ -121,6 +130,10 @@ namespace Duckvil { namespace Logger {
         if(Length < DUCKVIL_LOGGER_PATH_LENGTH_MAX)
         {
             strcpy(_log.m_sFile, _sFile);
+        }
+        else
+        {
+            assert(false && "File path is too long!");
         }
 
         _pFTable->log(_pFTable, _pData, _log);
