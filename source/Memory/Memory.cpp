@@ -92,6 +92,8 @@ Duckvil::Memory::IMemory* duckvil_memory_init()
     memory->m_fnFixedStackEmpty_ = &impl_fixed_stack_allocator_empty;
     memory->m_fnFixedStackFull_ = &impl_fixed_stack_allocator_full;
     memory->m_fnFixedStackClear_ = &impl_fixed_stack_clear;
+    memory->m_fnFixedStackSize_ = &impl_fixed_stack_allocator_size;
+    memory->m_fnFixedStackCapacity_ = &impl_fixed_stack_allocator_capacity;
 
     memory->m_fnFixedQueueAllocate_ = &impl_fixed_queue_allocate;
     memory->m_fnFixedQueueBegin_ = &impl_fixed_queue_begin;

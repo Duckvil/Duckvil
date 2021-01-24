@@ -80,6 +80,8 @@ namespace Duckvil { namespace Memory {
         typedef bool (*_fixed_stack_empty_)(__fixed_stack_allocator* _pAllocator);
         typedef bool (*_fixed_stack_full_)(__fixed_stack_allocator* _pAllocator);
         typedef void (*_fixed_stack_clear_)(__fixed_stack_allocator* _pAllocator);
+        typedef std::size_t (*_fixed_stack_size_)(__fixed_stack_allocator* _pAllocator);
+        typedef std::size_t (*_fixed_stack_capacity_)(__fixed_stack_allocator* _pAllocator);
 
         typedef void* (*_fixed_queue_allocate_)(__fixed_queue_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
         typedef void* (*_fixed_queue_begin_)(__fixed_queue_allocator* _pAllocator);
@@ -142,6 +144,8 @@ namespace Duckvil { namespace Memory {
         _fixed_stack_empty_         m_fnFixedStackEmpty_;
         _fixed_stack_full_          m_fnFixedStackFull_;
         _fixed_stack_clear_         m_fnFixedStackClear_;
+        _fixed_stack_size_          m_fnFixedStackSize_;
+        _fixed_stack_capacity_      m_fnFixedStackCapacity_;
 
         _fixed_queue_allocate_      m_fnFixedQueueAllocate_;
         _fixed_queue_begin_         m_fnFixedQueueBegin_;

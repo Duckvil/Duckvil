@@ -44,9 +44,9 @@ namespace Duckvil { namespace Memory {
         _pAllocator->m_ullUsed -= _pAllocator->m_ullBlockSize;
     }
 
-    bool impl_fixed_stack_allocator_empty(__fixed_stack_allocator* _pAlloctor)
+    bool impl_fixed_stack_allocator_empty(__fixed_stack_allocator* _pAllocator)
     {
-        return _pAlloctor->m_ullUsed == 0;
+        return _pAllocator->m_ullUsed == 0;
     }
 
     bool impl_fixed_stack_allocator_full(__fixed_stack_allocator* _pAllocator)
@@ -58,6 +58,16 @@ namespace Duckvil { namespace Memory {
     {
         memset(_pAllocator->m_pMemory, 0, _pAllocator->m_ullCapacity);
         _pAllocator->m_ullUsed = 0;
+    }
+
+    std::size_t impl_fixed_stack_allocator_size(__fixed_stack_allocator* _pAllocator)
+    {
+        return _pAllocator->m_ullUsed;
+    }
+
+    std::size_t impl_fixed_stack_allocator_capacity(__fixed_stack_allocator* _pAllocator)
+    {
+        return _pAllocator->m_ullCapacity;
     }
 
 }}

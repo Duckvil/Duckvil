@@ -61,22 +61,22 @@ namespace Duckvil { namespace Memory {
 
         inline bool Empty() const
         {
-            return fixed_stack_empty(m_pContainer);
+            return fixed_stack_empty(m_pMemoryInterface, m_pContainer);
         }
 
         inline bool Full() const
         {
-            return fixed_stack_full(m_pContainer);
+            return fixed_stack_full(m_pMemoryInterface, m_pContainer);
         }
 
         inline std::size_t GetSize() const
         {
-            return fixed_stack_size(m_pContainer);
+            return fixed_stack_size(m_pMemoryInterface, m_pContainer);
         }
 
         inline std::size_t GetCapacity() const
         {
-            return fixed_stack_capacity(m_pContainer);
+            return fixed_stack_capacity(m_pMemoryInterface, m_pContainer);
         }
     };
 
