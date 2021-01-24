@@ -59,4 +59,9 @@ namespace Duckvil { namespace Memory {
         _pMemory->m_fnFixedVectorErase_(_pMemory, m_pParentAllocator, _pAllocator, _uiIndex);
     }
 
+    static void fixed_vector_clear(IMemory* _pMemory, __fixed_vector_allocator* _pAllocator)
+    {
+        _pMemory->m_fnFixedVectorClear_(_pAllocator);
+    }
+
 }}

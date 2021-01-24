@@ -303,6 +303,11 @@ namespace Duckvil { namespace Memory {
             return *(Type*)fixed_vector_back(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
         }
 
+        void Clear()
+        {
+            fixed_vector_clear(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
+        }
+
         bool Empty() const
         {
             return fixed_vector_empty(SContainer::m_pMemoryInterface, SContainer::m_pContainer);

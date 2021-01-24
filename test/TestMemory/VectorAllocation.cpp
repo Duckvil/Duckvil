@@ -38,6 +38,64 @@ DUCKVIL_TEST(VectorAllocation)
         DUCKVIL_TEST_EQUAL(_vec.At(3), 40.f, "Wrong value");
         DUCKVIL_TEST_EQUAL(_vec.At(0), 10.f, "Wrong value");
         DUCKVIL_TEST_EQUAL(_vec.At(1), 20.f, "Wrong value");
+
+        {
+            Duckvil::Memory::Vector<float>::Iterator it = _vec.begin();
+
+            DUCKVIL_TEST_EQUAL(*it++, 10.f, "Wrong value");
+            DUCKVIL_TEST_EQUAL(*it++, 20.f, "Wrong value");
+            DUCKVIL_TEST_EQUAL(*it++, 30.f, "Wrong value");
+            DUCKVIL_TEST_EQUAL(*it, 40.f, "Wrong value");
+        }
+
+        {
+            _vec.Erase(0);
+
+            DUCKVIL_TEST_EQUAL(_vec.Size(), (std::size_t)3, "Wrong size");
+
+            DUCKVIL_TEST_EQUAL(_vec.At(0), 20.f, "Wrong value");
+            DUCKVIL_TEST_EQUAL(_vec.At(1), 30.f, "Wrong value");
+            DUCKVIL_TEST_EQUAL(_vec.At(2), 40.f, "Wrong value");
+
+            Duckvil::Memory::Vector<float>::Iterator it = _vec.begin();
+
+            DUCKVIL_TEST_EQUAL(*it++, 20.f, "Wrong value");
+            DUCKVIL_TEST_EQUAL(*it++, 30.f, "Wrong value");
+            DUCKVIL_TEST_EQUAL(*it, 40.f, "Wrong value");
+
+            _vec.Erase(2);
+
+            DUCKVIL_TEST_EQUAL(_vec.Size(), (std::size_t)2, "Wrong size");
+
+            DUCKVIL_TEST_EQUAL(_vec.At(0), 20.f, "Wrong value");
+            DUCKVIL_TEST_EQUAL(_vec.At(1), 30.f, "Wrong value");
+
+            it = _vec.begin();
+
+            DUCKVIL_TEST_EQUAL(*it++, 20.f, "Wrong value");
+            DUCKVIL_TEST_EQUAL(*it, 30.f, "Wrong value");
+        }
+
+        {
+            DUCKVIL_TEST_EXP(_vec.begin() != _vec.end(), "Begin is equal End, lol");
+        }
+
+        {
+            int i = 0;
+
+            for(Duckvil::Memory::Vector<float>::Iterator it = _vec.begin(); it != _vec.end(); ++it, i++)
+            {
+
+            }
+
+            DUCKVIL_TEST_EQUAL(i, 2, "Wrong value");
+        }
+
+        {
+            _vec.Clear();
+
+            DUCKVIL_TEST_EQUAL(_vec.Empty(), true, "Vector is not empty");
+        }
     }
 
     DUCKVIL_TEST_SUCCESS_PASS;

@@ -5,7 +5,7 @@
 #include "RuntimeReflection/RuntimeReflection.h"
 #include "RuntimeReflection/Recorder.h"
 
-#include "TestType//TestType.h"
+#include "TestType/TestType.h"
 
 Duckvil::PlugNPlay::__module __duckvil_global::m_module;
 Duckvil::PlugNPlay::__module_information __duckvil_global::m_memoryModule = Duckvil::PlugNPlay::__module_information("Memory");
@@ -78,7 +78,7 @@ DUCKVIL_TEST(RuntimeReflection)
 
             for(uint32_t i = 0; i < _count; i++)
             {
-                duckvil_recorderd_types(*test_type)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData);
+                duckvil_recorderd_types (*test_type)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData);
 
                 _module.get(_test_type_module, (std::string("duckvil_runtime_reflection_record_") + std::to_string(i)).c_str(), (void**)&test_type);
 
