@@ -264,7 +264,5 @@ int main(int argc, char* argv[])
 
     _file.close();
 
-    _index = 1;
-
     return 0;
 }
