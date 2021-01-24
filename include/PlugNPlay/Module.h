@@ -25,13 +25,15 @@ namespace Duckvil { namespace PlugNPlay {
             static_assert(false, "DUCKVIL_OUTPUT is not specified!");
 #endif
 #endif
+
+            m_pModule = nullptr;
         }
 
         __module_information(const Utils::string& _sName, const Utils::string& _sPath) :
             m_sName(_sName),
             m_sPath(_sPath)
         {
-
+            m_pModule = nullptr;
         }
 
         Utils::string m_sName;
