@@ -49,12 +49,12 @@ namespace Duckvil { namespace Memory {
 
         inline bool Empty() const
         {
-            return fixed_queue_empty(m_pAllocator);
+            return fixed_queue_empty(m_pMemoryInterface, m_pAllocator);
         }
 
         inline bool Full() const
         {
-            return fixed_queue_full(m_pAllocator);
+            return fixed_queue_full(m_pMemoryInterface, m_pAllocator);
         }
 
         inline void Pop()
@@ -64,12 +64,12 @@ namespace Duckvil { namespace Memory {
 
         inline std::size_t GetSize() const
         {
-            return fixed_queue_size(m_pAllocator);
+            return fixed_queue_size(m_pMemoryInterface, m_pAllocator);
         }
 
         inline std::size_t GetCapacity() const
         {
-            return fixed_queue_capacity(m_pAllocator);
+            return fixed_queue_capacity(m_pMemoryInterface, m_pAllocator);
         }
 
         inline const __fixed_queue_allocator* GetAllocator() const { return m_pAllocator; }

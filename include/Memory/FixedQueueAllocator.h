@@ -20,24 +20,28 @@ namespace Duckvil { namespace Memory {
         _pMemory->m_fnFixedQueuePop_(_pAllocator);
     }
 
-    inline bool fixed_queue_empty(__fixed_queue_allocator* _pAllocator)
+    inline bool fixed_queue_empty(IMemory* _pMemory, __fixed_queue_allocator* _pAllocator)
     {
-        return _pAllocator->m_ullUsed == 0;
+        return _pMemory->m_fnFixedQueueEmpty_(_pAllocator);
+        // return _pAllocator->m_ullUsed == 0;
     }
 
-    inline bool fixed_queue_full(__fixed_queue_allocator* _pAllocator)
+    inline bool fixed_queue_full(IMemory* _pMemory, __fixed_queue_allocator* _pAllocator)
     {
-        return _pAllocator->m_ullUsed == _pAllocator->m_ullCapacity;
+        return _pMemory->m_fnFixedQueueFull_(_pAllocator);
+        // return _pAllocator->m_ullUsed == _pAllocator->m_ullCapacity;
     }
 
-    inline std::size_t fixed_queue_size(__fixed_queue_allocator* _pAllocator)
+    inline std::size_t fixed_queue_size(IMemory* _pMemory, __fixed_queue_allocator* _pAllocator)
     {
-        return _pAllocator->m_ullUsed;
+        return _pMemory->m_fnFixedQueueSize_(_pAllocator);
+        // return _pAllocator->m_ullUsed;
     }
 
-    inline std::size_t fixed_queue_capacity(__fixed_queue_allocator* _pAllocator)
+    inline std::size_t fixed_queue_capacity(IMemory* _pMemory, __fixed_queue_allocator* _pAllocator)
     {
-        return _pAllocator->m_ullCapacity;
+        return _pMemory->m_fnFixedQueueCapacity_(_pAllocator);
+        // return _pAllocator->m_ullCapacity;
     }
 
 }}

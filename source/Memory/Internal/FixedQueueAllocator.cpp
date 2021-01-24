@@ -71,4 +71,14 @@ namespace Duckvil { namespace Memory {
         _pAllocator->m_ullTail = 0;
     }
 
+    std::size_t impl_fixed_queue_size(__fixed_queue_allocator* _pAllocator)
+    {
+        return _pAllocator->m_ullUsed;
+    }
+
+    std::size_t impl_fixed_queue_capacity(__fixed_queue_allocator* _pAllocator)
+    {
+        return _pAllocator->m_ullCapacity;
+    }
+
 }}
