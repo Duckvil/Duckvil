@@ -122,6 +122,7 @@ Duckvil::Memory::IMemory* duckvil_memory_init()
     memory->m_fnFixedVectorAllocate_ = &impl_fixed_vector_allocate;
     memory->m_fnFixedVectorBegin_ = &impl_fixed_vector_begin;
     memory->m_fnFixedVectorBack_ = &impl_fixed_vector_back;
+    memory->m_fnFixedVectorEnd_ = &impl_fixed_vector_end;
     memory->m_fnFixedVectorAt_ = &impl_fixed_vector_at;
     memory->m_fnFixedVectorEmpty_ = &impl_fixed_vector_empty;
     memory->m_fnFixedVectorFull_ = &impl_fixed_vector_full;

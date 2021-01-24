@@ -335,22 +335,24 @@ namespace Duckvil { namespace Memory {
             SContainer::m_fnErase(SContainer::m_pMemoryInterface, this, _uiIndex);
         }
 
-        Iterator begin()
+        Iterator begin() const
         {
-            return Iterator((Type*)SContainer::m_pContainer->m_pMemory);
+            // return Iterator((Type*)SContainer::m_pContainer->m_pMemory);
+            return Iterator((Type*)fixed_vector_begin(SContainer::m_pMemoryInterface, SContainer::m_pContainer));
         }
 
-        Iterator end()
+        Iterator end() const
         {
-            return Iterator((Type*)(SContainer::m_pContainer->m_pMemory + SContainer::m_pContainer->m_ullUsed));
+            // return Iterator((Type*)(SContainer::m_pContainer->m_pMemory + SContainer::m_pContainer->m_ullUsed));
+            return Iterator((Type*)fixed_vector_end(SContainer::m_pMemoryInterface, SContainer::m_pContainer));
         }
 
-        ConstIterator cbegin()
+        ConstIterator cbegin() const
         {
             return ConstIterator((Type*)SContainer::m_pContainer->m_pMemory);
         }
 
-        ConstIterator cend()
+        ConstIterator cend() const
         {
             return ConstIterator((Type*)(SContainer::m_pContainer->m_pMemory + SContainer::m_pContainer->m_ullUsed));
         }

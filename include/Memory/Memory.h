@@ -111,6 +111,7 @@ namespace Duckvil { namespace Memory {
         typedef void* (*_fixed_vector_at_)(__fixed_vector_allocator* _pAllocator, std::size_t _ullIndex);
         typedef void* (*_fixed_vector_begin_)(__fixed_vector_allocator* _pAllocator);
         typedef void* (*_fixed_vector_back_)(__fixed_vector_allocator* _pAllocator);
+        typedef void* (*_fixed_vector_end_)(__fixed_vector_allocator* _pAllocator);
         typedef bool (*_fixed_vector_empty_)(__fixed_vector_allocator* _pAllocator);
         typedef bool (*_fixed_vector_full_)(__fixed_vector_allocator* _pAllocator);
         typedef void (*_fixed_vector_clear_)(__fixed_vector_allocator* _pAllocator);
@@ -176,6 +177,7 @@ namespace Duckvil { namespace Memory {
         _fixed_vector_allocate_         m_fnFixedVectorAllocate_;
         _fixed_vector_begin_            m_fnFixedVectorBegin_;
         _fixed_vector_back_             m_fnFixedVectorBack_;
+        _fixed_vector_end_              m_fnFixedVectorEnd_;
         _fixed_vector_at_               m_fnFixedVectorAt_;
         _fixed_vector_empty_            m_fnFixedVectorEmpty_;
         _fixed_vector_full_             m_fnFixedVectorFull_;

@@ -24,6 +24,11 @@ namespace Duckvil { namespace Memory {
         return _pMemory->m_fnFixedVectorBack_(_pAllocator);
     }
 
+    static void* fixed_vector_end(IMemory* _pMemory, __fixed_vector_allocator* _pAllocator)
+    {
+        return _pMemory->m_fnFixedVectorEnd_(_pAllocator);
+    }
+
     static void* fixed_vector_at(IMemory* _pMemory, __fixed_vector_allocator* _pAllocator, std::size_t _ullIndex)
     {
         return _pMemory->m_fnFixedVectorAt_(_pAllocator, _ullIndex);

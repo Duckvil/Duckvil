@@ -35,6 +35,11 @@ namespace Duckvil { namespace Memory {
         return _pAllocator->m_pMemory + _pAllocator->m_ullUsed - _pAllocator->m_ullBlockSize;
     }
 
+    void* impl_fixed_vector_end(__fixed_vector_allocator* _pAllocator)
+    {
+        return _pAllocator->m_pMemory + _pAllocator->m_ullUsed;
+    }
+
     void* impl_fixed_vector_at(__fixed_vector_allocator* _pAllocator, std::size_t _ullIndex)
     {
         return _pAllocator->m_pMemory + (_ullIndex * _pAllocator->m_ullBlockSize);
