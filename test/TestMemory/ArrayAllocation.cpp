@@ -36,6 +36,17 @@ DUCKVIL_TEST(ArrayAllocation)
         DUCKVIL_TEST_EQUAL(*it++, 2, "Wrong value");
         DUCKVIL_TEST_EQUAL(*it++, 3, "Wrong value");
         DUCKVIL_TEST_EQUAL(*it, 4, "Wrong value");
+
+        // Duckvil::Memory::fixed_array_clear(__duckvil_global::m_freeList.GetMemoryInterface(), _array.GetAllocator());
+
+        _array.Clear();
+
+        DUCKVIL_TEST_EXP(_array.Empty(), "Array is not empty");
+
+        DUCKVIL_TEST_EQUAL(_array[0], 0, "Wrong value");
+        DUCKVIL_TEST_EQUAL(_array[1], 0, "Wrong value");
+        DUCKVIL_TEST_EQUAL(_array[2], 0, "Wrong value");
+        DUCKVIL_TEST_EQUAL(_array[3], 0, "Wrong value");
     }
 
     DUCKVIL_TEST_SUCCESS_PASS;

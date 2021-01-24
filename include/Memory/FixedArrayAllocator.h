@@ -42,4 +42,9 @@ namespace Duckvil { namespace Memory {
         return _pMemory->m_fnFixedArraySize_(_pAllocator);
     }
 
+    inline void fixed_array_clear(IMemory* _pMemory, __fixed_array_allocator* _pAllocator)
+    {
+        _pMemory->m_fnFixedArrayClear_(_pAllocator);
+    }
+
 }}

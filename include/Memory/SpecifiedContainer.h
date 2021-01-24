@@ -56,6 +56,8 @@ namespace Duckvil { namespace Memory {
         {
             return _pSpecifiedContainer->m_fnDestruct;
         }
+
+        Type* GetAllocator() { return m_pContainer; }
     };
 
 }}

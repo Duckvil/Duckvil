@@ -244,6 +244,11 @@ namespace Duckvil { namespace Memory {
             return fixed_array_size(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
         }
 
+        void Clear() const
+        {
+            fixed_array_clear(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
+        }
+
         Iterator begin()
         {
             return Iterator((Type*)SContainer::m_pContainer->m_pMemory);
