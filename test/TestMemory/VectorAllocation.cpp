@@ -74,6 +74,9 @@ DUCKVIL_TEST(VectorAllocation)
 
             DUCKVIL_TEST_EQUAL(*it++, 20.f, "Wrong value");
             DUCKVIL_TEST_EQUAL(*it, 30.f, "Wrong value");
+
+            DUCKVIL_TEST_EQUAL(_vec.Back(), 30.f, "Wrong value");
+            DUCKVIL_TEST_EQUAL(_vec.Begin(), 20.f, "Wrong value");
         }
 
         {
