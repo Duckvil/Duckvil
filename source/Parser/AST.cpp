@@ -511,7 +511,6 @@ namespace Duckvil { namespace Parser {
     void parse_template(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, __ast* _pAST, std::string& _sToken, std::vector<__ast_template>& _templates)
     {
         uint32_t _triBrackets = 0;
-        bool _wasType = false;
         std::string _type;
         std::string _internal;
         std::vector<__ast_template_element> _elements;
@@ -557,7 +556,6 @@ namespace Duckvil { namespace Parser {
             }
             else if(_sToken == "" && _pLexerData->m_bSpace && _internal.size() > 0)
             {
-                _wasType = true;
                 _type = _internal;
 
                 _internal.clear();
@@ -574,7 +572,6 @@ namespace Duckvil { namespace Parser {
         std::string _internal;
         std::size_t _openBracketIndex = std::string::npos;
         uint32_t _roundBrackets = 0;
-        bool _wasType = false;
         std::string _type;
         bool _wasOpenBracket = false;
         std::string _name;
@@ -623,7 +620,6 @@ namespace Duckvil { namespace Parser {
             else if(_sToken == "" && _pLexerData->m_bSpace && _internal.size() > 0 && !_wasOpenBracket)
             {
                 _type = _internal;
-                _wasType = true;
 
                 _internal.clear();
             }
@@ -664,7 +660,7 @@ namespace Duckvil { namespace Parser {
         }
     }
 
-    void process_open_mustache_bracket(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, __ast* _pAST, std::string& _sToken, std::string& _sTmpExpression, bool _bContinue)
+    void process_open_mustache_bracket(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, __ast* _pAST, std::string& _sToken, std::string& _sTmpExpression, bool& _bContinue)
     {
         if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType != __ast_entity_type::__ast_entity_type_function)
         {
