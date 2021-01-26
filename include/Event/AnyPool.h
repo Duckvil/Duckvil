@@ -115,13 +115,13 @@ namespace Duckvil { namespace Event {
             {
                 if(_channel.m_ullMessageTypeID == typeid(Message).hash_code())
                 {
-                    if(_channel->m_mode == mode::immediate)
+                    if(_channel.m_mode == mode::immediate)
                     {
                         Channel<Message, mode::immediate>* _right = (Channel<Message, mode::immediate>*)_channel.m_pChannel;
 
                         _right->Remove(_pHandler);
                     }
-                    else if(_channel->m_mode == mode::buffered)
+                    else if(_channel.m_mode == mode::buffered)
                     {
                         Channel<Message, mode::buffered>* _right = (Channel<Message, mode::buffered>*)_channel.m_pChannel;
 
