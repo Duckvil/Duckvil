@@ -27,12 +27,14 @@ namespace Duckvil { namespace HotReloader {
         const Memory::FreeList& _heap,
         RuntimeReflection::__data* _pReflectionData,
         RuntimeReflection::__recorder_ftable* _pReflectionRecorderFTable,
-        RuntimeReflection::__ftable* _pReflectionFTable
+        RuntimeReflection::__ftable* _pReflectionFTable,
+        Event::Pool<Event::pool_specification_immediate>* _pEventPool
     ) :
         m_heap(_heap),
         m_pReflectionData(_pReflectionData),
         m_pReflectionFTable(_pReflectionFTable),
-        m_pReflectionRecorderFTable(_pReflectionRecorderFTable)
+        m_pReflectionRecorderFTable(_pReflectionRecorderFTable),
+        m_pEventPool(_pEventPool)
     {
         _heap.Allocate(m_aHotObjects, 1);
         _heap.Allocate(m_aModules, 1);
@@ -279,7 +281,19 @@ namespace Duckvil { namespace HotReloader {
 
             RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::vector<std::string>&, const RuntimeCompiler::Options&)>* _compile = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::vector<std::string>&, const RuntimeCompiler::Options&>(m_pReflectionData, m_compilerTypeHandle, "Compile");
 
+            HotReloadedEvent _beforeCompileEvent;
+
+            _beforeCompileEvent.m_stage = HotReloadedEvent::stage_before_compile;
+
+            m_pEventPool->Broadcast(_beforeCompileEvent);
+
             (m_pCompiler->*_compile->m_fnFunction)({ _sFile, _generatedFile.string() }, _options);
+
+            HotReloadedEvent _afterCompileEvent;
+
+            _afterCompileEvent.m_stage = HotReloadedEvent::stage_after_compile;
+
+            m_pEventPool->Broadcast(_afterCompileEvent);
         }
 
         PlugNPlay::__module _module;

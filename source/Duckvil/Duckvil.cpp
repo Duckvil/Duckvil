@@ -136,6 +136,8 @@ namespace Duckvil {
         init_logger(_pData, &_module);
         init_runtime_reflection(_pData, &_module);
 
+        _pData->m_eventPool = Event::Pool<Event::pool_specification_immediate>(_pData->m_heap, _pData->m_pRuntimeReflectionData);
+
         PlugNPlay::AutoLoader _autoLoader(DUCKVIL_OUTPUT);
 
         _autoLoader.LoadAll(_pMemoryInterface, _pAllocator, &_pData->m_aLoadedModules, &_pData->m_uiLoadedModulesCount);
@@ -189,7 +191,8 @@ namespace Duckvil {
                 const Memory::FreeList&,
                 RuntimeReflection::__data*,
                 RuntimeReflection::__recorder_ftable*,
-                RuntimeReflection::__ftable*
+                RuntimeReflection::__ftable*,
+                Event::Pool<Event::pool_specification_immediate>*
             >(
                 _pData->m_pMemory,
                 _pData->m_pHeap,
@@ -198,7 +201,8 @@ namespace Duckvil {
                 _pData->m_heap,
                 _pData->m_pRuntimeReflectionData,
                 _pData->m_pRuntimeReflectionRecorder,
-                _pData->m_pRuntimeReflection
+                _pData->m_pRuntimeReflection,
+                &_pData->m_eventPool
             );
 
             _pData->m_fnRuntimeCompilerUpdate = RuntimeReflection::get_function_callback<ISystem>(_pData->m_pRuntimeReflectionData, _runtimeCompilerType, "Update")->m_fnFunction;
@@ -266,6 +270,8 @@ namespace Duckvil {
                         RuntimeReflection::__duckvil_resource_type_t _rcTypeHandle = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>(_pData->m_pRuntimeReflectionData);
                         RuntimeReflection::__duckvil_resource_function_t _addHotObjectHandle = RuntimeReflection::get_function_handle<void**, RuntimeReflection::__duckvil_resource_type_t>(_pData->m_pRuntimeReflectionData, _rcTypeHandle, "AddHotObject");
                         RuntimeReflection::invoke_member(_pData->m_pRuntimeReflectionData, _rcTypeHandle, _addHotObjectHandle, _pData->m_pRuntimeCompiler, aaa, _typeHandle);
+
+                        _pData->m_eventPool.Add<HotReloader::HotReloadedEvent>(*aaa, _typeHandle);
                     }
                 }
             }

@@ -136,4 +136,9 @@ namespace Duckvil { namespace LOL {
         printf("AAAAA2\n");
     }
 
+    void Test::OnEvent(const HotReloader::HotReloadedEvent& _event)
+    {
+        printf("AAAAA3\n");
+    }
+
 }}

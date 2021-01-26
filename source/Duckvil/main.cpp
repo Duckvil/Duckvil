@@ -21,49 +21,6 @@
 
 Duckvil::Utils::CommandArgumentsParser::Descriptor* g_pDescriptors = { 0 };
 
-// template <typename Type, typename Allocator>
-// struct BaseTest
-// {
-
-// };
-
-// template <typename Type, typename Allocator>
-// struct Test : public BaseTest<Type, Allocator> { };
-
-// struct alloc1
-// {
-
-// };
-
-// struct alloc2
-// {
-
-// };
-
-// template <typename Type>
-// struct Test<Type, alloc1>
-// {
-//     Test(alloc1 aa, Type a)
-//     {
-//         printf("int\n");
-//     }
-// };
-
-// template <typename Type>
-// Test(alloc1, Type) -> Test<Type, alloc1>;
-
-// template <typename Type>
-// struct Test<Type, alloc2>
-// {
-//     Test(alloc2 aa, Type a)
-//     {
-//         printf("float\n");
-//     }
-// };
-
-// template <typename Type>
-// Test(alloc2, Type) -> Test<Type, alloc2>;
-
 int main(int argc, char* argv[])
 {
     Duckvil::Utils::CommandArgumentsParser _parser(argc, argv);

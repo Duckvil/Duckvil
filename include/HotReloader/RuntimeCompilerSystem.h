@@ -12,6 +12,8 @@
 #include "HotReloader/FileWatcher.h"
 #include "HotReloader/HotObject.h"
 
+#include "HotReloader/Events/HotReloadEvent.h"
+
 #include "Process/Process.h"
 
 #include "RuntimeReflection/Generator.h"
@@ -20,6 +22,8 @@
 #include "Parser/Lexer.h"
 
 #include "RuntimeCompiler/RuntimeCompiler.h"
+
+#include "Event/ImmediatePool.h"
 
 namespace Duckvil { namespace HotReloader {
 
@@ -61,6 +65,8 @@ namespace Duckvil { namespace HotReloader {
 
         RuntimeCompiler::Compiler* m_pCompiler;
 
+        Event::Pool<Event::pool_specification_immediate>* m_pEventPool;
+
     // RuntimeReflection generator
         RuntimeReflection::__generator_ftable* m_pReflectionGenerator;
         Parser::__ast_ftable* m_pAST_FTable;
@@ -82,7 +88,7 @@ namespace Duckvil { namespace HotReloader {
         }
 
     public:
-        RuntimeCompilerSystem(const Memory::FreeList& _heap, RuntimeReflection::__data* _pReflectionData, RuntimeReflection::__recorder_ftable* _pReflectionRecorderFTable, RuntimeReflection::__ftable* _pReflectionFTable);
+        RuntimeCompilerSystem(const Memory::FreeList& _heap, RuntimeReflection::__data* _pReflectionData, RuntimeReflection::__recorder_ftable* _pReflectionRecorderFTable, RuntimeReflection::__ftable* _pReflectionFTable, Event::Pool<Event::pool_specification_immediate>* _pEventPool);
         ~RuntimeCompilerSystem();
 
         RuntimeReflection::__data* m_pReflectionData;

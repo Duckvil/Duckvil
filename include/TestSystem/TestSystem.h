@@ -8,9 +8,11 @@
 
 #include "Memory/FreeList.h"
 
-#include "Event/Pool.h"
+#include "Event/AnyPool.h"
 
 #include "HotReloader/HotObject.h"
+
+#include "HotReloader/Events/HotReloadEvent.h"
 
 #include "TestSystem/TestSystem.generated.h"
 
@@ -59,6 +61,7 @@ namespace Duckvil { namespace LOL {
 
         void OnEvent(const test& _event);
         void OnEvent(const test2& _event);
+        void OnEvent(const HotReloader::HotReloadedEvent& _event);
     };
 
 }}
