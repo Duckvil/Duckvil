@@ -25,7 +25,7 @@ record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Hot
 record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 5);
 record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, ReflectionFlags::ReflectionFlags_EngineSystem, true);
 record_inheritance(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, get_type<ISystem>(_pData), __protection::__protection_public);
-_constructor = record_constructor<Duckvil::HotReloader::RuntimeCompilerSystem, const Memory::FreeList&, RuntimeReflection::__data*, RuntimeReflection::__recorder_ftable*, RuntimeReflection::__ftable*, Event::Pool<Event::pool_specification_immediate>*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
+_constructor = record_constructor<Duckvil::HotReloader::RuntimeCompilerSystem, const Memory::FreeList&, RuntimeReflection::__data*, RuntimeReflection::__recorder_ftable*, RuntimeReflection::__ftable*, Event::Pool<Event::mode::immediate>*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
 _property = record_property<RuntimeReflection::__data*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::HotReloader::RuntimeCompilerSystem, m_pReflectionData), "m_pReflectionData");
 _property = record_property<duckvil_recorderd_types*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::HotReloader::RuntimeCompilerSystem, m_aRecordedTypes), "m_aRecordedTypes");
 _property = record_property<size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::HotReloader::RuntimeCompilerSystem, m_ullRecordedTypesCount), "m_ullRecordedTypesCount");
