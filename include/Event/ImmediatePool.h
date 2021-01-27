@@ -7,7 +7,7 @@ namespace Duckvil { namespace Event {
 
     // This pool can handle many different event messages
     template <>
-    class Pool<pool_specification::pool_specification_immediate>
+    class Pool<mode::immediate>
     {
     private:
         // Memory::Vector<IChannel*> m_aChannels; // Each one for specific message type

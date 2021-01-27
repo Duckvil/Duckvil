@@ -66,7 +66,7 @@ namespace Duckvil {
         __time_data m_timeData;
         double m_dOneSecond;
 
-        Event::Pool<Event::pool_specification_immediate> m_eventPool;
+        Event::Pool<Event::mode::immediate> m_eventPool;
 
         Memory::Vector<system> m_aEngineSystems;
     };

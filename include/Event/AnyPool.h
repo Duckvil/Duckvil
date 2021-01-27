@@ -8,7 +8,7 @@ namespace Duckvil { namespace Event {
 
     // Mixed container for any channel type(immediate, buffered, buffer_invoked) and any event
     template <>
-    class Pool<pool_specification::pool_specification_any>
+    class Pool<mode::mixed>
     {
     private:
         Memory::Vector<event_lookup> m_aChannels;

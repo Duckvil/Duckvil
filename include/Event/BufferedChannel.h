@@ -6,12 +6,6 @@ namespace Duckvil { namespace Event {
 
     struct BufferedChannel : public IChannel
     {
-        BufferedChannel(RuntimeReflection::__data* _pReflectionData) :
-            IChannel(_pReflectionData)
-        {
-
-        }
-
         bool (*m_fnAnyEvents)(BufferedChannel* _pChannel);
 
         uint32_t m_uiIndex;
@@ -24,6 +18,8 @@ namespace Duckvil { namespace Event {
     {
     private:
         std::queue<Message> m_aMessages;
+
+        RuntimeReflection::__data* m_pReflectionData;
 
         static bool AnyEvents(BufferedChannel* _pChannel)
         {
@@ -44,7 +40,7 @@ namespace Duckvil { namespace Event {
 
     public:
         Channel(const Memory::FreeList& _heap, RuntimeReflection::__data* _pReflectionData) :
-            BufferedChannel(_pReflectionData)
+            m_pReflectionData(_pReflectionData)
         {
             m_fnAnyEvents = &AnyEvents;
             m_uiIndex = 0;

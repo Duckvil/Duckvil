@@ -65,7 +65,7 @@ namespace Duckvil { namespace HotReloader {
 
         RuntimeCompiler::Compiler* m_pCompiler;
 
-        Event::Pool<Event::pool_specification_immediate>* m_pEventPool;
+        Event::Pool<Event::mode::immediate>* m_pEventPool;
 
     // RuntimeReflection generator
         RuntimeReflection::__generator_ftable* m_pReflectionGenerator;
@@ -88,7 +88,7 @@ namespace Duckvil { namespace HotReloader {
         }
 
     public:
-        RuntimeCompilerSystem(const Memory::FreeList& _heap, RuntimeReflection::__data* _pReflectionData, RuntimeReflection::__recorder_ftable* _pReflectionRecorderFTable, RuntimeReflection::__ftable* _pReflectionFTable, Event::Pool<Event::pool_specification_immediate>* _pEventPool);
+        RuntimeCompilerSystem(const Memory::FreeList& _heap, RuntimeReflection::__data* _pReflectionData, RuntimeReflection::__recorder_ftable* _pReflectionRecorderFTable, RuntimeReflection::__ftable* _pReflectionFTable, Event::Pool<Event::mode::immediate>* _pEventPool);
         ~RuntimeCompilerSystem();
 
         RuntimeReflection::__data* m_pReflectionData;

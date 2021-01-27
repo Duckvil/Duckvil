@@ -136,7 +136,7 @@ namespace Duckvil {
         init_logger(_pData, &_module);
         init_runtime_reflection(_pData, &_module);
 
-        _pData->m_eventPool = Event::Pool<Event::pool_specification_immediate>(_pData->m_heap, _pData->m_pRuntimeReflectionData);
+        _pData->m_eventPool = Event::Pool<Event::mode::immediate>(_pData->m_heap, _pData->m_pRuntimeReflectionData);
 
         PlugNPlay::AutoLoader _autoLoader(DUCKVIL_OUTPUT);
 
@@ -192,7 +192,7 @@ namespace Duckvil {
                 RuntimeReflection::__data*,
                 RuntimeReflection::__recorder_ftable*,
                 RuntimeReflection::__ftable*,
-                Event::Pool<Event::pool_specification_immediate>*
+                Event::Pool<Event::mode::immediate>*
             >(
                 _pData->m_pMemory,
                 _pData->m_pHeap,

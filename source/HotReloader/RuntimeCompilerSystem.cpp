@@ -28,7 +28,7 @@ namespace Duckvil { namespace HotReloader {
         RuntimeReflection::__data* _pReflectionData,
         RuntimeReflection::__recorder_ftable* _pReflectionRecorderFTable,
         RuntimeReflection::__ftable* _pReflectionFTable,
-        Event::Pool<Event::pool_specification_immediate>* _pEventPool
+        Event::Pool<Event::mode::immediate>* _pEventPool
     ) :
         m_heap(_heap),
         m_pReflectionData(_pReflectionData),
