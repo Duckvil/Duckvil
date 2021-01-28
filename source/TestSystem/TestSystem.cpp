@@ -34,7 +34,7 @@ namespace Duckvil { namespace LOL {
 
         // // aa2.Broadcast(test2{  });
 
-        Event::Pool<Event::pool_specification_any> _pool(_heap, _pReflectionData);
+        Event::Pool<Event::mode::mixed> _pool(_heap, _pReflectionData);
 
         _pool.Add<test>(); // When broadcasted, it is invoking the function immediately
         _pool.Add<test2>(this); // When broadcasted, it is added to a buffer, and then we need to get it
