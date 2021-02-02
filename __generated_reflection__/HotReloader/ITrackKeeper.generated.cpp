@@ -1,4 +1,4 @@
-#include "Event/ImmediatePool.h"
+#include "HotReloader/ITrackKeeper.h"
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
@@ -10,17 +10,15 @@ DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
-using namespace Duckvil::Event;
-_type = record_type<Duckvil::Event::EventEventNotFound>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "EventEventNotFound");
+using namespace Duckvil::HotReloader;
+_type = record_type<Duckvil::HotReloader::ITrackKeeper>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "ITrackKeeper");
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
-record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Event");
+record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "HotReloader");
 record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 4);
-record_inheritance<std::exception>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, __protection::__protection_public);
-record_function<Duckvil::Event::EventEventNotFound, char*, >(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Event::EventEventNotFound::what, "what");
 Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
 for(size_t i = 0; i < _recordedTypes.size(); i++) { _types[i] = _recordedTypes[i]; }
-return duckvil_recorderd_types { _types, _recordedTypes.size(), "Event/ImmediatePool.h", 4 };
+return duckvil_recorderd_types { _types, _recordedTypes.size(), "HotReloader/ITrackKeeper.h", 4 };
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
