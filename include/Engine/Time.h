@@ -6,8 +6,9 @@ namespace Duckvil {
 
     struct __time_data
     {
-        // std::chrono::steady_clock::time_point m_previousTime;
-        long long m_llPreviousTime;
+        typedef long long long_long; // TODO: My parser is fucked up, so I have to typedef this
+
+        long_long m_llPreviousTime;
         double m_dDelta;
     };
 

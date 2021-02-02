@@ -13,9 +13,9 @@
 
 #include "Logger/Logger.h"
 
-#include "Duckvil/Time.h"
-#include "Duckvil/ReflectionFlags.h"
-#include "Duckvil/ISystem.h"
+#include "Engine/Time.h"
+#include "Engine/ReflectionFlags.h"
+#include "Engine/ISystem.h"
 
 #include "HotReloader/RuntimeCompilerSystem.h"
 
@@ -30,10 +30,11 @@ namespace Duckvil {
         typedef bool (ISystem::*InitCallback)();
 
         RuntimeReflection::__duckvil_resource_type_t m_type;
-        void** m_pObject;
+        // void** m_pObject;
+        HotReloader::ITrackKeeper* m_pTrackKeeper;
         ISystem* m_pISystem;
-        UpdateCallback m_fnUpdateCallback;
-        InitCallback m_fnInitCallback;
+        system::UpdateCallback m_fnUpdateCallback;
+        system::InitCallback m_fnInitCallback;
     };
 
     struct __data
@@ -68,15 +69,15 @@ namespace Duckvil {
 
         Event::Pool<Event::mode::immediate> m_eventPool;
 
-        Memory::Vector<system> m_aEngineSystems;
+        Memory::Vector<Duckvil::system> m_aEngineSystems;
     };
 
     struct __ftable
     {
-        bool (*init)(__data* _pData, Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator);
-        bool (*start)(__data* _pData, __ftable* _pFTable);
-        bool (*stop)(__data* _pData, __ftable* _pFTable);
-        void (*update)(__data* _pData, __ftable* _pFTable);
+        bool (*init)(Duckvil::__data* _pData, Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator);
+        bool (*start)(Duckvil::__data* _pData, Duckvil::__ftable* _pFTable);
+        bool (*stop)(Duckvil::__data* _pData, Duckvil::__ftable* _pFTable);
+        void (*update)(Duckvil::__data* _pData, Duckvil::__ftable* _pFTable);
     };
 
 }

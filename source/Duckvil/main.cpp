@@ -17,7 +17,7 @@
 
 #include "Utils/Benchmark.h"
 
-#include "Duckvil/Duckvil.h"
+#include "Engine/Duckvil.h"
 
 Duckvil::Utils::CommandArgumentsParser::Descriptor* g_pDescriptors = { 0 };
 
@@ -32,14 +32,18 @@ int main(int argc, char* argv[])
 
     Duckvil::PlugNPlay::__module _module;
     Duckvil::PlugNPlay::__module_information _memoryModule("Memory");
+    Duckvil::PlugNPlay::__module_information _engineModule("Engine");
 
     Duckvil::PlugNPlay::module_init(&_module);
 
     _module.load(&_memoryModule);
+    _module.load(&_engineModule);
 
     Duckvil::Memory::init_callback duckvil_memory_init;
+    Duckvil::__ftable* (*duckvil_init)(Duckvil::Memory::IMemory*, Duckvil::Memory::__free_list_allocator*);
 
     _module.get(_memoryModule, "duckvil_memory_init", (void**)&duckvil_memory_init);
+    _module.get(_engineModule, "duckvil_init", (void**)&duckvil_init);
 
     Duckvil::Memory::IMemory* _memoryInterface = duckvil_memory_init();
 
