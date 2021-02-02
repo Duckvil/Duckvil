@@ -2,10 +2,13 @@
 
 #include "RuntimeReflection/Markers.h"
 #include "RuntimeReflection/Generator.h"
+#include "RuntimeReflection/RuntimeReflection.h"
 
-#include "Duckvil/ReflectionFlags.h"
+#include "Engine/ReflectionFlags.h"
 
 #include "Parser/AST.h"
+
+#include "Memory/FreeList.h"
 
 #include <fstream>
 
@@ -21,7 +24,7 @@ namespace Duckvil {
     private:
 
     public:
-        CasterReflectionModule()
+        CasterReflectionModule(const Memory::FreeList& _heap, RuntimeReflection::__data* _pRuntimeReflectionData)
         {
             m_bHasGeneratedBody = false;
             m_bIsStruct = false;
