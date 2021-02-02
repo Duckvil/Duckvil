@@ -199,7 +199,8 @@ namespace Duckvil { namespace RuntimeReflection {
 
     slot(__inheritance_t,
     {
-        DUCKVIL_RESOURCE(type_t) m_uiTypeSlotIndex; // TODO: Check if set
+        // DUCKVIL_RESOURCE(type_t) m_uiTypeSlotIndex; // TODO: Check if set
+        std::size_t m_ullInheritanceTypeID;
         __protection m_protection;
     });
 
@@ -575,6 +576,39 @@ namespace Duckvil { namespace RuntimeReflection {
     static const __type_t& get_type(__data* _pData, const DUCKVIL_RESOURCE(type_t)& _typeHandle)
     {
         return DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+    }
+
+    static DUCKVIL_RESOURCE(type_t) get_type(__data* _pData, const char* _sName, const std::vector<const char*>& _aNamespaces)
+    {
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+        {
+            const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
+            size_t _namespacesSize = DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_namespaces.m_data);
+
+            if(_aNamespaces.size() == _namespacesSize)
+            {
+                bool _valid = true;
+
+                for(uint32_t j = 0; j < _aNamespaces.size(); j++)
+                {
+                    const __namespace_t& _namespace = DUCKVIL_SLOT_ARRAY_GET(_type.m_namespaces, j);
+
+                    if(strcmp(_namespace.m_sTypeName, _aNamespaces[j]) != 0)
+                    {
+                        _valid = false;
+
+                        break;
+                    }
+                }
+
+                if(_valid && strcmp(_sName, _type.m_sTypeName) == 0)
+                {
+                    return { i };
+                }
+            }
+        }
+
+        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
     }
 
     static Memory::Vector<DUCKVIL_RESOURCE(type_t)> get_types(__data* _pData, Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator)
@@ -976,6 +1010,28 @@ namespace Duckvil { namespace RuntimeReflection {
         }
 
         return ReturnType();
+    }
+
+    static Memory::Vector<DUCKVIL_RESOURCE(inheritance_t)> get_inheritances(__data* _pData, Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+        Memory::Vector<DUCKVIL_RESOURCE(inheritance_t)> _inheritances(_pMemory, _pAllocator, DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_inheritances.m_data));
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_inheritances.m_data); i++)
+        {
+            auto& _a = DUCKVIL_SLOT_ARRAY_GET(_type.m_inheritances, i);
+
+            _inheritances.Allocate({ i });
+        }
+
+        return _inheritances;
+    }
+
+    static const __inheritance_t& get_inheritance(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(inheritance_t) _inheritanceHandle)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+
+        return DUCKVIL_SLOT_ARRAY_GET(_type.m_inheritances, _inheritanceHandle.m_ID);
     }
 
 }}

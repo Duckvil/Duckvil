@@ -29,7 +29,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         for(const Parser::__ast_inheritance& _inheritance : _pEntity->m_aInheritance)
         {
-            _file << "record_inheritance(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, get_type<" + _inheritance.m_sName + ">(_pData), ";
+            _file << "record_inheritance<" << _inheritance.m_sName << ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, ";
 
             if(_inheritance.m_protection == Parser::__ast_access::__ast_access_public)
             {
