@@ -353,6 +353,8 @@ namespace Duckvil { namespace HotReloader {
 
                     m_pEventPool->Broadcast(_swapEvent);
 
+                    _trackKeeper->SetObject(_newObject);
+
                     m_heap.GetMemoryInterface()->m_fnFreeListFree_(m_heap.GetAllocator(), _oldObject);
                 }
             }

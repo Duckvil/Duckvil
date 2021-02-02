@@ -2,6 +2,11 @@
 
 namespace Duckvil { namespace HotReloader {
 
+    void TrackKeeper::SetObject(void* _pObject)
+    {
+        m_pObject = _pObject;
+    }
+
     TrackKeeper::TrackKeeper(void* _pObject, RuntimeReflection::__duckvil_resource_type_t _typeHandle) :
         m_pObject(_pObject),
         m_typeHandle(_typeHandle)

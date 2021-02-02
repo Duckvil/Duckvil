@@ -14,6 +14,8 @@ namespace Duckvil { namespace HotReloader {
         void* m_pObject;
         RuntimeReflection::__duckvil_resource_type_t m_typeHandle;
 
+        void SetObject(void* _pObject) override;
+
     public:
         TrackKeeper(void* _pObject, RuntimeReflection::__duckvil_resource_type_t _typeHandle);
         ~TrackKeeper();
