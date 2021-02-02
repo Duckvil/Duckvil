@@ -2,7 +2,61 @@
 
 #include "Event/Channel.h"
 
+#include <type_traits>
+
 namespace Duckvil { namespace Event {
+
+    template <typename F>
+    struct lambda_traits : lambda_traits<decltype(&F::operator())>
+    {
+
+    };
+
+    template <typename F, typename R, typename... Args>
+    struct lambda_traits<R(F::*)(Args...)> : lambda_traits<R(F::*)(Args...) const>
+    {
+
+    };
+
+    template <class F, class R, class... Args>
+    struct lambda_traits<R(F::*)(Args...) const>
+    {
+        using pointer = typename std::add_pointer<R(Args...)>::type;
+
+        static pointer cify(F&& f)
+        {
+            static F fn = std::forward<F>(f);
+
+            return [](Args... args)
+            {
+                return fn(std::forward<Args>(args)...);
+            };
+        }
+    };
+
+    template <class F>
+    inline typename lambda_traits<F>::pointer cify(F&& f)
+    {
+        return lambda_traits<F>::cify(std::forward<F>(f));
+    }
+
+    template <typename T, typename U>
+    struct helper : helper<T, decltype(&U::operator())>
+    {
+
+    };
+
+    template <typename T, typename C, typename R, typename... A>
+    struct helper<T, R(C::*)(A...) const> 
+    {
+        static const bool value = std::is_convertible<T, R(*)(A...)>::value;
+    };
+
+    template<typename T>
+    struct is_stateless
+    {
+        static const bool value = helper<T,T>::value;
+    };
 
     struct reflected_event
     {
