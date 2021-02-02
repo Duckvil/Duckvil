@@ -50,8 +50,8 @@ namespace Duckvil {
         memcpy(_pData->m_pLoggerData->m_sPathFile, _outLog.c_str(), _outLog.size());
         _pData->m_pLoggerData->m_flags = static_cast<Logger::__logger_flags>(Logger::__logger_flags::__logger_flags_console_output | Logger::__logger_flags::__logger_flags_file_output);
 
-        DUCKVIL_LOG_INFO("Logger initialization complete!");
-        DUCKVIL_LOG_INFO("Logger file output: %s", _outLog.c_str());
+        DUCKVIL_LOG_INFO_("Logger initialization complete!");
+        DUCKVIL_LOG_INFO_("Logger file output: %s", _outLog.c_str());
 
         return true;
     }
@@ -83,7 +83,7 @@ namespace Duckvil {
 
         _autoLoader.LoadAll(_pMemoryInterface, _pAllocator, &_pData->m_aLoadedModules, &_pData->m_uiLoadedModulesCount);
 
-        DUCKVIL_LOG_INFO("Modules to load %i", _pData->m_uiLoadedModulesCount);
+        DUCKVIL_LOG_INFO_("Modules to load %i", _pData->m_uiLoadedModulesCount);
 
         for(uint32_t i = 0; i < _pData->m_uiLoadedModulesCount; i++)
         {
@@ -94,12 +94,12 @@ namespace Duckvil {
 
             if(get_recorder_count == nullptr)
             {
-                DUCKVIL_LOG_INFO("No recorder for %s", _loadedModule.m_sName.m_sText);
+                DUCKVIL_LOG_INFO_("No recorder for %s", _loadedModule.m_sName.m_sText);
 
                 continue;
             }
 
-            DUCKVIL_LOG_INFO("Module %s is present", _loadedModule.m_sName.m_sText);
+            DUCKVIL_LOG_INFO_("Module %s is present", _loadedModule.m_sName.m_sText);
 
             _pData->m_ullRecordedTypesCount = get_recorder_count();
             _pData->m_aRecordedTypes = new duckvil_recorderd_types[_pData->m_ullRecordedTypesCount];
@@ -293,8 +293,8 @@ namespace Duckvil {
         {
             _pData->m_pLogger->dispatch_logs(_pData->m_pLogger, _pData->m_pLoggerData);
 
-            DUCKVIL_LOG_INFO("Delta: %f ms", _pData->m_timeData.m_dDelta * 1000.0);
-            DUCKVIL_LOG_INFO("Used memory: %f of %f", (float)_pData->m_pHeap->m_ullUsed / 1024.f, (float)_pData->m_pHeap->m_ullCapacity / 1024.f);
+            DUCKVIL_LOG_INFO_("Delta: %f ms", _pData->m_timeData.m_dDelta * 1000.0);
+            DUCKVIL_LOG_INFO_("Used memory: %f of %f", (float)_pData->m_pHeap->m_ullUsed / 1024.f, (float)_pData->m_pHeap->m_ullCapacity / 1024.f);
 
             _pData->m_dOneSecond = 0.0;
         }

@@ -153,7 +153,7 @@ namespace Duckvil { namespace LOL {
 
     void Test::Update()
     {
-        DUCKVIL_LOG_INFO_(m_pLogger, m_pLoggerData, "B %i", m_iA);
+        DUCKVIL_LOG_INFO(m_pLogger, m_pLoggerData, "B %i", m_iA);
         // printf("%i\n", m_iA);
         // printf("AAAAAA\n");
     }
