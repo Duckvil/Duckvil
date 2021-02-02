@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Duckvil/ISystem.h"
-#include "Duckvil/ReflectionFlags.h"
+#include "Engine/ISystem.h"
+#include "Engine/ReflectionFlags.h"
 
 #include "RuntimeReflection/Markers.h"
 #include "RuntimeReflection/Recorder.h"
@@ -11,6 +11,7 @@
 #include "Event/AnyPool.h"
 
 #include "HotReloader/HotObject.h"
+#include "HotReloader/ReflectionFlags.h"
 
 #include "HotReloader/Events/HotReloadEvent.h"
 
@@ -44,8 +45,8 @@ namespace Duckvil { namespace LOL {
         }
     };
 
-    DUCKVIL_CLASS(ReflectionFlags::ReflectionFlags_EngineSystem)
-    class Test : public ISystem, public HotReloader::HotObject
+    DUCKVIL_CLASS(ReflectionFlags::ReflectionFlags_UserSystem, HotReloader::ReflectionFlags_Hot)
+    class Test : public ISystem
     {
         DUCKVIL_GENERATED_BODY
     private:

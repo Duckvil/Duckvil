@@ -2,6 +2,8 @@
 
 #include <cstdio>
 
+#include "Event/ImmediatePool.h"
+
 namespace Duckvil { namespace LOL {
 
     Test::Test()
@@ -107,6 +109,34 @@ namespace Duckvil { namespace LOL {
         }
 
         printf("VVV\n");
+
+        {
+            struct xd
+            {
+                void lol(const test& _event)
+                {
+
+                }
+            };
+
+            Event::Pool<Event::mode::immediate> _pool2(_heap, _pReflectionData);
+
+            _pool2.AddA<test>([](const test& _event)
+            {
+
+            });
+
+            _pool2.Add<test>(new xd(), &xd::lol);
+
+            try
+            {
+                Event::Channel<test, Event::mode::immediate>& c = _pool2.GetChannel<test>();
+            }
+            catch(std::exception& _what)
+            {
+                printf("AAAA %s\n", _what.what());
+            }
+        }
     }
 
     Test::~Test()
@@ -116,12 +146,14 @@ namespace Duckvil { namespace LOL {
 
     bool Test::Init()
     {
+        m_iA = 100;
+
         return true;
     }
 
     void Test::Update()
     {
-        // DUCKVIL_LOG_INFO_(m_pLogger, m_pLoggerData, "AAAAAA %i", m_iA);
+        DUCKVIL_LOG_INFO_(m_pLogger, m_pLoggerData, "B %i", m_iA);
         // printf("%i\n", m_iA);
         // printf("AAAAAA\n");
     }
