@@ -66,7 +66,7 @@ namespace Duckvil { namespace HotReloader {
                 {
                     reflection_module _module = {};
 
-                    _module.m_pObject = Duckvil::RuntimeReflection::create(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_pReflectionData, _typeHandle);
+                    _module.m_pObject = Duckvil::RuntimeReflection::create<const Duckvil::Memory::FreeList&, Duckvil::RuntimeReflection::__data*>(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_pReflectionData, _typeHandle, m_heap, m_pReflectionData);
                     _module.m_typeHandle = _typeHandle;
                     _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&>(m_pReflectionData, _typeHandle, "GenerateCustom");
                     _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(m_pReflectionData, _typeHandle, "Clear");
@@ -320,12 +320,13 @@ namespace Duckvil { namespace HotReloader {
 
         for(uint32_t i = 0; i < m_aHotObjects.Size(); i++)
         {
+            ITrackKeeper* _trackKeeper = m_aHotObjects[i];
+
             for(size_t j = 0; j < _types.m_ullCount; j++)
             {
                 const Duckvil::RuntimeReflection::__duckvil_resource_type_t& _type = _types.m_aTypes[j];
-                hot_object aa = m_aHotObjects[i];
 
-                if(aa.m_typeHandle.m_ID == _type.m_ID)
+                if(_trackKeeper->GetTypehandle().m_ID == _type.m_ID)
                 {
                     RuntimeSerializer::Serializer _serializer;
 
@@ -335,16 +336,22 @@ namespace Duckvil { namespace HotReloader {
                     RuntimeReflection::__function<void(HotObject::*)(RuntimeSerializer::ISerializer*)>* _func =
                         RuntimeReflection::get_function_callback<HotObject, RuntimeSerializer::ISerializer*>(m_pReflectionData, _type, _serializeFunctionHandle);
 
-                    _serializer.Serialize(*aa.m_pObject, _func);
+                    _serializer.Serialize(_trackKeeper->GetObject(), _func);
 
                     _serializer.SetLoading(true);
 
-                    void* _oldObject = *aa.m_pObject;
+                    void* _oldObject = _trackKeeper->GetObject();
                     void* _newObject = RuntimeReflection::create(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_pReflectionData, _type);
 
                     _serializer.Serialize(_newObject, _func);
 
-                    *aa.m_pObject = _newObject;
+                    HotReloadedEvent _swapEvent = {};
+
+                    _swapEvent.m_stage = HotReloadedEvent::stage_after_swap;
+                    _swapEvent.m_pObject = _newObject;
+                    _swapEvent._typeHandle = _trackKeeper->GetTypehandle();
+
+                    m_pEventPool->Broadcast(_swapEvent);
 
                     m_heap.GetMemoryInterface()->m_fnFreeListFree_(m_heap.GetAllocator(), _oldObject);
                 }
@@ -352,19 +359,14 @@ namespace Duckvil { namespace HotReloader {
         }
     }
 
-    void RuntimeCompilerSystem::AddHotObject(void** _pHotObject, RuntimeReflection::__duckvil_resource_type_t _typeHandle)
+    void RuntimeCompilerSystem::AddHotObject(ITrackKeeper* _pTrackKeeper)
     {
-        RuntimeReflection::__duckvil_resource_function_t _castHotObjectFunctionHandle = RuntimeReflection::get_function_handle<void*>(m_pReflectionData, _typeHandle, "Cast");
-        HotReloader::HotObject* _systemInheritance2 = (HotReloader::HotObject*)RuntimeReflection::invoke_static_result<void*, void*>(m_pReflectionData, _typeHandle, _castHotObjectFunctionHandle, *_pHotObject);
+        // RuntimeReflection::__duckvil_resource_function_t _castHotObjectFunctionHandle = RuntimeReflection::get_function_handle<void*>(m_pReflectionData, _pTrackKeeper->GetTypehandle(), "Cast");
+        // HotReloader::HotObject* _systemInheritance2 = (HotReloader::HotObject*)RuntimeReflection::invoke_static_result<void*, void*>(m_pReflectionData, _pTrackKeeper->GetTypehandle(), _castHotObjectFunctionHandle, _pTrackKeeper->GetObject());
 
-        _systemInheritance2->m_ullHotObjectID++;
+        // _systemInheritance2->m_ullHotObjectID++;
 
-        hot_object _hot = {};
-
-        _hot.m_pObject = _pHotObject;
-        _hot.m_typeHandle = _typeHandle;
-
-        m_aHotObjects.Allocate(_hot);
+        m_aHotObjects.Allocate(_pTrackKeeper);
     }
 
 }}

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Duckvil/ISystem.h"
-#include "Duckvil/ReflectionFlags.h"
+#include "Engine/ISystem.h"
+#include "Engine/ReflectionFlags.h"
 
 #include "RuntimeReflection/Markers.h"
 #include "RuntimeReflection/RuntimeReflection.h"
@@ -11,6 +11,7 @@
 
 #include "HotReloader/FileWatcher.h"
 #include "HotReloader/HotObject.h"
+#include "HotReloader/TrackKeeper.h"
 
 #include "HotReloader/Events/HotReloadEvent.h"
 
@@ -27,13 +28,13 @@
 
 namespace Duckvil { namespace HotReloader {
 
-    struct hot_object
-    {
-        void** m_pObject;
-        RuntimeReflection::__duckvil_resource_type_t m_typeHandle;
-    };
+    // struct hot_object
+    // {
+    //     void** m_pObject;
+    //     RuntimeReflection::__duckvil_resource_type_t m_typeHandle;
+    // };
 
-    DUCKVIL_CLASS(ReflectionFlags::ReflectionFlags_EngineSystem)
+    DUCKVIL_CLASS(Duckvil::ReflectionFlags::ReflectionFlags_EngineSystem)
     class RuntimeCompilerSystem : public ISystem
     {
     public:
@@ -96,7 +97,7 @@ namespace Duckvil { namespace HotReloader {
         duckvil_recorderd_types* m_aRecordedTypes;
         size_t m_ullRecordedTypesCount;
 
-        Memory::Vector<hot_object> m_aHotObjects;
+        Memory::Vector<ITrackKeeper*> m_aHotObjects;
 
         Memory::Vector<RuntimeCompilerSystem::reflection_module> m_aModules;
 
@@ -105,7 +106,7 @@ namespace Duckvil { namespace HotReloader {
 
         void Compile(const std::string& _sFile);
 
-        void AddHotObject(void** _pHotObject, RuntimeReflection::__duckvil_resource_type_t _typeHandle);
+        void AddHotObject(ITrackKeeper* _pTrackKeeper);
     };
 
 }}

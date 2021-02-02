@@ -10,7 +10,7 @@
 #include "Memory/Vector.h"
 #include "Memory/FreeList.h"
 
-#include "Duckvil/ReflectionFlags.h"
+#include "Engine/ReflectionFlags.h"
 
 #include "Utils/AST.h"
 
@@ -148,7 +148,7 @@ int main(int argc, char* argv[])
             {
                 reflection_module _module = {};
 
-                _module.m_pObject = Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _runtimeReflectionData, _typeHandle);
+                _module.m_pObject = Duckvil::RuntimeReflection::create<const Duckvil::Memory::FreeList&, Duckvil::RuntimeReflection::__data*>(_memoryInterface, _free_list, _runtimeReflectionData, _typeHandle, _heap, _runtimeReflectionData);
                 _module.m_typeHandle = _typeHandle;
                 _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&>(_runtimeReflectionData, _typeHandle, "GenerateCustom");
                 _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(_runtimeReflectionData, _typeHandle, "Clear");
