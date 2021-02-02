@@ -9,10 +9,23 @@ namespace Duckvil { namespace Memory {
 
     static const std::size_t g_ullMax = std::numeric_limits<std::size_t>::max();
 
+    enum allocator_type
+    {
+        allocator_type_free_list,
+        allocator_type_linear
+    };
+
     struct __allocator
     {
         std::size_t m_ullCapacity = 0;
         std::size_t m_ullUsed = 0;
+
+        void (*m_fnDebug)(__allocator* _pAllocator) = 0;
+        allocator_type m_allocatorType;
+        std::size_t m_ullAllocatorID;
+        __allocator* m_pParentAllocator;
+        void* m_pDebugData;
+
     // TODO: Remove for release build, it is needed only for debugging/dumping memory
     // Note: Not sure why, but when trying to dump memory without the pointer like: "AllocatorPointer + sizeof(AllocatorType)" (to get the stored data) program is crashing
         uint8_t* m_pMemory = 0; // It always points to the end of whole structure where the data is stored

@@ -19,7 +19,16 @@
 
 #include "Engine/Duckvil.h"
 
+#include "Event/ImmediateChannel.h"
+
 Duckvil::Utils::CommandArgumentsParser::Descriptor* g_pDescriptors = { 0 };
+
+struct debug_info
+{
+    std::vector<debug_info> m_aOther;
+    Duckvil::Memory::__allocator* m_pAllocator;
+    debug_info* m_pParent;
+};
 
 int main(int argc, char* argv[])
 {
@@ -50,6 +59,27 @@ int main(int argc, char* argv[])
     Duckvil::Memory::__linear_allocator _mainMemoryAllocator;
 
     _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024);
+
+    debug_info _memoryDebug = {};
+    std::size_t _index = 0;
+    debug_info* _current = &_memoryDebug;
+
+    _memoryDebug.m_pAllocator = &_mainMemoryAllocator;
+    _memoryDebug.m_pParent = 0;
+
+    _mainMemoryAllocator.m_fnDebug = Duckvil::Event::cify([&](Duckvil::Memory::__allocator* _pAllocator)
+    {
+        debug_info _info = {};
+
+        _info.m_pAllocator = _pAllocator;
+        _info.m_pParent = _current;
+
+        _current->m_aOther.push_back(_info);
+
+        _current = _current->m_aOther.end()._Ptr;
+
+        _pAllocator->m_pDebugData = _current;
+    });
 
     Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnAllocateFreeListAllocator(&_mainMemoryAllocator, 512 * 1024);
 

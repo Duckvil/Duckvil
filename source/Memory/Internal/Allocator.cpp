@@ -28,6 +28,9 @@ namespace Duckvil { namespace Memory {
             _pAllocator->m_ullCapacity = _ullSize;
         }
 
+        _pAllocator->m_pParentAllocator = nullptr;
+        _pAllocator->m_allocatorType = allocator_type_linear;
+
         return true;
     }
 
@@ -123,6 +126,11 @@ namespace Duckvil { namespace Memory {
         _node->m_pNext = nullptr;
 
         _pAllocator->m_ullUsed += _ullSize + sizeof(__free_list_allocator);
+
+        _allocator->m_pParentAllocator = _pAllocator;
+        _allocator->m_fnDebug = _pAllocator->m_fnDebug;
+        _allocator->m_allocatorType = allocator_type_free_list;
+        _pAllocator->m_fnDebug(_allocator);
 
         return _allocator;
     }
