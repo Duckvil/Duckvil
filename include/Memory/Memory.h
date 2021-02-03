@@ -6,36 +6,22 @@
 
 #include "Utils/Macro.h"
 
+#include "Memory/MemoryDebugger.h"
+
 namespace Duckvil { namespace Memory {
 
     static const std::size_t g_ullMax = std::numeric_limits<std::size_t>::max();
-
-    enum allocator_type
-    {
-        allocator_type_free_list,
-        allocator_type_linear,
-        allocator_type_vector
-    };
-
-    struct __allocator;
-
-    struct debug_info
-    {
-        __allocator* m_pAllocator;
-        debug_info* m_pParent;
-        allocator_type m_allocatorType;
-        std::vector<debug_info*> m_aOther;
-    };
 
     struct __allocator
     {
         std::size_t m_ullCapacity = 0;
         std::size_t m_ullUsed = 0;
 
-        void (*m_fnOnAllocate)(__allocator* _pAllocator, allocator_type _type) = 0;
-        std::size_t m_ullAllocatorID;
-        __allocator* m_pParentAllocator;
-        void* m_pDebugData;
+#ifdef DUCKVIL_MEMORY_DEBUG
+        void (*m_fnOnAllocate)(__allocator* _pParentAllocator, __allocator* _pAllocator, duckvil_memory_allocator_type _type) = 0;
+        // __allocator* m_pParentAllocator;
+        duckvil_memory_debug_info* m_pDebugData;
+#endif
 
     // TODO: Remove for release build, it is needed only for debugging/dumping memory
     // Note: Not sure why, but when trying to dump memory without the pointer like: "AllocatorPointer + sizeof(AllocatorType)" (to get the stored data) program is crashing
@@ -144,12 +130,14 @@ namespace Duckvil { namespace Memory {
         typedef std::size_t (*_fixed_vector_capacity_)(__fixed_vector_allocator* _pAllocator);
         typedef void (*_fixed_vector_erase_)(IMemory* _pInterface, __free_list_allocator* _pParentAllocator, __fixed_vector_allocator** _pAllocator, uint32_t _uiIndex);
 
-        typedef __linear_allocator* (*_allocate_linear_allocator)(__linear_allocator* _pAllocator, std::size_t _ullSize);
-        typedef __fixed_stack_allocator* (*_allocate_fixed_stack_allocator)(__linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
-        typedef __fixed_queue_allocator* (*_allocate_fixed_queue_allocator)(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
-        typedef __fixed_array_allocator* (*_allocate_fixed_array_allocator)(__linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
-        typedef __free_list_allocator* (*_allocate_free_list_allocator)(__linear_allocator* _pAllocator, std::size_t _ullSize);
-        typedef __fixed_vector_allocator* (*_allocate_fixed_vector_allocator)(__linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef __linear_allocator* (*_linear_allocate_linear_allocator)(__linear_allocator* _pAllocator, std::size_t _ullSize);
+        typedef __fixed_stack_allocator* (*_linear_allocate_fixed_stack_allocator)(__linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef __fixed_array_allocator* (*_linear_allocate_fixed_array_allocator)(__linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef __free_list_allocator* (*_linear_allocate_free_list_allocator)(__linear_allocator* _pAllocator, std::size_t _ullSize);
+        typedef __fixed_vector_allocator* (*_linear_allocate_fixed_vector_allocator)(__linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+
+        typedef __fixed_queue_allocator* (*_free_list_allocate_fixed_queue_allocator)(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef __free_list_allocator* (*_free_list_allocate_free_list_allocator)(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize);
 
         _basic_allocate             m_fnBasicAllocate;
 
@@ -211,12 +199,14 @@ namespace Duckvil { namespace Memory {
         _fixed_vector_capacity_         m_fnFixedVectorCapacity_;
         _fixed_vector_erase_            m_fnFixedVectorErase_;
 
-        _allocate_linear_allocator          m_fnAllocateLinearAllocator;
-        _allocate_fixed_stack_allocator     m_fnAllocateFixedStackAllocator;
-        _allocate_fixed_queue_allocator     m_fnAllocateFixedQueueAllocator;
-        _allocate_fixed_array_allocator     m_fnAllocateFixedArrayAllocator;
-        _allocate_free_list_allocator       m_fnAllocateFreeListAllocator;
-        _allocate_fixed_vector_allocator    m_fnAllocateFixedVectorAllocator;
+        _linear_allocate_linear_allocator               m_fnLinearAllocateLinearAllocator;
+        _linear_allocate_fixed_stack_allocator          m_fnLinearAllocateFixedStackAllocator;
+        _linear_allocate_fixed_array_allocator          m_fnLinearAllocateFixedArrayAllocator;
+        _linear_allocate_free_list_allocator            m_fnLinearAllocateFreeListAllocator;
+        _linear_allocate_fixed_vector_allocator         m_fnLinearAllocateFixedVectorAllocator;
+
+        _free_list_allocate_fixed_queue_allocator       m_fnFreeListAllocateFixedQueueAllocator;
+        _free_list_allocate_free_list_allocator         m_fnFreeListAllocateFreeListAllocator;
     };
 
     typedef IMemory* (*init_callback)();

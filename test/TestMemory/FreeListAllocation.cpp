@@ -17,7 +17,7 @@ struct _test
 
 DUCKVIL_TEST(FreeListAllocation)
 {
-    Duckvil::Memory::__free_list_allocator* _free = __duckvil_global::m_pMemoryInterface->m_fnAllocateFreeListAllocator((Duckvil::Memory::__linear_allocator*)__duckvil_global::m_pMemoryChunk, 256);
+    Duckvil::Memory::__free_list_allocator* _free = __duckvil_global::m_pMemoryInterface->m_fnLinearAllocateFreeListAllocator((Duckvil::Memory::__linear_allocator*)__duckvil_global::m_pMemoryChunk, 256);
 
     _test _t;
 

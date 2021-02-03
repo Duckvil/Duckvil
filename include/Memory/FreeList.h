@@ -26,7 +26,14 @@ namespace Duckvil { namespace Memory {
     // Allocate FreeList allocator uisng LinearAllocator with specified size
         FreeList(IMemory* _pMemory, __linear_allocator* _pAllocator, std::size_t _ullSize) :
             m_pMemory(_pMemory),
-            m_pContainer(_pMemory->m_fnAllocateFreeListAllocator(_pAllocator, _ullSize))
+            m_pContainer(_pMemory->m_fnLinearAllocateFreeListAllocator(_pAllocator, _ullSize))
+        {
+
+        }
+
+        FreeList(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize) :
+            m_pMemory(_pMemory),
+            m_pContainer(_pMemory->m_fnFreeListAllocateFreeListAllocator(_pMemory, _pAllocator, _ullSize))
         {
 
         }
@@ -100,6 +107,11 @@ namespace Duckvil { namespace Memory {
             _container = Vector<Type>(m_pMemory, m_pContainer, _ullCount);
         }
 
+        void Allocate(FreeList& _container, std::size_t _ullSize)
+        {
+            _container = FreeList(m_pMemory, m_pContainer, _ullSize);
+        }
+
         template <typename Type>
         void Allocate(Vector<Type>& _container, std::size_t _ullCount) const
         {
@@ -110,6 +122,11 @@ namespace Duckvil { namespace Memory {
         void Free(Vector<Type>& _container)
         {
             _container.~Vector<Type>();
+        }
+
+        void Free(void* _pData)
+        {
+            m_pMemory->m_fnFreeListFree_(m_pContainer, _pData);
         }
 
         template <typename Type>

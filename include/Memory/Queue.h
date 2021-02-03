@@ -22,7 +22,7 @@ namespace Duckvil { namespace Memory {
         Queue(IMemory* _pMemoryInterface, __free_list_allocator* _pAllocator, std::size_t _ullCount) :
             m_pMemoryInterface(_pMemoryInterface)
         {
-            m_pAllocator = m_pMemoryInterface->m_fnAllocateFixedQueueAllocator(_pMemoryInterface, _pAllocator, _ullCount * sizeof(Type), sizeof(Type));
+            m_pAllocator = m_pMemoryInterface->m_fnFreeListAllocateFixedQueueAllocator(_pMemoryInterface, _pAllocator, _ullCount * sizeof(Type), sizeof(Type));
         }
 
         Queue(IMemory* _pMemoryInterface, __fixed_queue_allocator* _pAllocator) :
