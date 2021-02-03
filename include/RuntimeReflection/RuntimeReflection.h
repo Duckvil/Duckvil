@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Memory/SlotArray.h"
-
 #include "PlugNPlay/Module.h"
 
 #include "Memory/Vector.h"
+#include "Memory/FreeList.h"
+#include "Memory/SlotArray.h"
 
 #include <typeinfo>
 
@@ -1032,6 +1032,18 @@ namespace Duckvil { namespace RuntimeReflection {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
 
         return DUCKVIL_SLOT_ARRAY_GET(_type.m_inheritances, _inheritanceHandle.m_ID);
+    }
+
+    template <typename... Args>
+    static void* create(const Memory::FreeList& _memory, __data* _pData, const char _sTypeName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX], Args... _vArgs)
+    {
+        return create<Args...>(_memory.GetMemoryInterface(), _memory.GetAllocator(), _pData, _sTypeName, _vArgs...);
+    }
+
+    template <typename... Args>
+    static void* create(const Memory::FreeList& _memory, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, Args... _vArgs)
+    {
+        return create<Args...>(_memory.GetMemoryInterface(), _memory.GetAllocator(), _pData, _typeHandle, _vArgs...);
     }
 
 }}
