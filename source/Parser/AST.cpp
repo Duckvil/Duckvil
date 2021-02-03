@@ -1579,6 +1579,7 @@ namespace Duckvil { namespace Parser {
             else if(_token == "#")
             {
                 bool _wasNewLine = false;
+                uint32_t _ifdefCount = 0;
 
                 while(_pLexer->next_token(&_lexerData, &_token))
                 {
@@ -1587,6 +1588,27 @@ namespace Duckvil { namespace Parser {
                         _wasNewLine = true;
 
                         continue;
+                    }
+                    else if(_token == "ifdef")
+                    {
+                        _ifdefCount++;
+
+                        while(_pLexer->next_token(&_lexerData, &_token))
+                        {
+                            if(_token == "ifdef")
+                            {
+                                _ifdefCount++;
+                            }
+                            else if(_token == "endif")
+                            {
+                                _ifdefCount--;
+
+                                if(_ifdefCount == 0)
+                                {
+                                    break;
+                                }
+                            }
+                        }
                     }
                     else if(_token == "" && _lexerData.m_bNewLine)
                     {
