@@ -341,7 +341,7 @@ namespace Duckvil { namespace HotReloader {
                     _serializer.SetLoading(true);
 
                     void* _oldObject = _trackKeeper->GetObject();
-                    void* _newObject = RuntimeReflection::create(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_pReflectionData, _type);
+                    void* _newObject = RuntimeReflection::create(m_objectsHeap, m_pReflectionData, _type);
 
                     _serializer.Serialize(_newObject, _func);
 
@@ -355,7 +355,7 @@ namespace Duckvil { namespace HotReloader {
 
                     _trackKeeper->SetObject(_newObject);
 
-                    m_heap.GetMemoryInterface()->m_fnFreeListFree_(m_heap.GetAllocator(), _oldObject);
+                    m_objectsHeap.Free(_oldObject);
                 }
             }
         }
@@ -369,6 +369,11 @@ namespace Duckvil { namespace HotReloader {
         // _systemInheritance2->m_ullHotObjectID++;
 
         m_aHotObjects.Allocate(_pTrackKeeper);
+    }
+
+    void RuntimeCompilerSystem::SetObjectsHeap(const Memory::FreeList& _heap)
+    {
+        m_objectsHeap = _heap;
     }
 
 }}

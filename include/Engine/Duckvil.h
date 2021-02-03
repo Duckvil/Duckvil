@@ -41,10 +41,18 @@ namespace Duckvil {
     {
         bool m_bRunning;
 
+#ifdef DUCKVIL_MEMORY_DEBUG
+        duckvil_memory_debug_info* m_pMemoryDebugger;
+#endif
+
         Memory::IMemory* m_pMemory;
         Memory::__free_list_allocator* m_pHeap;
 
-        Memory::FreeList m_heap;
+        Memory::FreeList m_heap; // General use memory
+        Memory::FreeList m_objectsHeap; // Memory for hot objects
+        Memory::FreeList m_eventsHeap;
+
+        size_t m_ullLastTimeUsed;
 
         RuntimeReflection::__ftable* m_pRuntimeReflection;
         RuntimeReflection::__recorder_ftable* m_pRuntimeReflectionRecorder;

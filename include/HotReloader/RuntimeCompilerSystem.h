@@ -60,6 +60,8 @@ namespace Duckvil { namespace HotReloader {
         RuntimeReflection::__recorder_ftable* m_pReflectionRecorderFTable;
         RuntimeReflection::__ftable* m_pReflectionFTable;
 
+        Memory::FreeList m_objectsHeap;
+
         RuntimeReflection::__duckvil_resource_type_t m_compilerTypeHandle;
 
         std::string m_sModuleName;
@@ -107,6 +109,8 @@ namespace Duckvil { namespace HotReloader {
         void Compile(const std::string& _sFile);
 
         void AddHotObject(ITrackKeeper* _pTrackKeeper);
+
+        void SetObjectsHeap(const Memory::FreeList& _heap);
     };
 
 }}

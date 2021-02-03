@@ -66,6 +66,8 @@ namespace Duckvil {
         _pData->m_time = time_init();
         _pData->m_heap = Memory::FreeList(_pData->m_pMemory, _pData->m_pHeap);
 
+        _pData->m_heap.Allocate(_pData->m_objectsHeap, 1024 * 8);
+        _pData->m_heap.Allocate(_pData->m_eventsHeap, 1024 * 8);
         _pData->m_heap.Allocate(_pData->m_aEngineSystems, 1);
 
         _pData->m_time.init(&_pData->m_timeData);
@@ -77,7 +79,7 @@ namespace Duckvil {
         init_logger(_pData, &_module);
         init_runtime_reflection(_pData, &_module);
 
-        _pData->m_eventPool = Event::Pool<Event::mode::immediate>(_pData->m_heap, _pData->m_pRuntimeReflectionData);
+        _pData->m_eventPool = Event::Pool<Event::mode::immediate>(_pData->m_eventsHeap, _pData->m_pRuntimeReflectionData);
 
         PlugNPlay::AutoLoader _autoLoader(DUCKVIL_OUTPUT);
 
@@ -136,8 +138,7 @@ namespace Duckvil {
                     RuntimeReflection::__ftable*,
                     Event::Pool<Event::mode::immediate>*
                 >(
-                    _pData->m_pMemory,
-                    _pData->m_pHeap,
+                    _pData->m_heap,
                     _pData->m_pRuntimeReflectionData,
                     _runtimeCompilerType,
                     _pData->m_heap,
@@ -152,6 +153,9 @@ namespace Duckvil {
 
                 _pData->m_pRuntimeCompiler->m_aRecordedTypes = _pData->m_aRecordedTypes;
                 _pData->m_pRuntimeCompiler->m_ullRecordedTypesCount = _pData->m_ullRecordedTypesCount;
+
+                auto _func = RuntimeReflection::get_function_handle<const Memory::FreeList&>(_pData->m_pRuntimeReflectionData, _runtimeCompilerType, "SetObjectsHeap");
+                RuntimeReflection::invoke_member<const Memory::FreeList&>(_pData->m_pRuntimeReflectionData, _runtimeCompilerType, _func, _pData->m_pRuntimeCompiler, _pData->m_objectsHeap);
             }
 
             for(uint32_t i = 0; i < _types.Size(); i++)
@@ -174,8 +178,7 @@ namespace Duckvil {
                             RuntimeReflection::__recorder_ftable*,
                             RuntimeReflection::__ftable*
                         >(
-                            _pData->m_pMemory,
-                            _pData->m_pHeap,
+                            _pData->m_objectsHeap,
                             _pData->m_pRuntimeReflectionData,
                             _typeHandle,
                             _pData->m_heap,
@@ -276,6 +279,11 @@ namespace Duckvil {
 
     void update(__data* _pData, __ftable* _pFTable)
     {
+        /*for(const auto& a : _pData->m_pMemoryDebugger->m_aOther)
+        {
+            printf("AAAAA\n");
+        }*/
+
         _pData->m_time.update(&_pData->m_timeData);
 
         _pData->m_dOneSecond += _pData->m_timeData.m_dDelta;
@@ -289,12 +297,21 @@ namespace Duckvil {
 
         (_pData->m_pRuntimeCompiler->*_pData->m_fnRuntimeCompilerUpdate)();
 
+        if(_pData->m_ullLastTimeUsed != _pData->m_pHeap->m_ullUsed)
+        {
+            size_t _change = _pData->m_pHeap->m_ullUsed - _pData->m_ullLastTimeUsed;
+
+            DUCKVIL_LOG_INFO_("Memory change: %d", _change);
+
+            _pData->m_ullLastTimeUsed = _pData->m_pHeap->m_ullUsed;
+        }
+
         if(_pData->m_dOneSecond >= 1.0)
         {
             _pData->m_pLogger->dispatch_logs(_pData->m_pLogger, _pData->m_pLoggerData);
 
             DUCKVIL_LOG_INFO_("Delta: %f ms", _pData->m_timeData.m_dDelta * 1000.0);
-            DUCKVIL_LOG_INFO_("Used memory: %f of %f", (float)_pData->m_pHeap->m_ullUsed / 1024.f, (float)_pData->m_pHeap->m_ullCapacity / 1024.f);
+            DUCKVIL_LOG_INFO_("Used memory: %d of %d", _pData->m_pHeap->m_ullUsed, _pData->m_pHeap->m_ullCapacity);
 
             _pData->m_dOneSecond = 0.0;
         }

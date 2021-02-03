@@ -9,6 +9,7 @@
 #include "PlugNPlay/Plugin.h"
 
 #include "Memory/Vector.h"
+#include "Memory/MemoryDebugger.h"
 
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/Generator.h"
@@ -51,41 +52,41 @@ int main(int argc, char* argv[])
 
     Duckvil::Memory::__linear_allocator _mainMemoryAllocator;
 
-    Duckvil::Memory::debug_info _memoryDebug = {};
-    std::stack<Duckvil::Memory::debug_info> _stack;
+#ifdef DUCKVIL_MEMORY_DEBUG
+    duckvil_memory_debug_info _memoryDebug = {};
+    std::stack<duckvil_memory_debug_info> _stack;
 
     _memoryDebug.m_pAllocator = &_mainMemoryAllocator;
     _memoryDebug.m_pParent = nullptr;
 
-    _mainMemoryAllocator.m_pParentAllocator = nullptr;
     _mainMemoryAllocator.m_pDebugData = &_memoryDebug;
-    _mainMemoryAllocator.m_fnOnAllocate = Duckvil::Event::cify([&](Duckvil::Memory::__allocator* _pAllocator, Duckvil::Memory::allocator_type _type)
+    _mainMemoryAllocator.m_fnOnAllocate = Duckvil::Event::cify([&](Duckvil::Memory::__allocator* _pParentAllocator, Duckvil::Memory::__allocator* _pAllocator, duckvil_memory_allocator_type _type)
     {
-        Duckvil::Memory::__allocator* _pParentAllocator = _pAllocator->m_pParentAllocator;
+        duckvil_memory_debug_info* _parentDebugInfo = (duckvil_memory_debug_info*)_pParentAllocator->m_pDebugData;
 
-        if(_pParentAllocator != nullptr)
-        {
-            Duckvil::Memory::debug_info* _parentDebugInfo = (Duckvil::Memory::debug_info*)_pParentAllocator->m_pDebugData;
+        _stack.push(duckvil_memory_debug_info{ _pAllocator, _parentDebugInfo, _type });
 
-            _stack.push(Duckvil::Memory::debug_info{ _pAllocator, _parentDebugInfo, _type });
+        duckvil_memory_debug_info* _currentInfo = &_stack.top();
 
-            Duckvil::Memory::debug_info* _currentInfo = &_stack.top();
+        _parentDebugInfo->m_aOther.push_back(_currentInfo);
 
-            _parentDebugInfo->m_aOther.push_back(_currentInfo);
-
-            _pAllocator->m_pDebugData = _currentInfo;
-        }
+        _pAllocator->m_pDebugData = _currentInfo;
     });
+#endif
 
     _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024);
 
-    Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnAllocateFreeListAllocator(&_mainMemoryAllocator, 512 * 1024);
-    Duckvil::Memory::__fixed_vector_allocator* _vec = _memoryInterface->m_fnAllocateFixedVectorAllocator(&_mainMemoryAllocator, 1 * 1024, 16);
+    Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(&_mainMemoryAllocator, 512 * 1024);
 
     Duckvil::__ftable* _engine = duckvil_init(_memoryInterface, _free_list);
     Duckvil::__data _engineData = {};
 
     _engine->init(&_engineData, _memoryInterface, _free_list);
+
+#ifdef DUCKVIL_MEMORY_DEBUG
+    _engineData.m_pMemoryDebugger = &_memoryDebug;
+#endif
+
     _engine->start(&_engineData, _engine);
 
     return 0;
