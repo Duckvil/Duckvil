@@ -23,13 +23,6 @@
 
 Duckvil::Utils::CommandArgumentsParser::Descriptor* g_pDescriptors = { 0 };
 
-struct debug_info
-{
-    std::vector<debug_info> m_aOther;
-    Duckvil::Memory::__allocator* m_pAllocator;
-    debug_info* m_pParent;
-};
-
 int main(int argc, char* argv[])
 {
     Duckvil::Utils::CommandArgumentsParser _parser(argc, argv);
@@ -58,30 +51,36 @@ int main(int argc, char* argv[])
 
     Duckvil::Memory::__linear_allocator _mainMemoryAllocator;
 
-    _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024);
-
-    debug_info _memoryDebug = {};
-    std::size_t _index = 0;
-    debug_info* _current = &_memoryDebug;
+    Duckvil::Memory::debug_info _memoryDebug = {};
+    std::stack<Duckvil::Memory::debug_info> _stack;
 
     _memoryDebug.m_pAllocator = &_mainMemoryAllocator;
-    _memoryDebug.m_pParent = 0;
+    _memoryDebug.m_pParent = nullptr;
 
-    _mainMemoryAllocator.m_fnDebug = Duckvil::Event::cify([&](Duckvil::Memory::__allocator* _pAllocator)
+    _mainMemoryAllocator.m_pParentAllocator = nullptr;
+    _mainMemoryAllocator.m_pDebugData = &_memoryDebug;
+    _mainMemoryAllocator.m_fnOnAllocate = Duckvil::Event::cify([&](Duckvil::Memory::__allocator* _pAllocator, Duckvil::Memory::allocator_type _type)
     {
-        debug_info _info = {};
+        Duckvil::Memory::__allocator* _pParentAllocator = _pAllocator->m_pParentAllocator;
 
-        _info.m_pAllocator = _pAllocator;
-        _info.m_pParent = _current;
+        if(_pParentAllocator != nullptr)
+        {
+            Duckvil::Memory::debug_info* _parentDebugInfo = (Duckvil::Memory::debug_info*)_pParentAllocator->m_pDebugData;
 
-        _current->m_aOther.push_back(_info);
+            _stack.push(Duckvil::Memory::debug_info{ _pAllocator, _parentDebugInfo, _type });
 
-        _current = _current->m_aOther.end()._Ptr;
+            Duckvil::Memory::debug_info* _currentInfo = &_stack.top();
 
-        _pAllocator->m_pDebugData = _current;
+            _parentDebugInfo->m_aOther.push_back(_currentInfo);
+
+            _pAllocator->m_pDebugData = _currentInfo;
+        }
     });
 
+    _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024);
+
     Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnAllocateFreeListAllocator(&_mainMemoryAllocator, 512 * 1024);
+    Duckvil::Memory::__fixed_vector_allocator* _vec = _memoryInterface->m_fnAllocateFixedVectorAllocator(&_mainMemoryAllocator, 1 * 1024, 16);
 
     Duckvil::__ftable* _engine = duckvil_init(_memoryInterface, _free_list);
     Duckvil::__data _engineData = {};

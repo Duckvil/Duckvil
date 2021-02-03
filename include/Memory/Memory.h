@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <vector>
 
 #include "Utils/Macro.h"
 
@@ -12,7 +13,18 @@ namespace Duckvil { namespace Memory {
     enum allocator_type
     {
         allocator_type_free_list,
-        allocator_type_linear
+        allocator_type_linear,
+        allocator_type_vector
+    };
+
+    struct __allocator;
+
+    struct debug_info
+    {
+        __allocator* m_pAllocator;
+        debug_info* m_pParent;
+        allocator_type m_allocatorType;
+        std::vector<debug_info*> m_aOther;
     };
 
     struct __allocator
@@ -20,8 +32,7 @@ namespace Duckvil { namespace Memory {
         std::size_t m_ullCapacity = 0;
         std::size_t m_ullUsed = 0;
 
-        void (*m_fnDebug)(__allocator* _pAllocator) = 0;
-        allocator_type m_allocatorType;
+        void (*m_fnOnAllocate)(__allocator* _pAllocator, allocator_type _type) = 0;
         std::size_t m_ullAllocatorID;
         __allocator* m_pParentAllocator;
         void* m_pDebugData;

@@ -29,7 +29,7 @@ namespace Duckvil { namespace Memory {
         }
 
         _pAllocator->m_pParentAllocator = nullptr;
-        _pAllocator->m_allocatorType = allocator_type_linear;
+        _pAllocator->m_fnOnAllocate(_pAllocator, allocator_type_linear);
 
         return true;
     }
@@ -128,9 +128,8 @@ namespace Duckvil { namespace Memory {
         _pAllocator->m_ullUsed += _ullSize + sizeof(__free_list_allocator);
 
         _allocator->m_pParentAllocator = _pAllocator;
-        _allocator->m_fnDebug = _pAllocator->m_fnDebug;
-        _allocator->m_allocatorType = allocator_type_free_list;
-        _pAllocator->m_fnDebug(_allocator);
+        _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
+        _pAllocator->m_fnOnAllocate(_allocator, allocator_type_free_list);
 
         return _allocator;
     }
@@ -154,6 +153,10 @@ namespace Duckvil { namespace Memory {
         memset(_memory->m_pMemory, 0, _ullSize);
 
         _pAllocator->m_ullUsed += _size + _ullSize;
+
+        _memory->m_pParentAllocator = _pAllocator;
+        _memory->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
+        _memory->m_fnOnAllocate(_memory, allocator_type_vector);
 
         return _memory;
     }
