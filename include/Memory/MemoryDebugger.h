@@ -2,9 +2,16 @@
 
 #include <vector>
 
+namespace Duckvil { namespace Memory {
+
+    struct __allocator;
+
+}}
+
 #ifdef DUCKVIL_MEMORY_DEBUGGER
 enum duckvil_memory_allocator_type
 {
+    duckvil_memory_allocator_type_unknown,
     duckvil_memory_allocator_type_free_list,
     duckvil_memory_allocator_type_linear,
     duckvil_memory_allocator_type_vector,
@@ -15,7 +22,7 @@ enum duckvil_memory_allocator_type
 
 struct duckvil_memory_debug_info
 {
-    void* m_pAllocator;
+    Duckvil::Memory::__allocator* m_pAllocator;
     duckvil_memory_debug_info* m_pParent;
     duckvil_memory_allocator_type m_allocatorType;
     char m_aLabel[128] = { 0 };
