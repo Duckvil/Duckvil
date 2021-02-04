@@ -65,7 +65,8 @@ namespace Duckvil { namespace Memory {
 
         }
 
-        Array(IMemory* _pMemoryInterface, __linear_allocator* _pAllocator, std::size_t _ullCount)
+        Array(IMemory* _pMemoryInterface, __linear_allocator* _pAllocator, std::size_t _ullCount) :
+            SContainer(_pMemoryInterface, _pAllocator)
         {
             SContainer::m_pMemoryInterface = _pMemoryInterface;
             SContainer::m_pAllocator = _pAllocator;
@@ -77,12 +78,7 @@ namespace Duckvil { namespace Memory {
         {
             SContainer::m_fnCopy = &free_list_copy;
             SContainer::m_fnDestruct = &free_list_destruct;
-            SContainer::m_pContainer = (__fixed_array_allocator*)free_list_allocate(_pMemoryInterface, _pAllocator, sizeof(__fixed_array_allocator) + (_ullCount * sizeof(Type)), alignof(__fixed_array_allocator));
-
-            SContainer::m_pContainer->m_ullCapacity = _ullCount * sizeof(Type);
-            SContainer::m_pContainer->m_ullUsed = 0;
-            SContainer::m_pContainer->m_ullBlockSize = sizeof(Type);
-            SContainer::m_pContainer->m_pMemory = (uint8_t*)SContainer::m_pContainer + sizeof(__fixed_array_allocator);
+            SContainer::m_pContainer = _pMemoryInterface->m_fnFreeListAllocateFixedArrayAllocator(_pMemoryInterface, _pAllocator, _ullCount * sizeof(Type), sizeof(Type));
         }
 
         Array(const Array& _array) :

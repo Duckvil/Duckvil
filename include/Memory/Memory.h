@@ -139,6 +139,8 @@ namespace Duckvil { namespace Memory {
         typedef __fixed_queue_allocator* (*_free_list_allocate_fixed_queue_allocator)(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
         typedef __free_list_allocator* (*_free_list_allocate_free_list_allocator)(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize);
         typedef __fixed_vector_allocator* (*_free_list_allocate_fixed_vector_allocator)(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef __fixed_stack_allocator* (*_free_list_allocate_fixed_stack_allocator)(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef __fixed_array_allocator* (*_free_list_allocate_fixed_array_allocator)(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
 
         _basic_allocate             m_fnBasicAllocate;
 
@@ -209,6 +211,8 @@ namespace Duckvil { namespace Memory {
         _free_list_allocate_fixed_queue_allocator       m_fnFreeListAllocateFixedQueueAllocator;
         _free_list_allocate_free_list_allocator         m_fnFreeListAllocateFreeListAllocator;
         _free_list_allocate_fixed_vector_allocator      m_fnFreeListAllocateFixedVectorAllocator;
+        _free_list_allocate_fixed_stack_allocator       m_fnFreeListAllocateFixedStackAllocator;
+        _free_list_allocate_fixed_array_allocator       m_fnFreeListAllocateFixedArrayAllocator;
     };
 
     typedef IMemory* (*init_callback)();
