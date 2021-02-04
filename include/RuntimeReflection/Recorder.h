@@ -219,6 +219,19 @@ namespace Duckvil { namespace RuntimeReflection {
         return _pFunctions->m_fnRecordFunction(_pMemoryInterface, _pAllocator, _pData, _typeHandle, _function, _sName, typeid(ReturnType).hash_code(), typeid(void(Args...)).hash_code());
     }
 
+    template <typename Type, typename ReturnType, typename... Args>
+    static DUCKVIL_RESOURCE(function_t) record_function(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, ReturnType (Type::*func)(Args...) const, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX])
+    {
+        void* _pointer =
+            _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__function<ReturnType (Type::*)(Args...) const>), alignof(__function<ReturnType (Type::*)(Args...) const>));
+
+        __function<ReturnType (Type::*)(Args...) const>* _function = new(_pointer) __function<ReturnType (Type::*)(Args...) const>();
+
+        _function->m_fnFunction = func;
+
+        return _pFunctions->m_fnRecordFunction(_pMemoryInterface, _pAllocator, _pData, _typeHandle, _function, _sName, typeid(ReturnType).hash_code(), typeid(void(Args...)).hash_code());
+    }
+
     template <typename ReturnType, typename... Args>
     static DUCKVIL_RESOURCE(function_t) record_function(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, ReturnType (*func)(Args...), const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX])
     {
