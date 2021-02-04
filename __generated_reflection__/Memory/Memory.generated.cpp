@@ -127,6 +127,8 @@ _property = record_property<IMemory::_linear_allocate_fixed_vector_allocator>(DU
 _property = record_property<IMemory::_free_list_allocate_fixed_queue_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnFreeListAllocateFixedQueueAllocator), "m_fnFreeListAllocateFixedQueueAllocator");
 _property = record_property<IMemory::_free_list_allocate_free_list_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnFreeListAllocateFreeListAllocator), "m_fnFreeListAllocateFreeListAllocator");
 _property = record_property<IMemory::_free_list_allocate_fixed_vector_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnFreeListAllocateFixedVectorAllocator), "m_fnFreeListAllocateFixedVectorAllocator");
+_property = record_property<IMemory::_free_list_allocate_fixed_stack_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnFreeListAllocateFixedStackAllocator), "m_fnFreeListAllocateFixedStackAllocator");
+_property = record_property<IMemory::_free_list_allocate_fixed_array_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnFreeListAllocateFixedArrayAllocator), "m_fnFreeListAllocateFixedArrayAllocator");
 Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
 for(size_t i = 0; i < _recordedTypes.size(); i++) { _types[i] = _recordedTypes[i]; }
 return duckvil_recorderd_types { _types, _recordedTypes.size(), "Memory/Memory.h", 18 };
