@@ -115,6 +115,7 @@ namespace Duckvil { namespace Event {
             m_pReflectionData(_pReflectionData)
         {
             _heap.Allocate(m_aRefelctedEvents, 1);
+            DUCKVIL_DEBUG_MEMORY(m_aRefelctedEvents.GetAllocator(), "m_aRefelctedEvents");
         }
 
         ~Channel()

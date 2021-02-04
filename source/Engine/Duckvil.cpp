@@ -10,6 +10,7 @@
 
 #undef max
 #undef GetObject
+#undef __allocator
 
 namespace Duckvil {
 
@@ -69,6 +70,10 @@ namespace Duckvil {
         _pData->m_heap.Allocate(_pData->m_objectsHeap, 1024 * 8);
         _pData->m_heap.Allocate(_pData->m_eventsHeap, 1024 * 8);
         _pData->m_heap.Allocate(_pData->m_aEngineSystems, 1);
+
+        DUCKVIL_DEBUG_MEMORY(_pData->m_objectsHeap.GetAllocator(), "m_objectsHeap");
+        DUCKVIL_DEBUG_MEMORY(_pData->m_eventsHeap.GetAllocator(), "m_eventsHeap");
+        DUCKVIL_DEBUG_MEMORY(_pData->m_aEngineSystems.GetAllocator(), "m_aEngineSystems");
 
         _pData->m_time.init(&_pData->m_timeData);
 
@@ -193,7 +198,7 @@ namespace Duckvil {
                         _systemInheritance->m_pLoggerData = _pData->m_pLoggerData;
 
                         RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type<HotReloader::TrackKeeper>(_pData->m_pRuntimeReflectionData);
-                        HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _pData->m_pRuntimeReflectionData, _trackKeeperHandle, _testSystem, _typeHandle);
+                        HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_pData->m_heap, _pData->m_pRuntimeReflectionData, _trackKeeperHandle, _testSystem, _typeHandle);
 
                         system _system = {};
 
@@ -277,13 +282,62 @@ namespace Duckvil {
         return true;
     }
 
+#ifdef DUCKVIL_MEMORY_DEBUGGER
+    void recursive(duckvil_memory_debug_info* _pDebugInfo, uint32_t& _index)
+    {
+        for(uint32_t i = 0; i < _index; i++)
+        {
+            printf(" ");
+        }
+
+        if(_pDebugInfo->m_allocatorType == duckvil_memory_allocator_type::duckvil_memory_allocator_type_free_list)
+        {
+            printf("Free list %s\n", _pDebugInfo->m_aLabel);
+        }
+        else if(_pDebugInfo->m_allocatorType == duckvil_memory_allocator_type::duckvil_memory_allocator_type_linear)
+        {
+            printf("Linear %s\n", _pDebugInfo->m_aLabel);
+        }
+        else if(_pDebugInfo->m_allocatorType == duckvil_memory_allocator_type::duckvil_memory_allocator_type_stack)
+        {
+            printf("Stack %s\n", _pDebugInfo->m_aLabel);
+        }
+        else if(_pDebugInfo->m_allocatorType == duckvil_memory_allocator_type::duckvil_memory_allocator_type_queue)
+        {
+            printf("Queue %s\n", _pDebugInfo->m_aLabel);
+        }
+        else if (_pDebugInfo->m_allocatorType == duckvil_memory_allocator_type::duckvil_memory_allocator_type_vector)
+        {
+            printf("Vector %s\n", _pDebugInfo->m_aLabel);
+        }
+
+        for(uint32_t i = 0; i < _index; i++)
+        {
+            printf(" ");
+        }
+
+        printf("Size: %d\n", ((Memory::__allocator*)_pDebugInfo->m_pAllocator)->m_ullUsed);
+
+        for(uint32_t i = 0; i < _index; i++)
+        {
+            printf(" ");
+        }
+
+        printf("Capacity: %d\n", ((Memory::__allocator*)_pDebugInfo->m_pAllocator)->m_ullCapacity);
+
+        _index++;
+
+        for(const auto& a : _pDebugInfo->m_aOther)
+        {
+            recursive(a, _index);
+        }
+
+        _index--;
+    }
+#endif
+
     void update(__data* _pData, __ftable* _pFTable)
     {
-        /*for(const auto& a : _pData->m_pMemoryDebugger->m_aOther)
-        {
-            printf("AAAAA\n");
-        }*/
-
         _pData->m_time.update(&_pData->m_timeData);
 
         _pData->m_dOneSecond += _pData->m_timeData.m_dDelta;
@@ -312,6 +366,11 @@ namespace Duckvil {
 
             DUCKVIL_LOG_INFO_("Delta: %f ms", _pData->m_timeData.m_dDelta * 1000.0);
             DUCKVIL_LOG_INFO_("Used memory: %d of %d", _pData->m_pHeap->m_ullUsed, _pData->m_pHeap->m_ullCapacity);
+
+#ifdef DUCKVIL_MEMORY_DEBUGGER
+            uint32_t _index = 0;
+            recursive(_pData->m_pMemoryDebugger, _index);
+#endif
 
             _pData->m_dOneSecond = 0.0;
         }

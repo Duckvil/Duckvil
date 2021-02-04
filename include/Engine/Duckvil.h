@@ -41,7 +41,7 @@ namespace Duckvil {
     {
         bool m_bRunning;
 
-#ifdef DUCKVIL_MEMORY_DEBUG
+#ifdef DUCKVIL_MEMORY_DEBUGGER
         duckvil_memory_debug_info* m_pMemoryDebugger;
 #endif
 

@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.17)
 project(Duckvil)
 
 option(GENERATE_REFLECTION "Generate reflection" OFF)
+option(DEBUG_MEMORY "Memory debugger" OFF)
 
 find_program(CLANG_TIDY_COMMAND NAMES clang-tidy)
 
@@ -31,6 +32,10 @@ endif()
 add_definitions(-DDUCKVIL_OUTPUT="${CMAKE_SOURCE_DIR}/bin")
 add_definitions(-DDUCKVIL_SWAP_OUTPUT="${CMAKE_SOURCE_DIR}/bin/Swap")
 add_definitions(-DDUCKVIL_CWD="${CMAKE_SOURCE_DIR}")
+
+if(DEBUG_MEMORY)
+    add_definitions(-DDUCKVIL_MEMORY_DEBUGGER)
+endif()
 
 add_subdirectory(source)
 list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")

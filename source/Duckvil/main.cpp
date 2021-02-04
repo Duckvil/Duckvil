@@ -52,12 +52,13 @@ int main(int argc, char* argv[])
 
     Duckvil::Memory::__linear_allocator _mainMemoryAllocator;
 
-#ifdef DUCKVIL_MEMORY_DEBUG
+#ifdef DUCKVIL_MEMORY_DEBUGGER
     duckvil_memory_debug_info _memoryDebug = {};
     std::stack<duckvil_memory_debug_info> _stack;
 
     _memoryDebug.m_pAllocator = &_mainMemoryAllocator;
     _memoryDebug.m_pParent = nullptr;
+    _memoryDebug.m_allocatorType = duckvil_memory_allocator_type_linear;
 
     _mainMemoryAllocator.m_pDebugData = &_memoryDebug;
     _mainMemoryAllocator.m_fnOnAllocate = Duckvil::Event::cify([&](Duckvil::Memory::__allocator* _pParentAllocator, Duckvil::Memory::__allocator* _pAllocator, duckvil_memory_allocator_type _type)
@@ -83,7 +84,7 @@ int main(int argc, char* argv[])
 
     _engine->init(&_engineData, _memoryInterface, _free_list);
 
-#ifdef DUCKVIL_MEMORY_DEBUG
+#ifdef DUCKVIL_MEMORY_DEBUGGER
     _engineData.m_pMemoryDebugger = &_memoryDebug;
 #endif
 
