@@ -140,6 +140,7 @@ Duckvil::Memory::IMemory* duckvil_memory_init()
 
     memory->m_fnFreeListAllocateFixedQueueAllocator =   &impl_free_list_allocate_fixed_queue_allocator;
     memory->m_fnFreeListAllocateFreeListAllocator =     &impl_free_list_allocate_free_list_allocator;
+    memory->m_fnFreeListAllocateFixedVectorAllocator =  &impl_free_list_allocate_fixed_vector_allocator;
 
     return memory;
 }

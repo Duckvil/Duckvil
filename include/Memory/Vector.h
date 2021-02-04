@@ -95,12 +95,7 @@ namespace Duckvil { namespace Memory {
             SContainer::m_fnDestruct = &free_list_destruct;
             SContainer::m_fnResize = &free_list_resize;
             SContainer::m_fnErase = &free_list_erase;
-            SContainer::m_pContainer = (__fixed_vector_allocator*)free_list_allocate(_pMemoryInterface, _pAllocator, sizeof(__fixed_vector_allocator) + (sizeof(Type) * _ullCount), alignof(__fixed_vector_allocator)); // free_list_allocate_allocator<__fixed_vector_allocator>(_pMemoryInterface, _pAllocator, sizeof(Type) * _ullCount, sizeof(Type), alignof(Type));
-
-            SContainer::m_pContainer->m_ullCapacity = sizeof(Type) * _ullCount;
-            SContainer::m_pContainer->m_ullUsed = 0;
-            SContainer::m_pContainer->m_ullBlockSize = sizeof(Type);
-            SContainer::m_pContainer->m_pMemory = (uint8_t*)SContainer::m_pContainer + sizeof(__fixed_vector_allocator);
+            SContainer::m_pContainer = _pMemoryInterface->m_fnFreeListAllocateFixedVectorAllocator(_pMemoryInterface, _pAllocator, sizeof(Type) * _ullCount, sizeof(Type));
         }
 
         Vector(const Vector& _vector) :
