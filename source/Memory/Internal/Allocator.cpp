@@ -237,8 +237,6 @@ namespace Duckvil { namespace Memory {
 
         memset(_allocator->m_pMemory, 0, _ullSize);
 
-        _pAllocator->m_ullUsed += _size + _ullSize;
-
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
         _allocator->m_fnOnAllocate(_pAllocator, _allocator, duckvil_memory_allocator_type_vector);
@@ -259,8 +257,6 @@ namespace Duckvil { namespace Memory {
 
         memset(_allocator->m_pMemory, 0, _ullSize);
 
-        _pAllocator->m_ullUsed += _size + _ullSize;
-
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
         _allocator->m_fnOnAllocate(_pAllocator, _allocator, duckvil_memory_allocator_type_stack);
@@ -280,8 +276,6 @@ namespace Duckvil { namespace Memory {
         _allocator->m_ullBlockSize = _ullTypeSize;
 
         memset(_allocator->m_pMemory, 0, _ullSize);
-
-        _pAllocator->m_ullUsed += _size + _ullSize;
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
