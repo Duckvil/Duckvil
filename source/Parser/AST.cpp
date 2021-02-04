@@ -1398,6 +1398,16 @@ namespace Duckvil { namespace Parser {
                     _pAST->m_pPendingScope = _scope;
                 }
             }
+            else if(_token == "friend")
+            {
+                while(_pLexer->next_token(&_lexerData, &_token))
+                {
+                    if(_token == ";")
+                    {
+                        break;
+                    }
+                }
+            }
             else if(_token == "class")
             {
                 if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure)
