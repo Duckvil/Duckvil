@@ -19,6 +19,7 @@ namespace Duckvil { namespace Memory {
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         void (*m_fnOnAllocate)(__allocator* _pParentAllocator, __allocator* _pAllocator, duckvil_memory_allocator_type _type) = 0;
+        void (*m_fnOnDeallocate)(__allocator* _pParentAllocator, __allocator* _pAllocator) = 0;
         // __allocator* m_pParentAllocator;
         duckvil_memory_debug_info* m_pDebugData;
 #endif

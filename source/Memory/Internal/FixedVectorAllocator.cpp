@@ -83,11 +83,22 @@ namespace Duckvil { namespace Memory {
 
         __fixed_vector_allocator* _allocator = _pInterface->m_fnFreeListAllocateFixedVectorAllocator(_pInterface, _pParentAllocator, _ullNewSize * (*_pAllocator)->m_ullBlockSize, (*_pAllocator)->m_ullBlockSize);
 
+        _allocator->m_ullUsed = (*_pAllocator)->m_ullUsed;
+
+        memcpy(_allocator->m_pMemory, (*_pAllocator)->m_pMemory, (*_pAllocator)->m_ullUsed);
+
+#ifdef DUCKVIL_MEMORY_DEBUGGER
+        _allocator->m_fnOnAllocate = _pParentAllocator->m_fnOnAllocate;
+        _allocator->m_fnOnDeallocate = _pParentAllocator->m_fnOnDeallocate;
+        _allocator->m_fnOnAllocate(_pParentAllocator, _allocator, duckvil_memory_allocator_type_vector);
+        memcpy(_allocator->m_pDebugData->m_aLabel, (*_pAllocator)->m_pDebugData->m_aLabel, 128);
+#endif
+
         __fixed_vector_allocator* _ptr = *_pAllocator;
 
         *_pAllocator = _allocator;
 
-        _pInterface->m_fnFreeListFree_(_pParentAllocator, _ptr);
+        free_list_free(_pInterface, _pParentAllocator, _ptr);
     }
 
     void impl_fixed_vector_erase(IMemory* _pInterface, __free_list_allocator* _pParentAllocator, __fixed_vector_allocator** _pAllocator, uint32_t _uiIndex)

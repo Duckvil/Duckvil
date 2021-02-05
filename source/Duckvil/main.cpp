@@ -54,7 +54,6 @@ int main(int argc, char* argv[])
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
     duckvil_memory_debug_info _memoryDebug = {};
-    std::stack<duckvil_memory_debug_info> _stack;
 
     _memoryDebug.m_pAllocator = &_mainMemoryAllocator;
     _memoryDebug.m_pParent = nullptr;
@@ -64,14 +63,28 @@ int main(int argc, char* argv[])
     _mainMemoryAllocator.m_fnOnAllocate = Duckvil::Event::cify([&](Duckvil::Memory::__allocator* _pParentAllocator, Duckvil::Memory::__allocator* _pAllocator, duckvil_memory_allocator_type _type)
     {
         duckvil_memory_debug_info* _parentDebugInfo = (duckvil_memory_debug_info*)_pParentAllocator->m_pDebugData;
-
-        _stack.push(duckvil_memory_debug_info{ _pAllocator, _parentDebugInfo, _type });
-
-        duckvil_memory_debug_info* _currentInfo = &_stack.top();
+        duckvil_memory_debug_info* _currentInfo = new duckvil_memory_debug_info{ _pAllocator, _parentDebugInfo, _type };
 
         _parentDebugInfo->m_aOther.push_back(_currentInfo);
 
         _pAllocator->m_pDebugData = _currentInfo;
+    });
+    _mainMemoryAllocator.m_fnOnDeallocate = Duckvil::Event::cify([&](Duckvil::Memory::__allocator* _pParentAllocator, Duckvil::Memory::__allocator* _pAllocator)
+    {
+        duckvil_memory_debug_info* _parentDebugInfo = (duckvil_memory_debug_info*)_pParentAllocator->m_pDebugData;
+        duckvil_memory_debug_info* _currentInfo = _pAllocator->m_pDebugData;
+
+        for(auto it = _parentDebugInfo->m_aOther.begin(); it != _parentDebugInfo->m_aOther.end(); ++it)
+        {
+            if(*it == _currentInfo)
+            {
+                _parentDebugInfo->m_aOther.erase(it);
+
+                break;
+            }
+        }
+
+        delete _currentInfo;
     });
 #endif
 

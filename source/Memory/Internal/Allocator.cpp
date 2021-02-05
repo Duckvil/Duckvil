@@ -52,6 +52,7 @@ namespace Duckvil { namespace Memory {
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _memory->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
+        _memory->m_fnOnDeallocate = _pAllocator->m_fnOnDeallocate;
         _memory->m_fnOnAllocate(_pAllocator, _memory, duckvil_memory_allocator_type_linear);
 #endif
 
@@ -80,6 +81,7 @@ namespace Duckvil { namespace Memory {
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _memory->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
+        _memory->m_fnOnDeallocate = _pAllocator->m_fnOnDeallocate;
         _memory->m_fnOnAllocate(_pAllocator, _memory, duckvil_memory_allocator_type_stack);
 #endif
 
@@ -108,6 +110,7 @@ namespace Duckvil { namespace Memory {
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _memory->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
+        _memory->m_fnOnDeallocate = _pAllocator->m_fnOnDeallocate;
         _memory->m_fnOnAllocate(_pAllocator, _memory, duckvil_memory_allocator_type_array);
 #endif
 
@@ -141,6 +144,7 @@ namespace Duckvil { namespace Memory {
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
+        _allocator->m_fnOnDeallocate = _pAllocator->m_fnOnDeallocate;
         _allocator->m_fnOnAllocate(_pAllocator, _allocator, duckvil_memory_allocator_type_free_list);
 #endif
 
@@ -169,6 +173,7 @@ namespace Duckvil { namespace Memory {
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _memory->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
+        _memory->m_fnOnDeallocate = _pAllocator->m_fnOnDeallocate;
         _memory->m_fnOnAllocate(_pAllocator, _memory, duckvil_memory_allocator_type_vector);
 #endif
 
@@ -192,6 +197,7 @@ namespace Duckvil { namespace Memory {
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
+        _allocator->m_fnOnDeallocate = _pAllocator->m_fnOnDeallocate;
         _allocator->m_fnOnAllocate(_pAllocator, _allocator, duckvil_memory_allocator_type_queue);
 #endif
 
@@ -219,6 +225,7 @@ namespace Duckvil { namespace Memory {
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
+        _allocator->m_fnOnDeallocate = _pAllocator->m_fnOnDeallocate;
         _allocator->m_fnOnAllocate(_pAllocator, _allocator, duckvil_memory_allocator_type_free_list);
 #endif
 
@@ -239,6 +246,7 @@ namespace Duckvil { namespace Memory {
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
+        _allocator->m_fnOnDeallocate = _pAllocator->m_fnOnDeallocate;
         _allocator->m_fnOnAllocate(_pAllocator, _allocator, duckvil_memory_allocator_type_vector);
 #endif
 
@@ -259,6 +267,7 @@ namespace Duckvil { namespace Memory {
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
+        _allocator->m_fnOnDeallocate = _pAllocator->m_fnOnDeallocate;
         _allocator->m_fnOnAllocate(_pAllocator, _allocator, duckvil_memory_allocator_type_stack);
 #endif
 
@@ -279,6 +288,7 @@ namespace Duckvil { namespace Memory {
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
+        _allocator->m_fnOnDeallocate = _pAllocator->m_fnOnDeallocate;
         _allocator->m_fnOnAllocate(_pAllocator, _allocator, duckvil_memory_allocator_type_stack);
 #endif
 
