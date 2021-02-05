@@ -7,6 +7,7 @@
 
 #include <type_traits>
 #include <utility>
+#include <cstring>
 
 namespace Duckvil { namespace Memory {
 
@@ -65,7 +66,7 @@ namespace Duckvil { namespace Memory {
                 }
             }
 
-            _pMemoryInterface->m_fnFreeListFree_(_allocator, _pThis->m_pContainer);
+            free_list_free(_pMemoryInterface, _allocator, _pThis->m_pContainer);
         }
 
         static void free_list_resize(IMemory* _pMemoryInterface, SContainer* _pThis, std::size_t _ullNewSize)
