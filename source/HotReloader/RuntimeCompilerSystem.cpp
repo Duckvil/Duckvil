@@ -39,6 +39,9 @@ namespace Duckvil { namespace HotReloader {
         _heap.Allocate(m_aHotObjects, 1);
         _heap.Allocate(m_aModules, 1);
 
+        DUCKVIL_DEBUG_MEMORY(m_aHotObjects.GetAllocator(), "m_aHotObjects");
+        DUCKVIL_DEBUG_MEMORY(m_aModules.GetAllocator(), "m_aModules");
+
         m_userData.m_pRuntimeCompiler = this;
 
         m_pFileWatcher = _heap.Allocate<FileWatcher, FileWatcher::ActionCallback, void*>(&Action, (void*)&m_userData);
