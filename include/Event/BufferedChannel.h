@@ -17,7 +17,7 @@ namespace Duckvil { namespace Event {
     class Channel<Message, mode::buffered> : public BufferedChannel
     {
     private:
-        std::queue<Message> m_aMessages;
+        Memory::Queue<Message> m_aMessages;
 
         RuntimeReflection::__data* m_pReflectionData;
 
@@ -45,15 +45,11 @@ namespace Duckvil { namespace Event {
             m_fnAnyEvents = &AnyEvents;
             m_uiIndex = 0;
             m_uiEventsCount = 0;
+
+            _heap.Allocate(m_aMessages, 10);
         }
 
         ~Channel()
-        {
-
-        }
-
-        template <typename Handler>
-        void Add(Handler* _pHandler)
         {
 
         }
@@ -66,19 +62,19 @@ namespace Duckvil { namespace Event {
 
         void Broadcast(const Message& _message)
         {
-            m_aMessages.push(_message);
+            m_aMessages.Allocate(_message);
 
             m_uiEventsCount++;
         }
 
         bool GetMessage(Message* _pMessage)
         {
-            if(m_aMessages.empty())
+            if(m_aMessages.Empty())
             {
                 return false;
             }
 
-            const Message& _message = m_aMessages.front();
+            const Message& _message = m_aMessages.Begin();
 
             *_pMessage = _message;
 
@@ -87,7 +83,7 @@ namespace Duckvil { namespace Event {
 
         void EventHandled()
         {
-            m_aMessages.pop();
+            m_aMessages.Pop();
 
             m_uiEventsCount--;
             m_uiIndex--;
@@ -95,8 +91,9 @@ namespace Duckvil { namespace Event {
 
         void EventHandled(const Message& _message)
         {
-            m_aMessages.pop();
-            m_aMessages.push(_message);
+        // Here we are moving not handled event to the end of queue, to give other events chance to be catched
+            m_aMessages.Pop();
+            m_aMessages.Allocate(_message);
         }
     };
 
