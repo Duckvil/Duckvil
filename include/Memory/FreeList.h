@@ -5,6 +5,7 @@
 #include "Memory/Vector.h"
 #include "Memory/Stack.h"
 #include "Memory/Array.h"
+#include "Memory/Queue.h"
 
 namespace Duckvil { namespace Memory {
 
@@ -101,21 +102,39 @@ namespace Duckvil { namespace Memory {
             return new(_pointer) Type(_vArgs...); // (Type*)free_list_allocate(m_pContainer, sizeof(Type), alignof(Type));
         }
 
-        template <typename Type>
-        void Allocate(Vector<Type>& _container, std::size_t _ullCount)
-        {
-            _container = Vector<Type>(m_pMemory, m_pContainer, _ullCount);
-        }
-
         void Allocate(FreeList& _container, std::size_t _ullSize)
         {
             _container = FreeList(m_pMemory, m_pContainer, _ullSize);
         }
 
         template <typename Type>
+        void Allocate(Vector<Type>& _container, std::size_t _ullCount)
+        {
+            _container = Vector<Type>(m_pMemory, m_pContainer, _ullCount);
+        }
+
+        template <typename Type>
         void Allocate(Vector<Type>& _container, std::size_t _ullCount) const
         {
             _container = Vector<Type>(m_pMemory, m_pContainer, _ullCount);
+        }
+
+        template <typename Type>
+        void Allocate(Stack<Type>& _container, std::size_t _ullCount)
+        {
+            _container = Stack<Type>(m_pMemory, m_pContainer, _ullCount);
+        }
+
+        template <typename Type>
+        void Allocate(Array<Type>& _container, std::size_t _ullCount)
+        {
+            _container = Array<Type>(m_pMemory, m_pContainer, _ullCount);
+        }
+
+        template <typename Type>
+        void Allocate(Queue<Type>& _container, std::size_t _ullCount)
+        {
+            _container = Queue<Type>(m_pMemory, m_pContainer, _ullCount);
         }
 
         template <typename Type>
@@ -127,18 +146,6 @@ namespace Duckvil { namespace Memory {
         void Free(void* _pData)
         {
             m_pMemory->m_fnFreeListFree_(m_pContainer, _pData);
-        }
-
-        template <typename Type>
-        void Allocate(Stack<Type>& _container, std::size_t _ullCount)
-        {
-            // _container = Vector<Type>(m_pMemory, m_pContainer, _ullCount);
-        }
-
-        template <typename Type>
-        void Allocate(Array<Type>& _container, std::size_t _ullCount)
-        {
-            _container = Array<Type>(m_pMemory, m_pContainer, _ullCount);
         }
 
         IMemory* GetMemoryInterface() const
