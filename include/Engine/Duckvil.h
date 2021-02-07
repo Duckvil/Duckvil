@@ -20,8 +20,12 @@
 #include "HotReloader/RuntimeCompilerSystem.h"
 
 #include "Event/ImmediatePool.h"
+#include "Event/BufferedPool.h"
 
 #include "Window/IWindow.h"
+
+#include "Window/Events/CloseEvent.h"
+#include "Window/Events/ResizeEvent.h"
 
 namespace Duckvil {
 
@@ -78,6 +82,7 @@ namespace Duckvil {
         double m_dOneSecond;
 
         Event::Pool<Event::mode::immediate> m_eventPool;
+        Event::Pool<Event::mode::buffered> m_windowEventPool;
 
         Memory::Vector<Duckvil::system> m_aEngineSystems;
 

@@ -11,6 +11,7 @@
 #undef max
 #undef GetObject
 #undef __allocator
+#undef GetMessage
 
 namespace Duckvil {
 
@@ -68,7 +69,7 @@ namespace Duckvil {
         _pData->m_heap = Memory::FreeList(_pData->m_pMemory, _pData->m_pHeap);
 
         _pData->m_heap.Allocate(_pData->m_objectsHeap, 1024 * 8);
-        _pData->m_heap.Allocate(_pData->m_eventsHeap, 1024 * 8);
+        _pData->m_heap.Allocate(_pData->m_eventsHeap, 1024);
         _pData->m_heap.Allocate(_pData->m_aEngineSystems, 1);
 
         DUCKVIL_DEBUG_MEMORY(_pData->m_objectsHeap.GetAllocator(), "m_objectsHeap");
@@ -85,6 +86,7 @@ namespace Duckvil {
         init_runtime_reflection(_pData, &_module);
 
         _pData->m_eventPool = Event::Pool<Event::mode::immediate>(_pData->m_eventsHeap, _pData->m_pRuntimeReflectionData);
+        _pData->m_windowEventPool = Event::Pool<Event::mode::buffered>(_pData->m_eventsHeap, _pData->m_pRuntimeReflectionData);
 
         PlugNPlay::AutoLoader _autoLoader(DUCKVIL_OUTPUT);
 
@@ -288,9 +290,9 @@ namespace Duckvil {
 
         RuntimeReflection::ReflectedType _windowType(_pData->m_pRuntimeReflectionData, _pData->m_heap, RuntimeReflection::get_type(_pData->m_pRuntimeReflectionData, "WindowSDL", "Duckvil", "Window"));
 
-        _pData->m_pWindow = (Window::IWindow*)_windowType.Create();
+        _pData->m_pWindow = (Window::IWindow*)_windowType.Create<Event::Pool<Event::mode::buffered>*>(&_pData->m_windowEventPool);
 
-        _pData->m_pWindow->Create();
+        _pData->m_pWindow->Create("AAAAA", 1920, 1080);
 
         return true;
     }
@@ -417,9 +419,26 @@ namespace Duckvil {
             _pData->m_dOneSecond = 0.0;
         }
 
-#ifdef DUCKVIL_PLATFORM_WINDOWS
-        // Sleep(1);
-#endif
+        while(_pData->m_windowEventPool.AnyEvents())
+        {
+            Window::CloseEvent _closeEvent;
+            Window::ResizeEvent _resizeEvent;
+
+            if(_pData->m_windowEventPool.GetMessage(&_closeEvent))
+            {
+                _pData->m_bRunning = false;
+
+                _pData->m_windowEventPool.EventHandled<Window::CloseEvent>();
+            }
+            else if(_pData->m_windowEventPool.GetMessage(&_resizeEvent))
+            {
+                printf("RESIZE ME!!!!\n");
+
+                _pData->m_windowEventPool.EventHandled<Window::ResizeEvent>();
+            }
+        }
+
+        _pData->m_windowEventPool.Reset();
 
         _pData->m_pWindow->Refresh();
     }
