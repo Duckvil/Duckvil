@@ -32,6 +32,12 @@ namespace std {
 
 namespace Duckvil { namespace RuntimeReflection {
 
+    template <typename Type, typename... Args>
+    void* create_type(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, Args... _vArgs)
+    {
+        return new(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Type), alignof(Type))) Type(_vArgs...);
+    }
+
     struct __recorder_meta_info
     {
         std::size_t m_ullKeyTypeID;
@@ -111,13 +117,38 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename Type>
     static DUCKVIL_RESOURCE(type_t) record_type(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX])
     {
-        return _pFunctions->m_fnRecordType(_pMemoryInterface, _pAllocator, _pData, typeid(Type).hash_code(), _sName);
+        DUCKVIL_RESOURCE(type_t) _typeHandle = _pFunctions->m_fnRecordType(_pMemoryInterface, _pAllocator, _pData, typeid(Type).hash_code(), _sName);
+
+        // ReflectedType_<Type>* _froentendType = new(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(ReflectedType_<Type>), alignof(ReflectedType_<Type>))) ReflectedType_<Type>(_typeHandle);
+
+        // _froentendType->m_aConstructors = Memory::Vector<IReflectedConstructor*>(_pMemoryInterface, _pAllocator, 1);
+
+        // if(_pData->m_aFrontend.Full())
+        // {
+        //     _pData->m_aFrontend.Resize(_pData->m_aFrontend.Size() * 2);
+        // }
+
+        // _pData->m_aFrontend.Allocate(_froentendType);
+
+        return _typeHandle;
     }
 
     template <typename Type, typename... Args>
     static DUCKVIL_RESOURCE(constructor_t) record_constructor(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle)
     {
-        return _pFunctions->m_fnRecordConstructor(_pMemoryInterface, _pAllocator, _pData, _typeHandle, typeid(void*(Args...)).hash_code(), (uint8_t*)&create_type<Type, Args...>);
+        DUCKVIL_RESOURCE(constructor_t) _constructorHandle = _pFunctions->m_fnRecordConstructor(_pMemoryInterface, _pAllocator, _pData, _typeHandle, typeid(void*(Args...)).hash_code(), (uint8_t*)&create_type<Type, Args...>);
+
+        // for(auto it : _pData->m_aFrontend)
+        // {
+        //     if(it->GetBackendTypeHandle().m_ID == _typeHandle.m_ID)
+        //     {
+        //         ReflectedConstructor<Args...>* _froentendType = new(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(ReflectedConstructor<Args...>), alignof(ReflectedConstructor<Args...>))) ReflectedConstructor<Args...>(_constructorHandle);
+
+        //         break;
+        //     }
+        // }
+
+        return _constructorHandle;
     }
 
     template <typename A, typename B>

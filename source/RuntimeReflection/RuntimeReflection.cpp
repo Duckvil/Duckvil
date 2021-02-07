@@ -7,6 +7,7 @@ namespace Duckvil { namespace RuntimeReflection {
         __data* _data = (__data*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__data), alignof(__data));
 
         _data->m_aTypes = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __type_t);
+        // _data->m_aFrontend = Memory::Vector<IReflectedType*>(_pMemoryInterface, _pAllocator, 1);
 
         return _data;
     }
