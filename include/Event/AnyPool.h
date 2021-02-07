@@ -47,12 +47,12 @@ namespace Duckvil { namespace Event {
 
                         _right->Add(_pHandler);
                     }
-                    else if(_channel.m_mode == mode::buffered)
+                    /*else if(_channel.m_mode == mode::buffered)
                     {
                         Channel<Message, mode::buffered>* _right = (Channel<Message, mode::buffered>*)_channel.m_pChannel;
 
                         _right->Add(_pHandler);
-                    }
+                    }*/
 
                     return;
                 }
@@ -76,14 +76,14 @@ namespace Duckvil { namespace Event {
 
                 _newChannel->Add(_pHandler);
             }
-            else if(_bBlocking == mode::buffered)
+            /*else if(_bBlocking == mode::buffered)
             {
                 Channel<Message, mode::buffered>* _newChannel = m_heap.Allocate<Channel<Message, mode::buffered>>(m_heap, m_pReflectionData);
 
                 _event.m_pChannel = _newChannel;
 
                 _newChannel->Add(_pHandler);
-            }
+            }*/
 
             m_aChannels.Allocate(_event);
         }
