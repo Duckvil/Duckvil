@@ -136,31 +136,51 @@ namespace Duckvil {
             {
                 auto _runtimeCompilerType = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>(_pData->m_pRuntimeReflectionData);
 
-                _pData->m_pRuntimeCompiler = (HotReloader::RuntimeCompilerSystem*)RuntimeReflection::create<
+                RuntimeReflection::ReflectedType _type(_pData->m_pRuntimeReflectionData, _pData->m_heap, RuntimeReflection::tag<HotReloader::RuntimeCompilerSystem>{});
+
+                _pData->m_pRuntimeCompiler = (HotReloader::RuntimeCompilerSystem*)_type.Create<
                     const Memory::FreeList&,
                     RuntimeReflection::__data*,
                     RuntimeReflection::__recorder_ftable*,
                     RuntimeReflection::__ftable*,
                     Event::Pool<Event::mode::immediate>*
                 >(
-                    _pData->m_heap,
-                    _pData->m_pRuntimeReflectionData,
-                    _runtimeCompilerType,
-                    _pData->m_heap,
+                    (const Memory::FreeList&)_pData->m_heap,
                     _pData->m_pRuntimeReflectionData,
                     _pData->m_pRuntimeReflectionRecorder,
                     _pData->m_pRuntimeReflection,
                     &_pData->m_eventPool
                 );
 
-                _pData->m_fnRuntimeCompilerUpdate = RuntimeReflection::get_function_callback<ISystem>(_pData->m_pRuntimeReflectionData, _runtimeCompilerType, "Update")->m_fnFunction;
-                _pData->m_fnRuntimeCompilerInit = RuntimeReflection::get_function_callback<bool, ISystem>(_pData->m_pRuntimeReflectionData, _runtimeCompilerType, "Init")->m_fnFunction;
+                // _pData->m_pRuntimeCompiler = (HotReloader::RuntimeCompilerSystem*)RuntimeReflection::create<
+                //     const Memory::FreeList&,
+                //     RuntimeReflection::__data*,
+                //     RuntimeReflection::__recorder_ftable*,
+                //     RuntimeReflection::__ftable*,
+                //     Event::Pool<Event::mode::immediate>*
+                // >(
+                //     _pData->m_heap,
+                //     _pData->m_pRuntimeReflectionData,
+                //     _runtimeCompilerType,
+                //     _pData->m_heap,
+                //     _pData->m_pRuntimeReflectionData,
+                //     _pData->m_pRuntimeReflectionRecorder,
+                //     _pData->m_pRuntimeReflection,
+                //     &_pData->m_eventPool
+                // );
+
+                // _pData->m_fnRuntimeCompilerUpdate = RuntimeReflection::get_function_callback<ISystem>(_pData->m_pRuntimeReflectionData, _runtimeCompilerType, "Update")->m_fnFunction;
+                _pData->m_fnRuntimeCompilerUpdate = _type.GetFunctionCallback<ISystem>("Update")->m_fnFunction;
+                // _pData->m_fnRuntimeCompilerInit = RuntimeReflection::get_function_callback<bool, ISystem>(_pData->m_pRuntimeReflectionData, _runtimeCompilerType, "Init")->m_fnFunction;
+                _pData->m_fnRuntimeCompilerInit = _type.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
 
                 _pData->m_pRuntimeCompiler->m_aRecordedTypes = _pData->m_aRecordedTypes;
                 _pData->m_pRuntimeCompiler->m_ullRecordedTypesCount = _pData->m_ullRecordedTypesCount;
 
-                auto _func = RuntimeReflection::get_function_handle<const Memory::FreeList&>(_pData->m_pRuntimeReflectionData, _runtimeCompilerType, "SetObjectsHeap");
-                RuntimeReflection::invoke_member<const Memory::FreeList&>(_pData->m_pRuntimeReflectionData, _runtimeCompilerType, _func, _pData->m_pRuntimeCompiler, _pData->m_objectsHeap);
+                // auto _func = RuntimeReflection::get_function_handle<const Memory::FreeList&>(_pData->m_pRuntimeReflectionData, _runtimeCompilerType, "SetObjectsHeap");
+                // RuntimeReflection::invoke_member<const Memory::FreeList&>(_pData->m_pRuntimeReflectionData, _runtimeCompilerType, _func, _pData->m_pRuntimeCompiler, _pData->m_objectsHeap);
+
+                _type.Invoke<const Memory::FreeList&>("SetObjectsHeap", _pData->m_pRuntimeCompiler, _pData->m_objectsHeap);
             }
 
             for(uint32_t i = 0; i < _types.Size(); i++)
@@ -177,22 +197,38 @@ namespace Duckvil {
                             _pData->m_aEngineSystems.Resize(_pData->m_aEngineSystems.Size() * 2);
                         }
 
-                        void* _testSystem = RuntimeReflection::create<
+                        RuntimeReflection::ReflectedType _type(_pData->m_pRuntimeReflectionData, _pData->m_heap, _typeHandle);
+
+                        void* _testSystem = _type.Create<
                             const Memory::FreeList&,
                             RuntimeReflection::__data*,
                             RuntimeReflection::__recorder_ftable*,
                             RuntimeReflection::__ftable*
                         >(
-                            _pData->m_objectsHeap,
-                            _pData->m_pRuntimeReflectionData,
-                            _typeHandle,
                             _pData->m_heap,
                             _pData->m_pRuntimeReflectionData,
                             _pData->m_pRuntimeReflectionRecorder,
                             _pData->m_pRuntimeReflection
                         );
-                        RuntimeReflection::__duckvil_resource_function_t _castFunctionHandle = RuntimeReflection::get_function_handle<void*>(_pData->m_pRuntimeReflectionData, _typeHandle, "Cast");
-                        ISystem* _systemInheritance = (ISystem*)RuntimeReflection::invoke_static_result<void*, void*>(_pData->m_pRuntimeReflectionData, _typeHandle, _castFunctionHandle, _testSystem);
+
+                        // void* _testSystem = RuntimeReflection::create<
+                        //     const Memory::FreeList&,
+                        //     RuntimeReflection::__data*,
+                        //     RuntimeReflection::__recorder_ftable*,
+                        //     RuntimeReflection::__ftable*
+                        // >(
+                        //     _pData->m_objectsHeap,
+                        //     _pData->m_pRuntimeReflectionData,
+                        //     _typeHandle,
+                        //     _pData->m_heap,
+                        //     _pData->m_pRuntimeReflectionData,
+                        //     _pData->m_pRuntimeReflectionRecorder,
+                        //     _pData->m_pRuntimeReflection
+                        // );
+                        // RuntimeReflection::__duckvil_resource_function_t _castFunctionHandle = RuntimeReflection::get_function_handle<void*>(_pData->m_pRuntimeReflectionData, _typeHandle, "Cast");
+                        // ISystem* _systemInheritance = (ISystem*)RuntimeReflection::invoke_static_result<void*, void*>(_pData->m_pRuntimeReflectionData, _typeHandle, _castFunctionHandle, _testSystem);
+
+                        ISystem* _systemInheritance = (ISystem*)_type.InvokeStatic<void*, void*>("Cast", _testSystem);
 
                         _systemInheritance->m_pLogger = _pData->m_pLogger;
                         _systemInheritance->m_pLoggerData = _pData->m_pLoggerData;
@@ -204,8 +240,8 @@ namespace Duckvil {
 
                         _system.m_type = _typeHandle;
                         _system.m_pTrackKeeper = _trackKeeper;
-                        _system.m_fnUpdateCallback = RuntimeReflection::get_function_callback<ISystem>(_pData->m_pRuntimeReflectionData, _typeHandle, "Update")->m_fnFunction;
-                        _system.m_fnInitCallback = RuntimeReflection::get_function_callback<bool, ISystem>(_pData->m_pRuntimeReflectionData, _typeHandle, "Init")->m_fnFunction;
+                        _system.m_fnUpdateCallback = _type.GetFunctionCallback<ISystem>("Update")->m_fnFunction; // RuntimeReflection::get_function_callback<ISystem>(_pData->m_pRuntimeReflectionData, _typeHandle, "Update")->m_fnFunction;
+                        _system.m_fnInitCallback = _type.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction; // RuntimeReflection::get_function_callback<bool, ISystem>(_pData->m_pRuntimeReflectionData, _typeHandle, "Init")->m_fnFunction;
                         _system.m_pISystem = _systemInheritance;
 
                         _pData->m_aEngineSystems.Allocate(_system);
@@ -249,6 +285,12 @@ namespace Duckvil {
                 return false;
             }
         }
+
+        RuntimeReflection::ReflectedType _windowType(_pData->m_pRuntimeReflectionData, _pData->m_heap, RuntimeReflection::get_type(_pData->m_pRuntimeReflectionData, "WindowSDL", "Duckvil", "Window"));
+
+        _pData->m_pWindow = (Window::IWindow*)_windowType.Create();
+
+        _pData->m_pWindow->Create();
 
         return true;
     }
@@ -378,6 +420,8 @@ namespace Duckvil {
 #ifdef DUCKVIL_PLATFORM_WINDOWS
         // Sleep(1);
 #endif
+
+        _pData->m_pWindow->Refresh();
     }
 
 }

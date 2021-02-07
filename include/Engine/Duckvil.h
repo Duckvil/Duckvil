@@ -21,6 +21,8 @@
 
 #include "Event/ImmediatePool.h"
 
+#include "Window/IWindow.h"
+
 namespace Duckvil {
 
     struct system
@@ -78,6 +80,8 @@ namespace Duckvil {
         Event::Pool<Event::mode::immediate> m_eventPool;
 
         Memory::Vector<Duckvil::system> m_aEngineSystems;
+
+        Window::IWindow* m_pWindow;
     };
 
     struct __ftable

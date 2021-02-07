@@ -37,6 +37,7 @@ if(DEBUG_MEMORY)
     add_definitions(-DDUCKVIL_MEMORY_DEBUGGER)
 endif()
 
+add_subdirectory(external)
 add_subdirectory(source)
 list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
 ENABLE_TESTING()
