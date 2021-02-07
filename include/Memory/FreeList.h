@@ -138,6 +138,12 @@ namespace Duckvil { namespace Memory {
         }
 
         template <typename Type>
+        void Allocate(Queue<Type>& _container, std::size_t _ullCount) const
+        {
+            _container = Queue<Type>(m_pMemory, m_pContainer, _ullCount);
+        }
+
+        template <typename Type>
         void Free(Vector<Type>& _container)
         {
             _container.~Vector<Type>();
