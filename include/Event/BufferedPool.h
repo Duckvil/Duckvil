@@ -27,9 +27,33 @@ namespace Duckvil { namespace Event {
             _heap.Allocate(m_aChannels, 1);
         }
 
+        Pool(Pool&& _pool) noexcept :
+            m_aChannels(std::move(_pool.m_aChannels)),
+            m_heap(std::move(_pool.m_heap)),
+            m_pReflectionData(std::move(_pool.m_pReflectionData))
+        {
+            _pool.m_pReflectionData = nullptr;
+        }
+
         ~Pool()
         {
 
+        }
+
+        Pool& operator=(Pool&& _pool)
+        {
+            if(&_pool == this)
+            {
+                return *this;
+            }
+
+            this->m_aChannels = std::move(_pool.m_aChannels);
+            this->m_heap = std::move(_pool.m_heap);
+            this->m_pReflectionData = std::move(_pool.m_pReflectionData);
+
+            _pool.m_pReflectionData = nullptr;
+
+            return *this;
         }
 
         template <typename Message>

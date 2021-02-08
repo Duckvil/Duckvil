@@ -46,7 +46,7 @@ namespace Duckvil { namespace Event {
             m_uiIndex = 0;
             m_uiEventsCount = 0;
 
-            _heap.Allocate(m_aMessages, 10);
+            _heap.Allocate(m_aMessages, 5);
         }
 
         ~Channel()
