@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.17)
 
 project(Duckvil)
 
-option(GENERATE_REFLECTION "Generate reflection" OFF)
-option(DEBUG_MEMORY "Memory debugger" OFF)
+option(DUCKVIL_GENERATE_REFLECTION "Generate reflection" OFF)
+option(DUCKVIL_DEBUG_MEMORY "Memory debugger" OFF)
 
 find_program(CLANG_TIDY_COMMAND NAMES clang-tidy)
 
@@ -33,7 +33,7 @@ add_definitions(-DDUCKVIL_OUTPUT="${CMAKE_SOURCE_DIR}/bin")
 add_definitions(-DDUCKVIL_SWAP_OUTPUT="${CMAKE_SOURCE_DIR}/bin/Swap")
 add_definitions(-DDUCKVIL_CWD="${CMAKE_SOURCE_DIR}")
 
-if(DEBUG_MEMORY)
+if(DUCKVIL_DEBUG_MEMORY)
     add_definitions(-DDUCKVIL_MEMORY_DEBUGGER)
 endif()
 
@@ -43,7 +43,7 @@ list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
 ENABLE_TESTING()
 add_subdirectory(test)
 
-if(GENERATE_REFLECTION)
+if(DUCKVIL_GENERATE_REFLECTION)
     message(STATUS "Generating reflection started!")
     execute_process(COMMAND "${CMAKE_SOURCE_DIR}/bin/ReflectionGenerator.exe")
     message(STATUS "Generating reflection done!")
