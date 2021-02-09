@@ -1,7 +1,5 @@
 #pragma once
 
-#include "SDL2/include/SDL.h"
-
 #include "Window/IWindow.h"
 
 #include "Event/BufferedPool.h"
@@ -14,7 +12,8 @@ namespace Duckvil { namespace Window {
     class WindowSDL : public IWindow
     {
     private:
-        SDL_Window* m_pWindow;
+        void* m_pWindow;
+        void* m_pContext;
 
         Event::Pool<Event::mode::buffered>* m_pEvents;
 
@@ -24,6 +23,9 @@ namespace Duckvil { namespace Window {
 
         bool Create(const char* _sTitle, int _iWidth, int _iHeight) override;
         void Refresh() const override;
+
+        void* GetWindow() const override;
+        void* GetContext() const override;
     };
 
 }}

@@ -1,5 +1,7 @@
 #include "Window/SDL_Window.h"
 
+#include "SDL2/include/SDL.h"
+
 namespace Duckvil { namespace Window {
 
     WindowSDL::WindowSDL(Event::Pool<Event::mode::buffered>* _pEventsPool) :
@@ -18,7 +20,24 @@ namespace Duckvil { namespace Window {
     {
         SDL_Init(SDL_INIT_EVERYTHING);
 
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+
+        SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+        SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+        SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+        SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+        SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
+        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
         m_pWindow = SDL_CreateWindow(_sTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _iWidth, _iHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+
+        m_pContext = SDL_GL_CreateContext((SDL_Window*)m_pWindow);
+
+        SDL_GL_MakeCurrent((SDL_Window*)m_pWindow, m_pContext);
+        SDL_GL_SetSwapInterval(0);
 
         return true;
     }
@@ -39,7 +58,16 @@ namespace Duckvil { namespace Window {
             }
         }
 
-        SDL_GL_SwapWindow(m_pWindow);
+        SDL_GL_SwapWindow((SDL_Window*)m_pWindow);
     }
 
+    void* WindowSDL::GetWindow() const
+    {
+        return m_pWindow;
+    }
+
+    void* WindowSDL::GetContext() const
+    {
+        return m_pContext;
+    }
 }}
