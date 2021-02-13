@@ -40,18 +40,6 @@ FOREACH(child ${children})
     endif()
 ENDFOREACH()
 
-FILE(GLOB external_children ${CMAKE_SOURCE_DIR}/external/*/CMakeLists.txt)
-
-FOREACH(child ${external_children})
-    get_filename_component(PARENT_DIR ${child} DIRECTORY)
-    get_filename_component(PROJECT_ID ${PARENT_DIR} NAME)
-    get_target_property(
-        TARGET_TYPE ${PROJECT_ID} TYPE
-    )
-
-    list(APPEND STATIC_LIBRARIES ${PROJECT_ID})
-ENDFOREACH()
-
 SET(GLOBAL_STATIC_LIBRARIES  ${STATIC_LIBRARIES} CACHE INTERNAL "Engine static libs" FORCE)
 
 FOREACH(child ${children})

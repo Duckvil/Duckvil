@@ -13,3 +13,7 @@ target_include_directories(
     Window
     PRIVATE
 )
+target_link_libraries(
+    Window
+    SDL2
+)
