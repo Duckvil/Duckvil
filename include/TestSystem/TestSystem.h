@@ -15,6 +15,10 @@
 
 #include "HotReloader/Events/HotReloadEvent.h"
 
+#include "imgui/imgui.h"
+
+#include "Editor/Widget.h"
+
 #include "TestSystem/TestSystem.generated.h"
 
 namespace Duckvil { namespace LOL {
@@ -46,7 +50,7 @@ namespace Duckvil { namespace LOL {
     };
 
     DUCKVIL_CLASS(ReflectionFlags::ReflectionFlags_UserSystem, HotReloader::ReflectionFlags_Hot)
-    class Test : public ISystem
+    class Test : public ISystem, public Editor::Widget
     {
         DUCKVIL_GENERATED_BODY
     private:
@@ -59,6 +63,9 @@ namespace Duckvil { namespace LOL {
 
         bool Init();
         void Update();
+
+        void InitEditor(void* _pImguiContext);
+        void OnDraw();
 
         void OnEvent(const test& _event);
         void OnEvent(const test2& _event);

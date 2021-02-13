@@ -96,8 +96,9 @@ namespace Duckvil { namespace HotReloader {
 
         RuntimeReflection::__data* m_pReflectionData;
 
-        duckvil_recorderd_types* m_aRecordedTypes;
-        size_t m_ullRecordedTypesCount;
+        // duckvil_recorderd_types* m_aRecordedTypes;
+        // size_t m_ullRecordedTypesCount;
+        Memory::Vector<duckvil_recorderd_types> m_aRecordedTypes;
 
         Memory::Vector<ITrackKeeper*> m_aHotObjects;
 

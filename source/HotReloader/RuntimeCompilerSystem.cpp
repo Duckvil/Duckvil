@@ -113,9 +113,11 @@ namespace Duckvil { namespace HotReloader {
 #endif
 #endif
         std::filesystem::path _includePath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include";
+        std::filesystem::path _externalPath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "external";
         std::filesystem::path _generatedIncludePath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__";
 
         (m_pCompiler->*_addInclude->m_fnFunction)(_includePath.string());
+        (m_pCompiler->*_addInclude->m_fnFunction)(_externalPath.string());
         (m_pCompiler->*_addInclude->m_fnFunction)(_generatedIncludePath.string());
 
 #ifdef DUCKVIL_PLATFORM_WINDOWS
@@ -201,7 +203,7 @@ namespace Duckvil { namespace HotReloader {
 
             std::replace(_toCmp.begin(), _toCmp.end(), '\\', '/');
 
-            for(size_t i = 0; i < m_ullRecordedTypesCount; i++)
+            for(size_t i = 0; i < m_aRecordedTypes.Size(); i++)
             {
                 const duckvil_recorderd_types& _types = m_aRecordedTypes[i];
 
@@ -270,6 +272,7 @@ namespace Duckvil { namespace HotReloader {
 
             std::string _generatedFilename = _filename + ".generated.cpp";
             std::filesystem::path _generatedFile = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _moduleName / _generatedFilename;
+            std::filesystem::path _externalPath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "external";
 
             RuntimeCompiler::Options _options = {};
 
@@ -290,7 +293,16 @@ namespace Duckvil { namespace HotReloader {
 
             m_pEventPool->Broadcast(_beforeCompileEvent);
 
-            (m_pCompiler->*_compile->m_fnFunction)({ _sFile, _generatedFile.string() }, _options);
+            (m_pCompiler->*_compile->m_fnFunction)(
+                {
+                    _sFile,
+                    _generatedFile.string(),
+                    (_externalPath / "imgui/imgui.cpp").string(),
+                    (_externalPath / "imgui/imgui_draw.cpp").string(),
+                    (_externalPath / "imgui/imgui_tables.cpp").string(),
+                    (_externalPath / "imgui/imgui_widgets.cpp").string(),
+                },
+            _options);
 
             HotReloadedEvent _afterCompileEvent;
 
@@ -353,6 +365,7 @@ namespace Duckvil { namespace HotReloader {
                     _swapEvent.m_stage = HotReloadedEvent::stage_after_swap;
                     _swapEvent.m_pObject = _newObject;
                     _swapEvent._typeHandle = _trackKeeper->GetTypehandle();
+                    _swapEvent.m_pOldObject = _oldObject;
 
                     m_pEventPool->Broadcast(_swapEvent);
 

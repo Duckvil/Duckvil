@@ -24,6 +24,7 @@ namespace Duckvil { namespace HotReloader {
         }
 
         void* m_pObject;
+        void* m_pOldObject;
         HotReloadedEvent::stage m_stage;
         RuntimeReflection::__duckvil_resource_type_t _typeHandle;
     };

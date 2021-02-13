@@ -20,10 +20,20 @@ namespace Duckvil { namespace HotReloader {
         TrackKeeper(void* _pObject, RuntimeReflection::__duckvil_resource_type_t _typeHandle);
         ~TrackKeeper();
 
-        void OnEvent(const HotReloadedEvent& _event);
+        // void OnEvent(const HotReloadedEvent& _event);
 
         void* GetObject() const override;
         RuntimeReflection::__duckvil_resource_type_t GetTypehandle() const override;
     };
+
+    // class HotTrackKeeper : public TrackKeeper
+    // {
+    // private:
+    //     uint32_t m_uiiObjectID;
+
+    // public:
+    //     HotTrackKeeper(void* _pObject, RuntimeReflection::__duckvil_resource_type_t _typeHandle);
+    //     ~HotTrackKeeper();
+    // };
 
 }}

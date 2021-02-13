@@ -27,6 +27,13 @@
 #include "Window/Events/CloseEvent.h"
 #include "Window/Events/ResizeEvent.h"
 
+// #include "Renderer/Renderer.h"
+
+// #include "Renderer/ImguiRenderer/Renderer.h"
+
+#include "Editor/Editor.h"
+#include "Editor/Widget.h"
+
 namespace Duckvil {
 
     struct system
@@ -64,8 +71,9 @@ namespace Duckvil {
         RuntimeReflection::__recorder_ftable* m_pRuntimeReflectionRecorder;
         RuntimeReflection::__data* m_pRuntimeReflectionData;
 
-        duckvil_recorderd_types* m_aRecordedTypes;
-        size_t m_ullRecordedTypesCount;
+        // duckvil_recorderd_types* m_aRecordedTypes;
+        // size_t m_ullRecordedTypesCount;
+        Memory::Vector<duckvil_recorderd_types> m_aRecordedTypes;
 
         PlugNPlay::__module_information* m_aLoadedModules;
         uint32_t m_uiLoadedModulesCount;
@@ -87,6 +95,12 @@ namespace Duckvil {
         Memory::Vector<Duckvil::system> m_aEngineSystems;
 
         Window::IWindow* m_pWindow;
+
+        // Renderer::RendererFTable* m_pRenderer;
+        // Renderer::Imgui::render_data m_renderData;
+
+        Editor::EditorFTable* m_pEditor;
+        void* m_pEditorData;
     };
 
     struct __ftable

@@ -153,9 +153,21 @@ namespace Duckvil { namespace LOL {
 
     void Test::Update()
     {
-        DUCKVIL_LOG_INFO(m_pLogger, m_pLoggerData, "B %i", m_iA);
+        // DUCKVIL_LOG_INFO(m_pLogger, m_pLoggerData, "axxxa %i", m_iA);
         // printf("%i\n", m_iA);
         // printf("AAAAAA\n");
+    }
+
+    void Test::InitEditor(void* _pImguiContext)
+    {
+        ImGui::SetCurrentContext((ImGuiContext*)_pImguiContext);
+    }
+
+    void Test::OnDraw()
+    {
+        ImGui::Begin("XXX");
+
+        ImGui::End();
     }
 
     void Test::OnEvent(const test& _event)
