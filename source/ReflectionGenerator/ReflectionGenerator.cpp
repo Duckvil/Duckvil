@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
 
     _autoLoader.LoadAll(_memoryInterface, _free_list, &_loadedModules, &_loadedModulesCount);
 
-    for(uint32_t i = 0; i < _loadedModulesCount; i++)
+    for(uint32_t i = 0; i < _loadedModulesCount; ++i)
     {
         const Duckvil::PlugNPlay::__module_information& _loadedModule = _loadedModules[i];
         uint32_t (*get_recorder_count)();
@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 
         uint32_t _recordersCount = get_recorder_count();
 
-        for(uint32_t j = 0; j < _recordersCount; j++)
+        for(uint32_t j = 0; j < _recordersCount; ++j)
         {
             duckvil_recorderd_types (*record)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData);
 

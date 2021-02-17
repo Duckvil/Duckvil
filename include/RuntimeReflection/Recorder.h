@@ -157,7 +157,7 @@ namespace Duckvil { namespace RuntimeReflection {
         static std::size_t _typeA_ID = typeid(A).hash_code();
         static std::size_t _typeB_ID = typeid(B).hash_code();
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); ++i)
         {
             __type_t _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
 

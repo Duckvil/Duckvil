@@ -203,7 +203,7 @@ namespace Duckvil { namespace Event {
         template <typename Message>
         void Remove()
         {
-            for(uint32_t i = 0; i < m_aChannels.Size(); i++)
+            for(uint32_t i = 0; i < m_aChannels.Size(); ++i)
             {
                 const auto& _channel = m_aChannels[i];
 

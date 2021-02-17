@@ -28,7 +28,7 @@ namespace Duckvil { namespace Utils {
     {
         std::size_t _res = std::numeric_limits<std::size_t>::max();
 
-        for(std::size_t i = 0; i < _ullLength; i++)
+        for(std::size_t i = 0; i < _ullLength; ++i)
         {
             if(_sText[i] == _cToken)
             {

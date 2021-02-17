@@ -19,7 +19,7 @@ namespace Duckvil { namespace Utils {
     {
         m_spArgv = new char*[_iArgc];
 
-        for(uint32_t i = 0; i < _iArgc; i++)
+        for(uint32_t i = 0; i < _iArgc; ++i)
         {
             const char* _current = _spArgv[i];
 
@@ -45,7 +45,7 @@ namespace Duckvil { namespace Utils {
         m_iArgc -= (m_iArgc > 0);
         m_spArgv += (m_spArgv != nullptr);
 
-        for(uint32_t i = 0; i < m_iArgc; i++)
+        for(uint32_t i = 0; i < m_iArgc; ++i)
         {
             const char* argv = m_spArgv[i];
             std::size_t _len = std::strlen(argv);
@@ -69,7 +69,7 @@ namespace Duckvil { namespace Utils {
                     argv = _argv;
                 }
 
-                for(uint32_t j = 0; j < _ullDescriptorsCount; j++)
+                for(uint32_t j = 0; j < _ullDescriptorsCount; ++j)
                 {
                     Descriptor& desc = _pDescriptors[j];
 

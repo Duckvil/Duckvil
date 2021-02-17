@@ -51,7 +51,7 @@ namespace Duckvil { namespace Memory {
 
             if(std::is_base_of<SContainer, Type>::value)
             {
-                for(uint32_t i = 0; i < _size; i++)
+                for(uint32_t i = 0; i < _size; ++i)
                 {
                     SContainer* _container = (SContainer*)fixed_vector_at(_pMemoryInterface, _pThis->m_pContainer, i);
 
@@ -60,7 +60,7 @@ namespace Duckvil { namespace Memory {
             }
             else
             {
-                for(uint32_t i = 0; i < _size; i++)
+                for(uint32_t i = 0; i < _size; ++i)
                 {
                     ((Type*)fixed_vector_at(_pMemoryInterface, _pThis->m_pContainer, i))->~Type();
                 }

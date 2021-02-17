@@ -269,13 +269,13 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         static const std::size_t& _constructorTypeID = typeid(void*(Args...)).hash_code();
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); ++i)
         {
             const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
 
             if(strcmp(_type.m_sTypeName, _sTypeName) == 0)
             {
-                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_constructors.m_data); j++)
+                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_constructors.m_data); ++j)
                 {
                     const __constructor_t& _constructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_constructors, j);
 
@@ -300,7 +300,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         static const std::size_t& _constructorTypeID = typeid(void*(Args...)).hash_code();
 
-        for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_constructors.m_data); j++)
+        for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_constructors.m_data); ++j)
         {
             const __constructor_t& _constructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_constructors, j);
 
@@ -322,7 +322,7 @@ namespace Duckvil { namespace RuntimeReflection {
         static const std::size_t& _keyTypeID = typeid(KeyType).hash_code();
         static const std::size_t& _keyTypeSize = sizeof(KeyType);
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantKeys.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantKeys.m_data); ++i)
         {
             const __variant_t& _keyVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, i);
 
@@ -343,7 +343,7 @@ namespace Duckvil { namespace RuntimeReflection {
         static const std::size_t& _keyTypeSize = sizeof(KeyType);
         static ValueType _invalid;
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantKeys.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantKeys.m_data); ++i)
         {
             const __variant_t& _keyVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, i);
 
@@ -368,7 +368,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
         _variant.m_ullTypeID = std::numeric_limits<std::size_t>::max();
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantKeys.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantKeys.m_data); ++i)
         {
             const __variant_t& _keyVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, i);
 
@@ -389,7 +389,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _handle.m_ID);
         static ValueType _invalid;
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantKeys.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantKeys.m_data); ++i)
         {
             const __variant_t& _keyVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, i);
 
@@ -413,7 +413,7 @@ namespace Duckvil { namespace RuntimeReflection {
         static const std::size_t& _keyTypeSize = sizeof(KeyType);
         static ValueType _invalid;
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_property.m_metas.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_property.m_metas.m_data); ++i)
         {
             const __meta_t& _meta = DUCKVIL_SLOT_ARRAY_GET(_property.m_metas, i);
             const __variant_t& _keyVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, _meta.m_key.m_ID);
@@ -436,7 +436,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __property_t& _property = DUCKVIL_SLOT_ARRAY_GET(_type.m_properties, _handle.m_ID);
         static ValueType _invalid;
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_property.m_metas.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_property.m_metas.m_data); ++i)
         {
             const __meta_t& _meta = DUCKVIL_SLOT_ARRAY_GET(_property.m_metas, i);
             const __variant_t& _keyVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, _meta.m_key.m_ID);
@@ -461,7 +461,7 @@ namespace Duckvil { namespace RuntimeReflection {
         static const std::size_t& _keyTypeSize = sizeof(KeyType);
         static ValueType _invalid;
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_constructor.m_metas.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_constructor.m_metas.m_data); ++i)
         {
             const __meta_t& _meta = DUCKVIL_SLOT_ARRAY_GET(_constructor.m_metas, i);
             const __variant_t& _keyVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, _meta.m_key.m_ID);
@@ -484,7 +484,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __constructor_t& _constructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_constructors, _handle.m_ID);
         static ValueType _invalid;
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_constructor.m_metas.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_constructor.m_metas.m_data); ++i)
         {
             const __meta_t& _meta = DUCKVIL_SLOT_ARRAY_GET(_constructor.m_metas, i);
             const __variant_t& _keyVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, _meta.m_key.m_ID);
@@ -502,7 +502,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
     static DUCKVIL_RESOURCE(type_t) get_type(__data* _pData, const std::size_t& _ullTypeID)
     {
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); ++i)
         {
             const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
 
@@ -528,7 +528,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         static const std::size_t& _argsSize = sizeof...(Lengths);
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); ++i)
         {
             const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
 
@@ -556,7 +556,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
     static DUCKVIL_RESOURCE(type_t) get_type(__data* _pData, const char* _sName, const std::vector<const char*>& _aNamespaces)
     {
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); ++i)
         {
             const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
             size_t _namespacesSize = DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_namespaces.m_data);
@@ -565,7 +565,7 @@ namespace Duckvil { namespace RuntimeReflection {
             {
                 bool _valid = true;
 
-                for(uint32_t j = 0; j < _aNamespaces.size(); j++)
+                for(uint32_t j = 0; j < _aNamespaces.size(); ++j)
                 {
                     const __namespace_t& _namespace = DUCKVIL_SLOT_ARRAY_GET(_type.m_namespaces, j);
 
@@ -592,7 +592,7 @@ namespace Duckvil { namespace RuntimeReflection {
         std::size_t _size = DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data);
         Memory::Vector<DUCKVIL_RESOURCE(type_t)> _types(_pMemory, _pAllocator, _size);
 
-        for(uint32_t i = 0; i < _size; i++)
+        for(uint32_t i = 0; i < _size; ++i)
         {
             __type_t _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
 
@@ -602,13 +602,18 @@ namespace Duckvil { namespace RuntimeReflection {
         return _types;
     }
 
+    static Memory::Vector<DUCKVIL_RESOURCE(type_t)> get_types(__data* _pData, const Memory::FreeList& _heap)
+    {
+        return get_types(_pData, _heap.GetMemoryInterface(), _heap.GetAllocator());
+    }
+
     // template <>
     // static Memory::Vector<DUCKVIL_RESOURCE(type_t), Memory::__free_list_allocator> get_types(__data* _pData, Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator)
     // {
     //     std::size_t _size = DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data);
     //     auto _types = Memory::VectorFactory<DUCKVIL_RESOURCE(type_t)>::Create(_pMemory, _pAllocator, _size);
 
-    //     for(uint32_t i = 0; i < _size; i++)
+    //     for(uint32_t i = 0; i < _size; ++i)
     //     {
     //         __type_t _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
 
@@ -624,7 +629,7 @@ namespace Duckvil { namespace RuntimeReflection {
     //     std::size_t _size = DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data);
     //     auto _types = Memory::VectorFactory<DUCKVIL_RESOURCE(type_t)>::Create(_pMemory, _pAllocator, _size);
 
-    //     for(uint32_t i = 0; i < _size; i++)
+    //     for(uint32_t i = 0; i < _size; ++i)
     //     {
     //         __type_t _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
 
@@ -638,7 +643,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_properties.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_properties.m_data); ++i)
         {
             const __property_t& _property = DUCKVIL_SLOT_ARRAY_GET(_type.m_properties, i);
 
@@ -657,7 +662,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         static const std::size_t& _constructorTypeID = typeid(void*(Args...)).hash_code();
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_constructors.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_constructors.m_data); ++i)
         {
             const __constructor_t& _constructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_constructors, i);
 
@@ -676,7 +681,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         static const std::size_t& _argsTypeID = typeid(void(Args...)).hash_code();
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); ++i)
         {
             const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, i);
 
@@ -696,7 +701,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         static const std::size_t& _argsTypeID = typeid(void(Args...)).hash_code();
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); ++i)
         {
             const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, i);
 
@@ -717,7 +722,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         static const std::size_t& _argsTypeID = typeid(void(Args...)).hash_code();
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); ++i)
         {
             const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, i);
 
@@ -748,7 +753,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         static const std::size_t& _argsTypeID = typeid(void(Args...)).hash_code();
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); ++i)
         {
             const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, i);
 
@@ -768,13 +773,13 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         static const std::size_t& _typeID = typeid(Type).hash_code();
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); ++i)
         {
             const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
 
             if(_type.m_ullTypeID == _typeID)
             {
-                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_properties.m_data); j++)
+                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_properties.m_data); ++j)
                 {
                     const __property_t& _property = DUCKVIL_SLOT_ARRAY_GET(_type.m_properties, j);
 
@@ -793,7 +798,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_properties.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_properties.m_data); ++i)
         {
             const __property_t& _property = DUCKVIL_SLOT_ARRAY_GET(_type.m_properties, i);
 
@@ -813,13 +818,13 @@ namespace Duckvil { namespace RuntimeReflection {
         static const std::size_t& _typeID = typeid(Type).hash_code();
         static const std::size_t& _argsTypeID = typeid(void(Args...)).hash_code();
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); ++i)
         {
             const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
 
             if(_type.m_ullTypeID == _typeID)
             {
-                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); j++)
+                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); ++j)
                 {
                     const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, j);
 
@@ -842,13 +847,13 @@ namespace Duckvil { namespace RuntimeReflection {
         static const std::size_t& _typeID = typeid(Type).hash_code();
         static const std::size_t& _argsTypeID = typeid(void(Args...)).hash_code();
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); ++i)
         {
             const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
 
             if(_type.m_ullTypeID == _typeID)
             {
-                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); j++)
+                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); ++j)
                 {
                     const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, j);
 
@@ -904,13 +909,13 @@ namespace Duckvil { namespace RuntimeReflection {
         static const std::size_t& _typeID = typeid(Type).hash_code();
         static const std::size_t& _argsTypeID = typeid(void(Args...)).hash_code();
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); ++i)
         {
             const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
 
             if(_type.m_ullTypeID == _typeID)
             {
-                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); j++)
+                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); ++j)
                 {
                     const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, j);
 
@@ -933,13 +938,13 @@ namespace Duckvil { namespace RuntimeReflection {
         static const std::size_t& _typeID = typeid(Type).hash_code();
         static const std::size_t& _argsTypeID = typeid(void(Args...)).hash_code();
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); ++i)
         {
             const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
 
             if(_type.m_ullTypeID == _typeID)
             {
-                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); j++)
+                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); ++j)
                 {
                     const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, j);
 
@@ -993,7 +998,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         Memory::Vector<DUCKVIL_RESOURCE(inheritance_t)> _inheritances(_pMemory, _pAllocator, DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_inheritances.m_data));
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_inheritances.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_inheritances.m_data); ++i)
         {
             _inheritances.Allocate({ i });
         }
@@ -1013,7 +1018,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         const __type_t& _inheritanceType = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_inheritances.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_inheritances.m_data); ++i)
         {
             auto& _inheritance = DUCKVIL_SLOT_ARRAY_GET(_type.m_inheritances, i);
 
@@ -1032,7 +1037,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         static const std::size_t& _inheritanceTypeID = typeid(Type).hash_code();
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_inheritances.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_inheritances.m_data); ++i)
         {
             auto& _inheritance = DUCKVIL_SLOT_ARRAY_GET(_type.m_inheritances, i);
 

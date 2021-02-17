@@ -75,7 +75,7 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             _file << ", ";
 
-            for(uint32_t i = 0; i < _castedConstructor->m_aArguments.size(); i++)
+            for(uint32_t i = 0; i < _castedConstructor->m_aArguments.size(); ++i)
             {
                 _file << _castedConstructor->m_aArguments[i].m_sType;
 
@@ -178,7 +178,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
         _file << "_property = record_property<" << _castedCallback->m_sReturnType << "(" << _castedCallback->m_sMemberType << ")(";
 
-        for(uint32_t i = 0; i < _castedCallback->m_aArguments.size(); i++)
+        for(uint32_t i = 0; i < _castedCallback->m_aArguments.size(); ++i)
         {
             _file << _castedCallback->m_aArguments[i].m_sType;
 
@@ -230,7 +230,7 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             _file << ", ";
 
-            for(uint32_t i = 0; i < _castedFunction->m_aArguments.size(); i++)
+            for(uint32_t i = 0; i < _castedFunction->m_aArguments.size(); ++i)
             {
                 _file << _castedFunction->m_aArguments[i].m_sType;
 
@@ -421,7 +421,7 @@ namespace Duckvil { namespace RuntimeReflection {
             recursive(_pData, &_ast.m_main, _file);
 
             _file << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) << "* _types = new " << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) <<"[_recordedTypes.size()];\n";
-            _file << "for(size_t i = 0; i < _recordedTypes.size(); i++) { _types[i] = _recordedTypes[i]; }\n";
+            _file << "for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }\n";
             _file << "return duckvil_recorderd_types { _types, _recordedTypes.size(), \"" << _pData->m_sInclude << "\", " << _pData->m_uiRecorderIndex << " };\n";
             _file << "}\n";
 

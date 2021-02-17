@@ -161,7 +161,7 @@ namespace Duckvil { namespace Event {
         template <typename Handler>
         void Remove(Handler* _pHandler)
         {
-            for(uint32_t i = 0; i < m_aRefelctedEvents.Size(); i++)
+            for(uint32_t i = 0; i < m_aRefelctedEvents.Size(); ++i)
             {
                 reflected_event& _event = m_aRefelctedEvents[i];
 
@@ -174,7 +174,7 @@ namespace Duckvil { namespace Event {
 
         void Remove(const Callback& _fn)
         {
-            for(uint32_t i = 0; i < m_aCallbackEvents.size(); i++)
+            for(uint32_t i = 0; i < m_aCallbackEvents.size(); ++i)
             {
                 void (*_fnI)(const Message&) = m_aCallbackEvents[i];
 

@@ -6,7 +6,7 @@
 #include "Utils/Utils.h"
 
 #define DUCKVIL_SPACES \
-    for(uint32_t i = 0; i < _uiScope; i++) \
+    for(uint32_t i = 0; i < _uiScope; ++i) \
     { \
         printf(" "); \
     }

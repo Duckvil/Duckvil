@@ -4,7 +4,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
     DUCKVIL_RESOURCE(type_t) record_type(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, __data* _pData, std::size_t _ullTypeID, const char _sTypeName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX])
     {
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); ++i)
         {
             __type_t _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
 
@@ -53,7 +53,7 @@ namespace Duckvil { namespace RuntimeReflection {
         __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aTypes, _owner.m_ID);
         bool _keyFound = false;
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type->m_variantKeys.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type->m_variantKeys.m_data); ++i)
         {
             __variant_t _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, i);
 
@@ -130,7 +130,7 @@ namespace Duckvil { namespace RuntimeReflection {
         __property_t* _property = DUCKVIL_SLOT_ARRAY_GET_POINTER(_type->m_properties, _owner.m_ID);
         bool _keyFound = false;
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type->m_variantKeys.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type->m_variantKeys.m_data); ++i)
         {
             __variant_t _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, i);
 
@@ -207,7 +207,7 @@ namespace Duckvil { namespace RuntimeReflection {
         __constructor_t* _property = DUCKVIL_SLOT_ARRAY_GET_POINTER(_type->m_constructors, _owner.m_ID);
         bool _keyFound = false;
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type->m_variantKeys.m_data); i++)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type->m_variantKeys.m_data); ++i)
         {
             __variant_t _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, i);
 

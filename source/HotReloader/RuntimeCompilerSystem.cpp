@@ -203,7 +203,7 @@ namespace Duckvil { namespace HotReloader {
 
             std::replace(_toCmp.begin(), _toCmp.end(), '\\', '/');
 
-            for(size_t i = 0; i < m_aRecordedTypes.Size(); i++)
+            for(size_t i = 0; i < m_aRecordedTypes.Size(); ++i)
             {
                 const duckvil_recorderd_types& _types = m_aRecordedTypes[i];
 
@@ -333,11 +333,11 @@ namespace Duckvil { namespace HotReloader {
 
         duckvil_recorderd_types _types = record(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_pReflectionRecorderFTable, m_pReflectionFTable, m_pReflectionData);
 
-        for(uint32_t i = 0; i < m_aHotObjects.Size(); i++)
+        for(uint32_t i = 0; i < m_aHotObjects.Size(); ++i)
         {
             ITrackKeeper* _trackKeeper = m_aHotObjects[i];
 
-            for(size_t j = 0; j < _types.m_ullCount; j++)
+            for(size_t j = 0; j < _types.m_ullCount; ++j)
             {
                 const Duckvil::RuntimeReflection::__duckvil_resource_type_t& _type = _types.m_aTypes[j];
 
