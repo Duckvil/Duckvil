@@ -18,6 +18,8 @@ namespace Duckvil { namespace Logger {
 
         memset(_data->m_buffer, 0, 128);
 
+        DUCKVIL_DEBUG_MEMORY(_data->m_logs.GetAllocator(), "m_logs");
+
         return _data;
     }
 
