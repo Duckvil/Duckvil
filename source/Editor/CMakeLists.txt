@@ -22,6 +22,7 @@ target_include_directories(
     "${CMAKE_SOURCE_DIR}/external/imgui/backends"
     "${CMAKE_SOURCE_DIR}/external/SDL2/include"
     "${CMAKE_SOURCE_DIR}/external/glew/include"
+    "${CMAKE_SOURCE_DIR}/external/hex_editor"
 )
 target_link_libraries(
     Editor

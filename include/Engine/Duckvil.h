@@ -100,7 +100,7 @@ namespace Duckvil {
         // Renderer::Imgui::render_data m_renderData;
 
         Editor::EditorFTable* m_pEditor;
-        void* m_pEditorData;
+        Editor::ImGuiEditorData* m_pEditorData;
     };
 
     struct __ftable

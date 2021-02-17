@@ -8,6 +8,8 @@
 
 #include "HotReloader/FileWatcher.h"
 
+#include "Editor/Widgets/HexEditorWidgetEvent.h"
+
 #undef max
 #undef GetObject
 #undef __allocator
@@ -87,7 +89,7 @@ namespace Duckvil {
 
         _pData->m_pEditor = init(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator());
 
-        _pData->m_pEditorData = _pData->m_pEditor->m_fnInit(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _pData->m_pWindow);
+        _pData->m_pEditorData = (Editor::ImGuiEditorData*)_pData->m_pEditor->m_fnInit(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _pData->m_pWindow);
 
         return true;
     }
@@ -130,7 +132,7 @@ namespace Duckvil {
 
         DUCKVIL_LOG_INFO_("Modules to load %i", _pData->m_uiLoadedModulesCount);
 
-        for(uint32_t i = 0; i < _pData->m_uiLoadedModulesCount; i++)
+        for(uint32_t i = 0; i < _pData->m_uiLoadedModulesCount; ++i)
         {
             const PlugNPlay::__module_information& _loadedModule = _pData->m_aLoadedModules[i];
             uint32_t (*get_recorder_count)();
@@ -151,7 +153,7 @@ namespace Duckvil {
 
             uint32_t _recordersCount = get_recorder_count();
 
-            for(uint32_t j = 0; j < _recordersCount; j++)
+            for(uint32_t j = 0; j < _recordersCount; ++j)
             {
                 duckvil_recorderd_types (*record)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);
 
@@ -217,7 +219,7 @@ namespace Duckvil {
                 _type.Invoke<const Memory::FreeList&>("SetObjectsHeap", _pData->m_pRuntimeCompiler, _pData->m_objectsHeap);
             }
 
-            for(uint32_t i = 0; i < _types.Size(); i++)
+            for(uint32_t i = 0; i < _types.Size(); ++i)
             {
                 const RuntimeReflection::__duckvil_resource_type_t& _typeHandle = _types[i];
                 const RuntimeReflection::__variant& _variant = RuntimeReflection::get_meta(_pData->m_pRuntimeReflectionData, _typeHandle, ReflectionFlags::ReflectionFlags_UserSystem);
@@ -284,7 +286,7 @@ namespace Duckvil {
                         {
                             if(_event.m_stage == HotReloader::HotReloadedEvent::stage_after_swap)
                             {
-                                for(uint32_t i = 0; i < _pData->m_aEngineSystems.Size(); i++)
+                                for(uint32_t i = 0; i < _pData->m_aEngineSystems.Size(); ++i)
                                 {
                                     system& _system = _pData->m_aEngineSystems[i];
 
@@ -309,7 +311,7 @@ namespace Duckvil {
                                             });
 
                                         // Call function to set for only this widget, not for all widgets
-                                            _pData->m_pEditor->m_fnPostInit(_pData->m_pEditorData);
+                                            _pData->m_pEditor->m_fnPostInit(_pData->m_pRuntimeReflectionData, _pData->m_heap, _pData->m_pEditorData);
                                         }
                                         else
                                         {
@@ -328,7 +330,7 @@ namespace Duckvil {
                 }
             }
 
-            _pData->m_pEditor->m_fnPostInit(_pData->m_pEditorData);
+            _pData->m_pEditor->m_fnPostInit(_pData->m_pRuntimeReflectionData, _pData->m_heap, _pData->m_pEditorData);
 
             if(!(_pData->m_pRuntimeCompiler->*_pData->m_fnRuntimeCompilerInit)())
             {
@@ -346,6 +348,7 @@ namespace Duckvil {
             return false;
         }
 
+        _pData->m_pEditorData->m_pEditorEvents.Broadcast(Editor::HexEditorWidgetInitEvent{ _pData->m_pMemoryDebugger });
         _pData->m_bRunning = true;
 
         while(_pData->m_bRunning)
@@ -371,7 +374,7 @@ namespace Duckvil {
 #ifdef DUCKVIL_MEMORY_DEBUGGER
     void recursive(duckvil_memory_debug_info* _pDebugInfo, uint32_t& _index)
     {
-        for(uint32_t i = 0; i < _index; i++)
+        for(uint32_t i = 0; i < _index; ++i)
         {
             printf(" ");
         }
@@ -397,14 +400,14 @@ namespace Duckvil {
             printf("Vector %s\n", _pDebugInfo->m_aLabel);
         }
 
-        for(uint32_t i = 0; i < _index; i++)
+        for(uint32_t i = 0; i < _index; ++i)
         {
             printf(" ");
         }
 
         printf("Size: %d\n", ((Memory::__allocator*)_pDebugInfo->m_pAllocator)->m_ullUsed);
 
-        for(uint32_t i = 0; i < _index; i++)
+        for(uint32_t i = 0; i < _index; ++i)
         {
             printf(" ");
         }
@@ -428,7 +431,7 @@ namespace Duckvil {
 
         _pData->m_dOneSecond += _pData->m_timeData.m_dDelta;
 
-        for(uint32_t i = 0; i < _pData->m_aEngineSystems.Size(); i++)
+        for(uint32_t i = 0; i < _pData->m_aEngineSystems.Size(); ++i)
         {
             system& _system = _pData->m_aEngineSystems[i];
 
@@ -453,10 +456,10 @@ namespace Duckvil {
             DUCKVIL_LOG_INFO_("Delta: %f ms", _pData->m_timeData.m_dDelta * 1000.0);
             DUCKVIL_LOG_INFO_("Used memory: %d of %d", _pData->m_pHeap->m_ullUsed, _pData->m_pHeap->m_ullCapacity);
 
-#ifdef DUCKVIL_MEMORY_DEBUGGER
-            uint32_t _index = 0;
-            recursive(_pData->m_pMemoryDebugger, _index);
-#endif
+// #ifdef DUCKVIL_MEMORY_DEBUGGER
+//             uint32_t _index = 0;
+//             recursive(_pData->m_pMemoryDebugger, _index);
+// #endif
 
             _pData->m_dOneSecond = 0.0;
         }

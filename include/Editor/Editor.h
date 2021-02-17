@@ -3,10 +3,15 @@
 #include "Utils/Macro.h"
 
 #include "Memory/FreeListAllocator.h"
+#include "Memory/FreeList.h"
 
 #include "Window/IWindow.h"
 
 #include "Editor/Draw.h"
+
+#include "RuntimeReflection/RuntimeReflection.h"
+
+#include "Event/ImmediatePool.h"
 
 namespace Duckvil { namespace Editor {
 
@@ -18,7 +23,14 @@ namespace Duckvil { namespace Editor {
         void (*m_fnAddDraw)(void* _pData, Draw _draw);
         void (*m_fnRemoveDraw)(void* _pData, void* _pObject);
 
-        void (*m_fnPostInit)(void* _pData);
+        void (*m_fnPostInit)(RuntimeReflection::__data* _pRuntimeReflectionData, const Memory::FreeList& _heap, void* _pData);
+    };
+
+    struct ImGuiEditorData
+    {
+        Memory::Vector<Editor::Draw> m_aDraws;
+        void* _ctx;
+        Event::Pool<Event::mode::immediate> m_pEditorEvents;
     };
 
 }}
