@@ -5,3 +5,6 @@
 	path = external/imgui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking
+[submodule "external/hex_editor"]
+	path = external/hex_editor
+	url = https://github.com/ocornut/imgui_club.git
