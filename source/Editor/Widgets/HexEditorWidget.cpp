@@ -7,13 +7,45 @@ namespace Duckvil { namespace Editor {
     {
         if(ImGui::TreeNodeEx((void*)(uintptr_t)_index, ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_None, "%s %d", _pDebugInfo->m_aLabel, _index))
         {
-            if(ImGui::IsItemToggledOpen())
+            // if(ImGui::IsItemToggledOpen())
+            // {
+            //     _pHexWidget->m_pSelected = _pDebugInfo;
+            // }
+            // else
+            // {
+            //     _pHexWidget->m_pSelected = _pDebugInfo->m_pParent;
+            // }
+
+            _pHexWidget->m_pSelected = _pDebugInfo;
+
+            if(_pHexWidget->m_pSelected && ImGui::IsItemHovered())
             {
-                _pHexWidget->m_pSelected = _pDebugInfo;
-            }
-            else
-            {
-                _pHexWidget->m_pSelected = _pDebugInfo->m_pParent;
+                ImGui::BeginTooltip();
+
+                ImGui::Text("Capacity: %d", _pHexWidget->m_pSelected->m_pAllocator->m_ullCapacity);
+
+                if(_pHexWidget->m_pSelected->m_allocatorType == duckvil_memory_allocator_type::duckvil_memory_allocator_type_free_list)
+                {
+                    ImGui::Text("Type: Free list");
+                }
+                else if(_pHexWidget->m_pSelected->m_allocatorType == duckvil_memory_allocator_type::duckvil_memory_allocator_type_linear)
+                {
+                    ImGui::Text("Type: Linear");
+                }
+                else if(_pHexWidget->m_pSelected->m_allocatorType == duckvil_memory_allocator_type::duckvil_memory_allocator_type_vector)
+                {
+                    ImGui::Text("Type: Vector");
+                }
+                else if(_pHexWidget->m_pSelected->m_allocatorType == duckvil_memory_allocator_type::duckvil_memory_allocator_type_array)
+                {
+                    ImGui::Text("Type: Array");
+                }
+                else if(_pHexWidget->m_pSelected->m_allocatorType == duckvil_memory_allocator_type::duckvil_memory_allocator_type_queue)
+                {
+                    ImGui::Text("Type: Queue");
+                }
+
+                ImGui::EndTooltip();
             }
 
             for(const auto& a : _pDebugInfo->m_aOther)
@@ -103,7 +135,7 @@ namespace Duckvil { namespace Editor {
 
             if(m_pSelected != nullptr)
             {
-                m_hexEditor.DrawContents(m_pSelected->m_pAllocator->m_pMemory, m_pSelected->m_pAllocator->m_ullUsed);
+                m_hexEditor.DrawContents(m_pSelected->m_pAllocator->m_pMemory, m_pSelected->m_pAllocator->m_ullCapacity);
             }
 
             ImGui::EndChild();

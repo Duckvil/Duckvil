@@ -18,8 +18,6 @@ namespace Duckvil { namespace Editor {
     {
         DUCKVIL_GENERATED_BODY
     private:
-        MemoryEditor m_hexEditor;
-
         Memory::FreeList m_heap;
         duckvil_memory_debug_info* m_pMemoryDebugInfo;
 
@@ -28,6 +26,8 @@ namespace Duckvil { namespace Editor {
     public:
         HexEditorWidget(const Memory::FreeList& _heap);
         ~HexEditorWidget();
+
+        MemoryEditor m_hexEditor;
 
         duckvil_memory_debug_info* m_pSelected;
 
