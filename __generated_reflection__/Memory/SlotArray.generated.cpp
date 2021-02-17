@@ -16,7 +16,7 @@ record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::
 _property = record_property<DUCKVIL_DYNAMIC_ARRAY(uint32_t)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(__duckvil_slot_array_base, m_handleIndices), "m_handleIndices");
 _property = record_property<DUCKVIL_DYNAMIC_ARRAY(uint32_t)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(__duckvil_slot_array_base, m_freeIndices), "m_freeIndices");
 Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
-for(size_t i = 0; i < _recordedTypes.size(); i++) { _types[i] = _recordedTypes[i]; }
+for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
 return duckvil_recorderd_types { _types, _recordedTypes.size(), "Memory/SlotArray.h", 21 };
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE

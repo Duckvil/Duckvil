@@ -21,7 +21,7 @@ _constructor = record_constructor<Duckvil::HotReloader::TrackKeeper, void*, Runt
 record_function<Duckvil::HotReloader::TrackKeeper, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::HotReloader::TrackKeeper::GetObject, "GetObject");
 record_function<Duckvil::HotReloader::TrackKeeper, RuntimeReflection::__duckvil_resource_type_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::HotReloader::TrackKeeper::GetTypehandle, "GetTypehandle");
 Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
-for(size_t i = 0; i < _recordedTypes.size(); i++) { _types[i] = _recordedTypes[i]; }
+for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
 return duckvil_recorderd_types { _types, _recordedTypes.size(), "HotReloader/TrackKeeper.h", 8 };
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE

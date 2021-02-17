@@ -22,7 +22,7 @@ record_function<Duckvil::RuntimeSerializer::ISerializer, bool>(DUCKVIL_RUNTIME_R
 record_function<Duckvil::RuntimeSerializer::ISerializer, bool, const char*, Type&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeSerializer::ISerializer::SerializeProperty, "SerializeProperty");
 record_function<Duckvil::RuntimeSerializer::ISerializer, bool, const char*, const Type>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeSerializer::ISerializer::SerializeProperty, "SerializeProperty");
 Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
-for(size_t i = 0; i < _recordedTypes.size(); i++) { _types[i] = _recordedTypes[i]; }
+for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
 return duckvil_recorderd_types { _types, _recordedTypes.size(), "Serializer/Runtime/ISerializer.h", 1 };
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE

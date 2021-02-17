@@ -25,7 +25,7 @@ _property = record_property<size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD
 _property = record_property<mode>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Event::event_lookup, m_mode), "m_mode");
 _property = record_property<IChannel*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Event::event_lookup, m_pChannel), "m_pChannel");
 Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
-for(size_t i = 0; i < _recordedTypes.size(); i++) { _types[i] = _recordedTypes[i]; }
+for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
 return duckvil_recorderd_types { _types, _recordedTypes.size(), "Event/Channel.h", 3 };
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE

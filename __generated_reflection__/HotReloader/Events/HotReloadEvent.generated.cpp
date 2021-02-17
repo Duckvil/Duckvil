@@ -22,7 +22,7 @@ _property = record_property<void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_
 _property = record_property<HotReloadedEvent::stage>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::HotReloader::HotReloadedEvent, m_stage), "m_stage");
 _property = record_property<RuntimeReflection::__duckvil_resource_type_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::HotReloader::HotReloadedEvent, _typeHandle), "_typeHandle");
 Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
-for(size_t i = 0; i < _recordedTypes.size(); i++) { _types[i] = _recordedTypes[i]; }
+for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
 return duckvil_recorderd_types { _types, _recordedTypes.size(), "HotReloader/Events/HotReloadEvent.h", 1 };
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE

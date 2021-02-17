@@ -23,7 +23,7 @@ record_function<Duckvil::Window::WindowSDL, void>(DUCKVIL_RUNTIME_REFLECTION_REC
 record_function<Duckvil::Window::WindowSDL, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Window::WindowSDL::GetWindow, "GetWindow");
 record_function<Duckvil::Window::WindowSDL, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Window::WindowSDL::GetContext, "GetContext");
 Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
-for(size_t i = 0; i < _recordedTypes.size(); i++) { _types[i] = _recordedTypes[i]; }
+for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
 return duckvil_recorderd_types { _types, _recordedTypes.size(), "Window/SDL_Window.h", 3 };
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE

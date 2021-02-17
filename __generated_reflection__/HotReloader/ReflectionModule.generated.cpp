@@ -32,7 +32,7 @@ record_function<Duckvil::HotReloader::RuntimeCompilerReflectionModule, void, Par
 record_function<Duckvil::HotReloader::RuntimeCompilerReflectionModule, void, std::ofstream&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::HotReloader::RuntimeCompilerReflectionModule::GenerateCustom, "GenerateCustom");
 record_function<Duckvil::HotReloader::RuntimeCompilerReflectionModule, void>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::HotReloader::RuntimeCompilerReflectionModule::Clear, "Clear");
 Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
-for(size_t i = 0; i < _recordedTypes.size(); i++) { _types[i] = _recordedTypes[i]; }
+for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
 return duckvil_recorderd_types { _types, _recordedTypes.size(), "HotReloader/ReflectionModule.h", 6 };
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE

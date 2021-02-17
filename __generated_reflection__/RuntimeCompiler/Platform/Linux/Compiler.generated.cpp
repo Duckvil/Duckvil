@@ -26,7 +26,7 @@ record_function<Duckvil::RuntimeCompiler::LinuxCompiler, void, const std::string
 record_function<Duckvil::RuntimeCompiler::LinuxCompiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::LinuxCompiler::AddLibraryPath, "AddLibraryPath");
 record_function<Duckvil::RuntimeCompiler::LinuxCompiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::LinuxCompiler::AddLibrary, "AddLibrary");
 Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
-for(size_t i = 0; i < _recordedTypes.size(); i++) { _types[i] = _recordedTypes[i]; }
+for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
 return duckvil_recorderd_types { _types, _recordedTypes.size(), "RuntimeCompiler/Platform/Linux/Compiler.h", 1 };
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE

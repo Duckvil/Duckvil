@@ -41,7 +41,7 @@ _property = record_property<void(*)(__lexer_data*, const char)>(DUCKVIL_RUNTIME_
 _property = record_property<bool(*)(__lexer_data*, std::string*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__lexer_ftable, next_token), "next_token");
 _property = record_property<bool(*)(const __lexer_data&)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__lexer_ftable, space), "space");
 Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
-for(size_t i = 0; i < _recordedTypes.size(); i++) { _types[i] = _recordedTypes[i]; }
+for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
 return duckvil_recorderd_types { _types, _recordedTypes.size(), "Parser/Lexer.h", 1 };
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE

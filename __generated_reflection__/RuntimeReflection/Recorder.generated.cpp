@@ -18,7 +18,7 @@ _property = record_property<size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD
 _property = record_property<const char*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(duckvil_recorderd_types, m_sFile), "m_sFile");
 _property = record_property<uint32_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(duckvil_recorderd_types, m_uiRecorderID), "m_uiRecorderID");
 Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
-for(size_t i = 0; i < _recordedTypes.size(); i++) { _types[i] = _recordedTypes[i]; }
+for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
 return duckvil_recorderd_types { _types, _recordedTypes.size(), "RuntimeReflection/Recorder.h", 4 };
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
