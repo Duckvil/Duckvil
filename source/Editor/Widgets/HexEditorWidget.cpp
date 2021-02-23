@@ -7,15 +7,6 @@ namespace Duckvil { namespace Editor {
     {
         if(ImGui::TreeNodeEx((void*)(uintptr_t)_index, ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_None, "%s %d", _pDebugInfo->m_aLabel, _index))
         {
-            // if(ImGui::IsItemToggledOpen())
-            // {
-            //     _pHexWidget->m_pSelected = _pDebugInfo;
-            // }
-            // else
-            // {
-            //     _pHexWidget->m_pSelected = _pDebugInfo->m_pParent;
-            // }
-
             _pHexWidget->m_pSelected = _pDebugInfo;
 
             if(_pHexWidget->m_pSelected && ImGui::IsItemHovered())
@@ -107,7 +98,9 @@ namespace Duckvil { namespace Editor {
     {
         a1 = 1000;
         a2 = 1000;
+#ifdef DUCKVIL_MEMORY_DEBUGGER
         m_pSelected = nullptr;
+#endif
     }
 
     HexEditorWidget::~HexEditorWidget()
@@ -124,10 +117,17 @@ namespace Duckvil { namespace Editor {
     {
         uint32_t _index = 0;
 
+#ifdef DUCKVIL_MEMORY_DEBUGGER
         ImGui::Begin("Hex editor");
         {
+            float _width = ImGui::GetWindowContentRegionWidth();
+
+            a2 = _width - a1;
+            a1 = _width - a2;
+
             DrawSplitter(0, 8, &a1, &a2, 8, 8);
             ImGui::BeginChild("Allocators tree", ImVec2(a1, 0), true);
+            ImGui::Text("Memory used: %d", m_heap.GetAllocator()->m_ullUsed);
             recursive(this, m_pMemoryDebugInfo, _index);
             ImGui::EndChild();
             ImGui::SameLine();
@@ -141,11 +141,14 @@ namespace Duckvil { namespace Editor {
             ImGui::EndChild();
         }
         ImGui::End();
+#endif
     }
 
     void HexEditorWidget::OnEvent(const HexEditorWidgetInitEvent& _event)
     {
+#ifdef DUCKVIL_MEMORY_DEBUGGER
         m_pMemoryDebugInfo = _event.m_pDebugInfo;
+#endif
     }
 
 }}

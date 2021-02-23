@@ -15,6 +15,8 @@
 
 #include "Editor/Widgets/HexEditorWidgetEvent.h"
 
+#include "RuntimeReflection/ReflectedType.h"
+
 namespace Duckvil { namespace Editor {
 
     void* init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, Window::IWindow* _pWindow)
@@ -39,6 +41,9 @@ namespace Duckvil { namespace Editor {
         ImGuiContext* _ctx = ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO(); (void)io;
 
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
         ImGui::StyleColorsDark();
 
         ImGui_ImplSDL2_InitForOpenGL((SDL_Window*)_pWindow->GetWindow(), _pWindow->GetContext());
@@ -51,24 +56,38 @@ namespace Duckvil { namespace Editor {
         return _data;
     }
 
-    void post_init(RuntimeReflection::__data* _pRuntimeReflectionData, const Memory::FreeList& _heap, void* _pData)
+    void post_init(RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData, const Memory::FreeList& _heap, void* _pData)
     {
         ImGuiEditorData* _data = (ImGuiEditorData*)_pData;
 
-        _data->m_pEditorEvents = Event::Pool<Event::mode::immediate>(_heap, _pRuntimeReflectionData);
+        _data->m_pEditorEvents = Event::Pool<Event::mode::immediate>(_heap, _pReflection, _pRuntimeReflectionData);
 
-        auto _types = RuntimeReflection::get_types(_pRuntimeReflectionData, _heap);
+        auto _types = RuntimeReflection::get_types(_pReflection, _pRuntimeReflectionData, _heap);
 
         for(uint32_t i = 0; i < _types.Size(); ++i)
         {
             RuntimeReflection::__duckvil_resource_type_t _typeHandle = _types[i];
-            RuntimeReflection::ReflectedType<> _type(_pRuntimeReflectionData, _heap, _typeHandle);
+            RuntimeReflection::ReflectedType<> _type(_pReflection, _pRuntimeReflectionData, _heap, _typeHandle);
 
             if(RuntimeReflection::inherits<Editor::Widget>(_pRuntimeReflectionData, _typeHandle) && !RuntimeReflection::inherits<ISystem>(_pRuntimeReflectionData, _typeHandle))
             {
+                const auto& _res = _pReflection->m_fnGetConstructors(_pRuntimeReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle); // RuntimeReflection::get_constructors(_pRuntimeReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle);
+
+                for(uint32_t i = 0; i < _res.Size(); ++i)
+                {
+                    const auto& _res2 = _pReflection->m_fnGetArguments(_pRuntimeReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle, { i }); // RuntimeReflection::get_arguments(_pRuntimeReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle, { i });
+
+                    for(uint32_t j = 0; j < _res.Size(); ++j)
+                    {
+                        const auto& _lol = _pReflection->m_fnGetArgument(_pRuntimeReflectionData, _typeHandle, { i }, { j }); // RuntimeReflection::get_argument(_pRuntimeReflectionData, _typeHandle, { i }, { j });
+
+                        printf("AAAAA\n");
+                    }
+                }
+
                 void* _object = _type.Create<const Memory::FreeList&>(_heap);
                 Editor::Widget* _widget = (Editor::Widget*)_type.InvokeStatic<void*, void*>("Cast", _object);
-                RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type<HotReloader::TrackKeeper>(_pRuntimeReflectionData);
+                RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type<HotReloader::TrackKeeper>(_pReflection, _pRuntimeReflectionData);
                 HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_heap, _pRuntimeReflectionData, _trackKeeperHandle, _object, _typeHandle);
 
                 auto _lol = _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction;
@@ -81,7 +100,10 @@ namespace Duckvil { namespace Editor {
 
                 _data->m_aDraws.Allocate(Editor::Draw { _lol, _lol2, _trackKeeper });
 
-                _data->m_pEditorEvents.Add<HexEditorWidgetInitEvent>(_object, _typeHandle);
+                if(_type.GetFunctionHandle<const HexEditorWidgetInitEvent&>("OnEvent").m_ID != -1)
+                {
+                    _data->m_pEditorEvents.Add<HexEditorWidgetInitEvent>(_object, _typeHandle);
+                }
             }
         }
 
@@ -103,7 +125,37 @@ namespace Duckvil { namespace Editor {
 
         ::ImGui::NewFrame();
 
-        ::ImGui::Begin("Hello, world!");
+        ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos, ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImGui::GetMainViewport()->Size, ImGuiCond_Always);
+
+        if(ImGui::Begin("EditorMainMenuBar", 0,
+            ImGuiWindowFlags_MenuBar |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_NoCollapse |
+			ImGuiWindowFlags_NoBringToFrontOnFocus |
+			ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_NoDocking))
+        {
+            ImGuiID dockSpace = ImGui::GetID("MainWindowDockspace");
+
+			ImGui::DockSpace(dockSpace, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+
+            if(ImGui::BeginMenuBar())
+            {
+                if(ImGui::BeginMenu("Project"))
+                {
+                    if(ImGui::MenuItem("New"))
+                    {
+
+                    }
+
+                    ImGui::EndMenu();
+                }
+
+                ImGui::EndMenuBar();
+            }
+        }
 
         ::ImGui::End();
 
@@ -120,6 +172,14 @@ namespace Duckvil { namespace Editor {
         glClearColor(1, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(::ImGui::GetDrawData());
+
+        SDL_Window* _window = SDL_GL_GetCurrentWindow();
+        SDL_GLContext _ctx = SDL_GL_GetCurrentContext();
+
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+
+        SDL_GL_MakeCurrent(_window, _ctx);
     }
 
     void add_draw(void* _pData, Draw _draw)

@@ -19,7 +19,9 @@ namespace Duckvil { namespace Editor {
         DUCKVIL_GENERATED_BODY
     private:
         Memory::FreeList m_heap;
+#ifdef DUCKVIL_MEMORY_DEBUGGER
         duckvil_memory_debug_info* m_pMemoryDebugInfo;
+#endif
 
         float a1, a2;
 
@@ -29,7 +31,9 @@ namespace Duckvil { namespace Editor {
 
         MemoryEditor m_hexEditor;
 
+#ifdef DUCKVIL_MEMORY_DEBUGGER
         duckvil_memory_debug_info* m_pSelected;
+#endif
 
         void InitEditor(void* _pImguiContext);
         void OnDraw();
