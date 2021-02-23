@@ -2,4 +2,4 @@
 
 #define DUCKVIL_GENERATED_BODY \
 public: \
-static void* Cast(void* _pObject) { return static_cast<render_data*>(_pObject); }
+static void* Cast(void* _pObject) { return static_cast<ConsoleWidget*>(_pObject); }
