@@ -87,10 +87,14 @@ namespace Duckvil { namespace Memory {
 
         memcpy(_allocator->m_pMemory, (*_pAllocator)->m_pMemory, (*_pAllocator)->m_ullUsed);
 
-#ifdef DUCKVIL_MEMORY_DEBUGGER
+/*#ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pParentAllocator->m_fnOnAllocate;
         _allocator->m_fnOnDeallocate = _pParentAllocator->m_fnOnDeallocate;
         _allocator->m_fnOnAllocate(_pParentAllocator, _allocator, duckvil_memory_allocator_type_vector);
+        memcpy(_allocator->m_pDebugData->m_aLabel, (*_pAllocator)->m_pDebugData->m_aLabel, 128);
+#endif*/
+
+#ifdef DUCKVIL_MEMORY_DEBUGGER
         memcpy(_allocator->m_pDebugData->m_aLabel, (*_pAllocator)->m_pDebugData->m_aLabel, 128);
 #endif
 
