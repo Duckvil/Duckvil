@@ -46,7 +46,7 @@ namespace Duckvil { namespace HotReloader {
 
         m_pFileWatcher = _heap.Allocate<FileWatcher, FileWatcher::ActionCallback, void*>(&Action, (void*)&m_userData);
 
-        RuntimeReflection::__duckvil_resource_type_t _runtimeCompilerHandle = RuntimeReflection::get_type<RuntimeCompiler::Compiler>(_pReflectionData);
+        RuntimeReflection::__duckvil_resource_type_t _runtimeCompilerHandle = RuntimeReflection::get_type<RuntimeCompiler::Compiler>(m_pReflectionFTable, _pReflectionData);
 
         m_pCompiler = (RuntimeCompiler::Compiler*)RuntimeReflection::create<const Memory::FreeList&>(_heap.GetMemoryInterface(), _heap.GetAllocator(), _pReflectionData, _runtimeCompilerHandle, _heap);
     }
@@ -59,7 +59,7 @@ namespace Duckvil { namespace HotReloader {
     bool RuntimeCompilerSystem::Init()
     {
         {
-            auto _types = Duckvil::RuntimeReflection::get_types(m_pReflectionData, m_heap.GetMemoryInterface(), m_heap.GetAllocator());
+            auto _types = Duckvil::RuntimeReflection::get_types(m_pReflectionFTable, m_pReflectionData, m_heap);
 
             for(auto& _typeHandle : _types)
             {
@@ -69,7 +69,7 @@ namespace Duckvil { namespace HotReloader {
                 {
                     reflection_module _module = {};
 
-                    _module.m_pObject = Duckvil::RuntimeReflection::create<const Duckvil::Memory::FreeList&, Duckvil::RuntimeReflection::__data*>(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_pReflectionData, _typeHandle, m_heap, m_pReflectionData);
+                    _module.m_pObject = Duckvil::RuntimeReflection::create<const Duckvil::Memory::FreeList&, Duckvil::RuntimeReflection::__ftable*, Duckvil::RuntimeReflection::__data*>(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_pReflectionData, _typeHandle, m_heap, m_pReflectionFTable, m_pReflectionData);
                     _module.m_typeHandle = _typeHandle;
                     _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&>(m_pReflectionData, _typeHandle, "GenerateCustom");
                     _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(m_pReflectionData, _typeHandle, "Clear");
@@ -85,7 +85,7 @@ namespace Duckvil { namespace HotReloader {
             }
         }
 
-        m_compilerTypeHandle = RuntimeReflection::get_type<RuntimeCompiler::Compiler>(m_pReflectionData);
+        m_compilerTypeHandle = RuntimeReflection::get_type<RuntimeCompiler::Compiler>(m_pReflectionFTable, m_pReflectionData);
 
         RuntimeReflection::__function<bool(RuntimeCompiler::Compiler::*)()>* _setup = RuntimeReflection::get_function_callback<bool, RuntimeCompiler::Compiler>(m_pReflectionData, m_compilerTypeHandle, "Setup");
         RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addFlag = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_pReflectionData, m_compilerTypeHandle, "AddFlag");

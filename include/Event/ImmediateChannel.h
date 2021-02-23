@@ -104,6 +104,7 @@ namespace Duckvil { namespace Event {
         std::vector<imember_event*> m_aMemberEvents;
 
         RuntimeReflection::__data* m_pReflectionData;
+        RuntimeReflection::__ftable* m_pReflection;
 
     public:
         Channel()
@@ -111,8 +112,9 @@ namespace Duckvil { namespace Event {
 
         }
 
-        Channel(const Memory::FreeList& _heap, RuntimeReflection::__data* _pReflectionData) :
-            m_pReflectionData(_pReflectionData)
+        Channel(const Memory::FreeList& _heap, RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pReflectionData) :
+            m_pReflectionData(_pReflectionData),
+            m_pReflection(_pReflection)
         {
             _heap.Allocate(m_aRefelctedEvents, 1);
             DUCKVIL_DEBUG_MEMORY(m_aRefelctedEvents.GetAllocator(), "m_aRefelctedEvents");
@@ -142,7 +144,7 @@ namespace Duckvil { namespace Event {
         template <typename Handler>
         void Add(Handler* _pHandler)
         {
-            RuntimeReflection::__duckvil_resource_type_t _typeHandle = RuntimeReflection::get_type<Handler>(m_pReflectionData);
+            RuntimeReflection::__duckvil_resource_type_t _typeHandle = RuntimeReflection::get_type<Handler>(m_pReflection, m_pReflectionData);
 
             Add(_pHandler, _typeHandle);
         }

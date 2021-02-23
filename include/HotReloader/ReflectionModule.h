@@ -28,8 +28,9 @@ namespace Duckvil { namespace HotReloader {
     private:
 
     public:
-        RuntimeCompilerReflectionModule(const Memory::FreeList& _heap, RuntimeReflection::__data* _pRuntimeReflectionData) :
+        RuntimeCompilerReflectionModule(const Memory::FreeList& _heap, RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData) :
             m_pRuntimeReflectionData(_pRuntimeReflectionData),
+            m_pRuntimeReflection(_pReflection),
             m_heap(_heap)
         {
             m_bGenerate = false;
@@ -42,6 +43,7 @@ namespace Duckvil { namespace HotReloader {
         }
 
         RuntimeReflection::__data* m_pRuntimeReflectionData;
+        RuntimeReflection::__ftable* m_pRuntimeReflection;
         Memory::FreeList m_heap;
 
         bool m_bGenerate;
@@ -117,12 +119,12 @@ namespace Duckvil { namespace HotReloader {
 
             if(_typeHandle.m_ID != -1)
             {
-                const Memory::Vector<RuntimeReflection::__duckvil_resource_inheritance_t>& _inhs = RuntimeReflection::get_inheritances(_pData->m_pRuntimeReflectionData, _pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _typeHandle);
+                const Memory::Vector<RuntimeReflection::__duckvil_resource_inheritance_t>& _inhs = _pData->m_pRuntimeReflection->m_fnGetInheritances(_pData->m_pRuntimeReflectionData, _pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _typeHandle); // RuntimeReflection::get_inheritances(_pData->m_pRuntimeReflectionData, _pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _typeHandle);
 
                 for(const auto& _inh : _inhs)
                 {
-                    const RuntimeReflection::__inheritance_t& _inhData = RuntimeReflection::get_inheritance(_pData->m_pRuntimeReflectionData, _typeHandle, _inh);
-                    RuntimeReflection::__duckvil_resource_type_t _inhTypeHandle = RuntimeReflection::get_type(_pData->m_pRuntimeReflectionData, _inhData.m_ullInheritanceTypeID);
+                    const RuntimeReflection::__inheritance_t& _inhData = _pData->m_pRuntimeReflection->m_fnGetInheritance(_pData->m_pRuntimeReflectionData, _typeHandle, _inh); // RuntimeReflection::get_inheritance(_pData->m_pRuntimeReflectionData, _typeHandle, _inh);
+                    RuntimeReflection::__duckvil_resource_type_t _inhTypeHandle = RuntimeReflection::get_type(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _inhData.m_ullInheritanceTypeID);
 
                     if(_inhTypeHandle.m_ID != -1)
                     {
@@ -130,7 +132,7 @@ namespace Duckvil { namespace HotReloader {
 
                         if(_funcHandle.m_ID != -1)
                         {
-                            const RuntimeReflection::__type_t& _inhType = RuntimeReflection::get_type(_pData->m_pRuntimeReflectionData, _inhTypeHandle);
+                            const RuntimeReflection::__type_t& _inhType = _pData->m_pRuntimeReflection->m_fnGetType(_pData->m_pRuntimeReflectionData, _inhTypeHandle); // RuntimeReflection::get_type(_pData->m_pRuntimeReflectionData, _inhTypeHandle);
 
                             _pData->m_aChildSerializers.push_back(_inhType.m_sTypeName);
                         }

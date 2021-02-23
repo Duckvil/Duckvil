@@ -278,7 +278,7 @@ namespace Duckvil { namespace RuntimeReflection {
         return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
     }
 
-    DUCKVIL_RESOURCE(constructor_t) record_constructor(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, uint8_t* _pConctructor)
+    DUCKVIL_RESOURCE(constructor_t) record_constructor(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, uint8_t* _pConctructor, Memory::Queue<__argument_t>& _arguments)
     {
         __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aTypes, _owner.m_ID);
         __constructor_t _constructor = {};
@@ -287,6 +287,18 @@ namespace Duckvil { namespace RuntimeReflection {
         _constructor.m_owner = _owner;
         _constructor.m_pData = _pConctructor;
         _constructor.m_metas = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __meta_t);
+        _constructor.m_arguments = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __argument_t);
+
+        while(!_arguments.Empty())
+        {
+            auto& _argument = _arguments.Begin();
+
+            DUCKVIL_RESOURCE(constructor_t) _argumentHandle = {};
+
+            _argumentHandle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _constructor.m_arguments, _argument);
+
+            _arguments.Pop();
+        }
 
         DUCKVIL_RESOURCE(constructor_t) _handle = {};
 

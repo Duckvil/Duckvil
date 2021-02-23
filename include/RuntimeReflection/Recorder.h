@@ -2,6 +2,8 @@
 
 #include "RuntimeReflection/RuntimeReflection.h"
 
+#include "Memory/Queue.h"
+
 // Index will be incremented each source file to avoid function name collision
 
 struct duckvil_recorderd_types
@@ -65,6 +67,7 @@ namespace Duckvil { namespace RuntimeReflection {
         _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_floating_point);
         _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_enum);
         _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_bool);
+        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_const);
 
         return _traits;
     }
@@ -101,10 +104,21 @@ namespace Duckvil { namespace RuntimeReflection {
         return recorder_generate_meta_info(_key, sizeof(KeyType), _value, sizeof(ValueType));
     }
 
+    template <typename Type>
+    void get_argument_info(Memory::Queue<__argument_t>& _arguments)
+    {
+        __argument_t _arg = {};
+
+        _arg.m_ullTypeID = typeid(Type).hash_code();
+        _arg.m_traits = recorder_generate_traits<Type>();
+
+        _arguments.Allocate(_arg);
+    }
+
     struct __recorder_ftable
     {
         DUCKVIL_RESOURCE(type_t) (*m_fnRecordType)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, std::size_t _ullTypeID, const char _sTypeName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX]);
-        DUCKVIL_RESOURCE(constructor_t) (*m_fnRecordConstructor)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, uint8_t* _pConctructor);
+        DUCKVIL_RESOURCE(constructor_t) (*m_fnRecordConstructor)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, uint8_t* _pConctructor, Memory::Queue<__argument_t>& _arguments);
         DUCKVIL_RESOURCE(property_t) (*m_fnRecordProperty)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, const char _sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX], uintptr_t _ullAddress);
         DUCKVIL_RESOURCE(namespace_t) (*m_fnRecordNamespace)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, const char _sName[DUCKVIL_RUNTIME_REFLECTION_NAMESPACE_NAME_MAX]);
         DUCKVIL_RESOURCE(inheritance_t) (*m_fnRecordInheritance)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullInheritanceTypeID, __protection _protection);
@@ -136,7 +150,12 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename Type, typename... Args>
     static DUCKVIL_RESOURCE(constructor_t) record_constructor(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle)
     {
-        DUCKVIL_RESOURCE(constructor_t) _constructorHandle = _pFunctions->m_fnRecordConstructor(_pMemoryInterface, _pAllocator, _pData, _typeHandle, typeid(void*(Args...)).hash_code(), (uint8_t*)&create_type<Type, Args...>);
+        Memory::Queue<__argument_t> _arguments(_pMemoryInterface, _pAllocator, sizeof...(Args));
+
+        int _[] = { 0, (get_argument_info<Args>(_arguments), 0)... };
+        (void)_;
+
+        DUCKVIL_RESOURCE(constructor_t) _constructorHandle = _pFunctions->m_fnRecordConstructor(_pMemoryInterface, _pAllocator, _pData, _typeHandle, typeid(void*(Args...)).hash_code(), (uint8_t*)&create_type<Type, Args...>, _arguments);
 
         // for(auto it : _pData->m_aFrontend)
         // {

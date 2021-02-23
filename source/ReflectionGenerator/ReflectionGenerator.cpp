@@ -37,6 +37,11 @@ void generate(std::ofstream& _file, void* _pUserData)
 
     for(auto& _module : _aModules)
     {
+        if(_module.m_pObject == nullptr)
+        {
+            continue;
+        }
+
         Duckvil::RuntimeReflection::invoke_member<std::ofstream&>(_runtimeReflectionData, _module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _file);
     }
 }
@@ -58,7 +63,7 @@ int main(int argc, char* argv[])
     _module.get(_memoryModule, "duckvil_memory_init", (void**)&_fnMemoryInit);
 
     Duckvil::Memory::IMemory* _memoryInterface = _fnMemoryInit();
-    Duckvil::Memory::__linear_allocator _mainMemoryAllocator;
+    Duckvil::Memory::__linear_allocator _mainMemoryAllocator = { 0 };
 
     _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024);
     Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(&_mainMemoryAllocator, 512 * 1024);
@@ -138,7 +143,7 @@ int main(int argc, char* argv[])
     }
 
     {
-        auto _types = Duckvil::RuntimeReflection::get_types(_runtimeReflectionData, _memoryInterface, _free_list);
+        auto _types = _reflectionFTable->m_fnGetTypes(_runtimeReflectionData, _memoryInterface, _free_list); // Duckvil::RuntimeReflection::get_types(_runtimeReflectionData, _memoryInterface, _free_list);
 
         for(auto& _typeHandle : _types)
         {
@@ -148,7 +153,7 @@ int main(int argc, char* argv[])
             {
                 reflection_module _module = {};
 
-                _module.m_pObject = Duckvil::RuntimeReflection::create<const Duckvil::Memory::FreeList&, Duckvil::RuntimeReflection::__data*>(_memoryInterface, _free_list, _runtimeReflectionData, _typeHandle, _heap, _runtimeReflectionData);
+                _module.m_pObject = Duckvil::RuntimeReflection::create<const Duckvil::Memory::FreeList&, Duckvil::RuntimeReflection::__ftable*, Duckvil::RuntimeReflection::__data*>(_memoryInterface, _free_list, _runtimeReflectionData, _typeHandle, _heap, _reflectionFTable, _runtimeReflectionData);
                 _module.m_typeHandle = _typeHandle;
                 _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&>(_runtimeReflectionData, _typeHandle, "GenerateCustom");
                 _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(_runtimeReflectionData, _typeHandle, "Clear");
@@ -190,6 +195,11 @@ int main(int argc, char* argv[])
 
         for(auto& _reflectionModule : _aModules)
         {
+            if(_reflectionModule.m_pObject == nullptr)
+            {
+                continue;
+            }
+
             Duckvil::RuntimeReflection::invoke_member<Duckvil::Parser::__ast*>(_runtimeReflectionData, _reflectionModule.m_typeHandle, _reflectionModule.m_processAST_FunctionHandle, _reflectionModule.m_pObject, &_astData);
         }
 
@@ -253,6 +263,11 @@ int main(int argc, char* argv[])
 
         for(auto& _module : _aModules)
         {
+            if(_module.m_pObject == nullptr)
+            {
+                continue;
+            }
+
             Duckvil::RuntimeReflection::invoke_member(_runtimeReflectionData, _module.m_typeHandle, _module.m_clearFunctionHandle, _module.m_pObject);
         }
     }

@@ -10,6 +10,8 @@
 
 #include "Editor/Widgets/HexEditorWidgetEvent.h"
 
+#include "RuntimeReflection/ReflectedType.h"
+
 #undef max
 #undef GetObject
 #undef __allocator
@@ -104,7 +106,7 @@ namespace Duckvil {
         _pData->m_time = time_init();
         _pData->m_heap = Memory::FreeList(_pData->m_pMemory, _pData->m_pHeap);
 
-        _pData->m_heap.Allocate(_pData->m_objectsHeap, 1024 * 8);
+        _pData->m_heap.Allocate(_pData->m_objectsHeap, 1024);
         _pData->m_heap.Allocate(_pData->m_eventsHeap, 1024);
         _pData->m_heap.Allocate(_pData->m_aEngineSystems, 1);
         _pData->m_heap.Allocate(_pData->m_aRecordedTypes, 1);
@@ -123,7 +125,7 @@ namespace Duckvil {
         init_logger(_pData, &_module);
         init_runtime_reflection(_pData, &_module);
 
-        _pData->m_eventPool = Event::Pool<Event::mode::immediate>(_pData->m_eventsHeap, _pData->m_pRuntimeReflectionData);
+        _pData->m_eventPool = Event::Pool<Event::mode::immediate>(_pData->m_eventsHeap, _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
         _pData->m_windowEventPool = Event::Pool<Event::mode::buffered>(_pData->m_eventsHeap, _pData->m_pRuntimeReflectionData);
 
         PlugNPlay::AutoLoader _autoLoader(DUCKVIL_OUTPUT);
@@ -178,7 +180,7 @@ namespace Duckvil {
 
         _pData->m_bRunning = false;
 
-        RuntimeReflection::ReflectedType<> _windowType(_pData->m_pRuntimeReflectionData, _pData->m_heap, RuntimeReflection::get_type(_pData->m_pRuntimeReflectionData, "WindowSDL", "Duckvil", "Window"));
+        RuntimeReflection::ReflectedType<> _windowType(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _pData->m_heap, RuntimeReflection::get_type(_pData->m_pRuntimeReflectionData, "WindowSDL", "Duckvil", "Window"));
 
         _pData->m_pWindow = (Window::IWindow*)_windowType.Create<Event::Pool<Event::mode::buffered>*>(&_pData->m_windowEventPool);
 
@@ -188,12 +190,12 @@ namespace Duckvil {
         init_editor(_pData, &_module);
 
         {
-            auto _types = RuntimeReflection::get_types(_pData->m_pRuntimeReflectionData, _pData->m_pMemory, _pData->m_pHeap);
+            auto _types = RuntimeReflection::get_types(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _pData->m_heap);
 
             {
-                auto _runtimeCompilerType = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>(_pData->m_pRuntimeReflectionData);
+                auto _runtimeCompilerType = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
 
-                RuntimeReflection::ReflectedType<HotReloader::RuntimeCompilerSystem> _type(_pData->m_pRuntimeReflectionData, _pData->m_heap);
+                RuntimeReflection::ReflectedType<HotReloader::RuntimeCompilerSystem> _type(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _pData->m_heap);
 
                 _pData->m_pRuntimeCompiler = (HotReloader::RuntimeCompilerSystem*)_type.Create<
                     const Memory::FreeList&,
@@ -233,7 +235,7 @@ namespace Duckvil {
                             _pData->m_aEngineSystems.Resize(_pData->m_aEngineSystems.Size() * 2);
                         }
 
-                        RuntimeReflection::ReflectedType<> _type(_pData->m_pRuntimeReflectionData, _pData->m_heap, _typeHandle);
+                        RuntimeReflection::ReflectedType<> _type(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _pData->m_heap, _typeHandle);
 
                         void* _testSystem = _type.Create<
                             const Memory::FreeList&,
@@ -252,7 +254,7 @@ namespace Duckvil {
                         _systemInheritance->m_pLogger = _pData->m_pLogger;
                         _systemInheritance->m_pLoggerData = _pData->m_pLoggerData;
 
-                        RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type<HotReloader::TrackKeeper>(_pData->m_pRuntimeReflectionData);
+                        RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type<HotReloader::TrackKeeper>(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
                         HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_pData->m_heap, _pData->m_pRuntimeReflectionData, _trackKeeperHandle, _testSystem, _typeHandle);
 
                         system _system = {};
@@ -275,7 +277,7 @@ namespace Duckvil {
                             _pData->m_pEditor->m_fnAddDraw(_pData->m_pEditorData, Editor::Draw { _lol, _lol2, _trackKeeper });
                         }
 
-                        RuntimeReflection::__duckvil_resource_type_t _rcTypeHandle = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>(_pData->m_pRuntimeReflectionData);
+                        RuntimeReflection::__duckvil_resource_type_t _rcTypeHandle = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
                         RuntimeReflection::__duckvil_resource_function_t _addHotObjectHandle = RuntimeReflection::get_function_handle<HotReloader::ITrackKeeper*>(_pData->m_pRuntimeReflectionData, _rcTypeHandle, "AddHotObject");
                         RuntimeReflection::invoke_member(_pData->m_pRuntimeReflectionData, _rcTypeHandle, _addHotObjectHandle, _pData->m_pRuntimeCompiler, (HotReloader::ITrackKeeper*)_trackKeeper);
 
@@ -292,7 +294,7 @@ namespace Duckvil {
 
                                     if(_system.m_type.m_ID == _event._typeHandle.m_ID)
                                     {
-                                        RuntimeReflection::ReflectedType<> _systemType(_pData->m_pRuntimeReflectionData, _pData->m_heap, _system.m_type);
+                                        RuntimeReflection::ReflectedType<> _systemType(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _pData->m_heap, _system.m_type);
 
                                         _system.m_fnUpdateCallback = _systemType.GetFunctionCallback<ISystem>("Update")->m_fnFunction;
                                         _system.m_pISystem = (ISystem*)_systemType.InvokeStatic<void*, void*>("Cast", _event.m_pObject);
@@ -311,7 +313,7 @@ namespace Duckvil {
                                             });
 
                                         // Call function to set for only this widget, not for all widgets
-                                            _pData->m_pEditor->m_fnPostInit(_pData->m_pRuntimeReflectionData, _pData->m_heap, _pData->m_pEditorData);
+                                            _pData->m_pEditor->m_fnPostInit(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _pData->m_heap, _pData->m_pEditorData);
                                         }
                                         else
                                         {
@@ -330,7 +332,7 @@ namespace Duckvil {
                 }
             }
 
-            _pData->m_pEditor->m_fnPostInit(_pData->m_pRuntimeReflectionData, _pData->m_heap, _pData->m_pEditorData);
+            _pData->m_pEditor->m_fnPostInit(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _pData->m_heap, _pData->m_pEditorData);
 
             if(!(_pData->m_pRuntimeCompiler->*_pData->m_fnRuntimeCompilerInit)())
             {
@@ -348,7 +350,9 @@ namespace Duckvil {
             return false;
         }
 
+#ifdef DUCKVIL_MEMORY_DEBUGGER
         _pData->m_pEditorData->m_pEditorEvents.Broadcast(Editor::HexEditorWidgetInitEvent{ _pData->m_pMemoryDebugger });
+#endif
         _pData->m_bRunning = true;
 
         while(_pData->m_bRunning)

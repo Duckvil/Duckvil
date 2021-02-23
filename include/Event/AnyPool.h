@@ -15,6 +15,7 @@ namespace Duckvil { namespace Event {
 
         Memory::FreeList m_heap;
         RuntimeReflection::__data* m_pReflectionData;
+        RuntimeReflection::__ftable* m_pReflection;
 
     public:
         Pool()
@@ -22,9 +23,10 @@ namespace Duckvil { namespace Event {
             m_pReflectionData = nullptr;
         }
 
-        Pool(const Memory::FreeList& _heap, RuntimeReflection::__data* _pReflectionData) :
+        Pool(const Memory::FreeList& _heap, RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pReflectionData) :
             m_heap(_heap),
-            m_pReflectionData(_pReflectionData)
+            m_pReflectionData(_pReflectionData),
+            m_pReflection(_pReflection)
         {
             _heap.Allocate(m_aChannels, 2);
         }
@@ -70,7 +72,7 @@ namespace Duckvil { namespace Event {
 
             if(_bBlocking == mode::immediate)
             {
-                Channel<Message, mode::immediate>* _newChannel = m_heap.Allocate<Channel<Message, mode::immediate>>(m_heap, m_pReflectionData);
+                Channel<Message, mode::immediate>* _newChannel = m_heap.Allocate<Channel<Message, mode::immediate>>(m_heap, m_pReflection, m_pReflectionData);
 
                 _event.m_pChannel = _newChannel;
 

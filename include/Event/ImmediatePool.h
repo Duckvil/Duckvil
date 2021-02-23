@@ -23,6 +23,7 @@ namespace Duckvil { namespace Event {
 
         Memory::FreeList m_heap;
         RuntimeReflection::__data* m_pReflectionData;
+        RuntimeReflection::__ftable* m_pReflection;
 
     public:
         Pool()
@@ -30,9 +31,10 @@ namespace Duckvil { namespace Event {
             m_pReflectionData = nullptr;
         }
 
-        Pool(const Memory::FreeList& _heap, RuntimeReflection::__data* _pReflectionData) :
+        Pool(const Memory::FreeList& _heap, RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pReflectionData) :
             m_heap(_heap),
-            m_pReflectionData(_pReflectionData)
+            m_pReflectionData(_pReflectionData),
+            m_pReflection(_pReflection)
         {
             _heap.Allocate(m_aChannels, 2);
         }
@@ -40,9 +42,11 @@ namespace Duckvil { namespace Event {
         Pool(Pool&& _pool) noexcept :
             m_aChannels(std::move(_pool.m_aChannels)),
             m_heap(std::move(_pool.m_heap)),
-            m_pReflectionData(std::move(_pool.m_pReflectionData))
+            m_pReflectionData(std::move(_pool.m_pReflectionData)),
+            m_pReflection(std::move(_pool.m_pReflection))
         {
             _pool.m_pReflectionData = nullptr;
+            _pool.m_pReflection = nullptr;
         }
 
         ~Pool()
@@ -60,8 +64,10 @@ namespace Duckvil { namespace Event {
             this->m_aChannels = std::move(_pool.m_aChannels);
             this->m_heap = std::move(_pool.m_heap);
             this->m_pReflectionData = std::move(_pool.m_pReflectionData);
+            this->m_pReflection = std::move(_pool.m_pReflection);
 
             _pool.m_pReflectionData = nullptr;
+            _pool.m_pReflection = nullptr;
 
             return *this;
         }
@@ -86,7 +92,7 @@ namespace Duckvil { namespace Event {
                 m_aChannels.Resize(m_aChannels.Size() * 2);
             }
 
-            Channel<Message, mode::immediate>* _newChannel = m_heap.Allocate<Channel<Message, mode::immediate>>(m_heap, m_pReflectionData);
+            Channel<Message, mode::immediate>* _newChannel = m_heap.Allocate<Channel<Message, mode::immediate>>(m_heap, m_pReflection, m_pReflectionData);
 
             event_lookup _event = {};
 
@@ -102,7 +108,7 @@ namespace Duckvil { namespace Event {
         template <typename Message, typename Handler>
         void Add(Handler* _pHandler)
         {
-            RuntimeReflection::__duckvil_resource_type_t _typeHandle = RuntimeReflection::get_type<Handler>(m_pReflectionData);
+            RuntimeReflection::__duckvil_resource_type_t _typeHandle = RuntimeReflection::get_type<Handler>(m_pReflection, m_pReflectionData);
 
             Add<Message>(_pHandler, _typeHandle);
         }
@@ -127,7 +133,7 @@ namespace Duckvil { namespace Event {
                 m_aChannels.Resize(m_aChannels.Size() * 2);
             }
 
-            Channel<Message, mode::immediate>* _newChannel = m_heap.Allocate<Channel<Message, mode::immediate>>(m_heap, m_pReflectionData);
+            Channel<Message, mode::immediate>* _newChannel = m_heap.Allocate<Channel<Message, mode::immediate>>(m_heap, m_pReflection, m_pReflectionData);
 
             event_lookup _event = {};
 
@@ -160,7 +166,7 @@ namespace Duckvil { namespace Event {
                 m_aChannels.Resize(m_aChannels.Size() * 2);
             }
 
-            Channel<Message, mode::immediate>* _newChannel = m_heap.Allocate<Channel<Message, mode::immediate>>(m_heap, m_pReflectionData);
+            Channel<Message, mode::immediate>* _newChannel = m_heap.Allocate<Channel<Message, mode::immediate>>(m_heap, m_pReflection, m_pReflectionData);
 
             event_lookup _event = {};
 

@@ -88,11 +88,11 @@ DUCKVIL_TEST(RuntimeReflection)
             }
         }
 
-        Duckvil::RuntimeReflection::__duckvil_resource_type_t _t = _rr_ftable->m_fnGetType(_rr_data, "TestType");
+        Duckvil::RuntimeReflection::__duckvil_resource_type_t _t = _rr_ftable->m_fnGetTypeHandleByName(_rr_data, "TestType");
 
         DUCKVIL_TEST_NOT_EQUAL(_t.m_ID, DUCKVIL_SLOT_ARRAY_INVALID_HANDLE, "Could not get 'TestType'");
 
-        Duckvil::RuntimeReflection::__duckvil_resource_property_t _propHandle = Duckvil::RuntimeReflection::get_property_handle(_rr_data, _t, "m_fA");
+        Duckvil::RuntimeReflection::__duckvil_resource_property_t _propHandle = _rr_ftable->m_fnGetPropertyHandleByName(_rr_data, _t, "m_fA"); // Duckvil::RuntimeReflection::get_property_handle(_rr_data, _t, "m_fA");
 
         DUCKVIL_TEST_NOT_EQUAL(_propHandle.m_ID, DUCKVIL_SLOT_ARRAY_INVALID_HANDLE, "Could not get 'm_fA'");
 
@@ -112,7 +112,7 @@ DUCKVIL_TEST(RuntimeReflection)
 
         DUCKVIL_TEST_IS_NOT_NULL(_prop, "Could not get 'm_fA' property");
 
-        _prop = (float*)Duckvil::RuntimeReflection::get_property(_rr_data, _t, "m_fA", _testT);
+        _prop = (float*)_rr_ftable->m_fnGetPropertyByName(_rr_data, _t, "m_fA", _testT); //Duckvil::RuntimeReflection::get_property(_rr_data, _t, "m_fA", _testT);
 
         DUCKVIL_TEST_IS_NOT_NULL(_prop, "Could not get 'm_fA' property");
 
