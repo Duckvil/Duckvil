@@ -38,6 +38,8 @@ namespace Duckvil { namespace Memory {
 
             memcpy(_pThis->m_pContainer, _specifiedContainer.m_pContainer, sizeof(__fixed_vector_allocator) + (sizeof(Type) * _vec.Size()));
 
+            // DUCKVIL_DEBUG_MEMORY(_pThis->m_pContainer, "Copied Vector");
+
             _pThis->m_fnCopy = _specifiedContainer.m_fnCopy;
             _pThis->m_fnDestruct = _specifiedContainer.m_fnDestruct;
             ((Vector<Type>*)_pThis)->m_fnResize = _vec.m_fnResize;
