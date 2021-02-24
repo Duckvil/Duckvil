@@ -6,6 +6,7 @@
 #include "RuntimeReflection/RuntimeReflection.h"
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/Generator.h"
+#include "RuntimeReflection/Meta.h"
 
 #include "Memory/Vector.h"
 #include "Memory/FreeList.h"
@@ -147,7 +148,7 @@ int main(int argc, char* argv[])
 
         for(auto& _typeHandle : _types)
         {
-            const Duckvil::RuntimeReflection::__variant& _variant = Duckvil::RuntimeReflection::get_meta(_runtimeReflectionData, _typeHandle, Duckvil::ReflectionFlags::ReflectionFlags_ReflectionModule);
+            const Duckvil::RuntimeReflection::__variant& _variant = Duckvil::RuntimeReflection::get_meta(_reflectionFTable, _runtimeReflectionData, _typeHandle, Duckvil::ReflectionFlags::ReflectionFlags_ReflectionModule);
 
             if(_variant.m_ullTypeID != std::numeric_limits<std::size_t>::max() && (uint8_t)_variant.m_traits & (uint8_t)Duckvil::RuntimeReflection::__traits::is_bool)
             {

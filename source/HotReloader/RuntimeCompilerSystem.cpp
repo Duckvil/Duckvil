@@ -6,6 +6,8 @@
 
 #include <cassert>
 
+#include "RuntimeReflection/Meta.h"
+
 #undef max
 
 namespace Duckvil { namespace HotReloader {
@@ -63,7 +65,7 @@ namespace Duckvil { namespace HotReloader {
 
             for(auto& _typeHandle : _types)
             {
-                const Duckvil::RuntimeReflection::__variant& _variant = Duckvil::RuntimeReflection::get_meta(m_pReflectionData, _typeHandle, Duckvil::ReflectionFlags::ReflectionFlags_ReflectionModule);
+                const Duckvil::RuntimeReflection::__variant& _variant = Duckvil::RuntimeReflection::get_meta(m_pReflectionFTable, m_pReflectionData, _typeHandle, Duckvil::ReflectionFlags::ReflectionFlags_ReflectionModule);
 
                 if(_variant.m_ullTypeID != std::numeric_limits<std::size_t>::max() && (uint8_t)_variant.m_traits & (uint8_t)Duckvil::RuntimeReflection::__traits::is_bool)
                 {

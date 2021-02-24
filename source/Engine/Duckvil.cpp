@@ -11,6 +11,7 @@
 #include "Editor/Widgets/HexEditorWidgetEvent.h"
 
 #include "RuntimeReflection/ReflectedType.h"
+#include "RuntimeReflection/Meta.h"
 
 #undef max
 #undef GetObject
@@ -224,7 +225,7 @@ namespace Duckvil {
             for(uint32_t i = 0; i < _types.Size(); ++i)
             {
                 const RuntimeReflection::__duckvil_resource_type_t& _typeHandle = _types[i];
-                const RuntimeReflection::__variant& _variant = RuntimeReflection::get_meta(_pData->m_pRuntimeReflectionData, _typeHandle, ReflectionFlags::ReflectionFlags_UserSystem);
+                const RuntimeReflection::__variant& _variant = RuntimeReflection::get_meta(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _typeHandle, ReflectionFlags::ReflectionFlags_UserSystem);
 
                 if(_variant.m_ullTypeID != std::numeric_limits<std::size_t>::max())
                 {
