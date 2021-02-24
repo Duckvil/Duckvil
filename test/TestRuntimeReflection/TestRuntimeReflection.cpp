@@ -4,6 +4,7 @@
 
 #include "RuntimeReflection/RuntimeReflection.h"
 #include "RuntimeReflection/Recorder.h"
+#include "RuntimeReflection/Meta.h"
 
 #include "TestType/TestType.h"
 
@@ -134,13 +135,13 @@ DUCKVIL_TEST(RuntimeReflection)
         }
 
         {
-            int _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, "a");
-            _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, "b");
-            _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, 1);
-            _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, 1.f);
-            _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, _propHandle, 1);
-            _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, _propHandle, "a");
-            _res = Duckvil::RuntimeReflection::get_meta_value<int>(_rr_data, _t, _consHandle, "a");
+            DUCKVIL_TEST_EQUAL(10, Duckvil::RuntimeReflection::get_meta_value<int>(_rr_ftable, _rr_data, _t, "a"), "Wrong meta value");
+            DUCKVIL_TEST_EQUAL(20, Duckvil::RuntimeReflection::get_meta_value<int>(_rr_ftable, _rr_data, _t, "b"), "Wrong meta value");
+            DUCKVIL_TEST_EQUAL(30, Duckvil::RuntimeReflection::get_meta_value<int>(_rr_ftable, _rr_data, _t, 1), "Wrong meta value");
+            DUCKVIL_TEST_EQUAL(40, Duckvil::RuntimeReflection::get_meta_value<int>(_rr_ftable, _rr_data, _t, 1.f), "Wrong meta value");
+            DUCKVIL_TEST_EQUAL(11, Duckvil::RuntimeReflection::get_meta_value<int>(_rr_ftable, _rr_data, _t, _propHandle, 1), "Wrong meta value");
+            DUCKVIL_TEST_EQUAL(22, Duckvil::RuntimeReflection::get_meta_value<int>(_rr_ftable, _rr_data, _t, _propHandle, "a"), "Wrong meta value");
+            DUCKVIL_TEST_EQUAL(1, Duckvil::RuntimeReflection::get_meta_value<int>(_rr_ftable, _rr_data, _t, _consHandle, "a"), "Wrong meta value");
         }
     }
 
