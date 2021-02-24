@@ -70,6 +70,11 @@ namespace Duckvil { namespace Memory {
             free_list_free(_pMemoryInterface, _allocator, _pThis->m_pContainer);
         }
 
+        static void linear_destruct(IMemory* _pMemoryInterface, __allocator* _pAllocator, SContainer* _pThis)
+        {
+            // Can not be destructed in this way, we could only clear whole linear allocator
+        }
+
     public:
         Stack()
         {
@@ -81,6 +86,7 @@ namespace Duckvil { namespace Memory {
         {
             this->m_pMemoryInterface = _pMemoryInterface;
             this->m_pAllocator = _pAllocator;
+            this->m_fnDestruct = &linear_destruct;
             this->m_pContainer = this->m_pMemoryInterface->m_fnLinearAllocateFixedStackAllocator(_pAllocator, _ullCount * sizeof(Type), sizeof(Type));
         }
 
