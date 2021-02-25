@@ -64,16 +64,16 @@ namespace Duckvil { namespace RuntimeReflection {
             return create<Args...>(m_heap, m_pReflectionData, m_typeHandle, _vArgs...);
         }
 
-        template <typename Type, typename... Args, std::size_t Length>
-        __function<void(Type::*)(Args...)>* GetFunctionCallback(const char (&_sName)[Length])
+        template <typename Type2, typename... Args, std::size_t Length>
+        __function<void(Type2::*)(Args...)>* GetFunctionCallback(const char (&_sName)[Length])
         {
-            return get_function_callback<Type, Args...>(m_pReflectionData, m_typeHandle, _sName);
+            return get_function_callback<Type2, Args...>(m_pReflectionData, m_typeHandle, _sName);
         }
 
-        template <typename ReturnType, typename Type, typename... Args, std::size_t Length>
-        __function<ReturnType(Type::*)(Args...)>* GetFunctionCallback(const char (&_sName)[Length])
+        template <typename ReturnType, typename Type2, typename... Args, std::size_t Length>
+        __function<ReturnType(Type2::*)(Args...)>* GetFunctionCallback(const char (&_sName)[Length])
         {
-            return get_function_callback<ReturnType, Type, Args...>(m_pReflectionData, m_typeHandle, _sName);
+            return get_function_callback<ReturnType, Type2, Args...>(m_pReflectionData, m_typeHandle, _sName);
         }
 
         template <typename... Args, std::size_t Length>
