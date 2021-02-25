@@ -98,6 +98,8 @@ else()
     util_cicd("RuntimeReflection")
     util_cicd("UniTestFramework")
 
+    SET(GLOBAL_STATIC_LIBRARIES  ${STATIC_LIBRARIES} CACHE INTERNAL "Engine static libs" FORCE)
+
     FOREACH(project ${PROJECTS})
         target_link_libraries(
             ${project}
