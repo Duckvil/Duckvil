@@ -8,6 +8,7 @@ on:
       - '**.h'
       - '**.cpp'
       - '.github/workflows/cmake.yml'
+      - '**/CMakeLists.txt'
   schedule:
     - cron: '00 8 * * 4'
 
