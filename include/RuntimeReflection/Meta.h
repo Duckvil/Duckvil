@@ -9,7 +9,7 @@
 namespace Duckvil { namespace RuntimeReflection {
 
     template <typename KeyType>
-    static DUCKVIL_RESOURCE(variant_t) get_meta_value_handle(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const KeyType& _key)
+    static inline DUCKVIL_RESOURCE(variant_t) get_meta_value_handle(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const KeyType& _key)
     {
         return _pReflection->m_fnGetTypeMetaHandle(_pData, _typeHandle, &_key, sizeof(KeyType), typeid(KeyType).hash_code());
     }
