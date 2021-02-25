@@ -8,7 +8,10 @@ list(APPEND INCLUDES
     "${CMAKE_SOURCE_DIR}/external"
 )
 
-function(UTIL_CICD AN_ARGUMENT)
+list(APPEND STATIC_LIBRARIES "")
+list(APPEND PROJECTS "")
+
+macro(UTIL_CICD AN_ARGUMENT)
     add_subdirectory(${AN_ARGUMENT})
     get_filename_component(PROJECT_ID ${AN_ARGUMENT} NAME)
     get_target_property(
@@ -37,11 +40,9 @@ function(UTIL_CICD AN_ARGUMENT)
     else()
         list(APPEND PROJECTS ${PROJECT_ID})
     endif()
-endfunction()
+endmacro()
 
 if(NOT DUCKVIL_CICD)
-    list(APPEND STATIC_LIBRARIES "")
-
     FOREACH(child ${children})
         get_filename_component(PARENT_DIR ${child} DIRECTORY)
         add_subdirectory(${PARENT_DIR})
@@ -89,9 +90,6 @@ if(NOT DUCKVIL_CICD)
         endif()
     ENDFOREACH()
 else()
-    list(APPEND STATIC_LIBRARIES "")
-    list(APPEND PROJECTS "")
-
     util_cicd("Utils")
     util_cicd("Memory")
     util_cicd("PlugNPlay")
