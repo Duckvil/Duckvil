@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 3.17)
 FILE(GLOB SRC_FILES *.cpp)
 FILE(GLOB TEST_TYPE_SRC_FILES TestType/*.cpp)
 
-add_definitions(-DDUCKVIL_TEST_OUTPUT="${CMAKE_SOURCE_DIR}/test/Debug")
-
 add_executable(
     TestRuntimeReflection
     ${SRC_FILES}
@@ -24,9 +22,9 @@ target_include_directories(
 
 set_target_properties(TestType PROPERTIES
     CXX_STANDARD 20
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/test"
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/test"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/test"
+    LIBRARY_OUTPUT_DIRECTORY ${DUCKVIL_TEST_OUTPUT}
+    ARCHIVE_OUTPUT_DIRECTORY ${DUCKVIL_TEST_OUTPUT}
+    RUNTIME_OUTPUT_DIRECTORY ${DUCKVIL_TEST_OUTPUT}
     DEBUG_POSTFIX ""
     PREFIX ""
 )
