@@ -4,6 +4,7 @@ project(Duckvil)
 
 option(DUCKVIL_GENERATE_REFLECTION "Generate reflection" OFF)
 option(DUCKVIL_DEBUG_MEMORY "Memory debugger" OFF)
+option(DUCKVIL_CICD "CI/CD" OFF)
 
 find_program(CLANG_TIDY_COMMAND NAMES clang-tidy)
 
