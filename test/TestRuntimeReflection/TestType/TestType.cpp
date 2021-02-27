@@ -6,7 +6,7 @@ namespace Duckvil { namespace Test {
 
     TestType::TestType()
     {
-
+        m_fA = 6.66f;
     }
 
     TestType::TestType(float a) :

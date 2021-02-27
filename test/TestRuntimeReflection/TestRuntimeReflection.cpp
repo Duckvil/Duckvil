@@ -89,19 +89,19 @@ DUCKVIL_TEST(RuntimeReflection)
             }
         }
 
-        Duckvil::RuntimeReflection::__duckvil_resource_type_t _t = _rr_ftable->m_fnGetTypeHandleByName(_rr_data, "TestType");
+        Duckvil::RuntimeReflection::__duckvil_resource_type_t _t = Duckvil::RuntimeReflection::get_type(_rr_ftable, _rr_data, "TestType"); // _rr_ftable->m_fnGetTypeHandleByName(_rr_data, "TestType");
 
         DUCKVIL_TEST_NOT_EQUAL(_t.m_ID, DUCKVIL_SLOT_ARRAY_INVALID_HANDLE, "Could not get 'TestType'");
 
-        Duckvil::RuntimeReflection::__duckvil_resource_property_t _propHandle = _rr_ftable->m_fnGetPropertyHandleByName(_rr_data, _t, "m_fA"); // Duckvil::RuntimeReflection::get_property_handle(_rr_data, _t, "m_fA");
+        Duckvil::RuntimeReflection::__duckvil_resource_property_t _propHandle = Duckvil::RuntimeReflection::get_property(_rr_ftable, _rr_data, _t, "m_fA"); // _rr_ftable->m_fnGetPropertyHandleByName(_rr_data, _t, "m_fA"); // Duckvil::RuntimeReflection::get_property_handle(_rr_data, _t, "m_fA");
 
         DUCKVIL_TEST_NOT_EQUAL(_propHandle.m_ID, DUCKVIL_SLOT_ARRAY_INVALID_HANDLE, "Could not get 'm_fA'");
 
-        Duckvil::RuntimeReflection::__duckvil_resource_constructor_t _consHandle = Duckvil::RuntimeReflection::get_constructor_handle(_rr_data, _t);
+        Duckvil::RuntimeReflection::__duckvil_resource_constructor_t _consHandle = Duckvil::RuntimeReflection::get_constructor_handle(_rr_ftable, _rr_data, _t);
 
         DUCKVIL_TEST_NOT_EQUAL(_consHandle.m_ID, DUCKVIL_SLOT_ARRAY_INVALID_HANDLE, "Could not get TestType default constructor");
 
-        Duckvil::RuntimeReflection::__duckvil_resource_function_t _funcHandle = Duckvil::RuntimeReflection::get_function_handle<float, float>(_rr_data, _t, "test2");
+        Duckvil::RuntimeReflection::__duckvil_resource_function_t _funcHandle = Duckvil::RuntimeReflection::get_function_handle<float, float>(_rr_ftable, _rr_data, _t, "test2");
 
         DUCKVIL_TEST_NOT_EQUAL(_funcHandle.m_ID, DUCKVIL_SLOT_ARRAY_INVALID_HANDLE, "Could not get 'test2'");
 
@@ -109,13 +109,15 @@ DUCKVIL_TEST(RuntimeReflection)
 
         DUCKVIL_TEST_IS_NOT_NULL(_testT, "Could not create 'TestType' object");
 
-        float* _prop = (float*)Duckvil::RuntimeReflection::get_property(_rr_data, "m_fA", (Duckvil::Test::TestType*)_testT);
+        float* _prop = (float*)Duckvil::RuntimeReflection::get_property(_rr_ftable, _rr_data, "m_fA", (Duckvil::Test::TestType*)_testT);
 
         DUCKVIL_TEST_IS_NOT_NULL(_prop, "Could not get 'm_fA' property");
+        DUCKVIL_TEST_EQUAL(10.f, *_prop, "Wrong property value");
 
-        _prop = (float*)_rr_ftable->m_fnGetPropertyByName(_rr_data, _t, "m_fA", _testT); //Duckvil::RuntimeReflection::get_property(_rr_data, _t, "m_fA", _testT);
+        /*_prop = (float*)_rr_ftable->m_fnGetPropertyByName(_rr_data, _t, "m_fA", _testT); //Duckvil::RuntimeReflection::get_property(_rr_data, _t, "m_fA", _testT);
 
         DUCKVIL_TEST_IS_NOT_NULL(_prop, "Could not get 'm_fA' property");
+        DUCKVIL_TEST_EQUAL(10.f, *_prop, "Wrong property value");*/
 
         Duckvil::RuntimeReflection::get_type(_rr_data, "TestType", "Duckvil", "Test");
 
