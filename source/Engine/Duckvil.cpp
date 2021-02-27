@@ -36,6 +36,10 @@ namespace Duckvil {
         _pData->m_pRuntimeReflectionRecorder = _runtimeReflectionRecorderInit(_pData->m_pMemory, _pData->m_pHeap);
         _pData->m_pRuntimeReflectionData = _pData->m_pRuntimeReflection->m_fnInit(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pRuntimeReflection);
 
+        duckvil_frontend_reflection_context* _ctx = _pData->m_pRuntimeReflection->m_fnCreateContext(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
+
+        RuntimeReflection::make_currnt(_ctx);
+
         return true;
     }
 
@@ -268,7 +272,7 @@ namespace Duckvil {
 
                         _pData->m_aEngineSystems.Allocate(_system);
 
-                        if(RuntimeReflection::inherits<Editor::Widget>(_pData->m_pRuntimeReflectionData, _typeHandle))
+                        if(RuntimeReflection::inherits<Editor::Widget>(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _typeHandle))
                         {
                             Editor::Widget* _widget = (Editor::Widget*)_type.InvokeStatic<void*, void*>("Cast", _testSystem);
 
@@ -279,8 +283,8 @@ namespace Duckvil {
                         }
 
                         RuntimeReflection::__duckvil_resource_type_t _rcTypeHandle = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
-                        RuntimeReflection::__duckvil_resource_function_t _addHotObjectHandle = RuntimeReflection::get_function_handle<HotReloader::ITrackKeeper*>(_pData->m_pRuntimeReflectionData, _rcTypeHandle, "AddHotObject");
-                        RuntimeReflection::invoke_member(_pData->m_pRuntimeReflectionData, _rcTypeHandle, _addHotObjectHandle, _pData->m_pRuntimeCompiler, (HotReloader::ITrackKeeper*)_trackKeeper);
+                        RuntimeReflection::__duckvil_resource_function_t _addHotObjectHandle = RuntimeReflection::get_function_handle<HotReloader::ITrackKeeper*>(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _rcTypeHandle, "AddHotObject");
+                        RuntimeReflection::invoke_member(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _rcTypeHandle, _addHotObjectHandle, _pData->m_pRuntimeCompiler, (HotReloader::ITrackKeeper*)_trackKeeper);
 
                         // _pData->m_eventPool.Add<HotReloader::HotReloadedEvent>(_trackKeeper->GetObject(), _typeHandle);
                         // _pData->m_eventPool.Add<HotReloader::HotReloadedEvent>(_trackKeeper);

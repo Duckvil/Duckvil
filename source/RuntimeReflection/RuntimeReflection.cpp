@@ -1,5 +1,9 @@
 #include "RuntimeReflection/RuntimeReflection.h"
 
+// #ifndef g_pDuckvilFrontendReflectionContext
+// duckvil_frontend_reflection_context* g_pDuckvilFrontendReflectionContext = nullptr;
+// #endif
+
 namespace Duckvil { namespace RuntimeReflection {
 
     __data* init(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __ftable* _pFunctions)
@@ -12,7 +16,18 @@ namespace Duckvil { namespace RuntimeReflection {
         return _data;
     }
 
-    DUCKVIL_RESOURCE(type_t) get_type_by_name(__data* _pData, const char _sName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX])
+    duckvil_frontend_reflection_context* create_context(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __ftable* _pFTable, __data* _pData)
+    {
+        duckvil_frontend_reflection_context* _ctx =
+            (duckvil_frontend_reflection_context*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(duckvil_frontend_reflection_context), alignof(duckvil_frontend_reflection_context));
+
+        _ctx->m_pReflection = _pFTable;
+        _ctx->m_pReflectionData = _pData;
+
+        return _ctx;
+    }
+
+    DUCKVIL_RESOURCE(type_t) get_type_by_name(__data* _pData, const char* _sName, std::size_t _ullLength)
     {
         // DUCKVIL_DYNAMIC_ARRAY_FOR(_pData->m_aTypes.m_data, __type_t, _type)
         for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); ++i)
@@ -63,7 +78,7 @@ namespace Duckvil { namespace RuntimeReflection {
         return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
     }
 
-    DUCKVIL_RESOURCE(property_t) get_property_handle_by_name(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char _sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX])
+    DUCKVIL_RESOURCE(property_t) get_property_handle_by_name(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
 
@@ -92,6 +107,95 @@ namespace Duckvil { namespace RuntimeReflection {
         }
 
         return _constructors;
+    }
+
+    DUCKVIL_RESOURCE(constructor_t) get_constructor_handle_by_type_id(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, std::size_t _ullTypeID)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_constructors.m_data); ++i)
+        {
+            const __constructor_t& _constructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_constructors, i);
+
+            if(_constructor.m_ullTypeID == _ullTypeID)
+            {
+                return { i };
+            }
+        }
+
+        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    }
+
+    DUCKVIL_RESOURCE(function_t) get_function_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength, std::size_t _ullTypeID)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); ++i)
+        {
+            const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, i);
+
+            if(_function.m_ullArgumentsTypeID == _ullTypeID && strcmp(_function.m_sFunctionName, _sName) == 0)
+            {
+                return { i };
+            }
+        }
+
+        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    }
+
+    __ifunction* get_function_callback(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength, std::size_t _ullTypeID)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); ++i)
+        {
+            const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, i);
+
+            if(_function.m_ullArgumentsTypeID == _ullTypeID && strcmp(_function.m_sFunctionName, _sName) == 0)
+            {
+                return _function.m_pFunction;
+            }
+        }
+
+        return nullptr;
+    }
+
+    __ifunction* get_function_callback_by_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, std::size_t _ullTypeID)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+        const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, _functionHandle.m_ID);
+
+        if(_function.m_ullArgumentsTypeID == _ullTypeID)
+        {
+            return _function.m_pFunction;
+        }
+
+        return nullptr;
+    }
+
+    void* get_property(__data* _pData, const char* _sName, std::size_t _ullLength, std::size_t _ullTypeID, const void* _pObject)
+    {
+        const __data& _data = *_pData;
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_data.m_aTypes.m_data); ++i)
+        {
+            const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_data.m_aTypes, i);
+
+            if(_type.m_ullTypeID == _ullTypeID)
+            {
+                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_properties.m_data); ++j)
+                {
+                    const __property_t& _property = DUCKVIL_SLOT_ARRAY_GET(_type.m_properties, j);
+
+                    if(strcmp(_property.m_sName, _sName) == 0)
+                    {
+                        return (uint8_t*)_pObject + _property.m_ullAddress;
+                    }
+                }
+            }
+        }
+
+        return nullptr;
     }
 
     Memory::Vector<DUCKVIL_RESOURCE(argument_t)> get_arguments(__data* _pData, Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _handle)
@@ -125,7 +229,7 @@ namespace Duckvil { namespace RuntimeReflection {
         return (uint8_t*)_pObject + _property.m_ullAddress;
     }
 
-    void* get_property_by_name(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char _sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX], const void* _pObject)
+    void* get_property_by_name(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength, const void* _pObject)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
 
@@ -172,6 +276,23 @@ namespace Duckvil { namespace RuntimeReflection {
             auto& _inheritance = DUCKVIL_SLOT_ARRAY_GET(_type.m_inheritances, i);
 
             if(_inheritance.m_ullInheritanceTypeID == _inheritanceType.m_ullTypeID)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    bool inherits_by_type_id(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, std::size_t _ullTypeID)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_inheritances.m_data); ++i)
+        {
+            auto& _inheritance = DUCKVIL_SLOT_ARRAY_GET(_type.m_inheritances, i);
+
+            if(_inheritance.m_ullInheritanceTypeID == _ullTypeID)
             {
                 return true;
             }
@@ -369,19 +490,30 @@ Duckvil::RuntimeReflection::__ftable* duckvil_runtime_reflection_init(Duckvil::M
 
     _functions->m_fnInit = &Duckvil::RuntimeReflection::init;
 
+    _functions->m_fnCreateContext = &Duckvil::RuntimeReflection::create_context;
+
     _functions->m_fnGetTypeHandleByName = &Duckvil::RuntimeReflection::get_type_by_name;
     _functions->m_fnGetPropertyByName = &Duckvil::RuntimeReflection::get_property_by_name;
     _functions->m_fnGetTypeHandleByTypeID = &Duckvil::RuntimeReflection::get_type_by_type_id;
     _functions->m_fnGetType = &Duckvil::RuntimeReflection::get_type_data;
     _functions->m_fnGetTypes = &Duckvil::RuntimeReflection::get_types;
     _functions->m_fnGetPropertyHandleByName = &Duckvil::RuntimeReflection::get_property_handle_by_name;
-    _functions->m_fnGetConstructors = &Duckvil::RuntimeReflection::get_constructors;
     _functions->m_fnGetArguments = &Duckvil::RuntimeReflection::get_arguments;
     _functions->m_fnGetArgument = &Duckvil::RuntimeReflection::get_argument;
     _functions->m_fnGetPropertyByName = &Duckvil::RuntimeReflection::get_property_by_name;
     _functions->m_fnGetInheritances = &Duckvil::RuntimeReflection::get_inheritances;
     _functions->m_fnGetInheritance = &Duckvil::RuntimeReflection::get_inheritance;
     _functions->m_fnInherits = &Duckvil::RuntimeReflection::inherits;
+    _functions->m_fnInheritsByTypeID = &Duckvil::RuntimeReflection::inherits_by_type_id;
+
+    _functions->m_fnGetConstructors = &Duckvil::RuntimeReflection::get_constructors;
+    _functions->m_fnGetConstructorHandleByTypeID = &Duckvil::RuntimeReflection::get_constructor_handle_by_type_id;
+
+    _functions->m_fnGetFunctionHandle = &Duckvil::RuntimeReflection::get_function_handle;
+    _functions->m_fnGetFunctionCallback = &Duckvil::RuntimeReflection::get_function_callback;
+    _functions->m_fnGetFunctionCallbackByHandle = &Duckvil::RuntimeReflection::get_function_callback_by_handle;
+
+    _functions->m_fnGetProperty = &Duckvil::RuntimeReflection::get_property;
 
     _functions->m_fnGetTypeMetaHandle = &Duckvil::RuntimeReflection::get_type_meta_handle;
     _functions->m_fnGetTypeMetaValue = &Duckvil::RuntimeReflection::get_type_meta_value;

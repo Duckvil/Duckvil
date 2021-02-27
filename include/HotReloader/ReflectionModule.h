@@ -128,7 +128,7 @@ namespace Duckvil { namespace HotReloader {
 
                     if(_inhTypeHandle.m_ID != -1)
                     {
-                        RuntimeReflection::__duckvil_resource_function_t _funcHandle = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_pData->m_pRuntimeReflectionData, _inhTypeHandle, "Serialize");
+                        RuntimeReflection::__duckvil_resource_function_t _funcHandle = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _inhTypeHandle, "Serialize");
 
                         if(_funcHandle.m_ID != -1)
                         {

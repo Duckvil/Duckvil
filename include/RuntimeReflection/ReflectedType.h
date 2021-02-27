@@ -2,22 +2,6 @@
 
 #include "RuntimeReflection/RuntimeReflection.h"
 
-// #ifndef DUCKVIL_FRONTEND_REFLECTION_API
-// #define DUCKVIL_FRONTEND_REFLECTION_API
-// #endif
-
-// struct duckvil_frontend_reflection_context;
-
-// #ifndef GImGui
-// extern DUCKVIL_FRONTEND_REFLECTION_API duckvil_frontend_reflection_context* g_pDuckvilFrontendReflectionContext;
-// #endif
-
-// struct duckvil_frontend_reflection_context
-// {
-//     Duckvil::RuntimeReflection::__ftable* m_pReflection;
-//     Duckvil::RuntimeReflection::__data* m_pReflectionData;
-// };
-
 namespace Duckvil { namespace RuntimeReflection {
 
     template<typename...>
@@ -67,25 +51,25 @@ namespace Duckvil { namespace RuntimeReflection {
         template <typename Type2, typename... Args, std::size_t Length>
         __function<void(Type2::*)(Args...)>* GetFunctionCallback(const char (&_sName)[Length])
         {
-            return get_function_callback<Type2, Args...>(m_pReflectionData, m_typeHandle, _sName);
+            return get_function_callback<Type2, Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _sName);
         }
 
         template <typename ReturnType, typename Type2, typename... Args, std::size_t Length>
         __function<ReturnType(Type2::*)(Args...)>* GetFunctionCallback(const char (&_sName)[Length])
         {
-            return get_function_callback<ReturnType, Type2, Args...>(m_pReflectionData, m_typeHandle, _sName);
+            return get_function_callback<ReturnType, Type2, Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _sName);
         }
 
         template <typename... Args, std::size_t Length>
         __duckvil_resource_function_t GetFunctionHandle(const char (&_sName)[Length])
         {
-            return get_function_handle<Args...>(m_pReflectionData, m_typeHandle, _sName);
+            return get_function_handle<Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _sName);
         }
 
         template <typename... Args>
         void Invoke(__duckvil_resource_function_t _functionHandle, void* _pObject, Args... _vArgs)
         {
-            invoke_member<Args...>(m_pReflectionData, m_typeHandle, _functionHandle, _pObject, _vArgs...);
+            invoke_member<Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _functionHandle, _pObject, _vArgs...);
         }
 
         template <typename... Args, std::size_t Length>
@@ -162,13 +146,13 @@ namespace Duckvil { namespace RuntimeReflection {
         template <typename Type, typename... Args, std::size_t Length>
         __function<void(Type::*)(Args...)>* GetFunctionCallback(const char (&_sName)[Length])
         {
-            return get_function_callback<Type, Args...>(m_pReflectionData, m_typeHandle, _sName);
+            return get_function_callback<Type, Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _sName);
         }
 
         template <typename ReturnType, typename Type, typename... Args, std::size_t Length>
         __function<ReturnType(Type::*)(Args...)>* GetFunctionCallback(const char (&_sName)[Length])
         {
-            return get_function_callback<ReturnType, Type, Args...>(m_pReflectionData, m_typeHandle, _sName);
+            return get_function_callback<ReturnType, Type, Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _sName);
         }
 
         template <typename ReturnType, typename Type, typename... Args>
@@ -186,13 +170,13 @@ namespace Duckvil { namespace RuntimeReflection {
         template <typename... Args, std::size_t Length>
         __duckvil_resource_function_t GetFunctionHandle(const char (&_sName)[Length])
         {
-            return get_function_handle<Args...>(m_pReflectionData, m_typeHandle, _sName);
+            return get_function_handle<Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _sName);
         }
 
         template <typename... Args>
         void Invoke(__duckvil_resource_function_t _functionHandle, void* _pObject, Args... _vArgs)
         {
-            invoke_member<Args...>(m_pReflectionData, m_typeHandle, _functionHandle, _pObject, _vArgs...);
+            invoke_member<Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _functionHandle, _pObject, _vArgs...);
         }
 
         template <typename... Args, std::size_t Length>
@@ -204,7 +188,7 @@ namespace Duckvil { namespace RuntimeReflection {
         template <typename ReturnType, typename... Args>
         ReturnType InvokeStatic(__duckvil_resource_function_t _functionHandle, Args... _vArgs)
         {
-            return invoke_static_result<ReturnType, Args...>(m_pReflectionData, m_typeHandle, _functionHandle, _vArgs...);
+            return invoke_static_result<ReturnType, Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _functionHandle, _vArgs...);
         }
 
         template <typename ReturnType, typename... Args, std::size_t Length>

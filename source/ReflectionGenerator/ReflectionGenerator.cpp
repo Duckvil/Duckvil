@@ -30,6 +30,7 @@ struct reflection_module
 std::filesystem::path _relativePath;
 Duckvil::Memory::Vector<reflection_module> _aModules;
 Duckvil::RuntimeReflection::__data* _runtimeReflectionData;
+Duckvil::RuntimeReflection::__ftable* _reflectionFTable;
 
 void generate(std::ofstream& _file, void* _pUserData)
 {
@@ -43,7 +44,7 @@ void generate(std::ofstream& _file, void* _pUserData)
             continue;
         }
 
-        Duckvil::RuntimeReflection::invoke_member<std::ofstream&>(_runtimeReflectionData, _module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _file);
+        Duckvil::RuntimeReflection::invoke_member<std::ofstream&>(_reflectionFTable, _runtimeReflectionData, _module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _file);
     }
 }
 
@@ -93,7 +94,7 @@ int main(int argc, char* argv[])
     _module.get(_reflectionModule, "duckvil_runtime_reflection_init", (void**)&_runtimeReflectionInit);
     _module.get(_reflectionModule, "duckvil_runtime_reflection_recorder_init", (void**)&_runtimeReflectionRecorderInit);
 
-    Duckvil::RuntimeReflection::__ftable* _reflectionFTable = _runtimeReflectionInit(_memoryInterface, _free_list);
+    _reflectionFTable = _runtimeReflectionInit(_memoryInterface, _free_list);
     Duckvil::RuntimeReflection::__recorder_ftable* _reflectionRecorderFTable = _runtimeReflectionRecorderInit(_memoryInterface, _free_list);
 
     _runtimeReflectionData = _reflectionFTable->m_fnInit(_memoryInterface, _free_list, _reflectionFTable);
@@ -156,9 +157,9 @@ int main(int argc, char* argv[])
 
                 _module.m_pObject = Duckvil::RuntimeReflection::create<const Duckvil::Memory::FreeList&, Duckvil::RuntimeReflection::__ftable*, Duckvil::RuntimeReflection::__data*>(_memoryInterface, _free_list, _runtimeReflectionData, _typeHandle, _heap, _reflectionFTable, _runtimeReflectionData);
                 _module.m_typeHandle = _typeHandle;
-                _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&>(_runtimeReflectionData, _typeHandle, "GenerateCustom");
-                _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(_runtimeReflectionData, _typeHandle, "Clear");
-                _module.m_processAST_FunctionHandle = Duckvil::RuntimeReflection::get_function_handle<Duckvil::Parser::__ast*>(_runtimeReflectionData, _typeHandle, "ProcessAST");
+                _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&>(_reflectionFTable, _runtimeReflectionData, _typeHandle, "GenerateCustom");
+                _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(_reflectionFTable, _runtimeReflectionData, _typeHandle, "Clear");
+                _module.m_processAST_FunctionHandle = Duckvil::RuntimeReflection::get_function_handle<Duckvil::Parser::__ast*>(_reflectionFTable, _runtimeReflectionData, _typeHandle, "ProcessAST");
 
                 if(_aModules.Full())
                 {
@@ -201,7 +202,7 @@ int main(int argc, char* argv[])
                 continue;
             }
 
-            Duckvil::RuntimeReflection::invoke_member<Duckvil::Parser::__ast*>(_runtimeReflectionData, _reflectionModule.m_typeHandle, _reflectionModule.m_processAST_FunctionHandle, _reflectionModule.m_pObject, &_astData);
+            Duckvil::RuntimeReflection::invoke_member<Duckvil::Parser::__ast*>(_reflectionFTable, _runtimeReflectionData, _reflectionModule.m_typeHandle, _reflectionModule.m_processAST_FunctionHandle, _reflectionModule.m_pObject, &_astData);
         }
 
         Duckvil::RuntimeReflection::__generator_data _generatorData;
@@ -269,7 +270,7 @@ int main(int argc, char* argv[])
                 continue;
             }
 
-            Duckvil::RuntimeReflection::invoke_member(_runtimeReflectionData, _module.m_typeHandle, _module.m_clearFunctionHandle, _module.m_pObject);
+            Duckvil::RuntimeReflection::invoke_member(_reflectionFTable, _runtimeReflectionData, _module.m_typeHandle, _module.m_clearFunctionHandle, _module.m_pObject);
         }
     }
 

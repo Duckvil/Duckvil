@@ -57,8 +57,6 @@ namespace Duckvil { namespace HotReloader {
         user_data m_userData;
 
         Memory::FreeList m_heap;
-        RuntimeReflection::__recorder_ftable* m_pReflectionRecorderFTable;
-        RuntimeReflection::__ftable* m_pReflectionFTable;
 
         Memory::FreeList m_objectsHeap;
 
@@ -95,6 +93,8 @@ namespace Duckvil { namespace HotReloader {
         ~RuntimeCompilerSystem();
 
         RuntimeReflection::__data* m_pReflectionData;
+        RuntimeReflection::__recorder_ftable* m_pReflectionRecorderFTable;
+        RuntimeReflection::__ftable* m_pReflectionFTable;
 
         // duckvil_recorderd_types* m_aRecordedTypes;
         // size_t m_ullRecordedTypesCount;

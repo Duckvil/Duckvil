@@ -69,7 +69,7 @@ namespace Duckvil { namespace Editor {
             RuntimeReflection::__duckvil_resource_type_t _typeHandle = _types[i];
             RuntimeReflection::ReflectedType<> _type(_pReflection, _pRuntimeReflectionData, _heap, _typeHandle);
 
-            if(RuntimeReflection::inherits<Editor::Widget>(_pRuntimeReflectionData, _typeHandle) && !RuntimeReflection::inherits<ISystem>(_pRuntimeReflectionData, _typeHandle))
+            if(RuntimeReflection::inherits<Editor::Widget>(_pReflection, _pRuntimeReflectionData, _typeHandle) && !RuntimeReflection::inherits<ISystem>(_pReflection, _pRuntimeReflectionData, _typeHandle))
             {
                 const auto& _res = _pReflection->m_fnGetConstructors(_pRuntimeReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle); // RuntimeReflection::get_constructors(_pRuntimeReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle);
 

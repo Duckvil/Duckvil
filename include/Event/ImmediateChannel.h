@@ -129,7 +129,7 @@ namespace Duckvil { namespace Event {
         {
             reflected_event _event = {};
 
-            _event.m_functionHandle = RuntimeReflection::get_function_handle<const Message&>(m_pReflectionData, _typeHandle, "OnEvent");
+            _event.m_functionHandle = RuntimeReflection::get_function_handle<const Message&>(m_pReflection, m_pReflectionData, _typeHandle, "OnEvent");
             _event.m_typeHandle = _typeHandle;
             _event.m_pObject = _pHandler;
 
@@ -191,7 +191,7 @@ namespace Duckvil { namespace Event {
         {
             for(reflected_event& _event : m_aRefelctedEvents)
             {
-                RuntimeReflection::invoke_member<const Message&>(m_pReflectionData, _event.m_typeHandle, _event.m_functionHandle, _event.m_pObject, _message);
+                RuntimeReflection::invoke_member<const Message&>(m_pReflection, m_pReflectionData, _event.m_typeHandle, _event.m_functionHandle, _event.m_pObject, _message);
             }
 
             for(Callback _fn : m_aCallbackEvents)
