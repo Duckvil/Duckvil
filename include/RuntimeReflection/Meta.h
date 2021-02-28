@@ -22,7 +22,7 @@
     } \
  \
     template <typename KeyType> \
-    static inline __variant get_meta(__ftable* _pReflection, __data* _pData, type, const KeyType& _key) \
+    static inline const __variant& get_meta(__ftable* _pReflection, __data* _pData, type, const KeyType& _key) \
     { \
         return _pReflection->m_fnGet ## name ## MetaVariant(_pData, type2, &_key, sizeof(KeyType), typeid(KeyType).hash_code()); \
     } \
@@ -31,6 +31,34 @@
     static inline const ValueType& get_meta_value(__ftable* _pReflection, __data* _pData, type, const char (&_key)[Length]) \
     { \
         return *(ValueType*)_pReflection->m_fnGet ## name ## MetaValue(_pData, type2, _key, Length, CONST_CHAR_POINTER_ID); \
+    } \
+ \
+    template <typename KeyType> \
+    static inline DUCKVIL_RESOURCE(variant_t) get_meta_value_handle(type, const KeyType& _key) \
+    { \
+        const duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext; \
+        return get_meta_value_handle<KeyType>(_context.m_pReflection, _context.m_pReflectionData, type2, _key); \
+    } \
+ \
+    template <typename ValueType, typename KeyType> \
+    static inline const ValueType& get_meta_value(type, const KeyType& _key) \
+    { \
+        const duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext; \
+        return get_meta_value<KeyType, ValueType>(_context.m_pReflection, _context.m_pReflectionData, type2, _key); \
+    } \
+ \
+    template <typename KeyType> \
+    static inline const __variant& get_meta(type, const KeyType& _key) \
+    { \
+        const duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext; \
+        return get_meta<KeyType>(_context.m_pReflection, _context.m_pReflectionData, type2, _key); \
+    } \
+ \
+    template <typename ValueType, std::size_t Length> \
+    static inline const ValueType& get_meta_value(type, const char (&_key)[Length]) \
+    { \
+        const duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext; \
+        return get_meta_value<ValueType>(_context.m_pReflection, _context.m_pReflectionData, type2, _key); \
     }
 
 namespace Duckvil { namespace RuntimeReflection {

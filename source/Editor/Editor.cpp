@@ -58,18 +58,20 @@ namespace Duckvil { namespace Editor {
 
     void post_init(RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData, const Memory::FreeList& _heap, void* _pData)
     {
+        RuntimeReflection::make_currnt({ _pReflection, _pRuntimeReflectionData });
+
         ImGuiEditorData* _data = (ImGuiEditorData*)_pData;
 
         _data->m_pEditorEvents = Event::Pool<Event::mode::immediate>(_heap, _pReflection, _pRuntimeReflectionData);
 
-        auto _types = RuntimeReflection::get_types(_pReflection, _pRuntimeReflectionData, _heap);
+        auto _types = RuntimeReflection::get_types(_heap);
 
         for(uint32_t i = 0; i < _types.Size(); ++i)
         {
             RuntimeReflection::__duckvil_resource_type_t _typeHandle = _types[i];
-            RuntimeReflection::ReflectedType<> _type(_pReflection, _pRuntimeReflectionData, _heap, _typeHandle);
+            RuntimeReflection::ReflectedType<> _type(_heap, _typeHandle);
 
-            if(RuntimeReflection::inherits<Editor::Widget>(_pReflection, _pRuntimeReflectionData, _typeHandle) && !RuntimeReflection::inherits<ISystem>(_pReflection, _pRuntimeReflectionData, _typeHandle))
+            if(RuntimeReflection::inherits<Editor::Widget>(_typeHandle) && !RuntimeReflection::inherits<ISystem>(_typeHandle))
             {
                 const auto& _res = _pReflection->m_fnGetConstructors(_pRuntimeReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle); // RuntimeReflection::get_constructors(_pRuntimeReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle);
 
@@ -87,7 +89,7 @@ namespace Duckvil { namespace Editor {
 
                 void* _object = _type.Create<const Memory::FreeList&>(_heap);
                 Editor::Widget* _widget = (Editor::Widget*)_type.InvokeStatic<void*, void*>("Cast", _object);
-                RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type<HotReloader::TrackKeeper>(_pReflection, _pRuntimeReflectionData);
+                RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type<HotReloader::TrackKeeper>();
                 HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_heap, _pRuntimeReflectionData, _trackKeeperHandle, _object, _typeHandle);
 
                 auto _lol = _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction;

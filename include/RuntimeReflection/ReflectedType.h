@@ -37,6 +37,12 @@ namespace Duckvil { namespace RuntimeReflection {
             m_typeHandle = get_type<Type>(m_pReflection, _pReflectionData);
         }
 
+        ReflectedType(const Memory::FreeList& _heap) :
+            ReflectedType(g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _heap)
+        {
+
+        }
+
         ~ReflectedType()
         {
 
@@ -110,13 +116,24 @@ namespace Duckvil { namespace RuntimeReflection {
 
         }
 
+        ReflectedType(const Memory::FreeList& _heap, DUCKVIL_RESOURCE(type_t) _typeHandle) :
+            ReflectedType(g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _heap, _typeHandle)
+        {
+
+        }
+
         template <typename Type>
         ReflectedType(__ftable* _pReflection, __data* _pReflectionData, const Memory::FreeList& _heap, tag<Type>) :
-            m_pReflectionData(_pReflectionData),
-            m_pReflection(_pReflection),
-            m_heap(_heap)
+            ReflectedType(_pReflection, _pReflectionData, _heap, get_type<Type>(m_pReflection, _pReflectionData))
         {
-            m_typeHandle = get_type<Type>(m_pReflection, _pReflectionData);
+
+        }
+
+        template <typename Type>
+        ReflectedType(const Memory::FreeList& _heap, tag<Type>) :
+            ReflectedType(g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _heap, get_type<Type>(g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData))
+        {
+
         }
 
         ~ReflectedType()
