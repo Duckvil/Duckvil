@@ -58,15 +58,15 @@ DUCKVIL_TEST(MainMemoryAllocation)
 
         *_main = 0;
 
-        DUCKVIL_TEST_EXP(__duckvil_global::m_pMemoryInterface->m_fnBasicAllocate(*_main, 1024) == false, "Should not happen");
+        DUCKVIL_TEST_EXP(__duckvil_global::m_pMemoryInterface->m_fnBasicAllocate(_main, 1024), "Should not happen");
     }
 
     Duckvil::Memory::__linear_allocator** _main = (Duckvil::Memory::__linear_allocator**)&__duckvil_global::m_pMemoryChunk;
 
     *_main = new Duckvil::Memory::__linear_allocator();
 
-    DUCKVIL_TEST_EXP(__duckvil_global::m_pMemoryInterface->m_fnBasicAllocate(*_main, std::numeric_limits<std::size_t>::max()) == false, "Could not allocate memory");
-    DUCKVIL_TEST_EXP(__duckvil_global::m_pMemoryInterface->m_fnBasicAllocate(*_main, 2048) == true, "Could not allocate memory");
+    DUCKVIL_TEST_EXP(__duckvil_global::m_pMemoryInterface->m_fnBasicAllocate(_main, std::numeric_limits<std::size_t>::max()) == false, "Could not allocate memory");
+    DUCKVIL_TEST_EXP(__duckvil_global::m_pMemoryInterface->m_fnBasicAllocate(_main, 2048) == true, "Could not allocate memory");
 
     __duckvil_global::m_pHeap = __duckvil_global::m_pMemoryInterface->m_fnLinearAllocateFreeListAllocator(*_main, 1024);
     __duckvil_global::m_freeList = Duckvil::Memory::FreeList(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::__free_list_allocator*)__duckvil_global::m_pHeap);

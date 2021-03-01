@@ -83,8 +83,6 @@ Duckvil::Memory::IMemory* duckvil_memory_init()
 
     memory->m_fnLinearAllocate =    &impl_linear_allocate;
     memory->m_fnLinearClear =       &impl_linear_clear;
-    memory->m_fnLinearAllocate_ =   &impl_linear_allocate;
-    memory->m_fnLinearClear_ =      &impl_linear_clear;
 
     memory->m_fnFixedStackAllocate_ =   &impl_fixed_stack_allocate;
     memory->m_fnFixedStackTop_ =        &impl_fixed_stack_allocator_top;

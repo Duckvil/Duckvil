@@ -170,12 +170,9 @@ namespace Duckvil { namespace Memory {
                 );
 
                 memcpy(_container2.m_pContainer, _container.m_pContainer, sizeof(typename Type::type));
-
-                _container2.m_pContainer->m_pMemory = (uint8_t*)_container2.m_pContainer + sizeof(typename Type::type);
-
                 memcpy(
-                    _container2.m_pContainer->m_pMemory,
-                    _container.m_pContainer->m_pMemory,
+                    _container2.GetWorkingMemory(),
+                    _container.GetWorkingMemory(),
                     _container.m_pContainer->m_ullCapacity
                 );
 
@@ -249,22 +246,22 @@ namespace Duckvil { namespace Memory {
 
         Iterator begin()
         {
-            return Iterator((Type*)SContainer::m_pContainer->m_pMemory);
+            return Iterator(SContainer::GetWorkingMemory());
         }
 
         Iterator end()
         {
-            return Iterator((Type*)(SContainer::m_pContainer->m_pMemory + SContainer::m_pContainer->m_ullUsed));
+            return Iterator((Type*)((uint8_t*)SContainer::GetWorkingMemory() + SContainer::m_pContainer->m_ullUsed));
         }
 
         ConstIterator cbegin()
         {
-            return ConstIterator((Type*)SContainer::m_pContainer->m_pMemory);
+            return ConstIterator(SContainer::GetWorkingMemory());
         }
 
         ConstIterator cend()
         {
-            return ConstIterator((Type*)(SContainer::m_pContainer->m_pMemory + SContainer::m_pContainer->m_ullUsed));
+            return ConstIterator((Type*)((uint8_t*)SContainer::GetWorkingMemory() + SContainer::m_pContainer->m_ullUsed));
         }
     };
 

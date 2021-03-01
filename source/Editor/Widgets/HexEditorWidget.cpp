@@ -135,7 +135,29 @@ namespace Duckvil { namespace Editor {
 
             if(m_pSelected != nullptr)
             {
-                m_hexEditor.DrawContents(m_pSelected->m_pAllocator->m_pMemory, m_pSelected->m_pAllocator->m_ullCapacity);
+                switch(m_pSelected->m_allocatorType)
+                {
+                case duckvil_memory_allocator_type::duckvil_memory_allocator_type_array:
+                    m_hexEditor.DrawContents((uint8_t*)m_pSelected->m_pAllocator + sizeof(Memory::__fixed_array_allocator), m_pSelected->m_pAllocator->m_ullCapacity);
+                    break;
+                case duckvil_memory_allocator_type::duckvil_memory_allocator_type_vector:
+                    m_hexEditor.DrawContents((uint8_t*)m_pSelected->m_pAllocator + sizeof(Memory::__fixed_vector_allocator), m_pSelected->m_pAllocator->m_ullCapacity);
+                    break;
+                case duckvil_memory_allocator_type::duckvil_memory_allocator_type_linear:
+                    m_hexEditor.DrawContents((uint8_t*)m_pSelected->m_pAllocator + sizeof(Memory::__linear_allocator), m_pSelected->m_pAllocator->m_ullCapacity);
+                    break;
+                case duckvil_memory_allocator_type::duckvil_memory_allocator_type_free_list:
+                    m_hexEditor.DrawContents((uint8_t*)m_pSelected->m_pAllocator + sizeof(Memory::__free_list_allocator), m_pSelected->m_pAllocator->m_ullCapacity);
+                    break;
+                case duckvil_memory_allocator_type::duckvil_memory_allocator_type_queue:
+                    m_hexEditor.DrawContents((uint8_t*)m_pSelected->m_pAllocator + sizeof(Memory::__fixed_queue_allocator), m_pSelected->m_pAllocator->m_ullCapacity);
+                    break;
+                case duckvil_memory_allocator_type::duckvil_memory_allocator_type_stack:
+                    m_hexEditor.DrawContents((uint8_t*)m_pSelected->m_pAllocator + sizeof(Memory::__fixed_stack_allocator), m_pSelected->m_pAllocator->m_ullCapacity);
+                    break;
+                default:
+                    break;
+                }
             }
 
             ImGui::EndChild();

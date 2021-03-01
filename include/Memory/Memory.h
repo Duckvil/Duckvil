@@ -14,19 +14,14 @@ namespace Duckvil { namespace Memory {
 
     struct __allocator
     {
-        std::size_t m_ullCapacity = 0;
-        std::size_t m_ullUsed = 0;
-
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         void (*m_fnOnAllocate)(__allocator* _pParentAllocator, __allocator* _pAllocator, duckvil_memory_allocator_type _type) = 0;
         void (*m_fnOnDeallocate)(__allocator* _pParentAllocator, __allocator* _pAllocator) = 0;
-        // __allocator* m_pParentAllocator;
         duckvil_memory_debug_info* m_pDebugData;
 #endif
 
-    // TODO: Remove for release build, it is needed only for debugging/dumping memory
-    // Note: Not sure why, but when trying to dump memory without the pointer like: "AllocatorPointer + sizeof(AllocatorType)" (to get the stored data) program is crashing
-        uint8_t* m_pMemory = 0; // It always points to the end of whole structure where the data is stored
+        std::size_t m_ullCapacity = 0;
+        std::size_t m_ullUsed = 0;
     };
 
     struct __linear_allocator : public __allocator
@@ -71,7 +66,7 @@ namespace Duckvil { namespace Memory {
 
     struct IMemory
     {
-        typedef bool (*_basic_allocate)(__linear_allocator* _pAllocator, std::size_t _ullSize);
+        typedef bool (*_basic_allocate)(__linear_allocator** _pAllocator, std::size_t _ullSize);
 
         typedef uintptr_t (*_calculate_aligned_pointer)(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
         typedef uint8_t (*_calculate_padding)(const uintptr_t& _ullAddress, uint8_t _ucAlignment);
@@ -80,10 +75,8 @@ namespace Duckvil { namespace Memory {
         typedef uint8_t (*_calculate_padding_)(const void* _p, uint8_t _ucAlignment);
         typedef uint8_t (*_calculate_padding_h_)(const void* _p, uint8_t _ucAlignment, uint8_t _ucHeaderSize);
 
-        typedef void* (*_linear_allocate)(__linear_allocator& _allocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef void (*_linear_clear)(__linear_allocator& _allocator);
-        typedef void* (*_linear_allocate_)(__linear_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef void (*_linear_clear_)(__linear_allocator* _pAllocator);
+        typedef void* (*_linear_allocate)(__linear_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef void (*_linear_clear)(__linear_allocator* _pAllocator);
 
         typedef void* (*_fixed_stack_allocate_)(__fixed_stack_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
         typedef void* (*_fixed_stack_top_)(__fixed_stack_allocator* _pAllocator);
@@ -154,8 +147,6 @@ namespace Duckvil { namespace Memory {
 
         _linear_allocate            m_fnLinearAllocate;
         _linear_clear               m_fnLinearClear;
-        _linear_allocate_           m_fnLinearAllocate_;
-        _linear_clear_              m_fnLinearClear_;
 
         _fixed_stack_allocate_      m_fnFixedStackAllocate_;
         _fixed_stack_top_           m_fnFixedStackTop_;

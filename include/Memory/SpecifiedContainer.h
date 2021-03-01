@@ -57,7 +57,8 @@ namespace Duckvil { namespace Memory {
             return _pSpecifiedContainer->m_fnDestruct;
         }
 
-        Type* GetAllocator() { return m_pContainer; }
+        Type* GetAllocator() const { return m_pContainer; }
+        ContainerType* GetWorkingMemory() const { return (ContainerType*)((uint8_t*)m_pContainer + sizeof(Type)); }
     };
 
 }}

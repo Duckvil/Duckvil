@@ -254,7 +254,7 @@ namespace Duckvil { namespace Memory {
 
     void impl_free_list_clear(__free_list_allocator* _pAllocator)
     {
-        memset(_pAllocator->m_pMemory, 0, _pAllocator->m_ullCapacity);
+        memset((uint8_t*)_pAllocator + sizeof(__free_list_allocator), 0, _pAllocator->m_ullCapacity);
         _pAllocator->m_ullUsed = 0;
     }
 

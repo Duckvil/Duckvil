@@ -18,7 +18,6 @@ record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Mem
 record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 18);
 _property = record_property<std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::__allocator, m_ullCapacity), "m_ullCapacity");
 _property = record_property<std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::__allocator, m_ullUsed), "m_ullUsed");
-_property = record_property<uint8_t*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::__allocator, m_pMemory), "m_pMemory");
 _type = record_type<Duckvil::Memory::__linear_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__linear_allocator");
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
@@ -76,8 +75,6 @@ _property = record_property<IMemory::_calculate_padding_>(DUCKVIL_RUNTIME_REFLEC
 _property = record_property<IMemory::_calculate_padding_h_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnCalculatePaddingH_), "m_fnCalculatePaddingH_");
 _property = record_property<IMemory::_linear_allocate>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnLinearAllocate), "m_fnLinearAllocate");
 _property = record_property<IMemory::_linear_clear>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnLinearClear), "m_fnLinearClear");
-_property = record_property<IMemory::_linear_allocate_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnLinearAllocate_), "m_fnLinearAllocate_");
-_property = record_property<IMemory::_linear_clear_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnLinearClear_), "m_fnLinearClear_");
 _property = record_property<IMemory::_fixed_stack_allocate_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnFixedStackAllocate_), "m_fnFixedStackAllocate_");
 _property = record_property<IMemory::_fixed_stack_top_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnFixedStackTop_), "m_fnFixedStackTop_");
 _property = record_property<IMemory::_fixed_stack_pop_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::IMemory, m_fnFixedStackPop_), "m_fnFixedStackPop_");

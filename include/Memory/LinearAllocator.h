@@ -5,15 +5,9 @@
 namespace Duckvil { namespace Memory {
 
     template <typename Type>
-    Type* linear_allocate(IMemory* _pMemory, __linear_allocator& _allocator, const Type& _pData)
-    {
-        return (Type*)_pMemory->m_fnLinearAllocate(_allocator, &_pData, sizeof(Type), alignof(Type));
-    }
-
-    template <typename Type>
     Type* linear_allocate(IMemory* _pMemory, __linear_allocator* _pAllocator, const Type& _pData)
     {
-        return (Type*)_pMemory->m_fnLinearAllocate_(_pAllocator, &_pData, sizeof(Type), alignof(Type));
+        return (Type*)_pMemory->m_fnLinearAllocate(_pAllocator, &_pData, sizeof(Type), alignof(Type));
     }
 
     bool linear_empty(__linear_allocator* _pAllocator)

@@ -65,10 +65,10 @@ int main(int argc, char* argv[])
     _module.get(_memoryModule, "duckvil_memory_init", (void**)&_fnMemoryInit);
 
     Duckvil::Memory::IMemory* _memoryInterface = _fnMemoryInit();
-    Duckvil::Memory::__linear_allocator _mainMemoryAllocator = { 0 };
+    Duckvil::Memory::__linear_allocator* _mainMemoryAllocator;
 
     _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024);
-    Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(&_mainMemoryAllocator, 512 * 1024);
+    Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(_mainMemoryAllocator, 512 * 1024);
     Duckvil::Memory::FreeList _heap(_memoryInterface, _free_list);
 
     _heap.Allocate(_aModules, 1);

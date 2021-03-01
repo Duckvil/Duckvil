@@ -447,7 +447,7 @@ namespace Duckvil {
             (_system.m_pISystem->*_system.m_fnUpdateCallback)();
         }
 
-        (_pData->m_pRuntimeCompiler->*_pData->m_fnRuntimeCompilerUpdate)();
+        // (_pData->m_pRuntimeCompiler->*_pData->m_fnRuntimeCompilerUpdate)();
 
         if(_pData->m_ullLastTimeUsed != _pData->m_pHeap->m_ullUsed)
         {
