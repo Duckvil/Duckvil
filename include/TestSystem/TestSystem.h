@@ -64,7 +64,7 @@ namespace Duckvil { namespace LOL {
         bool Init();
         void Update();
 
-        void InitEditor(void* _pImguiContext);
+        void InitEditor(void* _pImguiContext, const duckvil_frontend_reflection_context& _context);
         void OnDraw();
 
         void OnEvent(const test& _event);
