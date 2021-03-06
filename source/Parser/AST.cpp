@@ -153,8 +153,15 @@ namespace Duckvil { namespace Parser {
 
                     __ast_entity_argument _arg = {};
 
-                    _arg.m_sType = _type;
-                    _arg.m_sName = _tmp;
+                    if(_type == "")
+                    {
+                        _arg.m_sType = _tmp;
+                    }
+                    else
+                    {
+                        _arg.m_sType = _type;
+                        _arg.m_sName = _tmp;
+                    }
 
                     _res.push_back(_arg);
 
@@ -241,8 +248,15 @@ namespace Duckvil { namespace Parser {
 
                 __ast_entity_argument _arg = {};
 
-                _arg.m_sType = _type;
-                _arg.m_sName = _tmp;
+                if(_type == "")
+                {
+                    _arg.m_sType = _tmp;
+                }
+                else
+                {
+                    _arg.m_sType = _type;
+                    _arg.m_sName = _tmp;
+                }
 
                 _res.push_back(_arg);
 
