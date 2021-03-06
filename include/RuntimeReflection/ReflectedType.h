@@ -95,6 +95,11 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             return InvokeStatic<ReturnType, Args...>(GetFunctionHandle<Args...>(_sName), _vArgs...);
         }
+
+        const DUCKVIL_RESOURCE(type_t)& GetTypeHandle() const
+        {
+            return m_typeHandle;
+        }
     };
 
     template <>
@@ -212,6 +217,11 @@ namespace Duckvil { namespace RuntimeReflection {
         ReturnType InvokeStatic(const char (&_sName)[Length], Args... _vArgs)
         {
             return InvokeStatic<ReturnType, Args...>(GetFunctionHandle<Args...>(_sName), _vArgs...);
+        }
+
+        const DUCKVIL_RESOURCE(type_t)& GetTypeHandle() const
+        {
+            return m_typeHandle;
         }
     };
 
