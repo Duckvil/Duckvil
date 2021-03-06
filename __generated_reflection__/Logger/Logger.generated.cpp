@@ -34,12 +34,14 @@ _property = record_property<char>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_S
 _property = record_property<char>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Logger::__data, m_sPathFile), "m_sPathFile");
 _property = record_property<time_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Logger::__data, m_lastTime), "m_lastTime");
 _property = record_property<__logger_flags>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Logger::__data, m_flags), "m_flags");
+_property = record_property<Memory::Vector<custom_log_t>>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Logger::__data, m_aCustomLogs), "m_aCustomLogs");
+_property = record_property<Event::Pool<Event::mode::immediate>*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Logger::__data, m_pLogEventPool), "m_pLogEventPool");
 _type = record_type<Duckvil::Logger::__ftable>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__ftable");
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Logger");
 record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 0);
-_property = record_property<Logger::__data*(*)(Memory::IMemory*, Memory::__free_list_allocator*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Logger::__ftable, init), "init");
+_property = record_property<Logger::__data*(*)(Memory::IMemory*, Memory::__free_list_allocator*, const duckvil_frontend_reflection_context&)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Logger::__ftable, init), "init");
 _property = record_property<void(*)(Logger::__ftable*, Logger::__data*, __log_info&)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Logger::__ftable, log), "log");
 _property = record_property<void(*)(Logger::__data*, const __log_info&, char*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Logger::__ftable, format), "format");
 _property = record_property<void(*)(Logger::__ftable*, Logger::__data*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Logger::__ftable, dispatch_logs), "dispatch_logs");
