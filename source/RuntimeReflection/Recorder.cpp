@@ -108,15 +108,15 @@ namespace Duckvil { namespace RuntimeReflection {
                 return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
             }
 
-            __meta_t _meta = {};
+            __meta_t _metaData = {};
 
-            _meta.m_key = _keyHandle;
-            _meta.m_value = _valueHandle;
-            _meta.m_uiOwner = _owner.m_ID;
+            _metaData.m_key = _keyHandle;
+            _metaData.m_value = _valueHandle;
+            _metaData.m_uiOwner = _owner.m_ID;
 
             DUCKVIL_RESOURCE(meta_t) _metaHandle = {};
 
-            _metaHandle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _type->m_metas, _meta);
+            _metaHandle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _type->m_metas, _metaData);
 
             return _metaHandle;
         }
@@ -185,15 +185,15 @@ namespace Duckvil { namespace RuntimeReflection {
                 return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
             }
 
-            __meta_t _meta = {};
+            __meta_t _metaData = {};
 
-            _meta.m_key = _keyHandle;
-            _meta.m_value = _valueHandle;
-            _meta.m_uiOwner = _owner.m_ID;
+            _metaData.m_key = _keyHandle;
+            _metaData.m_value = _valueHandle;
+            _metaData.m_uiOwner = _owner.m_ID;
 
             DUCKVIL_RESOURCE(meta_t) _metaHandle = {};
 
-            _metaHandle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _property->m_metas, _meta);
+            _metaHandle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _property->m_metas, _metaData);
 
             return _metaHandle;
         }
@@ -262,15 +262,15 @@ namespace Duckvil { namespace RuntimeReflection {
                 return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
             }
 
-            __meta_t _meta = {};
+            __meta_t _metaData = {};
 
-            _meta.m_key = _keyHandle;
-            _meta.m_value = _valueHandle;
-            _meta.m_uiOwner = _owner.m_ID;
+            _metaData.m_key = _keyHandle;
+            _metaData.m_value = _valueHandle;
+            _metaData.m_uiOwner = _owner.m_ID;
 
             DUCKVIL_RESOURCE(meta_t) _metaHandle = {};
 
-            _metaHandle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _property->m_metas, _meta);
+            _metaHandle.m_ID = DUCKVIL_SLOT_ARRAY_INSERT(_pMemoryInterface, _pAllocator, _property->m_metas, _metaData);
 
             return _metaHandle;
         }
@@ -354,7 +354,7 @@ namespace Duckvil { namespace RuntimeReflection {
         return _handle;
     }
 
-    DUCKVIL_RESOURCE(function_t) record_function(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, __ifunction* _pFunction, const char _sName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX], std::size_t _ullReturnTypeID, std::size_t _ullArgumentsTypeID)
+    DUCKVIL_RESOURCE(function_t) record_function(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, __ifunction* _pFunction, const char* _sName, std::size_t _ullLength, std::size_t _ullReturnTypeID, std::size_t _ullArgumentsTypeID)
     {
         __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aTypes, _owner.m_ID);
         __function_t _function = {};
@@ -363,7 +363,7 @@ namespace Duckvil { namespace RuntimeReflection {
         _function.m_ullReturnTypeID = _ullReturnTypeID;
         _function.m_ullArgumentsTypeID = _ullArgumentsTypeID;
 
-        memcpy(_function.m_sFunctionName, _sName, DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX);
+        memcpy(_function.m_sFunctionName, _sName, _ullLength);
 
         DUCKVIL_RESOURCE(function_t) _handle = {};
 
