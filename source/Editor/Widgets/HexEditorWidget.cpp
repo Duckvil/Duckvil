@@ -108,9 +108,10 @@ namespace Duckvil { namespace Editor {
 
     }
 
-    void HexEditorWidget::InitEditor(void* _pImguiContext)
+    void HexEditorWidget::InitEditor(void* _pImguiContext, const duckvil_frontend_reflection_context& _context)
     {
         ImGui::SetCurrentContext((ImGuiContext*)_pImguiContext);
+        RuntimeReflection::make_current(_context);
     }
 
     void HexEditorWidget::OnDraw()

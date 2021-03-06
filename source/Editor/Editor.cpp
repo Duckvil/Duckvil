@@ -58,7 +58,7 @@ namespace Duckvil { namespace Editor {
 
     void post_init(RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData, const Memory::FreeList& _heap, void* _pData)
     {
-        RuntimeReflection::make_currnt({ _pReflection, _pRuntimeReflectionData });
+        RuntimeReflection::make_current({ _pReflection, _pRuntimeReflectionData });
 
         ImGuiEditorData* _data = (ImGuiEditorData*)_pData;
 
@@ -93,7 +93,7 @@ namespace Duckvil { namespace Editor {
                 HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_heap, _pRuntimeReflectionData, _trackKeeperHandle, _object, _typeHandle);
 
                 auto _lol = _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction;
-                auto _lol2 = _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction;
+                auto _lol2 = _type.GetFunctionCallback<Editor::Widget, void*, const duckvil_frontend_reflection_context&>("InitEditor")->m_fnFunction;
 
                 if(_data->m_aDraws.Full())
                 {
@@ -114,7 +114,7 @@ namespace Duckvil { namespace Editor {
             const Draw& _widget = _data->m_aDraws[i];
             Widget* _pWidget = (Widget*)_widget.m_pObject->GetObject();
 
-            (_pWidget->*_widget.m_fnInit)(_data->_ctx);
+            (_pWidget->*_widget.m_fnInit)(_data->_ctx, RuntimeReflection::get_current());
         }
     }
 

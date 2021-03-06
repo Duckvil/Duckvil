@@ -2,6 +2,7 @@
 
 #include "Memory/Memory.h"
 #include "Memory/Queue.h"
+#include "Memory/Vector.h"
 
 #include "Utils/Utils.h"
 
@@ -9,6 +10,8 @@
 #include <ctime>
 #include <cstdarg>
 #include <cassert>
+
+#include "Event/ImmediatePool.h"
 
 #define DUCKVIL_LOGGER_MESSAGE_LENGTH_MAX 256
 #define DUCKVIL_LOGGER_PATH_LENGTH_MAX 256
@@ -101,6 +104,8 @@ namespace Duckvil { namespace Logger {
         std::time_t m_time;
     };
 
+    typedef void (*custom_log_t)(const __log_info& _logInfo);
+
     struct __data
     {
         Memory::Queue<__log_info> m_logs;
@@ -109,11 +114,13 @@ namespace Duckvil { namespace Logger {
         char m_sPathFile[DUCKVIL_LOGGER_OUT_FILE_PATH_LENGTH_MAX];
         time_t m_lastTime;
         __logger_flags m_flags;
+        Memory::Vector<custom_log_t> m_aCustomLogs;
+        Event::Pool<Event::mode::immediate>* m_pLogEventPool;
     };
 
     struct __ftable
     {
-        Logger::__data* (*init)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator);
+        Logger::__data* (*init)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, const duckvil_frontend_reflection_context& _runtimeReflectionContext);
         void (*log)(Logger::__ftable* _pFTable, Logger::__data* _pData, __log_info& _logInfo);
         void (*format)(Logger::__data* _pData, const __log_info& _logInfo, char* _ppBuffer);
         void (*dispatch_logs)(Logger::__ftable* _pFTable, Logger::__data* _pData);

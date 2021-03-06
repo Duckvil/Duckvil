@@ -158,7 +158,7 @@ namespace Duckvil { namespace LOL {
         // printf("AAAAAA\n");
     }
 
-    void Test::InitEditor(void* _pImguiContext)
+    void Test::InitEditor(void* _pImguiContext, const duckvil_frontend_reflection_context& _context)
     {
         ImGui::SetCurrentContext((ImGuiContext*)_pImguiContext);
     }

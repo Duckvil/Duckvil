@@ -12,6 +12,8 @@
 
 #include "Editor/Widgets/HexEditorWidgetEvent.h"
 
+#include "RuntimeReflection/RuntimeReflection.h"
+
 namespace Duckvil { namespace Editor {
 
     class HexEditorWidget : public Widget
@@ -35,7 +37,7 @@ namespace Duckvil { namespace Editor {
         duckvil_memory_debug_info* m_pSelected;
 #endif
 
-        void InitEditor(void* _pImguiContext);
+        void InitEditor(void* _pImguiContext, const duckvil_frontend_reflection_context& _context);
         void OnDraw();
 
         void OnEvent(const HexEditorWidgetInitEvent& _event);

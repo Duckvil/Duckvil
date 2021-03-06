@@ -6,10 +6,14 @@
 
 #include <fstream>
 
+#include "RuntimeReflection/Meta.h"
+
 namespace Duckvil { namespace Logger {
 
-    __data* init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator)
+    __data* init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, const duckvil_frontend_reflection_context& _runtimeReflectionContext)
     {
+        RuntimeReflection::make_current(_runtimeReflectionContext);
+
         __data* _data = (__data*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__data), alignof(__data));
 
         _data->m_llInitTime = std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -18,7 +22,11 @@ namespace Duckvil { namespace Logger {
 
         memset(_data->m_buffer, 0, 128);
 
+        _data->m_aCustomLogs = Memory::Vector<custom_log_t>(_pMemoryInterface, _pAllocator, 1);
+
         DUCKVIL_DEBUG_MEMORY(_data->m_logs.GetAllocator(), "m_logs");
+
+        _data->m_pLogEventPool = (Event::Pool<Event::mode::immediate>*)RuntimeReflection::get_meta_value_ptr(RuntimeReflection::get_type<__data>(), "EventPool");
 
         return _data;
     }
@@ -178,6 +186,15 @@ namespace Duckvil { namespace Logger {
             {
                 _logOutFile << _pData->m_buffer << "\n";
             }
+
+            for(uint32_t i = 0; i < _pData->m_aCustomLogs.Size(); i++)
+            {
+                const custom_log_t& _fnLog = _pData->m_aCustomLogs[i];
+
+                _fnLog(_log);
+            }
+
+            _pData->m_pLogEventPool->Broadcast(_log);
 
             _pData->m_logs.Pop();
         }

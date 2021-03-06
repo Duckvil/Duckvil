@@ -38,7 +38,7 @@ namespace Duckvil {
 
         // duckvil_frontend_reflection_context* _ctx = _pData->m_pRuntimeReflection->m_fnCreateContext(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
 
-        RuntimeReflection::make_currnt({ _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData });
+        RuntimeReflection::make_current({ _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData });
 
         return true;
     }
@@ -53,8 +53,14 @@ namespace Duckvil {
 
         _pModule->get(_loggerModule, "duckvil_logger_init", (void**)&_loggerInit);
 
+        RuntimeReflection::ReflectedType<Logger::__data> _loggerType(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _pData->m_heap);
+
+        static Event::Pool<Event::mode::immediate> _eventPool(_pData->m_heap, _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
+
+        RuntimeReflection::record_meta(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pRuntimeReflectionRecorder, _pData->m_pRuntimeReflectionData, _loggerType.GetTypeHandle(), "EventPool", _eventPool);
+
         _pData->m_pLogger = _loggerInit(_pData->m_pMemory, _pData->m_pHeap);
-        _pData->m_pLoggerData = _pData->m_pLogger->init(_pData->m_pMemory, _pData->m_pHeap);
+        _pData->m_pLoggerData = _pData->m_pLogger->init(_pData->m_pMemory, _pData->m_pHeap, RuntimeReflection::get_current());
 
         std::string _outLog = (std::filesystem::path(DUCKVIL_OUTPUT) / "log.log").string();
 
@@ -98,6 +104,11 @@ namespace Duckvil {
 
         _pData->m_pEditorData = (Editor::ImGuiEditorData*)_pData->m_pEditor->m_fnInit(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _pData->m_pWindow);
 
+        _pData->m_pLoggerData->m_aCustomLogs.Allocate(Event::cify([](const Logger::__log_info& _logInfo)
+        {
+            printf("AAAAA %s\n", _logInfo.m_sMessage);
+        }));
+
         return true;
     }
 
@@ -127,7 +138,6 @@ namespace Duckvil {
 
         PlugNPlay::module_init(&_module);
 
-        init_logger(_pData, &_module);
         init_runtime_reflection(_pData, &_module);
 
         _pData->m_eventPool = Event::Pool<Event::mode::immediate>(_pData->m_eventsHeap, _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
@@ -137,7 +147,7 @@ namespace Duckvil {
 
         _autoLoader.LoadAll(_pMemoryInterface, _pAllocator, &_pData->m_aLoadedModules, &_pData->m_uiLoadedModulesCount);
 
-        DUCKVIL_LOG_INFO_("Modules to load %i", _pData->m_uiLoadedModulesCount);
+        // DUCKVIL_LOG_INFO_("Modules to load %i", _pData->m_uiLoadedModulesCount);
 
         for(uint32_t i = 0; i < _pData->m_uiLoadedModulesCount; ++i)
         {
@@ -148,12 +158,12 @@ namespace Duckvil {
 
             if(get_recorder_count == nullptr)
             {
-                DUCKVIL_LOG_INFO_("No recorder for %s", _loadedModule.m_sName.m_sText);
+                // DUCKVIL_LOG_INFO_("No recorder for %s", _loadedModule.m_sName.m_sText);
 
                 continue;
             }
 
-            DUCKVIL_LOG_INFO_("Module %s is present", _loadedModule.m_sName.m_sText);
+            // DUCKVIL_LOG_INFO_("Module %s is present", _loadedModule.m_sName.m_sText);
 
             // _pData->m_ullRecordedTypesCount = get_recorder_count();
             // _pData->m_aRecordedTypes = new duckvil_recorderd_types[_pData->m_ullRecordedTypesCount];
@@ -182,6 +192,8 @@ namespace Duckvil {
                 _pData->m_aRecordedTypes.Allocate(record(_pMemoryInterface, _pAllocator, _pData->m_pRuntimeReflectionRecorder, _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData));
             }
         }
+
+        init_logger(_pData, &_module);
 
         _pData->m_bRunning = false;
 
@@ -276,8 +288,10 @@ namespace Duckvil {
                         {
                             Editor::Widget* _widget = (Editor::Widget*)_type.InvokeStatic<void*, void*>("Cast", _testSystem);
 
+                            const auto& _aaa = _type.GetFunctionHandle<void*, const duckvil_frontend_reflection_context&>("InitEditor");
+
                             auto _lol = _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction;
-                            auto _lol2 = _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction;
+                            auto _lol2 = _type.GetFunctionCallback<Editor::Widget, void*, const duckvil_frontend_reflection_context&>("InitEditor")->m_fnFunction;
 
                             _pData->m_pEditor->m_fnAddDraw(_pData->m_pEditorData, Editor::Draw { _lol, _lol2, _trackKeeper });
                         }
@@ -313,7 +327,7 @@ namespace Duckvil {
                                             Editor::Draw
                                             {
                                                 _systemType.GetFunctionCallback<Editor::Widget>(_onDrawFunctionHandle)->m_fnFunction,
-                                                _systemType.GetFunctionCallback<Editor::Widget, void*>(_initEditorFunctionHandle)->m_fnFunction,
+                                                _systemType.GetFunctionCallback<Editor::Widget, void*, const duckvil_frontend_reflection_context&>(_initEditorFunctionHandle)->m_fnFunction,
                                                 _trackKeeper
                                             });
 
