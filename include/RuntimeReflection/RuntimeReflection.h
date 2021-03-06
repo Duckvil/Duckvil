@@ -256,7 +256,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __variant& (*m_fnGetConstructorMetaVariant)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _constructorHandle, const void* _pKey, const std::size_t& _ullSize, const std::size_t& _ullTypeID);
     };
 
-    static inline void make_currnt(const duckvil_frontend_reflection_context& _context)
+    static inline void make_current(const duckvil_frontend_reflection_context& _context)
     {
         g_duckvilFrontendReflectionContext = _context;
     }
