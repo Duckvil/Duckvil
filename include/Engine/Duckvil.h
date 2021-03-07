@@ -82,8 +82,9 @@ namespace Duckvil {
         system::UpdateCallback m_fnRuntimeCompilerUpdate;
         system::InitCallback m_fnRuntimeCompilerInit;
 
-        Logger::__ftable* m_pLogger;
-        Logger::__data* m_pLoggerData;
+        // __logger_ftable* m_pLogger;
+        // __logger_data* m_pLoggerData;
+        Logger m_logger;
 
         __time_ftable m_time;
         __time_data m_timeData;

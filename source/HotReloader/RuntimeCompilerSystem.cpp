@@ -21,23 +21,20 @@ namespace Duckvil { namespace HotReloader {
 
         for(auto& _module : _system->m_aModules)
         {
-            Duckvil::RuntimeReflection::invoke_member<std::ofstream&>(_system->m_pReflectionFTable, _system->m_pReflectionData, _module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _file);
+            Duckvil::RuntimeReflection::invoke_member<std::ofstream&>(_module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _file);
         }
     }
 
     RuntimeCompilerSystem::RuntimeCompilerSystem(
         const Memory::FreeList& _heap,
-        RuntimeReflection::__data* _pReflectionData,
-        RuntimeReflection::__recorder_ftable* _pReflectionRecorderFTable,
-        RuntimeReflection::__ftable* _pReflectionFTable,
+        const duckvil_frontend_reflection_context& _runtimeReflectionContext,
         Event::Pool<Event::mode::immediate>* _pEventPool
     ) :
         m_heap(_heap),
-        m_pReflectionData(_pReflectionData),
-        m_pReflectionFTable(_pReflectionFTable),
-        m_pReflectionRecorderFTable(_pReflectionRecorderFTable),
         m_pEventPool(_pEventPool)
     {
+        RuntimeReflection::make_current(_runtimeReflectionContext);
+
         _heap.Allocate(m_aHotObjects, 1);
         _heap.Allocate(m_aModules, 1);
 
@@ -48,9 +45,9 @@ namespace Duckvil { namespace HotReloader {
 
         m_pFileWatcher = _heap.Allocate<FileWatcher, FileWatcher::ActionCallback, void*>(&Action, (void*)&m_userData);
 
-        RuntimeReflection::__duckvil_resource_type_t _runtimeCompilerHandle = RuntimeReflection::get_type<RuntimeCompiler::Compiler>(m_pReflectionFTable, _pReflectionData);
+        RuntimeReflection::__duckvil_resource_type_t _runtimeCompilerHandle = RuntimeReflection::get_type<RuntimeCompiler::Compiler>();
 
-        m_pCompiler = (RuntimeCompiler::Compiler*)RuntimeReflection::create<const Memory::FreeList&>(_heap.GetMemoryInterface(), _heap.GetAllocator(), _pReflectionData, _runtimeCompilerHandle, _heap);
+        m_pCompiler = (RuntimeCompiler::Compiler*)RuntimeReflection::create<const Memory::FreeList&>(_heap.GetMemoryInterface(), _heap.GetAllocator(), g_duckvilFrontendReflectionContext.m_pReflectionData, _runtimeCompilerHandle, _heap);
     }
 
     RuntimeCompilerSystem::~RuntimeCompilerSystem()
@@ -61,21 +58,21 @@ namespace Duckvil { namespace HotReloader {
     bool RuntimeCompilerSystem::Init()
     {
         {
-            auto _types = Duckvil::RuntimeReflection::get_types(m_pReflectionFTable, m_pReflectionData, m_heap);
+            auto _types = Duckvil::RuntimeReflection::get_types(m_heap);
 
             for(auto& _typeHandle : _types)
             {
-                const Duckvil::RuntimeReflection::__variant& _variant = Duckvil::RuntimeReflection::get_meta(m_pReflectionFTable, m_pReflectionData, _typeHandle, Duckvil::ReflectionFlags::ReflectionFlags_ReflectionModule);
+                const Duckvil::RuntimeReflection::__variant& _variant = Duckvil::RuntimeReflection::get_meta(_typeHandle, Duckvil::ReflectionFlags::ReflectionFlags_ReflectionModule);
 
                 if(_variant.m_ullTypeID != std::numeric_limits<std::size_t>::max() && (uint8_t)_variant.m_traits & (uint8_t)Duckvil::RuntimeReflection::__traits::is_bool)
                 {
                     reflection_module _module = {};
 
-                    _module.m_pObject = Duckvil::RuntimeReflection::create<const Duckvil::Memory::FreeList&, Duckvil::RuntimeReflection::__ftable*, Duckvil::RuntimeReflection::__data*>(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_pReflectionData, _typeHandle, m_heap, m_pReflectionFTable, m_pReflectionData);
+                    _module.m_pObject = Duckvil::RuntimeReflection::create<const Duckvil::Memory::FreeList&, Duckvil::RuntimeReflection::__ftable*, Duckvil::RuntimeReflection::__data*>(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), g_duckvilFrontendReflectionContext.m_pReflectionData, _typeHandle, m_heap, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData);
                     _module.m_typeHandle = _typeHandle;
-                    _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&>(m_pReflectionFTable, m_pReflectionData, _typeHandle, "GenerateCustom");
-                    _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(m_pReflectionFTable, m_pReflectionData, _typeHandle, "Clear");
-                    _module.m_processAST_FunctionHandle = Duckvil::RuntimeReflection::get_function_handle<Duckvil::Parser::__ast*>(m_pReflectionFTable, m_pReflectionData, _typeHandle, "ProcessAST");
+                    _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&>(_typeHandle, "GenerateCustom");
+                    _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(_typeHandle, "Clear");
+                    _module.m_processAST_FunctionHandle = Duckvil::RuntimeReflection::get_function_handle<Duckvil::Parser::__ast*>(_typeHandle, "ProcessAST");
 
                     if(m_aModules.Full())
                     {
@@ -87,22 +84,22 @@ namespace Duckvil { namespace HotReloader {
             }
         }
 
-        m_compilerTypeHandle = RuntimeReflection::get_type<RuntimeCompiler::Compiler>(m_pReflectionFTable, m_pReflectionData);
+        m_compilerTypeHandle = RuntimeReflection::get_type<RuntimeCompiler::Compiler>();
 
         RuntimeReflection::__function<bool(RuntimeCompiler::Compiler::*)()>* _setup =
-            RuntimeReflection::get_function_callback<bool, RuntimeCompiler::Compiler>(m_pReflectionFTable, m_pReflectionData, m_compilerTypeHandle, "Setup");
+            RuntimeReflection::get_function_callback<bool, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "Setup");
         RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addFlag =
-            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_pReflectionFTable, m_pReflectionData, m_compilerTypeHandle, "AddFlag");
+            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddFlag");
         RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(RuntimeCompiler::Flag)>* _addFlag2 =
-            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, RuntimeCompiler::Flag>(m_pReflectionFTable, m_pReflectionData, m_compilerTypeHandle, "AddFlag");
+            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, RuntimeCompiler::Flag>(m_compilerTypeHandle, "AddFlag");
         RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addDefine =
-            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_pReflectionFTable, m_pReflectionData, m_compilerTypeHandle, "AddDefine");
+            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddDefine");
         RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addInclude =
-            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_pReflectionFTable, m_pReflectionData, m_compilerTypeHandle, "AddInclude");
+            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddInclude");
         RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addLibraryPath =
-            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_pReflectionFTable, m_pReflectionData, m_compilerTypeHandle, "AddLibraryPath");
+            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddLibraryPath");
         RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addLibrary =
-            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_pReflectionFTable, m_pReflectionData, m_compilerTypeHandle, "AddLibrary");
+            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddLibrary");
 
         (m_pCompiler->*_setup->m_fnFunction)();
 
@@ -255,14 +252,14 @@ namespace Duckvil { namespace HotReloader {
 
             for(auto& _reflectionModule : m_aModules)
             {
-                Duckvil::RuntimeReflection::invoke_member<Duckvil::Parser::__ast*>(m_pReflectionFTable, m_pReflectionData, _reflectionModule.m_typeHandle, _reflectionModule.m_processAST_FunctionHandle, _reflectionModule.m_pObject, &_astData);
+                Duckvil::RuntimeReflection::invoke_member<Duckvil::Parser::__ast*>(_reflectionModule.m_typeHandle, _reflectionModule.m_processAST_FunctionHandle, _reflectionModule.m_pObject, &_astData);
             }
 
             m_pReflectionGenerator->generate(&_generatorData, _source.string().c_str(), _header.string().c_str(), _astData, &generate, this);
 
             for(auto& _module : m_aModules)
             {
-                Duckvil::RuntimeReflection::invoke_member(m_pReflectionFTable, m_pReflectionData, _module.m_typeHandle, _module.m_clearFunctionHandle, _module.m_pObject);
+                Duckvil::RuntimeReflection::invoke_member(_module.m_typeHandle, _module.m_clearFunctionHandle, _module.m_pObject);
             }
         }
 
@@ -296,7 +293,7 @@ namespace Duckvil { namespace HotReloader {
 #endif
 #endif
 
-            RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::vector<std::string>&, const RuntimeCompiler::Options&)>* _compile = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::vector<std::string>&, const RuntimeCompiler::Options&>(m_pReflectionFTable, m_pReflectionData, m_compilerTypeHandle, "Compile");
+            RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::vector<std::string>&, const RuntimeCompiler::Options&)>* _compile = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::vector<std::string>&, const RuntimeCompiler::Options&>(m_compilerTypeHandle, "Compile");
 
             HotReloadedEvent _beforeCompileEvent;
 
@@ -342,7 +339,7 @@ namespace Duckvil { namespace HotReloader {
         _module.get(_testModule, "duckvil_get_recorder_index", (void**)&get_recorder_index);
         _module.get(_testModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(get_recorder_index())).c_str(), (void**)&record);
 
-        duckvil_recorderd_types _types = record(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_pReflectionRecorderFTable, m_pReflectionFTable, m_pReflectionData);
+        duckvil_recorderd_types _types = record(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), g_duckvilFrontendReflectionContext.m_pRecorder, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData);
 
         for(uint32_t i = 0; i < m_aHotObjects.Size(); ++i)
         {
@@ -358,16 +355,16 @@ namespace Duckvil { namespace HotReloader {
 
                     _serializer.SetLoading(false);
 
-                    RuntimeReflection::__duckvil_resource_function_t _serializeFunctionHandle = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(m_pReflectionFTable, m_pReflectionData, _type, "Serialize");
+                    RuntimeReflection::__duckvil_resource_function_t _serializeFunctionHandle = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_type, "Serialize");
                     RuntimeReflection::__function<void(HotObject::*)(RuntimeSerializer::ISerializer*)>* _func =
-                        RuntimeReflection::get_function_callback<HotObject, RuntimeSerializer::ISerializer*>(m_pReflectionData, _type, _serializeFunctionHandle);
+                        RuntimeReflection::get_function_callback<HotObject, RuntimeSerializer::ISerializer*>(g_duckvilFrontendReflectionContext.m_pReflectionData, _type, _serializeFunctionHandle);
 
                     _serializer.Serialize(_trackKeeper->GetObject(), _func);
 
                     _serializer.SetLoading(true);
 
                     void* _oldObject = _trackKeeper->GetObject();
-                    void* _newObject = RuntimeReflection::create(m_objectsHeap, m_pReflectionData, _type);
+                    void* _newObject = RuntimeReflection::create(m_objectsHeap, g_duckvilFrontendReflectionContext.m_pReflectionData, _type);
 
                     _serializer.Serialize(_newObject, _func);
 

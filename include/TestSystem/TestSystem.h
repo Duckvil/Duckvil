@@ -58,7 +58,7 @@ namespace Duckvil { namespace LOL {
 
     public:
         Test();
-        Test(const Memory::FreeList& _heap, RuntimeReflection::__data* _pReflectionData, RuntimeReflection::__recorder_ftable* _pReflectionRecorderFTable, RuntimeReflection::__ftable* _pReflectionFTable);
+        Test(const Memory::FreeList& _heap, const duckvil_frontend_reflection_context& _runtimeReflectionContext, const logger_context& _loggerContext);
         ~Test();
 
         bool Init();

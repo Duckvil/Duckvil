@@ -18,7 +18,7 @@ namespace Duckvil { namespace Editor {
     private:
         Memory::FreeList m_heap;
 
-        Memory::Vector<Logger::__log_info> m_aLogs;
+        Memory::Vector<__logger_log_info> m_aLogs;
 
         bool m_bScrollBottom;
 
@@ -29,7 +29,7 @@ namespace Duckvil { namespace Editor {
         void InitEditor(void* _pImguiContext, const duckvil_frontend_reflection_context& _context);
         void OnDraw();
 
-        void OnEvent(const Logger::__log_info& _event);
+        void OnEvent(const __logger_log_info& _event);
     };
 
 }}

@@ -56,13 +56,13 @@ namespace Duckvil { namespace Editor {
         return _data;
     }
 
-    void post_init(RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData, const Memory::FreeList& _heap, void* _pData)
+    void post_init(const duckvil_frontend_reflection_context& _runtimeReflectionContext, const Memory::FreeList& _heap, void* _pData)
     {
-        RuntimeReflection::make_current({ _pReflection, _pRuntimeReflectionData });
+        RuntimeReflection::make_current(_runtimeReflectionContext);
 
         ImGuiEditorData* _data = (ImGuiEditorData*)_pData;
 
-        _data->m_pEditorEvents = Event::Pool<Event::mode::immediate>(_heap, _pReflection, _pRuntimeReflectionData);
+        _data->m_pEditorEvents = Event::Pool<Event::mode::immediate>(_heap, _runtimeReflectionContext.m_pReflection, _runtimeReflectionContext.m_pReflectionData);
 
         auto _types = RuntimeReflection::get_types(_heap);
 
@@ -73,15 +73,15 @@ namespace Duckvil { namespace Editor {
 
             if(RuntimeReflection::inherits<Editor::Widget>(_typeHandle) && !RuntimeReflection::inherits<ISystem>(_typeHandle))
             {
-                const auto& _res = _pReflection->m_fnGetConstructors(_pRuntimeReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle); // RuntimeReflection::get_constructors(_pRuntimeReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle);
+                const auto& _res = RuntimeReflection::get_constructors(_heap, _typeHandle);
 
                 for(uint32_t i = 0; i < _res.Size(); ++i)
                 {
-                    const auto& _res2 = _pReflection->m_fnGetArguments(_pRuntimeReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle, { i }); // RuntimeReflection::get_arguments(_pRuntimeReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle, { i });
+                    const auto& _res2 = RuntimeReflection::get_arguments(_heap, _typeHandle, { i });
 
-                    for(uint32_t j = 0; j < _res.Size(); ++j)
+                    for(uint32_t j = 0; j < _res2.Size(); ++j)
                     {
-                        const auto& _lol = _pReflection->m_fnGetArgument(_pRuntimeReflectionData, _typeHandle, { i }, { j }); // RuntimeReflection::get_argument(_pRuntimeReflectionData, _typeHandle, { i }, { j });
+                        const auto& _lol = RuntimeReflection::get_argument(_heap, _typeHandle, { i }, { j });
 
                         printf("AAAAA\n");
                     }
@@ -90,7 +90,7 @@ namespace Duckvil { namespace Editor {
                 void* _object = _type.Create<const Memory::FreeList&>(_heap);
                 Editor::Widget* _widget = (Editor::Widget*)_type.InvokeStatic<void*, void*>("Cast", _object);
                 RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type<HotReloader::TrackKeeper>();
-                HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_heap, _pRuntimeReflectionData, _trackKeeperHandle, _object, _typeHandle);
+                HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_heap, _runtimeReflectionContext.m_pReflectionData, _trackKeeperHandle, _object, _typeHandle);
 
                 auto _lol = _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction;
                 auto _lol2 = _type.GetFunctionCallback<Editor::Widget, void*, const duckvil_frontend_reflection_context&>("InitEditor")->m_fnFunction;

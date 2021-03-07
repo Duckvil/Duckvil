@@ -36,39 +36,16 @@ namespace Duckvil {
         _pData->m_pRuntimeReflectionRecorder = _runtimeReflectionRecorderInit(_pData->m_pMemory, _pData->m_pHeap);
         _pData->m_pRuntimeReflectionData = _pData->m_pRuntimeReflection->m_fnInit(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pRuntimeReflection);
 
-        // duckvil_frontend_reflection_context* _ctx = _pData->m_pRuntimeReflection->m_fnCreateContext(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
-
-        RuntimeReflection::make_current({ _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData });
+        RuntimeReflection::make_current({ _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _pData->m_pRuntimeReflectionRecorder });
 
         return true;
     }
 
     bool init_logger(__data* _pData, PlugNPlay::__module* _pModule)
     {
-        PlugNPlay::__module_information _loggerModule("Logger");
-
-        _pModule->load(&_loggerModule);
-
-        duckvil_logger_init_callback _loggerInit;
-
-        _pModule->get(_loggerModule, "duckvil_logger_init", (void**)&_loggerInit);
-
-        RuntimeReflection::ReflectedType<Logger::__data> _loggerType(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _pData->m_heap);
-
-        static Event::Pool<Event::mode::immediate> _eventPool(_pData->m_heap, _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
-
-        RuntimeReflection::record_meta(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pRuntimeReflectionRecorder, _pData->m_pRuntimeReflectionData, _loggerType.GetTypeHandle(), "EventPool", _eventPool);
-
-        _pData->m_pLogger = _loggerInit(_pData->m_pMemory, _pData->m_pHeap);
-        _pData->m_pLoggerData = _pData->m_pLogger->init(_pData->m_pMemory, _pData->m_pHeap, RuntimeReflection::get_current());
-
         std::string _outLog = (std::filesystem::path(DUCKVIL_OUTPUT) / "log.log").string();
 
-        memcpy(_pData->m_pLoggerData->m_sPathFile, _outLog.c_str(), _outLog.size());
-        _pData->m_pLoggerData->m_flags = static_cast<Logger::__logger_flags>(Logger::__logger_flags::__logger_flags_console_output | Logger::__logger_flags::__logger_flags_file_output);
-
-        DUCKVIL_LOG_INFO_("Logger initialization complete!");
-        DUCKVIL_LOG_INFO_("Logger file output: %s", _outLog.c_str());
+        _pData->m_logger = Logger(_pData->m_heap, _outLog.c_str(), _outLog.length(), (__logger_flags)(__logger_flags_console_output | __logger_flags_file_output | __logger_flags_editor_console_output));
 
         return true;
     }
@@ -103,11 +80,6 @@ namespace Duckvil {
         _pData->m_pEditor = init(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator());
 
         _pData->m_pEditorData = (Editor::ImGuiEditorData*)_pData->m_pEditor->m_fnInit(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _pData->m_pWindow);
-
-        _pData->m_pLoggerData->m_aCustomLogs.Allocate(Event::cify([](const Logger::__log_info& _logInfo)
-        {
-            printf("AAAAA %s\n", _logInfo.m_sMessage);
-        }));
 
         return true;
     }
@@ -216,15 +188,11 @@ namespace Duckvil {
 
                 _pData->m_pRuntimeCompiler = (HotReloader::RuntimeCompilerSystem*)_type.Create<
                     const Memory::FreeList&,
-                    RuntimeReflection::__data*,
-                    RuntimeReflection::__recorder_ftable*,
-                    RuntimeReflection::__ftable*,
+                    const duckvil_frontend_reflection_context&,
                     Event::Pool<Event::mode::immediate>*
                 >(
                     (const Memory::FreeList&)_pData->m_heap,
-                    _pData->m_pRuntimeReflectionData,
-                    _pData->m_pRuntimeReflectionRecorder,
-                    _pData->m_pRuntimeReflection,
+                    RuntimeReflection::get_current(),
                     &_pData->m_eventPool
                 );
 
@@ -256,20 +224,18 @@ namespace Duckvil {
 
                         void* _testSystem = _type.Create<
                             const Memory::FreeList&,
-                            RuntimeReflection::__data*,
-                            RuntimeReflection::__recorder_ftable*,
-                            RuntimeReflection::__ftable*
+                            const duckvil_frontend_reflection_context&,
+                            const logger_context&
                         >(
                             _pData->m_heap,
-                            _pData->m_pRuntimeReflectionData,
-                            _pData->m_pRuntimeReflectionRecorder,
-                            _pData->m_pRuntimeReflection
+                            RuntimeReflection::get_current(),
+                            logger_get_current()
                         );
 
                         ISystem* _systemInheritance = (ISystem*)_type.InvokeStatic<void*, void*>("Cast", _testSystem);
 
-                        _systemInheritance->m_pLogger = _pData->m_pLogger;
-                        _systemInheritance->m_pLoggerData = _pData->m_pLoggerData;
+                        // _systemInheritance->m_pLogger = _pData->m_pLogger;
+                        // _systemInheritance->m_pLoggerData = _pData->m_pLoggerData;
 
                         RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type<HotReloader::TrackKeeper>();
                         HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_pData->m_heap, _pData->m_pRuntimeReflectionData, _trackKeeperHandle, _testSystem, _typeHandle);
@@ -332,7 +298,7 @@ namespace Duckvil {
                                             });
 
                                         // Call function to set for only this widget, not for all widgets
-                                            _pData->m_pEditor->m_fnPostInit(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _pData->m_heap, _pData->m_pEditorData);
+                                            _pData->m_pEditor->m_fnPostInit(RuntimeReflection::get_current(), _pData->m_heap, _pData->m_pEditorData);
                                         }
                                         else
                                         {
@@ -351,7 +317,7 @@ namespace Duckvil {
                 }
             }
 
-            _pData->m_pEditor->m_fnPostInit(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _pData->m_heap, _pData->m_pEditorData);
+            _pData->m_pEditor->m_fnPostInit(RuntimeReflection::get_current(), _pData->m_heap, _pData->m_pEditorData);
 
             if(!(_pData->m_pRuntimeCompiler->*_pData->m_fnRuntimeCompilerInit)())
             {
@@ -461,23 +427,24 @@ namespace Duckvil {
             (_system.m_pISystem->*_system.m_fnUpdateCallback)();
         }
 
-        // (_pData->m_pRuntimeCompiler->*_pData->m_fnRuntimeCompilerUpdate)();
+        (_pData->m_pRuntimeCompiler->*_pData->m_fnRuntimeCompilerUpdate)();
 
         if(_pData->m_ullLastTimeUsed != _pData->m_pHeap->m_ullUsed)
         {
             size_t _change = _pData->m_pHeap->m_ullUsed - _pData->m_ullLastTimeUsed;
 
-            DUCKVIL_LOG_INFO_("Memory change: %d", _change);
+            DUCKVIL_LOG_INFO("Memory change: %d", _change);
 
             _pData->m_ullLastTimeUsed = _pData->m_pHeap->m_ullUsed;
         }
 
         if(_pData->m_dOneSecond >= 1.0)
         {
-            _pData->m_pLogger->dispatch_logs(_pData->m_pLogger, _pData->m_pLoggerData);
+            // _pData->m_pLogger->dispatch_logs(/*_pData->m_pLogger, _pData->m_pLoggerData*/ logger_get_current().m_pLogger, logger_get_current().m_pLoggerData);
+            _pData->m_logger.Dispatch();
 
-            DUCKVIL_LOG_INFO_("Delta: %f ms", _pData->m_timeData.m_dDelta * 1000.0);
-            DUCKVIL_LOG_INFO_("Used memory: %d of %d", _pData->m_pHeap->m_ullUsed, _pData->m_pHeap->m_ullCapacity);
+            DUCKVIL_LOG_INFO("Delta: %f ms", _pData->m_timeData.m_dDelta * 1000.0);
+            DUCKVIL_LOG_INFO("Used memory: %d of %d", _pData->m_pHeap->m_ullUsed, _pData->m_pHeap->m_ullCapacity);
 
 // #ifdef DUCKVIL_MEMORY_DEBUGGER
 //             uint32_t _index = 0;

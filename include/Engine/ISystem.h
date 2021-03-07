@@ -15,8 +15,8 @@ namespace Duckvil {
     {
         DUCKVIL_GENERATED_BODY
 
-        Logger::__ftable* m_pLogger;
-        Logger::__data* m_pLoggerData;
+        // __logger_ftable* m_pLogger;
+        // __logger_data* m_pLoggerData;
     };
 
 }

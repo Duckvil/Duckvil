@@ -32,6 +32,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
     struct __ftable;
     struct __data;
+    struct __recorder_ftable;
 
 }}
 
@@ -39,6 +40,7 @@ struct duckvil_frontend_reflection_context
 {
     Duckvil::RuntimeReflection::__ftable* m_pReflection;
     Duckvil::RuntimeReflection::__data* m_pReflectionData;
+    Duckvil::RuntimeReflection::__recorder_ftable* m_pRecorder;
 };
 
 inline duckvil_frontend_reflection_context g_duckvilFrontendReflectionContext;
@@ -586,6 +588,13 @@ namespace Duckvil { namespace RuntimeReflection {
         return get_constructor_handle<Args...>(_context.m_pReflection, _context.m_pReflectionData, _typeHandle);
     }
 
+    static inline Memory::Vector<DUCKVIL_RESOURCE(constructor_t)> get_constructors(const Memory::FreeList& _heap, DUCKVIL_RESOURCE(type_t) _typeHandle)
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        return _context.m_pReflection->m_fnGetConstructors(_context.m_pReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle);
+    }
+
     template <typename... Args, std::size_t Length>
     static inline DUCKVIL_RESOURCE(function_t) get_function_handle(DUCKVIL_RESOURCE(type_t) _typeHandle, const char (&_sName)[Length])
     {
@@ -715,6 +724,20 @@ namespace Duckvil { namespace RuntimeReflection {
         duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
 
         return inherits<Type>(_context.m_pReflection, _context.m_pReflectionData, _typeHandle);
+    }
+
+    static inline Memory::Vector<DUCKVIL_RESOURCE(argument_t)> get_arguments(const Memory::FreeList& _heap, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _constructorHandle)
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        return _context.m_pReflection->m_fnGetArguments(_context.m_pReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle, _constructorHandle);
+    }
+
+    static inline __argument_t get_argument(const Memory::FreeList& _heap, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _constructorHandle, DUCKVIL_RESOURCE(argument_t) _argumentHandle)
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        return _context.m_pReflection->m_fnGetArgument(_context.m_pReflectionData, _typeHandle, _constructorHandle, _argumentHandle);
     }
 
 }}
