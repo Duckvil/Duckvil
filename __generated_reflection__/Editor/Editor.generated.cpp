@@ -20,7 +20,7 @@ _property = record_property<void*(*)(Duckvil::Memory::IMemory*, Duckvil::Memory:
 _property = record_property<void(*)(void*, Window::IWindow*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnRender), "m_fnRender");
 _property = record_property<void(*)(void*, Draw)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnAddDraw), "m_fnAddDraw");
 _property = record_property<void(*)(void*, void*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnRemoveDraw), "m_fnRemoveDraw");
-_property = record_property<void(*)(RuntimeReflection::__ftable*, RuntimeReflection::__data*, const Memory::FreeList&, void*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnPostInit), "m_fnPostInit");
+_property = record_property<void(*)(const duckvil_frontend_reflection_context&, const Memory::FreeList&, void*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnPostInit), "m_fnPostInit");
 _type = record_type<Duckvil::Editor::ImGuiEditorData>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "ImGuiEditorData");
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");

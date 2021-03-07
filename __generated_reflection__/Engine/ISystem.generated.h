@@ -6,6 +6,4 @@ static void* Cast(void* _pObject) { return static_cast<ISystem*>(_pObject); } \
 public: \
 void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\
-_pSerializer->SerializeProperty("m_pLogger", m_pLogger); \
-_pSerializer->SerializeProperty("m_pLoggerData", m_pLoggerData); \
 }
