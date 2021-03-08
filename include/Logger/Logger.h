@@ -137,7 +137,7 @@ namespace Duckvil {
 
     struct __logger_ftable
     {
-        __logger_data* (*init)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, const duckvil_frontend_reflection_context& _runtimeReflectionContext);
+        __logger_data* (*init)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator);
         void (*log)(__logger_ftable* _pFTable, __logger_data* _pData, __logger_log_info& _logInfo);
         void (*format)(__logger_data* _pData, const __logger_log_info& _logInfo, char* _ppBuffer);
         void (*dispatch_logs)(__logger_ftable* _pFTable, __logger_data* _pData);
@@ -225,7 +225,10 @@ namespace Duckvil {
             assert(false && "File path is too long!");
         }
 
-        _context.m_pLogger->log(_context.m_pLogger, _context.m_pLoggerData, _log);
+        if(_context.m_pLogger != nullptr)
+        {
+            _context.m_pLogger->log(_context.m_pLogger, _context.m_pLoggerData, _log);
+        }
 
         va_end(_argList);
     }
@@ -274,7 +277,7 @@ namespace Duckvil {
             RuntimeReflection::record_meta(_heap.GetMemoryInterface(), _heap.GetAllocator(), RuntimeReflection::get_current().m_pRecorder, RuntimeReflection::get_current().m_pReflectionData, _loggerType.GetTypeHandle(), "Loggers", _loggers);
 
             m_pLogger = _loggerInit(_heap.GetMemoryInterface(), _heap.GetAllocator());
-            m_pLoggerData = m_pLogger->init(_heap.GetMemoryInterface(), _heap.GetAllocator(), RuntimeReflection::get_current());
+            m_pLoggerData = m_pLogger->init(_heap.GetMemoryInterface(), _heap.GetAllocator());
 
             logger_make_current(logger_context(m_pLogger, m_pLoggerData));
 
@@ -300,6 +303,16 @@ namespace Duckvil {
         void Dispatch()
         {
             m_pLogger->dispatch_logs(m_pLogger, m_pLoggerData);
+        }
+
+        inline __logger_ftable* GetLogger() const
+        {
+            return m_pLogger;
+        }
+
+        inline __logger_data* GetLoggerData() const
+        {
+            return m_pLoggerData;
         }
     };
 

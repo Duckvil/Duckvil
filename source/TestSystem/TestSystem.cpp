@@ -11,10 +11,9 @@ namespace Duckvil { namespace LOL {
         m_iA = 20;
     }
 
-    Test::Test(const Memory::FreeList& _heap, const duckvil_frontend_reflection_context& _runtimeReflectionContext, const logger_context& _loggerContext)
+    Test::Test(const Memory::FreeList& _heap)
     {
-        RuntimeReflection::make_current(_runtimeReflectionContext);
-        logger_make_current(_loggerContext);
+
     }
 
     Test::~Test()
@@ -32,13 +31,13 @@ namespace Duckvil { namespace LOL {
     void Test::Update()
     {
         // DUCKVIL_LOG_INFO(m_pLogger, m_pLoggerData, "axxxa %i", m_iA);
-        // printf("%i\n", m_iA);
+        // printf("%ii\n", m_iA);
         // printf("AAAAAA\n");
 
-        // DUCKVIL_LOG_INFO("axxxa %i", m_iA);
+        DUCKVIL_LOG_INFO("a %i", m_iA);
     }
 
-    void Test::InitEditor(void* _pImguiContext, const duckvil_frontend_reflection_context& _context)
+    void Test::InitEditor(void* _pImguiContext)
     {
         ImGui::SetCurrentContext((ImGuiContext*)_pImguiContext);
     }

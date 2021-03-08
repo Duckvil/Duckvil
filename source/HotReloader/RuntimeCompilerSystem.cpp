@@ -27,14 +27,11 @@ namespace Duckvil { namespace HotReloader {
 
     RuntimeCompilerSystem::RuntimeCompilerSystem(
         const Memory::FreeList& _heap,
-        const duckvil_frontend_reflection_context& _runtimeReflectionContext,
         Event::Pool<Event::mode::immediate>* _pEventPool
     ) :
         m_heap(_heap),
         m_pEventPool(_pEventPool)
     {
-        RuntimeReflection::make_current(_runtimeReflectionContext);
-
         _heap.Allocate(m_aHotObjects, 1);
         _heap.Allocate(m_aModules, 1);
 
@@ -280,6 +277,7 @@ namespace Duckvil { namespace HotReloader {
 
             std::string _generatedFilename = _filename + ".generated.cpp";
             std::filesystem::path _generatedFile = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _moduleName / _generatedFilename;
+            std::filesystem::path _pluginFile = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _moduleName / "plugin_info.cpp";
             std::filesystem::path _externalPath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "external";
 
             RuntimeCompiler::Options _options = {};
@@ -305,6 +303,7 @@ namespace Duckvil { namespace HotReloader {
                 {
                     _sFile,
                     _generatedFile.string(),
+                    _pluginFile.string(),
                     (_externalPath / "imgui/imgui.cpp").string(),
                     (_externalPath / "imgui/imgui_draw.cpp").string(),
                     (_externalPath / "imgui/imgui_tables.cpp").string(),
@@ -336,8 +335,16 @@ namespace Duckvil { namespace HotReloader {
             return;
         }
 
+        void (*make_current_runtime_reflection_context)(const duckvil_frontend_reflection_context&);
+        void (*make_current_logger_context)(const logger_context&);
+
         _module.get(_testModule, "duckvil_get_recorder_index", (void**)&get_recorder_index);
         _module.get(_testModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(get_recorder_index())).c_str(), (void**)&record);
+        _module.get(_testModule, "duckvil_plugin_make_current_runtime_reflection_context", (void**)&make_current_runtime_reflection_context);
+        _module.get(_testModule, "duckvil_plugin_make_current_logger_context", (void**)&make_current_logger_context);
+
+        make_current_runtime_reflection_context(RuntimeReflection::get_current());
+        make_current_logger_context(logger_get_current());
 
         duckvil_recorderd_types _types = record(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), g_duckvilFrontendReflectionContext.m_pRecorder, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData);
 

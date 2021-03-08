@@ -26,7 +26,7 @@ namespace Duckvil { namespace Editor {
         ConsoleWidget(const Memory::FreeList& _heap);
         ~ConsoleWidget();
 
-        void InitEditor(void* _pImguiContext, const duckvil_frontend_reflection_context& _context);
+        void InitEditor(void* _pImguiContext);
         void OnDraw();
 
         void OnEvent(const __logger_log_info& _event);

@@ -21,10 +21,9 @@ namespace Duckvil { namespace Editor {
 
     }
 
-    void ConsoleWidget::InitEditor(void* _pImguiContext, const duckvil_frontend_reflection_context& _context)
+    void ConsoleWidget::InitEditor(void* _pImguiContext)
     {
         ImGui::SetCurrentContext((ImGuiContext*)_pImguiContext);
-        RuntimeReflection::make_current(_context);
 
         RuntimeReflection::ReflectedType<__logger_data> _loggerType(m_heap);
 

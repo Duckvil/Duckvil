@@ -10,10 +10,8 @@
 
 namespace Duckvil {
 
-    __logger_data* init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, const duckvil_frontend_reflection_context& _runtimeReflectionContext)
+    __logger_data* init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator)
     {
-        RuntimeReflection::make_current(_runtimeReflectionContext);
-
         __logger_data* _data = (__logger_data*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__logger_data), alignof(__logger_data));
 
         _data->m_llInitTime = std::chrono::high_resolution_clock::now().time_since_epoch().count();

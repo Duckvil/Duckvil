@@ -89,7 +89,7 @@ namespace Duckvil { namespace HotReloader {
         }
 
     public:
-        RuntimeCompilerSystem(const Memory::FreeList& _heap, const duckvil_frontend_reflection_context& _runtimeReflectionContext, Event::Pool<Event::mode::immediate>* _pEventPool);
+        RuntimeCompilerSystem(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEventPool);
         ~RuntimeCompilerSystem();
 
         // duckvil_recorderd_types* m_aRecordedTypes;

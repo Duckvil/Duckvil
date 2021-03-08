@@ -23,7 +23,7 @@ namespace Duckvil { namespace Editor {
         void (*m_fnAddDraw)(void* _pData, Draw _draw);
         void (*m_fnRemoveDraw)(void* _pData, void* _pObject);
 
-        void (*m_fnPostInit)(const duckvil_frontend_reflection_context& _runtimeReflectionContext, const Memory::FreeList& _heap, void* _pData);
+        void (*m_fnPostInit)(const Memory::FreeList& _heap, void* _pData);
     };
 
     struct ImGuiEditorData

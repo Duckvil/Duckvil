@@ -37,7 +37,7 @@ namespace Duckvil { namespace Editor {
         duckvil_memory_debug_info* m_pSelected;
 #endif
 
-        void InitEditor(void* _pImguiContext, const duckvil_frontend_reflection_context& _context);
+        void InitEditor(void* _pImguiContext);
         void OnDraw();
 
         void OnEvent(const HexEditorWidgetInitEvent& _event);

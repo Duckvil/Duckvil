@@ -56,13 +56,11 @@ namespace Duckvil { namespace Editor {
         return _data;
     }
 
-    void post_init(const duckvil_frontend_reflection_context& _runtimeReflectionContext, const Memory::FreeList& _heap, void* _pData)
+    void post_init(const Memory::FreeList& _heap, void* _pData)
     {
-        RuntimeReflection::make_current(_runtimeReflectionContext);
-
         ImGuiEditorData* _data = (ImGuiEditorData*)_pData;
 
-        _data->m_pEditorEvents = Event::Pool<Event::mode::immediate>(_heap, _runtimeReflectionContext.m_pReflection, _runtimeReflectionContext.m_pReflectionData);
+        _data->m_pEditorEvents = Event::Pool<Event::mode::immediate>(_heap, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData);
 
         auto _types = RuntimeReflection::get_types(_heap);
 
@@ -90,10 +88,10 @@ namespace Duckvil { namespace Editor {
                 void* _object = _type.Create<const Memory::FreeList&>(_heap);
                 Editor::Widget* _widget = (Editor::Widget*)_type.InvokeStatic<void*, void*>("Cast", _object);
                 RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type<HotReloader::TrackKeeper>();
-                HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_heap, _runtimeReflectionContext.m_pReflectionData, _trackKeeperHandle, _object, _typeHandle);
+                HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_heap, g_duckvilFrontendReflectionContext.m_pReflectionData, _trackKeeperHandle, _object, _typeHandle);
 
                 auto _lol = _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction;
-                auto _lol2 = _type.GetFunctionCallback<Editor::Widget, void*, const duckvil_frontend_reflection_context&>("InitEditor")->m_fnFunction;
+                auto _lol2 = _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction;
 
                 if(_data->m_aDraws.Full())
                 {
@@ -114,7 +112,7 @@ namespace Duckvil { namespace Editor {
             const Draw& _widget = _data->m_aDraws[i];
             Widget* _pWidget = (Widget*)_widget.m_pObject->GetObject();
 
-            (_pWidget->*_widget.m_fnInit)(_data->_ctx, RuntimeReflection::get_current());
+            (_pWidget->*_widget.m_fnInit)(_data->_ctx);
         }
     }
 

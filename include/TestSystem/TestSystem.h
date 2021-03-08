@@ -58,13 +58,13 @@ namespace Duckvil { namespace LOL {
 
     public:
         Test();
-        Test(const Memory::FreeList& _heap, const duckvil_frontend_reflection_context& _runtimeReflectionContext, const logger_context& _loggerContext);
+        Test(const Memory::FreeList& _heap);
         ~Test();
 
         bool Init();
         void Update();
 
-        void InitEditor(void* _pImguiContext, const duckvil_frontend_reflection_context& _context);
+        void InitEditor(void* _pImguiContext);
         void OnDraw();
 
         void OnEvent(const test& _event);
