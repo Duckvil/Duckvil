@@ -573,6 +573,70 @@ namespace Duckvil { namespace RuntimeReflection {
         return get_type(_context.m_pReflection, _context.m_pReflectionData, _sName);
     }
 
+    template <std::size_t Length, std::size_t... Lengths>
+    static DUCKVIL_RESOURCE(type_t) get_type(const char (&_sName)[Length], const char (&..._sNamespaces)[Lengths])
+    {
+         duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+        const __data& _data = *_context.m_pReflectionData;
+        static const std::size_t& _argsSize = sizeof...(Lengths);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_data.m_aTypes.m_data); ++i)
+        {
+            const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_data.m_aTypes, i);
+
+            if(_argsSize == DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_namespaces.m_data))
+            {
+                uint32_t _index = 0;
+                bool _res = true;
+
+                compare_namespace(_type.m_namespaces, _index, _res, _sNamespaces...);
+
+                if(_res && strcmp(_type.m_sTypeName, _sName) == 0)
+                {
+                    return _type.m_uiSlotIndex;
+                }
+            }
+        }
+
+        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    }
+
+    static DUCKVIL_RESOURCE(type_t) get_type(const char* _sName, const std::vector<const char*>& _aNamespaces)
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+        const __data& _data = *_context.m_pReflectionData;
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_data.m_aTypes.m_data); ++i)
+        {
+            const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_data.m_aTypes, i);
+            size_t _namespacesSize = DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_namespaces.m_data);
+
+            if(_aNamespaces.size() == _namespacesSize)
+            {
+                bool _valid = true;
+
+                for(uint32_t j = 0; j < _aNamespaces.size(); ++j)
+                {
+                    const __namespace_t& _namespace = DUCKVIL_SLOT_ARRAY_GET(_type.m_namespaces, j);
+
+                    if(strcmp(_namespace.m_sTypeName, _aNamespaces[j]) != 0)
+                    {
+                        _valid = false;
+
+                        break;
+                    }
+                }
+
+                if(_valid && strcmp(_sName, _type.m_sTypeName) == 0)
+                {
+                    return { i };
+                }
+            }
+        }
+
+        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    }
+
     static inline Memory::Vector<DUCKVIL_RESOURCE(type_t)> get_types(const Memory::FreeList& _heap)
     {
         duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
