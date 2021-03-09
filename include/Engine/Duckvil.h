@@ -34,6 +34,8 @@
 #include "Editor/Editor.h"
 #include "Editor/Widget.h"
 
+#include "Thread/ThreadPool.h"
+
 namespace Duckvil {
 
     struct system
@@ -85,6 +87,9 @@ namespace Duckvil {
         // __logger_ftable* m_pLogger;
         // __logger_data* m_pLoggerData;
         Logger m_logger;
+
+        Thread::pool_ftable* m_pThread;
+        Thread::pool_data* m_pThreadData;
 
         __time_ftable m_time;
         __time_data m_timeData;

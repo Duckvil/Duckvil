@@ -45,6 +45,20 @@ namespace Duckvil { namespace HotReloader {
         RuntimeReflection::__duckvil_resource_type_t _runtimeCompilerHandle = RuntimeReflection::get_type<RuntimeCompiler::Compiler>();
 
         m_pCompiler = (RuntimeCompiler::Compiler*)RuntimeReflection::create<const Memory::FreeList&>(_heap.GetMemoryInterface(), _heap.GetAllocator(), g_duckvilFrontendReflectionContext.m_pReflectionData, _runtimeCompilerHandle, _heap);
+
+        PlugNPlay::__module _module;
+
+        PlugNPlay::module_init(&_module);
+
+        PlugNPlay::__module_information _threadModule("Thread");
+
+        _module.load(&_threadModule);
+
+        Thread::pool_ftable* (*init)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator);
+
+        _module.get(_threadModule, "duckvil_thread_pool_init", (void**)&init);
+
+        m_pThread = init(_heap.GetMemoryInterface(), _heap.GetAllocator());
     }
 
     RuntimeCompilerSystem::~RuntimeCompilerSystem()
@@ -54,6 +68,8 @@ namespace Duckvil { namespace HotReloader {
 
     bool RuntimeCompilerSystem::Init()
     {
+        m_pThreadData = *(Thread::pool_data**)RuntimeReflection::get_meta_value_ptr(RuntimeReflection::get_type("__data", { "Duckvil" }), "Thread");
+
         {
             auto _types = Duckvil::RuntimeReflection::get_types(m_heap);
 
@@ -190,7 +206,11 @@ namespace Duckvil { namespace HotReloader {
 
     void RuntimeCompilerSystem::Compile(const std::string& _sFile)
     {
+        DUCKVIL_LOG_INFO("Hot reload started");
+
         {
+            DUCKVIL_LOG_INFO("Generating reflection");
+
             std::filesystem::path _path = std::filesystem::relative(_sFile, std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "source");
             std::filesystem::path _generatePath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _path;
             std::filesystem::path _source = _generatePath;
@@ -258,6 +278,8 @@ namespace Duckvil { namespace HotReloader {
             {
                 Duckvil::RuntimeReflection::invoke_member(_module.m_typeHandle, _module.m_clearFunctionHandle, _module.m_pObject);
             }
+
+            DUCKVIL_LOG_INFO("Generating reflection finished");
         }
 
         std::filesystem::path _path = std::tmpnam(nullptr);
@@ -265,6 +287,8 @@ namespace Duckvil { namespace HotReloader {
         m_sModuleName = _path.filename().string();
 
         {
+            DUCKVIL_LOG_INFO("Compilation");
+
             std::filesystem::path _file = _sFile;
             std::string _filename = _file.filename().string();
             std::string _moduleName = _file.parent_path().stem().string();
@@ -316,6 +340,8 @@ namespace Duckvil { namespace HotReloader {
             _afterCompileEvent.m_stage = HotReloadedEvent::stage_after_compile;
 
             m_pEventPool->Broadcast(_afterCompileEvent);
+
+            DUCKVIL_LOG_INFO("Compilation finished");
         }
 
         PlugNPlay::__module _module;
@@ -347,6 +373,8 @@ namespace Duckvil { namespace HotReloader {
         make_current_logger_context(logger_get_current());
 
         duckvil_recorderd_types _types = record(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), g_duckvilFrontendReflectionContext.m_pRecorder, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData);
+
+        DUCKVIL_LOG_INFO("Swapping objects");
 
         for(uint32_t i = 0; i < m_aHotObjects.Size(); ++i)
         {
@@ -382,14 +410,16 @@ namespace Duckvil { namespace HotReloader {
                     _swapEvent._typeHandle = _trackKeeper->GetTypehandle();
                     _swapEvent.m_pOldObject = _oldObject;
 
-                    m_pEventPool->Broadcast(_swapEvent);
-
                     _trackKeeper->SetObject(_newObject);
+
+                    m_pEventPool->Broadcast(_swapEvent);
 
                     m_objectsHeap.Free(_oldObject);
                 }
             }
         }
+
+        DUCKVIL_LOG_INFO("Swapping objects finished");
     }
 
     void RuntimeCompilerSystem::AddHotObject(ITrackKeeper* _pTrackKeeper)

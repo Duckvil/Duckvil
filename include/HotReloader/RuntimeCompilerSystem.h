@@ -26,6 +26,8 @@
 
 #include "Event/ImmediatePool.h"
 
+#include "Thread/ThreadPool.h"
+
 namespace Duckvil { namespace HotReloader {
 
     // struct hot_object
@@ -73,6 +75,9 @@ namespace Duckvil { namespace HotReloader {
         Parser::__ast_ftable* m_pAST_FTable;
         Parser::__lexer_ftable* m_pLexerFTable;
 
+        Thread::pool_ftable* m_pThread;
+        Thread::pool_data* m_pThreadData;
+
         static void Action(const std::filesystem::path& _file, FileWatcher::FileStatus _status, void* _pUserData)
         {
             user_data* _userData = (user_data*)_pUserData;
@@ -83,7 +88,11 @@ namespace Duckvil { namespace HotReloader {
 
                 if(_file.extension() == ".cpp")
                 {
-                    _userData->m_pRuntimeCompiler->Compile(_file.string());
+                    Thread::order_task(_userData->m_pRuntimeCompiler->m_pThread, _userData->m_pRuntimeCompiler->m_pThreadData, [](RuntimeCompilerSystem* _pData, const std::filesystem::path& _file)
+                    {
+                        _pData->Compile(_file.string());
+                    }, _userData->m_pRuntimeCompiler, _file);
+                    // _userData->m_pRuntimeCompiler->Compile(_file.string());
                 }
             }
         }

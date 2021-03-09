@@ -52,6 +52,26 @@ namespace Duckvil {
         return true;
     }
 
+    bool init_threading(__data* _pData, PlugNPlay::__module* _pModule)
+    {
+        PlugNPlay::__module_information _threadModule("Thread");
+
+        _pModule->load(&_threadModule);
+
+        Thread::pool_ftable* (*init)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator);
+
+        _pModule->get(_threadModule, "duckvil_thread_pool_init", (void**)&init);
+
+        _pData->m_pThread = init(_pData->m_pMemory, _pData->m_pHeap);
+        _pData->m_pThreadData = _pData->m_pThread->m_fnInit(_pData->m_heap);
+
+        _pData->m_pThread->m_fnStart(_pData->m_pThreadData);
+
+        RuntimeReflection::record_meta(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), RuntimeReflection::get_current().m_pRecorder, RuntimeReflection::get_current().m_pReflectionData, RuntimeReflection::get_type<__data>(), "Thread", _pData->m_pThreadData);
+
+        return true;
+    }
+
     // bool init_renderer(__data* _pData, PlugNPlay::__module* _pModule)
     // {
     //     PlugNPlay::__module_information _rendererModule("Renderer");
@@ -145,9 +165,6 @@ namespace Duckvil {
 
             // DUCKVIL_LOG_INFO_("Module %s is present", _loadedModule.m_sName.m_sText);
 
-            // _pData->m_ullRecordedTypesCount = get_recorder_count();
-            // _pData->m_aRecordedTypes = new duckvil_recorderd_types[_pData->m_ullRecordedTypesCount];
-
             uint32_t _recordersCount = get_recorder_count();
 
             for(uint32_t j = 0; j < _recordersCount; ++j)
@@ -168,7 +185,6 @@ namespace Duckvil {
                     _pData->m_aRecordedTypes.Resize(_pData->m_aRecordedTypes.Size() * 2);
                 }
 
-                // _pData->m_aRecordedTypes[j] = record(_pMemoryInterface, _pAllocator, _pData->m_pRuntimeReflectionRecorder, _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
                 _pData->m_aRecordedTypes.Allocate(record(_pMemoryInterface, _pAllocator, _pData->m_pRuntimeReflectionRecorder, _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData));
             }
 
@@ -179,6 +195,7 @@ namespace Duckvil {
         }
 
         init_logger(_pData, &_module);
+        init_threading(_pData, &_module);
 
         for(uint32_t i = 0; i < _pData->m_uiLoadedModulesCount; ++i)
         {
@@ -252,9 +269,6 @@ namespace Duckvil {
                         );
 
                         ISystem* _systemInheritance = (ISystem*)_type.InvokeStatic<void*, void*>("Cast", _testSystem);
-
-                        // _systemInheritance->m_pLogger = _pData->m_pLogger;
-                        // _systemInheritance->m_pLoggerData = _pData->m_pLoggerData;
 
                         RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type<HotReloader::TrackKeeper>();
                         HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_pData->m_heap, _pData->m_pRuntimeReflectionData, _trackKeeperHandle, _testSystem, _typeHandle);
