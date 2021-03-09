@@ -188,7 +188,7 @@ namespace Duckvil { namespace Event {
         template <typename Message, class F, std::enable_if_t<!is_stateless<F>::value, bool> = true>
         void AddA(F&& _fn)
         {
-            typename lambda_traits<F>::pointer _ptr = cify(std::forward<F>(_fn));
+            typename Utils::lambda_traits<F>::pointer _ptr = Utils::lambda(std::forward<F>(_fn));
             Add<Message>(_ptr);
         }
 

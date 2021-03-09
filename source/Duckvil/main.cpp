@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
     _memoryDebug.m_allocatorType = duckvil_memory_allocator_type_linear;
 
     _mainMemoryAllocator->m_pDebugData = &_memoryDebug;
-    _mainMemoryAllocator->m_fnOnAllocate = Duckvil::Event::cify([&](Duckvil::Memory::__allocator* _pParentAllocator, Duckvil::Memory::__allocator* _pAllocator, duckvil_memory_allocator_type _type)
+    _mainMemoryAllocator->m_fnOnAllocate = Duckvil::Utils::lambda([&](Duckvil::Memory::__allocator* _pParentAllocator, Duckvil::Memory::__allocator* _pAllocator, duckvil_memory_allocator_type _type)
     {
         duckvil_memory_debug_info* _parentDebugInfo = (duckvil_memory_debug_info*)_pParentAllocator->m_pDebugData;
         duckvil_memory_debug_info* _currentInfo = new duckvil_memory_debug_info{ _pAllocator, _parentDebugInfo, _type };
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 
         _pAllocator->m_pDebugData = _currentInfo;
     });
-    _mainMemoryAllocator->m_fnOnDeallocate = Duckvil::Event::cify([&](Duckvil::Memory::__allocator* _pParentAllocator, Duckvil::Memory::__allocator* _pAllocator)
+    _mainMemoryAllocator->m_fnOnDeallocate = Duckvil::Utils::lambda([&](Duckvil::Memory::__allocator* _pParentAllocator, Duckvil::Memory::__allocator* _pAllocator)
     {
         duckvil_memory_debug_info* _parentDebugInfo = (duckvil_memory_debug_info*)_pParentAllocator->m_pDebugData;
         duckvil_memory_debug_info* _currentInfo = _pAllocator->m_pDebugData;
