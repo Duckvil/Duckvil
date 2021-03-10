@@ -289,9 +289,10 @@ namespace Duckvil { namespace HotReloader {
         {
             DUCKVIL_LOG_INFO("Compilation");
 
+            std::filesystem::path _working = std::filesystem::path(DUCKVIL_OUTPUT).parent_path();
             std::filesystem::path _file = _sFile;
             std::string _filename = _file.filename().string();
-            std::string _moduleName = _file.parent_path().stem().string();
+            std::filesystem::path _relativePath = std::filesystem::relative(_file.parent_path(), _working / "source");
             std::size_t _dotPosition = _filename.find_first_of('.');
 
             if(_dotPosition != std::string::npos)
@@ -300,9 +301,9 @@ namespace Duckvil { namespace HotReloader {
             }
 
             std::string _generatedFilename = _filename + ".generated.cpp";
-            std::filesystem::path _generatedFile = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _moduleName / _generatedFilename;
-            std::filesystem::path _pluginFile = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _moduleName / "plugin_info.cpp";
-            std::filesystem::path _externalPath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "external";
+            std::filesystem::path _generatedFile = _working / "__generated_reflection__" / _relativePath / _generatedFilename;
+            std::filesystem::path _pluginFile = _working / "__generated_reflection__" / *_relativePath.begin() / "plugin_info.cpp";
+            std::filesystem::path _externalPath = _working / "external";
 
             RuntimeCompiler::Options _options = {};
 
@@ -408,6 +409,7 @@ namespace Duckvil { namespace HotReloader {
                     _swapEvent.m_stage = HotReloadedEvent::stage_after_swap;
                     _swapEvent.m_pObject = _newObject;
                     _swapEvent._typeHandle = _trackKeeper->GetTypehandle();
+                    _swapEvent.m_pTrackKeeper = _trackKeeper;
                     _swapEvent.m_pOldObject = _oldObject;
 
                     _trackKeeper->SetObject(_newObject);
