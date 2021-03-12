@@ -33,6 +33,12 @@
         return _pReflection->m_fnGet ## name ## MetaVariant(_pData, type2, &_key, sizeof(KeyType), typeid(KeyType).hash_code()); \
     } \
  \
+    template <std::size_t Length> \
+    static inline const __variant& get_meta(__ftable* _pReflection, __data* _pData, type, const char (&_key)[Length]) \
+    { \
+        return _pReflection->m_fnGet ## name ## MetaVariant(_pData, type2, _key, Length, CONST_CHAR_POINTER_ID); \
+    } \
+ \
     template <typename ValueType, std::size_t Length> \
     static inline const ValueType& get_meta_value(__ftable* _pReflection, __data* _pData, type, const char (&_key)[Length]) \
     { \
@@ -71,6 +77,13 @@
     { \
         const duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext; \
         return get_meta<KeyType>(_context.m_pReflection, _context.m_pReflectionData, type2, _key); \
+    } \
+ \
+    template <std::size_t Length> \
+    static inline const __variant& get_meta(type, const char (&_key)[Length]) \
+    { \
+        const duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext; \
+        return get_meta(_context.m_pReflection, _context.m_pReflectionData, type2, _key); \
     } \
  \
     template <typename ValueType, std::size_t Length> \
