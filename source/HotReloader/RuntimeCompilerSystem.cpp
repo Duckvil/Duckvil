@@ -385,23 +385,21 @@ namespace Duckvil { namespace HotReloader {
             {
                 const Duckvil::RuntimeReflection::__duckvil_resource_type_t& _type = _types.m_aTypes[j];
 
-                if(_trackKeeper->GetTypehandle().m_ID == _type.m_ID)
+                if(RuntimeReflection::get_meta(_type, ReflectionFlags_Hot).m_ullTypeID != -1 && _trackKeeper->GetTypehandle().m_ID == _type.m_ID)
                 {
                     RuntimeSerializer::Serializer _serializer;
-
-                    _serializer.SetLoading(false);
 
                     RuntimeReflection::__duckvil_resource_function_t _serializeFunctionHandle = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_type, "Serialize");
                     RuntimeReflection::__function<void(HotObject::*)(RuntimeSerializer::ISerializer*)>* _func =
                         RuntimeReflection::get_function_callback<HotObject, RuntimeSerializer::ISerializer*>(g_duckvilFrontendReflectionContext.m_pReflectionData, _type, _serializeFunctionHandle);
 
+                    _serializer.SetLoading(false);
                     _serializer.Serialize(_trackKeeper->GetObject(), _func);
-
-                    _serializer.SetLoading(true);
 
                     void* _oldObject = _trackKeeper->GetObject();
                     void* _newObject = RuntimeReflection::create(m_objectsHeap, g_duckvilFrontendReflectionContext.m_pReflectionData, _type);
 
+                    _serializer.SetLoading(true);
                     _serializer.Serialize(_newObject, _func);
 
                     HotReloadedEvent _swapEvent = {};
@@ -430,6 +428,11 @@ namespace Duckvil { namespace HotReloader {
         // HotReloader::HotObject* _systemInheritance2 = (HotReloader::HotObject*)RuntimeReflection::invoke_static_result<void*, void*>(m_pReflectionData, _pTrackKeeper->GetTypehandle(), _castHotObjectFunctionHandle, _pTrackKeeper->GetObject());
 
         // _systemInheritance2->m_ullHotObjectID++;
+
+        if(m_aHotObjects.Full())
+        {
+            m_aHotObjects.Resize(m_aHotObjects.Size() * 2);
+        }
 
         m_aHotObjects.Allocate(_pTrackKeeper);
     }
