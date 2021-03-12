@@ -28,8 +28,6 @@ namespace Duckvil { namespace Thread {
 
             _task();
         }
-
-        printf("ENDED!\n");
     }
 
     pool_data* impl_pool_init(const Memory::FreeList& _heap)
