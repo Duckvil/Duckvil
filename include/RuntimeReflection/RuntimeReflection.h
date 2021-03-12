@@ -92,6 +92,8 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             m_pData = nullptr;
             m_ullTypeID = -1;
+            m_ullSize = 0;
+            m_traits = (__traits)0;
         }
 
         std::size_t m_ullSize;
