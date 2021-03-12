@@ -197,6 +197,8 @@ namespace Duckvil {
         init_logger(_pData, &_module);
         init_threading(_pData, &_module);
 
+        RuntimeReflection::record_meta(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), RuntimeReflection::get_current().m_pRecorder, RuntimeReflection::get_current().m_pReflectionData, RuntimeReflection::get_type<__data>(), "Time", &(_pData->m_timeData));
+
         for(uint32_t i = 0; i < _pData->m_uiLoadedModulesCount; ++i)
         {
             const PlugNPlay::__module_information& _loadedModule = _pData->m_aLoadedModules[i];
@@ -290,7 +292,7 @@ namespace Duckvil {
                             auto _lol = _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction;
                             auto _lol2 = _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction;
 
-                            _pData->m_pEditor->m_fnAddDraw(_pData->m_pEditorData, Editor::Draw { _lol, _lol2, _trackKeeper });
+                            _pData->m_pEditor->m_fnAddDraw(_pData->m_pEditorData, Editor::Draw { _lol, _lol2, _trackKeeper, _typeHandle });
                         }
 
                         RuntimeReflection::__duckvil_resource_type_t _rcTypeHandle = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>();
@@ -300,7 +302,7 @@ namespace Duckvil {
                         // _pData->m_eventPool.Add<HotReloader::HotReloadedEvent>(_trackKeeper->GetObject(), _typeHandle);
                         // _pData->m_eventPool.Add<HotReloader::HotReloadedEvent>(_trackKeeper);
 
-                        _pData->m_eventPool.AddA<HotReloader::HotReloadedEvent>([_pData, _trackKeeper](const HotReloader::HotReloadedEvent& _event)
+                        _pData->m_eventPool.AddA<HotReloader::HotReloadedEvent>([_pData, _trackKeeper, _typeHandle](const HotReloader::HotReloadedEvent& _event)
                         {
                             if(_event.m_stage == HotReloader::HotReloadedEvent::stage_after_swap)
                             {
@@ -314,29 +316,10 @@ namespace Duckvil {
 
                                         _system.m_fnUpdateCallback = _systemType.GetFunctionCallback<ISystem>("Update")->m_fnFunction;
                                         _system.m_pISystem = (ISystem*)_systemType.InvokeStatic<void*, void*>("Cast", _event.m_pObject);
-
-                                        RuntimeReflection::__duckvil_resource_function_t _onDrawFunctionHandle = _systemType.GetFunctionHandle("OnDraw");
-                                        RuntimeReflection::__duckvil_resource_function_t _initEditorFunctionHandle = _systemType.GetFunctionHandle<void*>("InitEditor");
-
-                                        if(_onDrawFunctionHandle.m_ID != -1 && _initEditorFunctionHandle.m_ID != -1)
-                                        {
-                                            _pData->m_pEditor->m_fnAddDraw(_pData->m_pEditorData,
-                                            Editor::Draw
-                                            {
-                                                _systemType.GetFunctionCallback<Editor::Widget>(_onDrawFunctionHandle)->m_fnFunction,
-                                                _systemType.GetFunctionCallback<Editor::Widget, void*>(_initEditorFunctionHandle)->m_fnFunction,
-                                                _trackKeeper
-                                            });
-
-                                        // Call function to set for only this widget, not for all widgets
-                                            _pData->m_pEditor->m_fnPostInit(_pData->m_heap, _pData->m_pEditorData);
-                                        }
-                                        else
-                                        {
-                                            _pData->m_pEditor->m_fnRemoveDraw(_pData->m_pEditorData, _event.m_pOldObject);
-                                        }
                                     }
                                 }
+
+                                // _pData->m_pEditor->m_fnHotReloadInit(_pData->m_pEditorData, _event);
                             }
                         });
 
@@ -348,7 +331,7 @@ namespace Duckvil {
                 }
             }
 
-            _pData->m_pEditor->m_fnPostInit(_pData->m_heap, _pData->m_pEditorData);
+            _pData->m_pEditor->m_fnPostInit(_pData->m_heap, _pData->m_pEditorData, _pData->m_pEditor, &_pData->m_eventPool, _pData->m_pRuntimeCompiler);
 
             if(!(_pData->m_pRuntimeCompiler->*_pData->m_fnRuntimeCompilerInit)())
             {
@@ -458,8 +441,6 @@ namespace Duckvil {
             (_system.m_pISystem->*_system.m_fnUpdateCallback)();
         }
 
-        (_pData->m_pRuntimeCompiler->*_pData->m_fnRuntimeCompilerUpdate)();
-
         if(_pData->m_ullLastTimeUsed != _pData->m_pHeap->m_ullUsed)
         {
             size_t _change = _pData->m_pHeap->m_ullUsed - _pData->m_ullLastTimeUsed;
@@ -471,11 +452,13 @@ namespace Duckvil {
 
         if(_pData->m_dOneSecond >= 1.0)
         {
+            (_pData->m_pRuntimeCompiler->*_pData->m_fnRuntimeCompilerUpdate)();
+
             // _pData->m_pLogger->dispatch_logs(/*_pData->m_pLogger, _pData->m_pLoggerData*/ logger_get_current().m_pLogger, logger_get_current().m_pLoggerData);
             _pData->m_logger.Dispatch();
 
-            DUCKVIL_LOG_INFO("Delta: %f ms", _pData->m_timeData.m_dDelta * 1000.0);
-            DUCKVIL_LOG_INFO("Used memory: %d of %d", _pData->m_pHeap->m_ullUsed, _pData->m_pHeap->m_ullCapacity);
+            // DUCKVIL_LOG_INFO("Delta: %f ms", _pData->m_timeData.m_dDelta * 1000.0);
+            // DUCKVIL_LOG_INFO("Used memory: %d of %d", _pData->m_pHeap->m_ullUsed, _pData->m_pHeap->m_ullCapacity);
 
 // #ifdef DUCKVIL_MEMORY_DEBUGGER
 //             uint32_t _index = 0;

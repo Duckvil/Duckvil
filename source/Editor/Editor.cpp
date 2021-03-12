@@ -56,10 +56,11 @@ namespace Duckvil { namespace Editor {
         return _data;
     }
 
-    void post_init(const Memory::FreeList& _heap, void* _pData)
+    void post_init(const Memory::FreeList& _heap, void* _pData, EditorFTable* _pEditor, Event::Pool<Event::mode::immediate>* _pEventPool, HotReloader::RuntimeCompilerSystem* _pHotReloader)
     {
         ImGuiEditorData* _data = (ImGuiEditorData*)_pData;
 
+        _data->m_heap = _heap;
         _data->m_pEditorEvents = Event::Pool<Event::mode::immediate>(_heap, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData);
 
         auto _types = RuntimeReflection::get_types(_heap);
@@ -90,6 +91,10 @@ namespace Duckvil { namespace Editor {
                 RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type<HotReloader::TrackKeeper>();
                 HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_heap, g_duckvilFrontendReflectionContext.m_pReflectionData, _trackKeeperHandle, _object, _typeHandle);
 
+                RuntimeReflection::__duckvil_resource_type_t _rcTypeHandle = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>();
+                RuntimeReflection::__duckvil_resource_function_t _addHotObjectHandle = RuntimeReflection::get_function_handle<HotReloader::ITrackKeeper*>(_rcTypeHandle, "AddHotObject");
+                RuntimeReflection::invoke_member(_rcTypeHandle, _addHotObjectHandle, _pHotReloader, (HotReloader::ITrackKeeper*)_trackKeeper);
+
                 auto _lol = _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction;
                 auto _lol2 = _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction;
 
@@ -98,12 +103,33 @@ namespace Duckvil { namespace Editor {
                     _data->m_aDraws.Resize(_data->m_aDraws.Size() * 2);
                 }
 
-                _data->m_aDraws.Allocate(Editor::Draw { _lol, _lol2, _trackKeeper });
+                _data->m_aDraws.Allocate(Editor::Draw { _lol, _lol2, _trackKeeper, _typeHandle });
 
                 if(_type.GetFunctionHandle<const HexEditorWidgetInitEvent&>("OnEvent").m_ID != -1)
                 {
                     _data->m_pEditorEvents.Add<HexEditorWidgetInitEvent>(_object, _typeHandle);
                 }
+
+                _pEventPool->AddA<HotReloader::HotReloadedEvent>([_data, _pEditor](const HotReloader::HotReloadedEvent& _event)
+                {
+                    if(_event.m_stage == HotReloader::HotReloadedEvent::stage_after_swap)
+                    {
+                        // for(uint32_t i = 0; i < _pData->m_aEngineSystems.Size(); ++i)
+                        // {
+                        //     system& _system = _pData->m_aEngineSystems[i];
+
+                        //     if(_system.m_type.m_ID == _event._typeHandle.m_ID)
+                        //     {
+                        //         RuntimeReflection::ReflectedType<> _systemType(_pData->m_heap, _system.m_type);
+
+                        //         _system.m_fnUpdateCallback = _systemType.GetFunctionCallback<ISystem>("Update")->m_fnFunction;
+                        //         _system.m_pISystem = (ISystem*)_systemType.InvokeStatic<void*, void*>("Cast", _event.m_pObject);
+                        //     }
+                        // }
+
+                        _pEditor->m_fnHotReloadInit(_data, _event);
+                    }
+                });
             }
         }
 
@@ -113,6 +139,59 @@ namespace Duckvil { namespace Editor {
             Widget* _pWidget = (Widget*)_widget.m_pObject->GetObject();
 
             (_pWidget->*_widget.m_fnInit)(_data->_ctx);
+        }
+    }
+
+    void hot_reload_init(ImGuiEditorData* _pData, const HotReloader::HotReloadedEvent& _event)
+    {
+        uint32_t _index = -1;
+
+        RuntimeReflection::ReflectedType<> _type(_pData->m_heap, _event._typeHandle);
+        RuntimeReflection::__duckvil_resource_function_t _onDrawFunctionHandle = _type.GetFunctionHandle("OnDraw");
+        RuntimeReflection::__duckvil_resource_function_t _initEditorFunctionHandle = _type.GetFunctionHandle<void*>("InitEditor");
+
+        for(uint32_t i = 0; i < _pData->m_aDraws.Size(); ++i)
+        {
+            Draw& _widget = _pData->m_aDraws[i];
+
+            if(_widget.m_typeHandle.m_ID == _type.GetTypeHandle().m_ID)
+            {
+                _index = i;
+
+                break;
+            }
+        }
+
+        if(_index == -1)
+        {
+            if(_pData->m_aDraws.Full())
+            {
+                _pData->m_aDraws.Resize(_pData->m_aDraws.Size() * 2);
+            }
+
+            _pData->m_aDraws.Allocate(
+                {
+                    _type.GetFunctionCallback<Editor::Widget>(_onDrawFunctionHandle)->m_fnFunction,
+                    _type.GetFunctionCallback<Editor::Widget, void*>(_initEditorFunctionHandle)->m_fnFunction,
+                    _event.m_pTrackKeeper,
+                    _event._typeHandle
+                });
+        }
+        else
+        {
+            if(_onDrawFunctionHandle.m_ID != -1 && _initEditorFunctionHandle.m_ID != -1)
+            {
+                Draw& _widget = _pData->m_aDraws[_index];
+
+                _widget.m_fnDraw = _type.GetFunctionCallback<Editor::Widget>(_onDrawFunctionHandle)->m_fnFunction;
+                _widget.m_fnInit = _type.GetFunctionCallback<Editor::Widget, void*>(_initEditorFunctionHandle)->m_fnFunction;
+
+                (((Editor::Widget*)_event.m_pObject)->*_widget.m_fnInit)(ImGui::GetCurrentContext());
+            }
+            else
+            {
+                _pData->m_aDraws.Erase(_index);
+            }
         }
     }
 
@@ -217,22 +296,22 @@ namespace Duckvil { namespace Editor {
         _data->m_aDraws.Allocate(_draw);
     }
 
-    void remove_draw(void* _pData, void* _pObject)
-    {
-        ImGuiEditorData* _data = (ImGuiEditorData*)_pData;
+    // void remove_draw(void* _pData, void* _pObject)
+    // {
+    //     ImGuiEditorData* _data = (ImGuiEditorData*)_pData;
 
-        for(uint32_t i = 0; i < _data->m_aDraws.Size(); ++i)
-        {
-            const Draw& _draw = _data->m_aDraws[i];
+    //     for(uint32_t i = 0; i < _data->m_aDraws.Size(); ++i)
+    //     {
+    //         const Draw& _draw = _data->m_aDraws[i];
 
-            if(_draw.m_pObject->GetObject() == _pObject)
-            {
-                _data->m_aDraws.Erase(i);
+    //         if(_draw.m_pObject->GetObject() == _pObject)
+    //         {
+    //             _data->m_aDraws.Erase(i);
 
-                break;
-            }
-        }
-    }
+    //             break;
+    //         }
+    //     }
+    // }
 
 }}
 
@@ -244,9 +323,10 @@ Duckvil::Editor::EditorFTable* duckvil_editor_init(Duckvil::Memory::IMemory* _pM
     _result->m_fnRender = &Duckvil::Editor::render;
 
     _result->m_fnAddDraw = &Duckvil::Editor::add_draw;
-    _result->m_fnRemoveDraw = &Duckvil::Editor::remove_draw;
+    // _result->m_fnRemoveDraw = &Duckvil::Editor::remove_draw;
 
     _result->m_fnPostInit = &Duckvil::Editor::post_init;
+    _result->m_fnHotReloadInit = &Duckvil::Editor::hot_reload_init;
 
     return _result;
 }

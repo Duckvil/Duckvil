@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include "HotReloader/ITrackKeeper.h"
+
 #include "RuntimeReflection/RuntimeReflection.h"
 
 namespace Duckvil { namespace HotReloader {
@@ -25,6 +27,7 @@ namespace Duckvil { namespace HotReloader {
 
         void* m_pObject;
         void* m_pOldObject;
+        HotReloader::ITrackKeeper* m_pTrackKeeper;
         HotReloadedEvent::stage m_stage;
         RuntimeReflection::__duckvil_resource_type_t _typeHandle;
     };
