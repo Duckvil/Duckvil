@@ -38,6 +38,8 @@ namespace Duckvil {
 
         RuntimeReflection::make_current({ _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _pData->m_pRuntimeReflectionRecorder });
 
+        _pData->m_pRuntimeReflectionData->m_pEvents = _pData->m_heap.Allocate<Event::Pool<Event::mode::immediate>>(_pData->m_heap);
+
         return true;
     }
 
@@ -219,7 +221,7 @@ namespace Duckvil {
 
         _pData->m_pWindow = (Window::IWindow*)_windowType.Create<Event::Pool<Event::mode::buffered>*>(&_pData->m_windowEventPool);
 
-        _pData->m_pWindow->Create("AAAAA", 1920, 1080);
+        _pData->m_pWindow->Create("Duckvil", 1920, 1080);
 
         // init_renderer(_pData, &_module);
         init_editor(_pData, &_module);
@@ -239,6 +241,8 @@ namespace Duckvil {
                     (const Memory::FreeList&)_pData->m_heap,
                     &_pData->m_eventPool
                 );
+
+                ((Event::Pool<Event::mode::immediate>*)_pData->m_pRuntimeReflectionData->m_pEvents)->Add<RuntimeReflection::TrackedObjectCreatedEvent>(_pData->m_pRuntimeCompiler);
 
                 _pData->m_fnRuntimeCompilerUpdate = _type.GetFunctionCallback<ISystem>("Update")->m_fnFunction;
                 _pData->m_fnRuntimeCompilerInit = _type.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
@@ -264,21 +268,44 @@ namespace Duckvil {
 
                         RuntimeReflection::ReflectedType<> _type(_pData->m_heap, _typeHandle);
 
-                        void* _testSystem = _type.Create<
+                        if(RuntimeReflection::get_meta(_typeHandle, HotReloader::ReflectionFlags_Hot).m_ullTypeID != -1)
+                        {
+                            printf("AAAAAA\n");
+                        }
+                        else
+                        {
+                            printf("AAAAAA\n");
+                        }
+
+                        // if(RuntimeReflection::get_meta(_typeHandle, HotReloader::ReflectionFlags_Hot).m_ullTypeID != -1)
+                        // {
+                        //     HotReloader::ITrackKeeper* _testSystem = _type.CreateTracked<
+                        //         const Memory::FreeList&
+                        //     >(
+                        //         _pData->m_heap
+                        //     );
+                        // }
+                        // else
+                        // {
+                        //     HotReloader::ITrackKeeper* _testSystem = _type.Create<
+                        //         const Memory::FreeList&
+                        //     >(
+                        //         _pData->m_heap
+                        //     );
+                        // }
+
+                        HotReloader::ITrackKeeper* _testSystem = _type.CreateTracked<
                             const Memory::FreeList&
                         >(
                             _pData->m_heap
                         );
 
-                        ISystem* _systemInheritance = (ISystem*)_type.InvokeStatic<void*, void*>("Cast", _testSystem);
-
-                        RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type<HotReloader::TrackKeeper>();
-                        HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_pData->m_heap, _pData->m_pRuntimeReflectionData, _trackKeeperHandle, _testSystem, _typeHandle);
+                        ISystem* _systemInheritance = (ISystem*)_type.InvokeStatic<void*, void*>("Cast", _testSystem->GetObject());
 
                         system _system = {};
 
                         _system.m_type = _typeHandle;
-                        _system.m_pTrackKeeper = _trackKeeper;
+                        _system.m_pTrackKeeper = _testSystem;
                         _system.m_fnUpdateCallback = _type.GetFunctionCallback<ISystem>("Update")->m_fnFunction;
                         _system.m_fnInitCallback = _type.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
                         _system.m_pISystem = _systemInheritance;
@@ -287,22 +314,18 @@ namespace Duckvil {
 
                         if(RuntimeReflection::inherits<Editor::Widget>(_typeHandle))
                         {
-                            Editor::Widget* _widget = (Editor::Widget*)_type.InvokeStatic<void*, void*>("Cast", _testSystem);
+                            Editor::Widget* _widget = (Editor::Widget*)_type.InvokeStatic<void*, void*>("Cast", _testSystem->GetObject());
 
                             auto _lol = _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction;
                             auto _lol2 = _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction;
 
-                            _pData->m_pEditor->m_fnAddDraw(_pData->m_pEditorData, Editor::Draw { _lol, _lol2, _trackKeeper, _typeHandle });
+                            _pData->m_pEditor->m_fnAddDraw(_pData->m_pEditorData, Editor::Draw { _lol, _lol2, _testSystem, _typeHandle });
                         }
-
-                        RuntimeReflection::__duckvil_resource_type_t _rcTypeHandle = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>();
-                        RuntimeReflection::__duckvil_resource_function_t _addHotObjectHandle = RuntimeReflection::get_function_handle<HotReloader::ITrackKeeper*>(_rcTypeHandle, "AddHotObject");
-                        RuntimeReflection::invoke_member(_rcTypeHandle, _addHotObjectHandle, _pData->m_pRuntimeCompiler, (HotReloader::ITrackKeeper*)_trackKeeper);
 
                         // _pData->m_eventPool.Add<HotReloader::HotReloadedEvent>(_trackKeeper->GetObject(), _typeHandle);
                         // _pData->m_eventPool.Add<HotReloader::HotReloadedEvent>(_trackKeeper);
 
-                        _pData->m_eventPool.AddA<HotReloader::HotReloadedEvent>([_pData, _trackKeeper, _typeHandle](const HotReloader::HotReloadedEvent& _event)
+                        _pData->m_eventPool.AddA<HotReloader::HotReloadedEvent>([_pData, _typeHandle](const HotReloader::HotReloadedEvent& _event)
                         {
                             if(_event.m_stage == HotReloader::HotReloadedEvent::stage_after_swap)
                             {

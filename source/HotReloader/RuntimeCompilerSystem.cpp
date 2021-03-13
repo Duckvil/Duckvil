@@ -44,7 +44,7 @@ namespace Duckvil { namespace HotReloader {
 
         RuntimeReflection::__duckvil_resource_type_t _runtimeCompilerHandle = RuntimeReflection::get_type<RuntimeCompiler::Compiler>();
 
-        m_pCompiler = (RuntimeCompiler::Compiler*)RuntimeReflection::create<const Memory::FreeList&>(_heap.GetMemoryInterface(), _heap.GetAllocator(), g_duckvilFrontendReflectionContext.m_pReflectionData, _runtimeCompilerHandle, _heap);
+        m_pCompiler = (RuntimeCompiler::Compiler*)RuntimeReflection::create<const Memory::FreeList&>(_heap.GetMemoryInterface(), _heap.GetAllocator(), g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _runtimeCompilerHandle, false, _heap);
 
         PlugNPlay::__module _module;
 
@@ -81,7 +81,7 @@ namespace Duckvil { namespace HotReloader {
                 {
                     reflection_module _module = {};
 
-                    _module.m_pObject = Duckvil::RuntimeReflection::create<const Duckvil::Memory::FreeList&, Duckvil::RuntimeReflection::__ftable*, Duckvil::RuntimeReflection::__data*>(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), g_duckvilFrontendReflectionContext.m_pReflectionData, _typeHandle, m_heap, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData);
+                    _module.m_pObject = Duckvil::RuntimeReflection::create<const Duckvil::Memory::FreeList&, Duckvil::RuntimeReflection::__ftable*, Duckvil::RuntimeReflection::__data*>(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _typeHandle, false, m_heap, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData);
                     _module.m_typeHandle = _typeHandle;
                     _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&>(_typeHandle, "GenerateCustom");
                     _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(_typeHandle, "Clear");
@@ -397,7 +397,7 @@ namespace Duckvil { namespace HotReloader {
                     _serializer.Serialize(_trackKeeper->GetObject(), _func);
 
                     void* _oldObject = _trackKeeper->GetObject();
-                    void* _newObject = RuntimeReflection::create(m_objectsHeap, g_duckvilFrontendReflectionContext.m_pReflectionData, _type);
+                    void* _newObject = RuntimeReflection::create(m_objectsHeap, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _type, false);
 
                     _serializer.SetLoading(true);
                     _serializer.Serialize(_newObject, _func);
@@ -424,11 +424,6 @@ namespace Duckvil { namespace HotReloader {
 
     void RuntimeCompilerSystem::AddHotObject(ITrackKeeper* _pTrackKeeper)
     {
-        // RuntimeReflection::__duckvil_resource_function_t _castHotObjectFunctionHandle = RuntimeReflection::get_function_handle<void*>(m_pReflectionData, _pTrackKeeper->GetTypehandle(), "Cast");
-        // HotReloader::HotObject* _systemInheritance2 = (HotReloader::HotObject*)RuntimeReflection::invoke_static_result<void*, void*>(m_pReflectionData, _pTrackKeeper->GetTypehandle(), _castHotObjectFunctionHandle, _pTrackKeeper->GetObject());
-
-        // _systemInheritance2->m_ullHotObjectID++;
-
         if(m_aHotObjects.Full())
         {
             m_aHotObjects.Resize(m_aHotObjects.Size() * 2);
@@ -440,6 +435,11 @@ namespace Duckvil { namespace HotReloader {
     void RuntimeCompilerSystem::SetObjectsHeap(const Memory::FreeList& _heap)
     {
         m_objectsHeap = _heap;
+    }
+
+    void RuntimeCompilerSystem::OnEvent(const RuntimeReflection::TrackedObjectCreatedEvent& _event)
+    {
+        AddHotObject(_event.m_pTrackKeeper);
     }
 
 }}

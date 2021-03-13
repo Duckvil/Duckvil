@@ -8,6 +8,8 @@
 
 #include "RuntimeReflection/Function.h"
 
+// #include "Event/ImmediatePool.h"
+
 #define slot(T, ...) \
     struct T \
         __VA_ARGS__ \
@@ -213,6 +215,8 @@ namespace Duckvil { namespace RuntimeReflection {
     struct __data
     {
         DUCKVIL_SLOT_ARRAY(__type_t) m_aTypes;
+        // Event::Pool<Event::mode::immediate> m_events;
+        void* m_pEvents;
     };
 
     struct __ftable
@@ -273,7 +277,7 @@ namespace Duckvil { namespace RuntimeReflection {
 // Create type object using type name string
 // Note: It will compare given arguments with available constructors arguments
     template <typename... Args>
-    static void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, const char _sTypeName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX], const Args&... _vArgs)
+    static void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __ftable* _pReflection, __data* _pData, const char _sTypeName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX], bool _bTracked, const Args&... _vArgs)
     {
         const __data& _data = *_pData;
         static const std::size_t& _constructorTypeID = typeid(void*(Args...)).hash_code();
@@ -290,9 +294,9 @@ namespace Duckvil { namespace RuntimeReflection {
 
                     if(_constructor.m_ullTypeID == _constructorTypeID)
                     {
-                        void* (*_constructor_callback)(Memory::IMemory*, Memory::__free_list_allocator*, Args...) = (void* (*)(Memory::IMemory*, Memory::__free_list_allocator*, Args...))_constructor.m_pData;
+                        void* (*_constructor_callback)(Memory::IMemory*, Memory::__free_list_allocator*, __ftable*, __data*, bool, Args...) = (void* (*)(Memory::IMemory*, Memory::__free_list_allocator*, __ftable*, __data*, bool, Args...))_constructor.m_pData;
 
-                        return _constructor_callback(_pMemoryInterface, _pAllocator, _vArgs...);
+                        return _constructor_callback(_pMemoryInterface, _pAllocator, _pReflection, _pData, _bTracked, _vArgs...);
                     }
                 }
             }
@@ -304,7 +308,7 @@ namespace Duckvil { namespace RuntimeReflection {
 // Create type object using type handle
 // Note: It will compare given arguments with available constructors arguments
     template <typename... Args>
-    static void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const Args&... _vArgs)
+    static void* create(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, bool _bTracked, const Args&... _vArgs)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         static const std::size_t& _constructorTypeID = typeid(void*(Args...)).hash_code();
@@ -315,9 +319,9 @@ namespace Duckvil { namespace RuntimeReflection {
 
             if(_constructor.m_ullTypeID == _constructorTypeID)
             {
-                void* (*_constructor_callback)(Memory::IMemory*, Memory::__free_list_allocator*, Args...) = (void* (*)(Memory::IMemory*, Memory::__free_list_allocator*, Args...))_constructor.m_pData;
+                void* (*_constructor_callback)(Memory::IMemory*, Memory::__free_list_allocator*, __ftable*, __data*, bool, Args...) = (void* (*)(Memory::IMemory*, Memory::__free_list_allocator*, __ftable*, __data*, bool, Args...))_constructor.m_pData;
 
-                return _constructor_callback(_pMemoryInterface, _pAllocator, _vArgs...);
+                return _constructor_callback(_pMemoryInterface, _pAllocator, _pReflection, _pData, _bTracked, _vArgs...);
             }
         }
 
@@ -540,15 +544,15 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename... Args>
-    static inline void* create(const Memory::FreeList& _memory, __data* _pData, const char _sTypeName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX], const Args&... _vArgs)
+    static inline void* create(const Memory::FreeList& _memory, __ftable* _pReflection, __data* _pData, const char _sTypeName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX], bool _bTracked, const Args&... _vArgs)
     {
-        return create<Args...>(_memory.GetMemoryInterface(), _memory.GetAllocator(), _pData, _sTypeName, _vArgs...);
+        return create<Args...>(_memory.GetMemoryInterface(), _memory.GetAllocator(), _pReflection, _pData, _sTypeName, _bTracked, _vArgs...);
     }
 
     template <typename... Args>
-    static inline void* create(const Memory::FreeList& _memory, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const Args&... _vArgs)
+    static inline void* create(const Memory::FreeList& _memory, __ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, bool _bTracked, const Args&... _vArgs)
     {
-        return create<Args...>(_memory.GetMemoryInterface(), _memory.GetAllocator(), _pData, _typeHandle, _vArgs...);
+        return create<Args...>(_memory.GetMemoryInterface(), _memory.GetAllocator(), _pReflection, _pData, _typeHandle, _bTracked, _vArgs...);
     }
 
 // With context

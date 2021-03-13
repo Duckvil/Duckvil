@@ -6,6 +6,8 @@
 #include "RuntimeReflection/Markers.h"
 #include "RuntimeReflection/RuntimeReflection.h"
 #include "RuntimeReflection/Recorder.h"
+#include "RuntimeReflection/Generator.h"
+#include "RuntimeReflection/TrackedObjectCreatedEvent.h"
 
 #include "Memory/FreeList.h"
 
@@ -16,8 +18,6 @@
 #include "HotReloader/Events/HotReloadEvent.h"
 
 #include "Process/Process.h"
-
-#include "RuntimeReflection/Generator.h"
 
 #include "Parser/AST.h"
 #include "Parser/Lexer.h"
@@ -117,6 +117,8 @@ namespace Duckvil { namespace HotReloader {
         void AddHotObject(ITrackKeeper* _pTrackKeeper);
 
         void SetObjectsHeap(const Memory::FreeList& _heap);
+
+        void OnEvent(const RuntimeReflection::TrackedObjectCreatedEvent& _event);
     };
 
 }}

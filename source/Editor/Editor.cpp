@@ -16,6 +16,7 @@
 #include "Editor/Widgets/HexEditorWidgetEvent.h"
 
 #include "RuntimeReflection/ReflectedType.h"
+#include "RuntimeReflection/Meta.h"
 
 namespace Duckvil { namespace Editor {
 
@@ -86,14 +87,18 @@ namespace Duckvil { namespace Editor {
                     }
                 }
 
-                void* _object = _type.Create<const Memory::FreeList&>(_heap);
-                Editor::Widget* _widget = (Editor::Widget*)_type.InvokeStatic<void*, void*>("Cast", _object);
-                RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type<HotReloader::TrackKeeper>();
-                HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_heap, g_duckvilFrontendReflectionContext.m_pReflectionData, _trackKeeperHandle, _object, _typeHandle);
+                if(RuntimeReflection::get_meta(_typeHandle, HotReloader::ReflectionFlags_Hot).m_ullTypeID != -1)
+                {
+                    printf("AAAAAA\n");
+                }
+                else
+                {
+                    printf("AAAAAA\n");
+                }
 
-                RuntimeReflection::__duckvil_resource_type_t _rcTypeHandle = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>();
-                RuntimeReflection::__duckvil_resource_function_t _addHotObjectHandle = RuntimeReflection::get_function_handle<HotReloader::ITrackKeeper*>(_rcTypeHandle, "AddHotObject");
-                RuntimeReflection::invoke_member(_rcTypeHandle, _addHotObjectHandle, _pHotReloader, (HotReloader::ITrackKeeper*)_trackKeeper);
+                HotReloader::ITrackKeeper* _object = _type.CreateTracked<const Memory::FreeList&>(_heap);
+                Editor::Widget* _widget = (Editor::Widget*)_type.InvokeStatic<void*, void*>("Cast", _object->GetObject());
+                RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type<HotReloader::TrackKeeper>();
 
                 auto _lol = _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction;
                 auto _lol2 = _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction;
@@ -103,30 +108,17 @@ namespace Duckvil { namespace Editor {
                     _data->m_aDraws.Resize(_data->m_aDraws.Size() * 2);
                 }
 
-                _data->m_aDraws.Allocate(Editor::Draw { _lol, _lol2, _trackKeeper, _typeHandle });
+                _data->m_aDraws.Allocate(Editor::Draw { _lol, _lol2, _object, _typeHandle });
 
                 if(_type.GetFunctionHandle<const HexEditorWidgetInitEvent&>("OnEvent").m_ID != -1)
                 {
-                    _data->m_pEditorEvents.Add<HexEditorWidgetInitEvent>(_object, _typeHandle);
+                    _data->m_pEditorEvents.Add<HexEditorWidgetInitEvent>(_object->GetObject(), _typeHandle);
                 }
 
                 _pEventPool->AddA<HotReloader::HotReloadedEvent>([_data, _pEditor](const HotReloader::HotReloadedEvent& _event)
                 {
                     if(_event.m_stage == HotReloader::HotReloadedEvent::stage_after_swap)
                     {
-                        // for(uint32_t i = 0; i < _pData->m_aEngineSystems.Size(); ++i)
-                        // {
-                        //     system& _system = _pData->m_aEngineSystems[i];
-
-                        //     if(_system.m_type.m_ID == _event._typeHandle.m_ID)
-                        //     {
-                        //         RuntimeReflection::ReflectedType<> _systemType(_pData->m_heap, _system.m_type);
-
-                        //         _system.m_fnUpdateCallback = _systemType.GetFunctionCallback<ISystem>("Update")->m_fnFunction;
-                        //         _system.m_pISystem = (ISystem*)_systemType.InvokeStatic<void*, void*>("Cast", _event.m_pObject);
-                        //     }
-                        // }
-
                         _pEditor->m_fnHotReloadInit(_data, _event);
                     }
                 });

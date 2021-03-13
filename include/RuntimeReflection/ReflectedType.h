@@ -2,6 +2,8 @@
 
 #include "RuntimeReflection/RuntimeReflection.h"
 
+#include "HotReloader/ITrackKeeper.h"
+
 namespace Duckvil { namespace RuntimeReflection {
 
     template<typename...>
@@ -51,7 +53,13 @@ namespace Duckvil { namespace RuntimeReflection {
         template <typename... Args>
         void* Create(Args... _vArgs)
         {
-            return create<Args...>(m_heap, m_pReflectionData, m_typeHandle, _vArgs...);
+            return create<Args...>(m_heap, m_pReflection, m_pReflectionData, m_typeHandle, false, _vArgs...);
+        }
+
+        template <typename... Args>
+        HotReloader::ITrackKeeper* CreateTracked(Args... _vArgs)
+        {
+            return (HotReloader::ITrackKeeper*)create<Args...>(m_heap, m_pReflection, m_pReflectionData, m_typeHandle, true, _vArgs...);
         }
 
         template <typename Type2, typename... Args, std::size_t Length>
@@ -149,7 +157,13 @@ namespace Duckvil { namespace RuntimeReflection {
         template <typename... Args>
         void* Create(Args... _vArgs)
         {
-            return create<Args...>(m_heap, m_pReflectionData, m_typeHandle, _vArgs...);
+            return create<Args...>(m_heap, m_pReflection, m_pReflectionData, m_typeHandle, false, _vArgs...);
+        }
+
+        template <typename... Args>
+        HotReloader::ITrackKeeper* CreateTracked(Args... _vArgs)
+        {
+            return (HotReloader::ITrackKeeper*)create<Args...>(m_heap, m_pReflection, m_pReflectionData, m_typeHandle, true, _vArgs...);
         }
 
 // Constructors

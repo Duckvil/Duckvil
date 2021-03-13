@@ -27,6 +27,7 @@ record_function<Duckvil::HotReloader::RuntimeCompilerSystem, void>(DUCKVIL_RUNTI
 record_function<Duckvil::HotReloader::RuntimeCompilerSystem, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::HotReloader::RuntimeCompilerSystem::Compile, "Compile");
 record_function<Duckvil::HotReloader::RuntimeCompilerSystem, void, ITrackKeeper*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::HotReloader::RuntimeCompilerSystem::AddHotObject, "AddHotObject");
 record_function<Duckvil::HotReloader::RuntimeCompilerSystem, void, const Memory::FreeList&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::HotReloader::RuntimeCompilerSystem::SetObjectsHeap, "SetObjectsHeap");
+record_function<Duckvil::HotReloader::RuntimeCompilerSystem, void, const RuntimeReflection::TrackedObjectCreatedEvent&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::HotReloader::RuntimeCompilerSystem::OnEvent, "OnEvent");
 _type = record_type<Duckvil::HotReloader::RuntimeCompilerSystem::user_data>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "user_data");
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");

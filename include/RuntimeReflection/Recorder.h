@@ -1,8 +1,12 @@
 #pragma once
 
 #include "RuntimeReflection/RuntimeReflection.h"
+#include "RuntimeReflection/ObjectCreatedEvent.h"
+#include "RuntimeReflection/TrackedObjectCreatedEvent.h"
 
 #include "Memory/Queue.h"
+
+#include "Event/ImmediatePool.h"
 
 // Index will be incremented each source file to avoid function name collision
 // Each plugin/__module will be created file which contains total count of recorders
@@ -69,9 +73,49 @@ namespace std {
 namespace Duckvil { namespace RuntimeReflection {
 
     template <typename Type, typename... Args>
-    void* create_type(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, Args... _vArgs)
+    void* create_object(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __ftable* _pReflection, __data* _pData, bool _bTracked, Args... _vArgs)
     {
-        return new(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Type), alignof(Type))) Type(_vArgs...);
+        void* _object = new(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Type), alignof(Type))) Type(_vArgs...);
+
+        if(_bTracked)
+        {
+            RuntimeReflection::__duckvil_resource_type_t _typHandle = RuntimeReflection::get_type<Type>(_pReflection, _pData);
+            RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type(_pData, "TrackKeeper", { "Duckvil", "HotReloader" });
+            HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_pMemoryInterface, _pAllocator, _pReflection, _pData, _trackKeeperHandle, false, _object, _typHandle);
+
+            Event::Pool<Event::mode::immediate>* _events = (Event::Pool<Event::mode::immediate>*)_pData->m_pEvents;
+
+            if(_events == nullptr)
+            {
+                return _trackKeeper;
+            }
+
+            TrackedObjectCreatedEvent _event;
+
+            _event.m_pTrackKeeper = _trackKeeper;
+
+            _events->Broadcast(_event);
+
+            return _trackKeeper;
+        }
+        else
+        {
+            Event::Pool<Event::mode::immediate>* _events = (Event::Pool<Event::mode::immediate>*)_pData->m_pEvents;
+
+            if(_events == nullptr)
+            {
+                return _object;
+            }
+
+            ObjectCreatedEvent _event;
+
+            _event.m_pObject = _object;
+            _event.m_ullTypeID = typeid(Type).hash_code();
+
+            _events->Broadcast(_event);
+
+            return _object;
+        }
     }
 
     struct __recorder_meta_info
@@ -249,7 +293,7 @@ namespace Duckvil { namespace RuntimeReflection {
         int _[] = { 0, (get_argument_info<Args>(_arguments), 0)... };
         (void)_;
 
-        DUCKVIL_RESOURCE(constructor_t) _constructorHandle = _pFunctions->m_fnRecordConstructor(_pMemoryInterface, _pAllocator, _pData, _typeHandle, typeid(void*(Args...)).hash_code(), (uint8_t*)&create_type<Type, Args...>, _arguments);
+        DUCKVIL_RESOURCE(constructor_t) _constructorHandle = _pFunctions->m_fnRecordConstructor(_pMemoryInterface, _pAllocator, _pData, _typeHandle, typeid(void*(Args...)).hash_code(), (uint8_t*)&create_object<Type, Args...>, _arguments);
 
         // for(auto it : _pData->m_aFrontend)
         // {
