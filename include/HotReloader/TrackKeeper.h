@@ -26,14 +26,4 @@ namespace Duckvil { namespace HotReloader {
         RuntimeReflection::__duckvil_resource_type_t GetTypehandle() const override;
     };
 
-    // class HotTrackKeeper : public TrackKeeper
-    // {
-    // private:
-    //     uint32_t m_uiiObjectID;
-
-    // public:
-    //     HotTrackKeeper(void* _pObject, RuntimeReflection::__duckvil_resource_type_t _typeHandle);
-    //     ~HotTrackKeeper();
-    // };
-
 }}

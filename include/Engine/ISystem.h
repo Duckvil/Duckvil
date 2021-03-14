@@ -10,7 +10,6 @@
 
 namespace Duckvil {
 
-    DUCKVIL_CLASS(HotReloader::ReflectionFlags_Hot)
     struct ISystem
     {
         DUCKVIL_GENERATED_BODY

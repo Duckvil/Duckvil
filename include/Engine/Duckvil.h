@@ -45,9 +45,9 @@ namespace Duckvil {
         typedef bool (ISystem::*InitCallback)();
 
         RuntimeReflection::__duckvil_resource_type_t m_type;
-        // void** m_pObject;
-        HotReloader::ITrackKeeper* m_pTrackKeeper;
-        ISystem* m_pISystem;
+        DUCKVIL_TRACK_KEEPER_OBJECT(ISystem) m_pTrackKeeper;
+        // ISystem* m_pISystem;
+        bool m_bIsHot;
         system::UpdateCallback m_fnUpdateCallback;
         system::InitCallback m_fnInitCallback;
     };

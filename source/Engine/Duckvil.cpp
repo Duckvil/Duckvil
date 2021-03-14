@@ -268,58 +268,30 @@ namespace Duckvil {
 
                         RuntimeReflection::ReflectedType<> _type(_pData->m_heap, _typeHandle);
 
-                        if(RuntimeReflection::get_meta(_typeHandle, HotReloader::ReflectionFlags_Hot).m_ullTypeID != -1)
-                        {
-                            printf("AAAAAA\n");
-                        }
-                        else
-                        {
-                            printf("AAAAAA\n");
-                        }
-
-                        // if(RuntimeReflection::get_meta(_typeHandle, HotReloader::ReflectionFlags_Hot).m_ullTypeID != -1)
-                        // {
-                        //     HotReloader::ITrackKeeper* _testSystem = _type.CreateTracked<
-                        //         const Memory::FreeList&
-                        //     >(
-                        //         _pData->m_heap
-                        //     );
-                        // }
-                        // else
-                        // {
-                        //     HotReloader::ITrackKeeper* _testSystem = _type.Create<
-                        //         const Memory::FreeList&
-                        //     >(
-                        //         _pData->m_heap
-                        //     );
-                        // }
-
-                        HotReloader::ITrackKeeper* _testSystem = _type.CreateTracked<
+                        void* _testSystem = _type.CreateTracked<
                             const Memory::FreeList&
                         >(
                             _pData->m_heap
                         );
 
-                        ISystem* _systemInheritance = (ISystem*)_type.InvokeStatic<void*, void*>("Cast", _testSystem->GetObject());
-
                         system _system = {};
 
                         _system.m_type = _typeHandle;
-                        _system.m_pTrackKeeper = _testSystem;
+                        _system.m_pTrackKeeper = DUCKVIL_TRACK_KEEPER_CAST(ISystem, _testSystem);
                         _system.m_fnUpdateCallback = _type.GetFunctionCallback<ISystem>("Update")->m_fnFunction;
                         _system.m_fnInitCallback = _type.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
-                        _system.m_pISystem = _systemInheritance;
+                        // _system.m_pISystem = (ISystem*)_type.InvokeStatic<void*, void*>("Cast", DUCKVIL_TRACK_KEEPER_GET_OBJECT(_testSystem));
 
                         _pData->m_aEngineSystems.Allocate(_system);
 
                         if(RuntimeReflection::inherits<Editor::Widget>(_typeHandle))
                         {
-                            Editor::Widget* _widget = (Editor::Widget*)_type.InvokeStatic<void*, void*>("Cast", _testSystem->GetObject());
+                            Editor::Widget* _widget = (Editor::Widget*)_type.InvokeStatic<void*, void*>("Cast", DUCKVIL_TRACK_KEEPER_GET_OBJECT(_testSystem));
 
                             auto _lol = _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction;
                             auto _lol2 = _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction;
 
-                            _pData->m_pEditor->m_fnAddDraw(_pData->m_pEditorData, Editor::Draw { _lol, _lol2, _testSystem, _typeHandle });
+                            _pData->m_pEditor->m_fnAddDraw(_pData->m_pEditorData, Editor::Draw { _lol, _lol2, DUCKVIL_TRACK_KEEPER_CAST(Editor::Widget, _testSystem), _typeHandle });
                         }
 
                         // _pData->m_eventPool.Add<HotReloader::HotReloadedEvent>(_trackKeeper->GetObject(), _typeHandle);
@@ -338,7 +310,8 @@ namespace Duckvil {
                                         RuntimeReflection::ReflectedType<> _systemType(_pData->m_heap, _system.m_type);
 
                                         _system.m_fnUpdateCallback = _systemType.GetFunctionCallback<ISystem>("Update")->m_fnFunction;
-                                        _system.m_pISystem = (ISystem*)_systemType.InvokeStatic<void*, void*>("Cast", _event.m_pObject);
+                                        _system.m_fnInitCallback = _systemType.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
+                                        // _system.m_pISystem = (ISystem*)_systemType.InvokeStatic<void*, void*>("Cast", _event.m_pObject);
                                     }
                                 }
 
@@ -346,7 +319,7 @@ namespace Duckvil {
                             }
                         });
 
-                        if(!(_system.m_pISystem->*_system.m_fnInitCallback)())
+                        if(!((ISystem*)DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pTrackKeeper)->*_system.m_fnInitCallback)())
                         {
                             return false;
                         }
@@ -461,7 +434,7 @@ namespace Duckvil {
         {
             system& _system = _pData->m_aEngineSystems[i];
 
-            (_system.m_pISystem->*_system.m_fnUpdateCallback)();
+            ((ISystem*)DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pTrackKeeper)->*_system.m_fnUpdateCallback)();
         }
 
         if(_pData->m_ullLastTimeUsed != _pData->m_pHeap->m_ullUsed)

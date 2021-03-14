@@ -385,7 +385,7 @@ namespace Duckvil { namespace HotReloader {
             {
                 const Duckvil::RuntimeReflection::__duckvil_resource_type_t& _type = _types.m_aTypes[j];
 
-                if(RuntimeReflection::get_meta(_type, ReflectionFlags_Hot).m_ullTypeID != -1 && _trackKeeper->GetTypehandle().m_ID == _type.m_ID)
+                if(/*RuntimeReflection::get_meta(_type, ReflectionFlags_Hot).m_ullTypeID != -1 && */_trackKeeper->GetTypehandle().m_ID == _type.m_ID)
                 {
                     RuntimeSerializer::Serializer _serializer;
 
@@ -393,10 +393,11 @@ namespace Duckvil { namespace HotReloader {
                     RuntimeReflection::__function<void(HotObject::*)(RuntimeSerializer::ISerializer*)>* _func =
                         RuntimeReflection::get_function_callback<HotObject, RuntimeSerializer::ISerializer*>(g_duckvilFrontendReflectionContext.m_pReflectionData, _type, _serializeFunctionHandle);
 
-                    _serializer.SetLoading(false);
-                    _serializer.Serialize(_trackKeeper->GetObject(), _func);
+                    void* _oldObject = DUCKVIL_TRACK_KEEPER_GET_OBJECT(_trackKeeper);
 
-                    void* _oldObject = _trackKeeper->GetObject();
+                    _serializer.SetLoading(false);
+                    _serializer.Serialize(_oldObject, _func);
+
                     void* _newObject = RuntimeReflection::create(m_objectsHeap, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _type, false);
 
                     _serializer.SetLoading(true);

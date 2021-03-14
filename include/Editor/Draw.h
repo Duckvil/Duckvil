@@ -12,7 +12,8 @@ namespace Duckvil { namespace Editor {
     {
         void (Widget::*m_fnDraw)();
         void (Widget::*m_fnInit)(void*);
-        HotReloader::ITrackKeeper* m_pObject;
+        DUCKVIL_TRACK_KEEPER_OBJECT(Widget) m_pTrackKeeper;
+        // Widget* m_pObject;
         RuntimeReflection::__duckvil_resource_type_t m_typeHandle;
     };
 

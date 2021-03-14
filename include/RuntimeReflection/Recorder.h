@@ -77,13 +77,14 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         void* _object = new(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Type), alignof(Type))) Type(_vArgs...);
 
+        Event::Pool<Event::mode::immediate>* _events = (Event::Pool<Event::mode::immediate>*)_pData->m_pEvents;
+
+#ifdef DUCKVIL_HOT_RELOADING
         if(_bTracked)
         {
             RuntimeReflection::__duckvil_resource_type_t _typHandle = RuntimeReflection::get_type<Type>(_pReflection, _pData);
             RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type(_pData, "TrackKeeper", { "Duckvil", "HotReloader" });
             HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_pMemoryInterface, _pAllocator, _pReflection, _pData, _trackKeeperHandle, false, _object, _typHandle);
-
-            Event::Pool<Event::mode::immediate>* _events = (Event::Pool<Event::mode::immediate>*)_pData->m_pEvents;
 
             if(_events == nullptr)
             {
@@ -100,8 +101,6 @@ namespace Duckvil { namespace RuntimeReflection {
         }
         else
         {
-            Event::Pool<Event::mode::immediate>* _events = (Event::Pool<Event::mode::immediate>*)_pData->m_pEvents;
-
             if(_events == nullptr)
             {
                 return _object;
@@ -116,6 +115,21 @@ namespace Duckvil { namespace RuntimeReflection {
 
             return _object;
         }
+#else
+        if(_events == nullptr)
+        {
+            return _object;
+        }
+
+        ObjectCreatedEvent _event;
+
+        _event.m_pObject = _object;
+        _event.m_ullTypeID = typeid(Type).hash_code();
+
+        _events->Broadcast(_event);
+
+        return _object;
+#endif
     }
 
     struct __recorder_meta_info

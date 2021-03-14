@@ -33,7 +33,6 @@ namespace Duckvil { namespace HotReloader {
             m_pRuntimeReflection(_pReflection),
             m_heap(_heap)
         {
-            m_bGenerate = false;
             m_bHasGeneratedBody = false;
         }
 
@@ -46,7 +45,6 @@ namespace Duckvil { namespace HotReloader {
         RuntimeReflection::__ftable* m_pRuntimeReflection;
         Memory::FreeList m_heap;
 
-        bool m_bGenerate;
         bool m_bHasGeneratedBody;
         std::vector<std::string> m_aVars;
         std::vector<std::string> m_aChildSerializers;
@@ -58,32 +56,29 @@ namespace Duckvil { namespace HotReloader {
 
         void GenerateCustom(std::ofstream& _file)
         {
-            if(m_bGenerate)
+            _file << " \\\n";
+            _file << "public: \\\n";
+            _file << "void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \\\n";
+            _file << "{\\\n";
+
+            for(const auto& _var : m_aVars)
             {
-                _file << " \\\n";
-                _file << "public: \\\n";
-                _file << "void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \\\n";
-                _file << "{\\\n";
-
-                for(const auto& _var : m_aVars)
-                {
-                    _file << "_pSerializer->SerializeProperty(\"" << _var << "\", " << _var << "); \\\n";
-                }
-
-                for(const std::string& _child : m_aChildSerializers)
-                {
-                    _file << _child << "::Serialize(_pSerializer); \\\n";
-                }
-
-                _file << "}";
+                _file << "_pSerializer->SerializeProperty(\"" << _var << "\", " << _var << "); \\\n";
             }
+
+            for(const std::string& _child : m_aChildSerializers)
+            {
+                _file << _child << "::Serialize(_pSerializer); \\\n";
+            }
+
+            _file << "}";
         }
 
         void Clear()
         {
-            m_bGenerate = false;
             m_aVars.clear();
             m_aChildSerializers.clear();
+            m_bHasGeneratedBody = false;
         }
     };
 
@@ -153,78 +148,36 @@ namespace Duckvil { namespace HotReloader {
                 }
             }
 
-            for(const auto& _meta : _struct->m_aMeta)
+            if(_pData->m_bHasGeneratedBody)
             {
-                if(_meta.m_sKey.find("HotReloader::ReflectionFlags_Hot") != std::string::npos)
+                Parser::__ast_entity_function* _func = new Parser::__ast_entity_function();
+
+                _func->m_sReturnType = "void";
+                _func->m_sName = "Serialize";
+                _func->m_pParentScope = _struct;
+                _func->m_accessLevel = Parser::__ast_access::__ast_access_public;
+                _func->m_flags = (Parser::__ast_flags)0;
+
                 {
-                    _pData->m_bGenerate = true;
+                    Parser::__ast_entity_argument _arg;
+                    
+                    _arg.m_sName = "_pSerializer";
+                    _arg.m_sType = "Duckvil::RuntimeSerializer::ISerializer*";
+                    _arg.m_pParentScope = _func;
 
-                    if(_pData->m_bHasGeneratedBody)
-                    {
-                        Parser::__ast_entity_function* _func = new Parser::__ast_entity_function();
-
-                        _func->m_sReturnType = "void";
-                        _func->m_sName = "Serialize";
-                        _func->m_pParentScope = _struct;
-                        _func->m_accessLevel = Parser::__ast_access::__ast_access_public;
-                        _func->m_flags = (Parser::__ast_flags)0;
-
-                        {
-                            Parser::__ast_entity_argument _arg;
-                            
-                            _arg.m_sName = "_pSerializer";
-                            _arg.m_sType = "Duckvil::RuntimeSerializer::ISerializer*";
-                            _arg.m_pParentScope = _func;
-
-                            _func->m_aArguments.push_back(_arg);
-                        }
-
-                        _struct->m_aScopes.push_back(_func);
-                    }
+                    _func->m_aArguments.push_back(_arg);
                 }
+
+                _struct->m_aScopes.push_back(_func);
             }
-
-            // for(const Parser::__ast_inheritance& _inh : _struct->m_aInheritance)
-            // {
-            //     if(_inh.m_sName.find("HotObject") != std::string::npos)
-            //     {
-            //         _pData->m_bGenerate = true;
-
-            //         if(_pData->m_bHasGeneratedBody)
-            //         {
-            //             Parser::__ast_entity_function* _func = new Parser::__ast_entity_function();
-
-            //             _func->m_sReturnType = "void";
-            //             _func->m_sName = "Serialize";
-            //             _func->m_pParentScope = _struct;
-            //             _func->m_accessLevel = Parser::__ast_access::__ast_access_public;
-            //             _func->m_flags = (Parser::__ast_flags)0;
-
-            //             {
-            //                 Parser::__ast_entity_argument _arg;
-                            
-            //                 _arg.m_sName = "_pSerializer";
-            //                 _arg.m_sType = "Duckvil::RuntimeSerializer::ISerializer*";
-            //                 _arg.m_pParentScope = _func;
-
-            //                 _func->m_aArguments.push_back(_arg);
-            //             }
-
-            //             _struct->m_aScopes.push_back(_func);
-            //         }
-            //     }
-            // }
 
             for(Parser::__ast_entity* _child : _struct->m_aScopes)
             {
                 if(_child->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_variable)
                 {
-                    if(_pData->m_bGenerate)
-                    {
-                        Parser::__ast_entity_variable* _var = (Parser::__ast_entity_variable*)_child;
-                        
-                        _pData->m_aVars.push_back(_var->m_sName);
-                    }
+                    Parser::__ast_entity_variable* _var = (Parser::__ast_entity_variable*)_child;
+                    
+                    _pData->m_aVars.push_back(_var->m_sName);
                 }
             }
         }

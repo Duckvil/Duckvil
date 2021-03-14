@@ -2,8 +2,6 @@
 
 #include "Editor/Widget.h"
 
-#include "Editor/Widgets/EngineInfoWidget.generated.h"
-
 #include "Memory/FreeList.h"
 
 #include "Engine/Time.h"
@@ -15,9 +13,10 @@
 
 #include "HotReloader/ReflectionFlags.h"
 
+#include "Editor/Widgets/EngineInfoWidget.generated.h"
+
 namespace Duckvil { namespace Editor {
 
-    DUCKVIL_CLASS(HotReloader::ReflectionFlags_Hot)
     class EngineInfoWidget : public Widget
     {
         DUCKVIL_GENERATED_BODY

@@ -2,13 +2,13 @@
 
 #include "Editor/Widget.h"
 
-#include "Editor/Widgets/ConsoleWidget.generated.h"
-
 #include "Memory/FreeList.h"
 
 #include "RuntimeReflection/RuntimeReflection.h"
 
 #include "Logger/Logger.h"
+
+#include "Editor/Widgets/ConsoleWidget.generated.h"
 
 namespace Duckvil { namespace Editor {
 

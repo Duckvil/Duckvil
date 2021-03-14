@@ -23,33 +23,33 @@
 
 namespace Duckvil { namespace LOL {
 
-    struct test
-    {
-        int a;
-    };
+    // struct test
+    // {
+    //     int a;
+    // };
 
-    struct test2
-    {
-        int a;
-    };
+    // struct test2
+    // {
+    //     int a;
+    // };
 
-    struct aaa
-    {
-        void OnEvent(const test& _event)
-        {
-            printf("NOOOOOOO\n");
-        }
-    };
+    // struct aaa
+    // {
+    //     void OnEvent(const test& _event)
+    //     {
+    //         printf("NOOOOOOO\n");
+    //     }
+    // };
 
-    struct aaa2
-    {
-        void OnEvent(const test& _event)
-        {
-            printf("NOOOOOOO2\n");
-        }
-    };
+    // struct aaa2
+    // {
+    //     void OnEvent(const test& _event)
+    //     {
+    //         printf("NOOOOOOO2\n");
+    //     }
+    // };
 
-    DUCKVIL_CLASS(ReflectionFlags::ReflectionFlags_UserSystem, HotReloader::ReflectionFlags_Hot)
+    DUCKVIL_CLASS(ReflectionFlags::ReflectionFlags_UserSystem)
     class Test : public ISystem, public Editor::Widget
     {
         DUCKVIL_GENERATED_BODY
@@ -67,8 +67,8 @@ namespace Duckvil { namespace LOL {
         void InitEditor(void* _pImguiContext);
         void OnDraw();
 
-        void OnEvent(const test& _event);
-        void OnEvent(const test2& _event);
+        // void OnEvent(const test& _event);
+        // void OnEvent(const test2& _event);
         void OnEvent(const HotReloader::HotReloadedEvent& _event);
     };
 

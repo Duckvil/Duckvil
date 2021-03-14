@@ -33,6 +33,7 @@ namespace Duckvil { namespace Editor {
 
         ImGui::Text("Delta: %f", m_pTime->m_dDelta * 1000.f);
         ImGui::Text("Memory used: %i of: %i", m_heap.GetAllocator()->m_ullUsed, m_heap.GetAllocator()->m_ullCapacity);
+        // ImGui::Text("AAAAA");
 
         ImGui::End();
     }

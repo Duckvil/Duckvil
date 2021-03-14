@@ -2,8 +2,6 @@
 
 #include "Editor/Widget.h"
 
-#include "Editor/Widgets/HexEditorWidget.generated.h"
-
 #include "imgui/ImGui.h"
 
 #include "imgui_memory_editor/imgui_memory_editor.h"
@@ -13,6 +11,8 @@
 #include "Editor/Widgets/HexEditorWidgetEvent.h"
 
 #include "RuntimeReflection/RuntimeReflection.h"
+
+#include "Editor/Widgets/HexEditorWidget.generated.h"
 
 namespace Duckvil { namespace Editor {
 
@@ -25,7 +25,8 @@ namespace Duckvil { namespace Editor {
         duckvil_memory_debug_info* m_pMemoryDebugInfo;
 #endif
 
-        float a1, a2;
+        float a1;
+        float a2;
 
     public:
         HexEditorWidget(const Memory::FreeList& _heap);
