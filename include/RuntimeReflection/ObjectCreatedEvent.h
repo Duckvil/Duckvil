@@ -1,11 +1,13 @@
 #pragma once
 
+#include <cstddef>
+
 namespace Duckvil { namespace RuntimeReflection {
 
     struct ObjectCreatedEvent
     {
         const void* m_pObject;
-        size_t m_ullTypeID;
+        std::size_t m_ullTypeID;
     };
 
 }}
