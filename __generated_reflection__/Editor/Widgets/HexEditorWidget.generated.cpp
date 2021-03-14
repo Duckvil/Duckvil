@@ -23,6 +23,7 @@ record_function<Duckvil::Editor::HexEditorWidget, void, void*>(DUCKVIL_RUNTIME_R
 record_function<Duckvil::Editor::HexEditorWidget, void>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Editor::HexEditorWidget::OnDraw, "OnDraw");
 record_function<Duckvil::Editor::HexEditorWidget, void, const HexEditorWidgetInitEvent&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Editor::HexEditorWidget::OnEvent, "OnEvent");
 record_function<void*, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Editor::HexEditorWidget::Cast, "Cast");
+record_function<Duckvil::Editor::HexEditorWidget, void, Duckvil::RuntimeSerializer::ISerializer*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Editor::HexEditorWidget::Serialize, "Serialize");
 Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
 for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
 return duckvil_recorderd_types { _types, _recordedTypes.size(), "Editor/Widgets/HexEditorWidget.h", 5 };

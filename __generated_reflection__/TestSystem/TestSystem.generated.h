@@ -7,5 +7,4 @@ public: \
 void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\
 _pSerializer->SerializeProperty("m_iA", m_iA); \
-ISystem::Serialize(_pSerializer); \
 }

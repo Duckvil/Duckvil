@@ -2,4 +2,10 @@
 
 #define DUCKVIL_GENERATED_BODY \
 public: \
-static void* Cast(void* _pObject) { return static_cast<Container*>(_pObject); }
+static void* Cast(void* _pObject) { return static_cast<Container*>(_pObject); } \
+public: \
+void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
+{\
+_pSerializer->SerializeProperty("m_pMemoryInterface", m_pMemoryInterface); \
+_pSerializer->SerializeProperty("m_pAllocator", m_pAllocator); \
+}

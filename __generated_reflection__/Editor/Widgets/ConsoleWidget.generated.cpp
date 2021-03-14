@@ -22,6 +22,7 @@ record_function<Duckvil::Editor::ConsoleWidget, void, void*>(DUCKVIL_RUNTIME_REF
 record_function<Duckvil::Editor::ConsoleWidget, void>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Editor::ConsoleWidget::OnDraw, "OnDraw");
 record_function<Duckvil::Editor::ConsoleWidget, void, const __logger_log_info&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Editor::ConsoleWidget::OnEvent, "OnEvent");
 record_function<void*, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Editor::ConsoleWidget::Cast, "Cast");
+record_function<Duckvil::Editor::ConsoleWidget, void, Duckvil::RuntimeSerializer::ISerializer*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Editor::ConsoleWidget::Serialize, "Serialize");
 Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
 for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
 return duckvil_recorderd_types { _types, _recordedTypes.size(), "Editor/Widgets/ConsoleWidget.h", 3 };
