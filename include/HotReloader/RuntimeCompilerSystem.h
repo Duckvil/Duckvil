@@ -43,6 +43,7 @@ namespace Duckvil { namespace HotReloader {
         struct user_data
         {
             RuntimeCompilerSystem* m_pRuntimeCompiler;
+            std::filesystem::path m_file;
         };
 
         struct reflection_module
@@ -88,11 +89,17 @@ namespace Duckvil { namespace HotReloader {
 
                 if(_file.extension() == ".cpp")
                 {
-                    Thread::order_task(_userData->m_pRuntimeCompiler->m_pThread, _userData->m_pRuntimeCompiler->m_pThreadData, [](RuntimeCompilerSystem* _pData, const std::filesystem::path& _file)
+                    // Thread::order_task(_userData->m_pRuntimeCompiler->m_pThread, _userData->m_pRuntimeCompiler->m_pThreadData, [](RuntimeCompilerSystem* _pData, const std::filesystem::path& _file)
+                    // {
+                    //     _pData->Compile(_file.string());
+                    // }, _userData->m_pRuntimeCompiler, _file);
+
+                    _userData->m_file = _file;
+
+                    _userData->m_pRuntimeCompiler->m_pThread->m_fnOrderTask(_userData->m_pRuntimeCompiler->m_pThreadData, Utils::lambda([_userData]()
                     {
-                        _pData->Compile(_file.string());
-                    }, _userData->m_pRuntimeCompiler, _file);
-                    // _userData->m_pRuntimeCompiler->Compile(_file.string());
+                        _userData->m_pRuntimeCompiler->Compile(_userData->m_file.string());
+                    }));
                 }
             }
         }
