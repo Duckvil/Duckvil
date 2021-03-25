@@ -151,24 +151,9 @@ namespace Duckvil { namespace LOL {
     {
         ImGui::Begin("XXX");
 
-        ImGui::Text("AAAAAAAA");
+        ImGui::Text("AAA");
 
         ImGui::End();
-    }
-
-    // void Test::OnEvent(const test& _event)
-    // {
-    //     printf("AAAAA\n");
-    // }
-
-    // void Test::OnEvent(const test2& _event)
-    // {
-    //     printf("AAAAA2\n");
-    // }
-
-    void Test::OnEvent(const HotReloader::HotReloadedEvent& _event)
-    {
-        printf("AAAAA3\n");
     }
 
 }}

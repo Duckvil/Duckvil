@@ -13,8 +13,6 @@
 #include "HotReloader/HotObject.h"
 #include "HotReloader/ReflectionFlags.h"
 
-#include "HotReloader/Events/HotReloadEvent.h"
-
 #include "imgui/imgui.h"
 
 #include "Editor/Widget.h"
@@ -66,10 +64,6 @@ namespace Duckvil { namespace LOL {
 
         void InitEditor(void* _pImguiContext);
         void OnDraw();
-
-        // void OnEvent(const test& _event);
-        // void OnEvent(const test2& _event);
-        void OnEvent(const HotReloader::HotReloadedEvent& _event);
     };
 
 }}
