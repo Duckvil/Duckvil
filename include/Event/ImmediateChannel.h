@@ -3,8 +3,11 @@
 #include "Event/Channel.h"
 
 #include <type_traits>
+#include <mutex>
 
 #include "Utils/Function.h"
+
+#include "HotReloader/ITrackKeeper.h"
 
 namespace Duckvil { namespace Event {
 
@@ -31,6 +34,13 @@ namespace Duckvil { namespace Event {
         RuntimeReflection::__duckvil_resource_function_t m_functionHandle;
         RuntimeReflection::__duckvil_resource_type_t m_typeHandle;
         void* m_pObject;
+    };
+
+    struct tracked_event
+    {
+        RuntimeReflection::__duckvil_resource_function_t m_functionHandle;
+        RuntimeReflection::__duckvil_resource_type_t m_typeHandle;
+        HotReloader::ITrackKeeper* m_pObject;
     };
 
     // Invoked immediately when broadcasted
@@ -68,6 +78,7 @@ namespace Duckvil { namespace Event {
 
     private:
         Memory::Vector<reflected_event> m_aRefelctedEvents;
+        Memory::Vector<tracked_event> m_aTrackedEvents;
         std::vector<Callback> m_aCallbackEvents;
         std::vector<imember_event*> m_aMemberEvents;
 
@@ -85,6 +96,7 @@ namespace Duckvil { namespace Event {
             m_pReflection(_pReflection)
         {
             _heap.Allocate(m_aRefelctedEvents, 1);
+            _heap.Allocate(m_aTrackedEvents, 1);
             DUCKVIL_DEBUG_MEMORY(m_aRefelctedEvents.GetAllocator(), "m_aRefelctedEvents");
         }
 
@@ -107,6 +119,22 @@ namespace Duckvil { namespace Event {
             }
 
             m_aRefelctedEvents.Allocate(_event);
+        }
+
+        void Add(HotReloader::ITrackKeeper* _pHandler, RuntimeReflection::__duckvil_resource_type_t _typeHandle)
+        {
+            tracked_event _event = {};
+
+            _event.m_functionHandle = RuntimeReflection::get_function_handle<const Message&>(m_pReflection, m_pReflectionData, _typeHandle, "OnEvent");
+            _event.m_typeHandle = _typeHandle;
+            _event.m_pObject = _pHandler;
+
+            if(m_aTrackedEvents.Full())
+            {
+                m_aTrackedEvents.Resize(m_aTrackedEvents.Size() * 2);
+            }
+
+            m_aTrackedEvents.Allocate(_event);
         }
 
         template <typename Handler>
@@ -160,6 +188,11 @@ namespace Duckvil { namespace Event {
             for(reflected_event& _event : m_aRefelctedEvents)
             {
                 RuntimeReflection::invoke_member<const Message&>(m_pReflection, m_pReflectionData, _event.m_typeHandle, _event.m_functionHandle, _event.m_pObject, _message);
+            }
+
+            for(tracked_event& _event : m_aTrackedEvents)
+            {
+                RuntimeReflection::invoke_member<const Message&>(m_pReflection, m_pReflectionData, _event.m_typeHandle, _event.m_functionHandle, _event.m_pObject->GetObject(), _message);
             }
 
             for(Callback _fn : m_aCallbackEvents)

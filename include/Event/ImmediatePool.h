@@ -81,8 +81,74 @@ namespace Duckvil { namespace Event {
             return *this;
         }
 
+        template <typename Type, typename Message>
+        void Add(Type* _pHandler, RuntimeReflection::__duckvil_resource_type_t _typeHandle)
+        {
+            for(const auto& _channel : m_aChannels)
+            {
+                if(_channel.m_ullMessageTypeID == typeid(Message).hash_code())
+                {
+                    Channel<Message, mode::immediate>* _right = (Channel<Message, mode::immediate>*)_channel.m_pChannel;
+
+                    _right->Add(_pHandler, _typeHandle);
+
+                    return;
+                }
+            }
+
+            if(m_aChannels.Full())
+            {
+                m_aChannels.Resize(m_aChannels.Size() * 2);
+            }
+
+            Channel<Message, mode::immediate>* _newChannel = m_heap.Allocate<Channel<Message, mode::immediate>>(m_heap, m_pReflection, m_pReflectionData);
+
+            event_lookup _event = {};
+
+            _event.m_mode = mode::immediate;
+            _event.m_ullMessageTypeID = typeid(Message).hash_code();
+            _event.m_pChannel = _newChannel;
+
+            m_aChannels.Allocate(_event);
+
+            _newChannel->Add(_pHandler, _typeHandle);
+        }
+
         template <typename Message>
         void Add(void* _pHandler, RuntimeReflection::__duckvil_resource_type_t _typeHandle)
+        {
+            for(const auto& _channel : m_aChannels)
+            {
+                if(_channel.m_ullMessageTypeID == typeid(Message).hash_code())
+                {
+                    Channel<Message, mode::immediate>* _right = (Channel<Message, mode::immediate>*)_channel.m_pChannel;
+
+                    _right->Add(_pHandler, _typeHandle);
+
+                    return;
+                }
+            }
+
+            if(m_aChannels.Full())
+            {
+                m_aChannels.Resize(m_aChannels.Size() * 2);
+            }
+
+            Channel<Message, mode::immediate>* _newChannel = m_heap.Allocate<Channel<Message, mode::immediate>>(m_heap, m_pReflection, m_pReflectionData);
+
+            event_lookup _event = {};
+
+            _event.m_mode = mode::immediate;
+            _event.m_ullMessageTypeID = typeid(Message).hash_code();
+            _event.m_pChannel = _newChannel;
+
+            m_aChannels.Allocate(_event);
+
+            _newChannel->Add(_pHandler, _typeHandle);
+        }
+
+        template <typename Message>
+        void Add(HotReloader::ITrackKeeper* _pHandler, RuntimeReflection::__duckvil_resource_type_t _typeHandle)
         {
             for(const auto& _channel : m_aChannels)
             {
