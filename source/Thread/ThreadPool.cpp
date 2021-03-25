@@ -26,7 +26,14 @@ namespace Duckvil { namespace Thread {
                 _pData->m_aTasks.Pop();
             }
 
-            _task();
+            try
+            {
+                _task();
+            }
+            catch(std::exception& _e)
+            {
+                printf("%s\n", _e.what());
+            }
         }
     }
 
