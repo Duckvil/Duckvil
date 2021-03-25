@@ -126,6 +126,20 @@ namespace Duckvil { namespace RuntimeReflection {
         return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
     }
 
+    Memory::Vector<DUCKVIL_RESOURCE(function_t)> get_functions(__data* _pData, Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+        std::size_t _size = DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data);
+        Memory::Vector<DUCKVIL_RESOURCE(function_t)> _functions(_pMemory, _pAllocator, _size);
+
+        for(uint32_t i = 0; i < _size; ++i)
+        {
+            _functions.Allocate({ i });
+        }
+
+        return _functions;
+    }
+
     DUCKVIL_RESOURCE(function_t) get_function_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength, std::size_t _ullTypeID)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
@@ -171,6 +185,13 @@ namespace Duckvil { namespace RuntimeReflection {
         }
 
         return nullptr;
+    }
+
+    const __function_t& get_function_by_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+
+        return DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, _functionHandle.m_ID);
     }
 
     void* get_property(__data* _pData, const char* _sName, std::size_t _ullLength, std::size_t _ullTypeID, const void* _pObject)
@@ -509,9 +530,11 @@ Duckvil::RuntimeReflection::__ftable* duckvil_runtime_reflection_init(Duckvil::M
     _functions->m_fnGetConstructors = &Duckvil::RuntimeReflection::get_constructors;
     _functions->m_fnGetConstructorHandleByTypeID = &Duckvil::RuntimeReflection::get_constructor_handle_by_type_id;
 
+    _functions->m_fnGetFunctions = &Duckvil::RuntimeReflection::get_functions;
     _functions->m_fnGetFunctionHandle = &Duckvil::RuntimeReflection::get_function_handle;
     _functions->m_fnGetFunctionCallback = &Duckvil::RuntimeReflection::get_function_callback;
     _functions->m_fnGetFunctionCallbackByHandle = &Duckvil::RuntimeReflection::get_function_callback_by_handle;
+    _functions->m_fnGetFunctionByHandle = &Duckvil::RuntimeReflection::get_function_by_handle;
 
     _functions->m_fnGetProperty = &Duckvil::RuntimeReflection::get_property;
 

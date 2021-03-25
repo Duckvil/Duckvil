@@ -30,6 +30,9 @@
 #define DUCKVIL_RUNTIME_REFLECTION_NAMESPACE_NAME_MAX 32
 #define DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX 32
 
+#define DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(...) typeid(void(__VA_ARGS__)).hash_code()
+
+
 namespace Duckvil { namespace RuntimeReflection {
 
     struct __ftable;
@@ -61,7 +64,7 @@ namespace Duckvil { namespace RuntimeReflection {
     DUCKVIL_RESOURCE_DECLARE(meta_t);
     DUCKVIL_RESOURCE_DECLARE(argument_t);
 
-    enum class __traits : uint16_t
+    enum class property_traits : uint16_t
     {
         is_pointer          = 1 << 0,
         is_reference        = 1 << 1,
@@ -95,13 +98,13 @@ namespace Duckvil { namespace RuntimeReflection {
             m_pData = nullptr;
             m_ullTypeID = -1;
             m_ullSize = 0;
-            m_traits = (__traits)0;
+            m_traits = (property_traits)0;
         }
 
         std::size_t m_ullSize;
         std::size_t m_ullTypeID;
         void* m_pData;
-        __traits m_traits;
+        property_traits m_traits;
     };
 
     slot(__variant_t,
@@ -120,7 +123,7 @@ namespace Duckvil { namespace RuntimeReflection {
     slot(__argument_t,
     {
         std::size_t m_ullTypeID;
-        __traits m_traits;
+        property_traits m_traits;
     });
 
     slot(__constructor_t,
@@ -138,7 +141,7 @@ namespace Duckvil { namespace RuntimeReflection {
         std::size_t m_ullTypeID;
         char m_sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX];
         uintptr_t m_ullAddress;
-        __traits m_traits;
+        property_traits m_traits;
         DUCKVIL_SLOT_ARRAY(__meta_t) m_metas;
     });
 
@@ -237,9 +240,11 @@ namespace Duckvil { namespace RuntimeReflection {
         void* (*m_fnGetPropertyByName)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength, const void* _pObject);
         DUCKVIL_RESOURCE(property_t) (*m_fnGetPropertyHandleByName)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength);
 
+        Memory::Vector<DUCKVIL_RESOURCE(function_t)> (*m_fnGetFunctions)(__data* _pData, Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle);
         DUCKVIL_RESOURCE(function_t) (*m_fnGetFunctionHandle)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength, std::size_t _ullTypeID);
         __ifunction* (*m_fnGetFunctionCallback)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength, std::size_t _ullTypeID);
         __ifunction* (*m_fnGetFunctionCallbackByHandle)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, std::size_t _ullTypeID);
+        const __function_t& (*m_fnGetFunctionByHandle)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle);
 
         void* (*m_fnGetProperty)(__data* _pData, const char* _sName, std::size_t _ullLength, std::size_t _ullTypeID, const void* _pObject);
 
@@ -409,6 +414,11 @@ namespace Duckvil { namespace RuntimeReflection {
         return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
     }
 
+    static inline const __type_t& get_type(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle)
+    {
+        return _pReflection->m_fnGetType(_pData, _typeHandle);
+    }
+
     static inline Memory::Vector<DUCKVIL_RESOURCE(type_t)> get_types(__ftable* _pReflection, __data* _pData, const Memory::FreeList& _heap)
     {
         return _pReflection->m_fnGetTypes(_pData, _heap.GetMemoryInterface(), _heap.GetAllocator());
@@ -423,27 +433,32 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename... Args, std::size_t Length>
     static inline DUCKVIL_RESOURCE(function_t) get_function_handle(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char (&_sName)[Length])
     {
-        return _pReflection->m_fnGetFunctionHandle(_pData, _typeHandle, _sName, Length, typeid(void(Args...)).hash_code());
+        return _pReflection->m_fnGetFunctionHandle(_pData, _typeHandle, _sName, Length, DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(Args...));
+    }
+
+    static inline Memory::Vector<DUCKVIL_RESOURCE(function_t)> get_functions(__ftable* _pReflection, __data* _pData, const Memory::FreeList& _heap, DUCKVIL_RESOURCE(type_t) _typeHandle)
+    {
+        return _pReflection->m_fnGetFunctions(_pData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle);
     }
 
 // TODO: Check it
     template <typename... Args, std::size_t Length>
     static inline __function<void(*)(Args...)>* get_static_function_callback(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char (&_sName)[Length])
     {
-        return (__function<void(*)(Args...)>*)_pReflection->m_fnGetFunctionCallback(_pData, _typeHandle, _sName, Length, typeid(void(Args...)).hash_code());
+        return (__function<void(*)(Args...)>*)_pReflection->m_fnGetFunctionCallback(_pData, _typeHandle, _sName, Length, DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(Args...));
     }
 
     template <typename Type, typename... Args, std::size_t Length>
     static inline __function<void(Type::*)(Args...)>* get_function_callback(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char (&_sName)[Length])
     {
-        return (__function<void(Type::*)(Args...)>*)_pReflection->m_fnGetFunctionCallback(_pData, _typeHandle, _sName, Length, typeid(void(Args...)).hash_code());
+        return (__function<void(Type::*)(Args...)>*)_pReflection->m_fnGetFunctionCallback(_pData, _typeHandle, _sName, Length, DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(Args...));
     }
 
     template <typename Type, typename... Args>
     static inline __function<void(Type::*)(Args...)>* get_function_callback(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
-        static const std::size_t& _argsTypeID = typeid(void(Args...)).hash_code();
+        static const std::size_t& _argsTypeID = DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(Args...);
         const __function_t& _function = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, _functionHandle.m_ID);
 
         return (__function<void(Type::*)(Args...)>*)_function.m_pFunction;
@@ -452,7 +467,12 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename ReturnType, typename Type, typename... Args, std::size_t Length>
     static inline __function<ReturnType(Type::*)(Args...)>* get_function_callback(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char (&_sName)[Length])
     {
-        return (__function<ReturnType(Type::*)(Args...)>*)_pReflection->m_fnGetFunctionCallback(_pData, _typeHandle, _sName, Length, typeid(void(Args...)).hash_code());
+        return (__function<ReturnType(Type::*)(Args...)>*)_pReflection->m_fnGetFunctionCallback(_pData, _typeHandle, _sName, Length, DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(Args...));
+    }
+
+    static inline const __function_t& get_function(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle)
+    {
+        return _pReflection->m_fnGetFunctionByHandle(_pData, _typeHandle, _functionHandle);
     }
 
     template <typename Type, std::size_t Length>
@@ -472,7 +492,7 @@ namespace Duckvil { namespace RuntimeReflection {
     static inline void invoke(__ftable* _pReflection, __data* _pData, const char (&_sName)[Length], Type* _pObject, const Args&... _vArgs)
     {
         auto& _typeHandle = _pReflection->m_fnGetTypeHandleByTypeID(_pData, typeid(Type).hash_code());
-        __function<void(Type::*)(Args...)>* _func = (__function<void(Type::*)(Args...)>*)_pReflection->m_fnGetFunctionCallback(_pData, _typeHandle, _sName, Length, typeid(void(Args...)).hash_code());
+        __function<void(Type::*)(Args...)>* _func = (__function<void(Type::*)(Args...)>*)_pReflection->m_fnGetFunctionCallback(_pData, _typeHandle, _sName, Length, DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(Args...));
 
         (_pObject->*(_func->m_fnFunction))(_vArgs...);
     }
@@ -481,7 +501,7 @@ namespace Duckvil { namespace RuntimeReflection {
     static inline ReturnType invoke(__ftable* _pReflection, __data* _pData, const char (&_sName)[Length], Type* _pObject, const Args&... _vArgs)
     {
         auto& _typeHandle = _pReflection->m_fnGetTypeHandleByTypeID(_pData, typeid(Type).hash_code());
-        __function<ReturnType(Type::*)(Args...)>* _func = (__function<ReturnType(Type::*)(Args...)>*)_pReflection->m_fnGetFunctionCallback(_pData, _typeHandle, _sName, Length, typeid(void(Args...)).hash_code());
+        __function<ReturnType(Type::*)(Args...)>* _func = (__function<ReturnType(Type::*)(Args...)>*)_pReflection->m_fnGetFunctionCallback(_pData, _typeHandle, _sName, Length, DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(Args...));
 
         return (_pObject->*(_func->m_fnFunction))(_vArgs...);
     }
@@ -489,7 +509,7 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename... Args>
     static inline void invoke_member(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, void* _pObject, const Args&... _vArgs)
     {
-        __proxy_member_function<void, Args...>* _func = (__proxy_member_function<void, Args...>*)_pReflection->m_fnGetFunctionCallbackByHandle(_pData, _typeHandle, _functionHandle, typeid(void(Args...)).hash_code());
+        __proxy_member_function<void, Args...>* _func = (__proxy_member_function<void, Args...>*)_pReflection->m_fnGetFunctionCallbackByHandle(_pData, _typeHandle, _functionHandle, DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(Args...));
 
         _func->Invoke(_pObject, _vArgs...);
     }
@@ -497,7 +517,7 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename ReturnType, typename... Args>
     static inline ReturnType invoke_member_result(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, void* _pObject, const Args&... _vArgs)
     {
-        __proxy_member_function<ReturnType, Args...>* _func = (__proxy_member_function<ReturnType, Args...>*)_pReflection->m_fnGetFunctionCallback(_pData, _typeHandle, _functionHandle, typeid(void(Args...)).hash_code());
+        __proxy_member_function<ReturnType, Args...>* _func = (__proxy_member_function<ReturnType, Args...>*)_pReflection->m_fnGetFunctionCallback(_pData, _typeHandle, _functionHandle, DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(Args...));
 
         return _func->Invoke(_pObject, _vArgs...);
     }
@@ -507,7 +527,7 @@ namespace Duckvil { namespace RuntimeReflection {
     static inline void invoke(__ftable* _pReflection, __data* _pData, const char (&_sName)[Length], const Args&... _vArgs)
     {
         auto& _typeHandle = _pReflection->m_fnGetTypeHandleByTypeID(_pData, typeid(Type).hash_code());
-        __function<void(*)(Args...)>* _func = (__function<void(*)(Args...)>*)_pReflection->m_fnGetFunctionCallback(_pData, _typeHandle, _sName, Length, typeid(void(Args...)).hash_code());
+        __function<void(*)(Args...)>* _func = (__function<void(*)(Args...)>*)_pReflection->m_fnGetFunctionCallback(_pData, _typeHandle, _sName, Length, DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(Args...));
 
         (*(_func->m_fnFunction))(_vArgs...);
     }
@@ -516,7 +536,7 @@ namespace Duckvil { namespace RuntimeReflection {
     static inline ReturnType invoke(__ftable* _pReflection, __data* _pData, const char (&_sName)[Length], const Args&... _vArgs)
     {
         auto& _typeHandle = _pReflection->m_fnGetTypeHandleByTypeID(_pData, typeid(Type).hash_code());
-        __function<ReturnType(*)(Args...)>* _func = (__function<ReturnType(*)(Args...)>*)_pReflection->m_fnGetFunctionCallback(_pData, _typeHandle, _sName, Length, typeid(void(Args...)).hash_code());
+        __function<ReturnType(*)(Args...)>* _func = (__function<ReturnType(*)(Args...)>*)_pReflection->m_fnGetFunctionCallback(_pData, _typeHandle, _sName, Length, DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(Args...));
 
         return (*(_func->m_fnFunction))(_vArgs...);
     }
@@ -524,7 +544,7 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename... Args>
     static inline void invoke_static(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, const Args&... _vArgs)
     {
-        __proxy_static_function<void, Args...>* _func = (__proxy_static_function<void, Args...>*)_pReflection->m_fnGetFunctionCallbackByHandle(_pData, _typeHandle, _functionHandle, typeid(void(Args...)).hash_code());
+        __proxy_static_function<void, Args...>* _func = (__proxy_static_function<void, Args...>*)_pReflection->m_fnGetFunctionCallbackByHandle(_pData, _typeHandle, _functionHandle, DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(Args...));
 
         _func->Invoke(_vArgs...);
     }
@@ -532,7 +552,7 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename ReturnType, typename... Args>
     static inline ReturnType invoke_static_result(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, const Args&... _vArgs)
     {
-        __proxy_static_function<ReturnType, Args...>* _func = (__proxy_static_function<ReturnType, Args...>*)_pReflection->m_fnGetFunctionCallbackByHandle(_pData, _typeHandle, _functionHandle, typeid(void(Args...)).hash_code());
+        __proxy_static_function<ReturnType, Args...>* _func = (__proxy_static_function<ReturnType, Args...>*)_pReflection->m_fnGetFunctionCallbackByHandle(_pData, _typeHandle, _functionHandle, DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(Args...));
 
         return _func->Invoke(_vArgs...);
     }
@@ -650,6 +670,13 @@ namespace Duckvil { namespace RuntimeReflection {
         return get_types(_context.m_pReflection, _context.m_pReflectionData, _heap);
     }
 
+    static inline const __type_t& get_type(DUCKVIL_RESOURCE(type_t) _typeHandle)
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        return _context.m_pReflection->m_fnGetType(_context.m_pReflectionData, _typeHandle);
+    }
+
     template <typename... Args>
     static inline DUCKVIL_RESOURCE(constructor_t) get_constructor_handle(DUCKVIL_RESOURCE(type_t) _typeHandle)
     {
@@ -663,6 +690,13 @@ namespace Duckvil { namespace RuntimeReflection {
         duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
 
         return _context.m_pReflection->m_fnGetConstructors(_context.m_pReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle);
+    }
+
+    static inline Memory::Vector<DUCKVIL_RESOURCE(function_t)> get_functions(const Memory::FreeList& _heap, DUCKVIL_RESOURCE(type_t) _typeHandle)
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        return _context.m_pReflection->m_fnGetFunctions(_context.m_pReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle);
     }
 
     template <typename... Args, std::size_t Length>
@@ -704,6 +738,13 @@ namespace Duckvil { namespace RuntimeReflection {
         duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
 
         return get_function_callback<ReturnType, Type, Args...>(_context.m_pReflection, _context.m_pReflectionData, _typeHandle, _sName);
+    }
+
+    static inline const __function_t& get_function(DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle)
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        return get_function(_context.m_pReflection, _context.m_pReflectionData, _typeHandle, _functionHandle);
     }
 
     template <typename Type, std::size_t Length>

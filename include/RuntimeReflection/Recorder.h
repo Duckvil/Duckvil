@@ -28,7 +28,7 @@ struct duckvil_recorderd_types
     DUCKVIL_EXPORT uint32_t duckvil_get_runtime_reflection_recorder_count() { return count; }
 
 #define DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF _pMemoryInterface, _pAllocator, _pRecorder, _pData
-#define DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(type, trait) (std::trait<type>::value ? static_cast<__traits>((uint8_t)_traits | (uint8_t)__traits::trait) : _traits)
+#define DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(type, trait) (std::trait<type>::value ? static_cast<property_traits>((uint8_t)_traits | (uint8_t)property_traits::trait) : _traits)
 
 #define DUCKVIL_REFLECTION_META_UTIL(name, types, types2) \
     template <typename KeyType, typename ValueType> \
@@ -137,19 +137,19 @@ namespace Duckvil { namespace RuntimeReflection {
         std::size_t m_ullKeyTypeID;
         std::size_t m_ullKeyTypeSize;
         uint8_t m_ucKeyTypeAlignment;
-        __traits m_keyTraits;
+        property_traits m_keyTraits;
         const void* m_pKeyData;
         std::size_t m_ullValueTypeID;
         std::size_t m_ullValueTypeSize;
         uint8_t m_ucValueTypeAlignment;
-        __traits m_valueTraits;
+        property_traits m_valueTraits;
         const void* m_pValueData;
     };
 
     template <typename Type>
-    static inline __traits recorder_generate_traits()
+    static inline property_traits recorder_generate_traits()
     {
-        __traits _traits = {};
+        property_traits _traits = {};
 
         _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_pointer);
         _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_reference);
@@ -165,7 +165,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename Type>
-    static inline __traits recorder_generate_traits(const Type& _type)
+    static inline property_traits recorder_generate_traits(const Type& _type)
     {
         return recorder_generate_traits<Type>();
     }
