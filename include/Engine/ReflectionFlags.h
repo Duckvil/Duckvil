@@ -6,7 +6,8 @@ namespace Duckvil {
     {
         ReflectionFlags_EngineSystem,
         ReflectionFlags_UserSystem,
-        ReflectionFlags_ReflectionModule
+        ReflectionFlags_ReflectionModule,
+        ReflectionFlags_AutoEventsAdding
     };
 
 }

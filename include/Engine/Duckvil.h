@@ -36,6 +36,8 @@
 
 #include "Thread/ThreadPool.h"
 
+#include "Memory/SmartPointer/SharedPointer.h"
+
 namespace Duckvil {
 
     struct system

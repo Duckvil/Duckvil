@@ -10,6 +10,7 @@
 
 namespace Duckvil {
 
+    // Allow to retrieve system events
     struct ISystem
     {
         DUCKVIL_GENERATED_BODY

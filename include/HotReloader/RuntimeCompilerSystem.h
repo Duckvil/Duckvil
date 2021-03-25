@@ -15,7 +15,9 @@
 #include "HotReloader/HotObject.h"
 #include "HotReloader/TrackKeeper.h"
 
-#include "HotReloader/Events/HotReloadEvent.h"
+#include "HotReloader/Events/BeforeCompileEvent.h"
+#include "HotReloader/Events/AfterCompileEvent.h"
+#include "HotReloader/Events/SwapEvent.h"
 
 #include "Process/Process.h"
 
@@ -28,6 +30,8 @@
 
 #include "Thread/ThreadPool.h"
 
+#include "Editor/Widget.h"
+
 namespace Duckvil { namespace HotReloader {
 
     // struct hot_object
@@ -37,7 +41,7 @@ namespace Duckvil { namespace HotReloader {
     // };
 
     DUCKVIL_CLASS(Duckvil::ReflectionFlags::ReflectionFlags_EngineSystem)
-    class RuntimeCompilerSystem : public ISystem
+    class RuntimeCompilerSystem : public ISystem, public Editor::Widget
     {
     public:
         struct user_data
@@ -118,6 +122,9 @@ namespace Duckvil { namespace HotReloader {
 
         bool Init();
         void Update();
+
+        void InitEditor(void* _pImguiContext);
+        void OnDraw();
 
         void Compile(const std::string& _sFile);
 

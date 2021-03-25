@@ -8,8 +8,17 @@ add_library(
     SHARED
     ${SRC_FILES}
     ${GENERATED_SRC_FILES}
+    "${CMAKE_SOURCE_DIR}/external/imgui/imgui.cpp"
+    "${CMAKE_SOURCE_DIR}/external/imgui/imgui_draw.cpp"
+    "${CMAKE_SOURCE_DIR}/external/imgui/imgui_tables.cpp"
+    "${CMAKE_SOURCE_DIR}/external/imgui/imgui_widgets.cpp"
 )
 target_include_directories(
     HotReloader
     PRIVATE
+    "${CMAKE_SOURCE_DIR}/external/imgui"
+    "${CMAKE_SOURCE_DIR}/external/imgui/backends"
+    "${CMAKE_SOURCE_DIR}/external/SDL2/include"
+    "${CMAKE_SOURCE_DIR}/external/glew/include"
+    "${CMAKE_SOURCE_DIR}/external/hex_editor"
 )

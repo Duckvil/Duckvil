@@ -8,6 +8,8 @@
 
 #include "RuntimeReflection/Meta.h"
 
+#include "ImGui/imgui.h"
+
 #undef max
 
 namespace Duckvil { namespace HotReloader {
@@ -77,7 +79,7 @@ namespace Duckvil { namespace HotReloader {
             {
                 const Duckvil::RuntimeReflection::__variant& _variant = Duckvil::RuntimeReflection::get_meta(_typeHandle, Duckvil::ReflectionFlags::ReflectionFlags_ReflectionModule);
 
-                if(_variant.m_ullTypeID != std::numeric_limits<std::size_t>::max() && (uint8_t)_variant.m_traits & (uint8_t)Duckvil::RuntimeReflection::__traits::is_bool)
+                if(_variant.m_ullTypeID != std::numeric_limits<std::size_t>::max() && (uint8_t)_variant.m_traits & (uint8_t)Duckvil::RuntimeReflection::property_traits::is_bool)
                 {
                     reflection_module _module = {};
 
@@ -204,6 +206,27 @@ namespace Duckvil { namespace HotReloader {
         m_pFileWatcher->Update();
     }
 
+    void RuntimeCompilerSystem::InitEditor(void* _pImguiContext)
+    {
+        ImGui::SetCurrentContext((ImGuiContext*)_pImguiContext);
+    }
+
+    void RuntimeCompilerSystem::OnDraw()
+    {
+        ImGui::Begin("RuntimeCompilerSystem");
+
+        ImGui::Text("Hot types:");
+
+        for(uint32_t i = 0; i < m_aHotObjects.Size(); ++i)
+        {
+            auto _type = RuntimeReflection::get_type(m_aHotObjects[i]->GetTypeHandle());
+
+            ImGui::Text("  %s", _type.m_sTypeName);
+        }
+
+        ImGui::End();
+    }
+
     void RuntimeCompilerSystem::Compile(const std::string& _sFile)
     {
         DUCKVIL_LOG_INFO("Hot reload started");
@@ -318,9 +341,13 @@ namespace Duckvil { namespace HotReloader {
 
             RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::vector<std::string>&, const RuntimeCompiler::Options&)>* _compile = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::vector<std::string>&, const RuntimeCompiler::Options&>(m_compilerTypeHandle, "Compile");
 
-            HotReloadedEvent _beforeCompileEvent;
+            // HotReloadedEvent _beforeCompileEvent;
 
-            _beforeCompileEvent.m_stage = HotReloadedEvent::stage_before_compile;
+            // _beforeCompileEvent.m_stage = HotReloadedEvent::stage_before_compile;
+
+            // m_pEventPool->Broadcast(_beforeCompileEvent);
+
+            BeforeCompileEvent _beforeCompileEvent;
 
             m_pEventPool->Broadcast(_beforeCompileEvent);
 
@@ -336,9 +363,13 @@ namespace Duckvil { namespace HotReloader {
                 },
             _options);
 
-            HotReloadedEvent _afterCompileEvent;
+            // HotReloadedEvent _afterCompileEvent;
 
-            _afterCompileEvent.m_stage = HotReloadedEvent::stage_after_compile;
+            // _afterCompileEvent.m_stage = HotReloadedEvent::stage_after_compile;
+
+            // m_pEventPool->Broadcast(_afterCompileEvent);
+
+            AfterCompileEvent _afterCompileEvent;
 
             m_pEventPool->Broadcast(_afterCompileEvent);
 
@@ -385,7 +416,7 @@ namespace Duckvil { namespace HotReloader {
             {
                 const Duckvil::RuntimeReflection::__duckvil_resource_type_t& _type = _types.m_aTypes[j];
 
-                if(/*RuntimeReflection::get_meta(_type, ReflectionFlags_Hot).m_ullTypeID != -1 && */_trackKeeper->GetTypehandle().m_ID == _type.m_ID)
+                if(/*RuntimeReflection::get_meta(_type, ReflectionFlags_Hot).m_ullTypeID != -1 && */_trackKeeper->GetTypeHandle().m_ID == _type.m_ID)
                 {
                     RuntimeSerializer::Serializer _serializer;
 
@@ -403,13 +434,18 @@ namespace Duckvil { namespace HotReloader {
                     _serializer.SetLoading(true);
                     _serializer.Serialize(_newObject, _func);
 
-                    HotReloadedEvent _swapEvent = {};
+                    SwapEvent _swapEvent;
 
-                    _swapEvent.m_stage = HotReloadedEvent::stage_after_swap;
-                    _swapEvent.m_pObject = _newObject;
-                    _swapEvent._typeHandle = _trackKeeper->GetTypehandle();
-                    _swapEvent.m_pTrackKeeper = _trackKeeper;
                     _swapEvent.m_pOldObject = _oldObject;
+                    _swapEvent.m_pTrackKeeper = _trackKeeper;
+
+                    // HotReloadedEvent _swapEvent = {};
+
+                    // _swapEvent.m_stage = HotReloadedEvent::stage_after_swap;
+                    // _swapEvent.m_pObject = _newObject;
+                    // // _swapEvent._typeHandle = _trackKeeper->GetTypeHandle();
+                    // _swapEvent.m_pTrackKeeper = _trackKeeper;
+                    // _swapEvent.m_pOldObject = _oldObject;
 
                     _trackKeeper->SetObject(_newObject);
 

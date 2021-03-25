@@ -1,7 +1,5 @@
 #pragma once
 
-#include "HotReloader/Events/HotReloadEvent.h"
-
 #include "HotReloader/ITrackKeeper.h"
 
 #undef GetObject
@@ -20,10 +18,8 @@ namespace Duckvil { namespace HotReloader {
         TrackKeeper(void* _pObject, RuntimeReflection::__duckvil_resource_type_t _typeHandle);
         ~TrackKeeper();
 
-        // void OnEvent(const HotReloadedEvent& _event);
-
         void* GetObject() const override;
-        RuntimeReflection::__duckvil_resource_type_t GetTypehandle() const override;
+        RuntimeReflection::__duckvil_resource_type_t GetTypeHandle() const override;
     };
 
 }}

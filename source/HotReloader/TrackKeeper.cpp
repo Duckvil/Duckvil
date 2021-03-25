@@ -19,30 +19,14 @@ namespace Duckvil { namespace HotReloader {
 
     }
 
-    // void TrackKeeper::OnEvent(const HotReloader::HotReloadedEvent& _event)
-    // {
-
-    // }
-
     void* TrackKeeper::GetObject() const
     {
         return m_pObject;
     }
 
-    RuntimeReflection::__duckvil_resource_type_t TrackKeeper::GetTypehandle() const
+    RuntimeReflection::__duckvil_resource_type_t TrackKeeper::GetTypeHandle() const
     {
         return m_typeHandle;
     }
-
-    // HotTrackKeeper::HotTrackKeeper(void* _pObject, RuntimeReflection::__duckvil_resource_type_t _typeHandle) :
-    //     TrackKeeper(_pObject, _typeHandle)
-    // {
-
-    // }
-
-    // HotTrackKeeper::~HotTrackKeeper()
-    // {
-
-    // }
 
 }}
