@@ -23,9 +23,11 @@ _pSerializer->SerializeProperty("m_aRecordedTypes", m_aRecordedTypes); \
 _pSerializer->SerializeProperty("m_aHotObjects", m_aHotObjects); \
 _pSerializer->SerializeProperty("m_aModules", m_aModules); \
 _pSerializer->SerializeProperty("m_pRuntimeCompiler", m_pRuntimeCompiler); \
+_pSerializer->SerializeProperty("m_file", m_file); \
 _pSerializer->SerializeProperty("m_pObject", m_pObject); \
 _pSerializer->SerializeProperty("m_typeHandle", m_typeHandle); \
 _pSerializer->SerializeProperty("m_generateCustomFunctionHandle", m_generateCustomFunctionHandle); \
 _pSerializer->SerializeProperty("m_processAST_FunctionHandle", m_processAST_FunctionHandle); \
 _pSerializer->SerializeProperty("m_clearFunctionHandle", m_clearFunctionHandle); \
+ISystem::Serialize(_pSerializer); \
 }

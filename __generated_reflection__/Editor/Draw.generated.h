@@ -8,4 +8,6 @@ void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\
 _pSerializer->SerializeProperty("m_pTrackKeeper", m_pTrackKeeper); \
 _pSerializer->SerializeProperty("m_typeHandle", m_typeHandle); \
+_pSerializer->SerializeProperty("m_pObject", m_pObject); \
+_pSerializer->SerializeProperty("m_typeHandle", m_typeHandle); \
 }

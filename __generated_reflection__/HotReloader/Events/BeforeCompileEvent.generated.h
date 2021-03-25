@@ -2,10 +2,8 @@
 
 #define DUCKVIL_GENERATED_BODY \
 public: \
-static void* Cast(void* _pObject) { return static_cast<Test*>(_pObject); } \
+static void* Cast(void* _pObject) { return static_cast<BeforeCompileEvent*>(_pObject); } \
 public: \
 void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\
-_pSerializer->SerializeProperty("m_iA", m_iA); \
-ISystem::Serialize(_pSerializer); \
 }
