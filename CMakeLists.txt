@@ -5,6 +5,7 @@ project(Duckvil)
 option(DUCKVIL_GENERATE_REFLECTION "Generate reflection" OFF)
 option(DUCKVIL_DEBUG_MEMORY "Memory debugger" OFF)
 option(DUCKVIL_CICD "CI/CD" OFF)
+option(DUCKVIL_HOT_RELOADING "Hot reloading" ON)
 
 find_program(CLANG_TIDY_COMMAND NAMES clang-tidy)
 
@@ -36,6 +37,10 @@ add_definitions(-DDUCKVIL_CWD="${CMAKE_SOURCE_DIR}")
 
 if(DUCKVIL_DEBUG_MEMORY)
     add_definitions(-DDUCKVIL_MEMORY_DEBUGGER)
+endif()
+
+if(DUCKVIL_HOT_RELOADING)
+    add_definitions(-DDUCKVIL_HOT_RELOADING)
 endif()
 
 add_subdirectory(external)
