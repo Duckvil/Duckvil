@@ -22,6 +22,4 @@ _pSerializer->SerializeProperty("m_flags", m_flags); \
 _pSerializer->SerializeProperty("m_pLogEventPool", m_pLogEventPool); \
 _pSerializer->SerializeProperty("m_pLogger", m_pLogger); \
 _pSerializer->SerializeProperty("m_pLoggerData", m_pLoggerData); \
-_pSerializer->SerializeProperty("m_pLogger", m_pLogger); \
-_pSerializer->SerializeProperty("m_pLoggerData", m_pLoggerData); \
 }

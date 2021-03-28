@@ -229,10 +229,10 @@ namespace Duckvil { namespace HotReloader {
 
     void RuntimeCompilerSystem::Compile(const std::string& _sFile)
     {
-        DUCKVIL_LOG_INFO("Hot reload started");
+        DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Hot reload started");
 
         {
-            DUCKVIL_LOG_INFO("Generating reflection");
+            DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Generating reflection");
 
             std::filesystem::path _path = std::filesystem::relative(_sFile, std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "source");
             std::filesystem::path _generatePath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _path;
@@ -302,7 +302,7 @@ namespace Duckvil { namespace HotReloader {
                 Duckvil::RuntimeReflection::invoke_member(_module.m_typeHandle, _module.m_clearFunctionHandle, _module.m_pObject);
             }
 
-            DUCKVIL_LOG_INFO("Generating reflection finished");
+            DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Generating reflection finished");
         }
 
         std::filesystem::path _path = std::tmpnam(nullptr);
@@ -310,7 +310,7 @@ namespace Duckvil { namespace HotReloader {
         m_sModuleName = _path.filename().string();
 
         {
-            DUCKVIL_LOG_INFO("Compilation");
+            DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Compilation");
 
             std::filesystem::path _working = std::filesystem::path(DUCKVIL_OUTPUT).parent_path();
             std::filesystem::path _file = _sFile;
@@ -373,7 +373,7 @@ namespace Duckvil { namespace HotReloader {
 
             m_pEventPool->Broadcast(_afterCompileEvent);
 
-            DUCKVIL_LOG_INFO("Compilation finished");
+            DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Compilation finished");
         }
 
         PlugNPlay::__module _module;
@@ -394,19 +394,19 @@ namespace Duckvil { namespace HotReloader {
         }
 
         void (*make_current_runtime_reflection_context)(const duckvil_frontend_reflection_context&);
-        void (*make_current_logger_context)(const logger_context&);
+        // void (*make_current_logger_context)(const logger_channel_context&);
 
         _module.get(_testModule, "duckvil_get_recorder_index", (void**)&get_recorder_index);
         _module.get(_testModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(get_recorder_index())).c_str(), (void**)&record);
         _module.get(_testModule, "duckvil_plugin_make_current_runtime_reflection_context", (void**)&make_current_runtime_reflection_context);
-        _module.get(_testModule, "duckvil_plugin_make_current_logger_context", (void**)&make_current_logger_context);
+        // _module.get(_testModule, "duckvil_plugin_make_current_logger_context", (void**)&make_current_logger_context);
 
         make_current_runtime_reflection_context(RuntimeReflection::get_current());
-        make_current_logger_context(logger_get_current());
+        // make_current_logger_context(logger_get_current());
 
         duckvil_recorderd_types _types = record(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), g_duckvilFrontendReflectionContext.m_pRecorder, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData);
 
-        DUCKVIL_LOG_INFO("Swapping objects");
+        DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Swapping objects");
 
         for(uint32_t i = 0; i < m_aHotObjects.Size(); ++i)
         {
@@ -456,7 +456,7 @@ namespace Duckvil { namespace HotReloader {
             }
         }
 
-        DUCKVIL_LOG_INFO("Swapping objects finished");
+        DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Swapping objects finished");
     }
 
     void RuntimeCompilerSystem::AddHotObject(ITrackKeeper* _pTrackKeeper)

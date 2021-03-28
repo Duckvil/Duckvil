@@ -11,7 +11,7 @@
 #include "PlugNPlay/Module.h"
 #include "PlugNPlay/AutoLoader.h"
 
-#include "Logger/LoggerChannel.h"
+#include "Logger/Logger.h"
 
 #include "Engine/Time.h"
 #include "Engine/ReflectionFlags.h"

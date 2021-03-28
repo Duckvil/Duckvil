@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Logger/LoggerChannel.h"
+#include "Logger/Logger.h"
 
 #include "HotReloader/ReflectionFlags.h"
 

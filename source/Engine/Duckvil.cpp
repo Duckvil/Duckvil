@@ -15,6 +15,8 @@
 
 #include "Memory/SmartPointer/UniquePointer.h"
 
+#include "Logger/Logger.h"
+
 #undef max
 #undef GetObject
 #undef __allocator
@@ -49,9 +51,29 @@ namespace Duckvil {
     {
         std::string _outLog = (std::filesystem::path(DUCKVIL_OUTPUT) / "log.log").string();
 
-        _pData->m_logger = LoggerChannel(_pData->m_heap, _outLog.c_str(), _outLog.length(), (__logger_flags)(__logger_flags_console_output | __logger_flags_file_output | __logger_flags_editor_console_output));
+        _pData->m_logger = LoggerChannel(_pData->m_heap, _outLog.c_str(), _outLog.length(), (__logger_channel_flags)(__logger_flags_console_output | __logger_flags_file_output | __logger_flags_editor_console_output));
 
-        logger_make_current(logger_context(_pData->m_logger.GetLogger(), _pData->m_logger.GetLoggerData()));
+        // logger_channel_make_current(logger_channel_context(_pData->m_logger.GetLogger(), _pData->m_logger.GetLoggerData()));
+
+
+
+        // Logger _logger(_pData->m_heap);
+
+        // _logger.Add(_pData->m_logger, LoggerChannelID::Default);
+        // _logger.Log(LoggerChannelID::Default, 10, "aaa", "vvv", __logger_channel_verbosity::__verbosity_info);
+
+        logger_ftable (*_duckvilLoggerInit)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator);
+
+        PlugNPlay::__module_information _loggerModule("Logger");
+
+        _pModule->load(&_loggerModule);
+        _pModule->get(_loggerModule, "duckvil_logger_init", (void**)&_duckvilLoggerInit);
+
+        logger_ftable _loggerFTable = _duckvilLoggerInit(_pData->m_pMemory, _pData->m_pHeap);
+        logger_data _loggerData = _loggerFTable.m_fnInitLogger(_pData->m_heap);
+
+        logger_make_current({ _loggerFTable, _loggerData });
+        logger_add(_pData->m_logger, LoggerChannelID::Default);
 
         return true;
     }
@@ -152,13 +174,13 @@ namespace Duckvil {
             const PlugNPlay::__module_information& _loadedModule = _pData->m_aLoadedModules[i];
             uint32_t (*get_recorder_count)();
             void (*make_current_runtime_reflection_context)(const duckvil_frontend_reflection_context&);
-            void (*make_current_logger_context)(const logger_context&);
+            // void (*make_current_logger_context)(const logger_channel_context&);
 
             make_current_runtime_reflection_context = nullptr;
 
             _module.get(_loadedModule, "duckvil_get_runtime_reflection_recorder_count", (void**)&get_recorder_count);
             _module.get(_loadedModule, "duckvil_plugin_make_current_runtime_reflection_context", (void**)&make_current_runtime_reflection_context);
-            _module.get(_loadedModule, "duckvil_plugin_make_current_logger_context", (void**)&make_current_logger_context);
+            // _module.get(_loadedModule, "duckvil_plugin_make_current_logger_context", (void**)&make_current_logger_context);
 
             if(get_recorder_count == nullptr)
             {
@@ -461,7 +483,7 @@ namespace Duckvil {
         {
             size_t _change = _pData->m_pHeap->m_ullUsed - _pData->m_ullLastTimeUsed;
 
-            DUCKVIL_LOG_INFO("Memory change: %d", _change);
+            DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Memory change: %d", _change);
 
             _pData->m_ullLastTimeUsed = _pData->m_pHeap->m_ullUsed;
         }

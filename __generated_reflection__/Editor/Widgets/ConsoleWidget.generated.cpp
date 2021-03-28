@@ -20,7 +20,7 @@ record_inheritance<Widget>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _
 _constructor = record_constructor<Duckvil::Editor::ConsoleWidget, const Memory::FreeList&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
 record_function<Duckvil::Editor::ConsoleWidget, void, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Editor::ConsoleWidget::InitEditor, "InitEditor");
 record_function<Duckvil::Editor::ConsoleWidget, void>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Editor::ConsoleWidget::OnDraw, "OnDraw");
-record_function<Duckvil::Editor::ConsoleWidget, void, const __logger_log_info&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Editor::ConsoleWidget::OnEvent, "OnEvent");
+record_function<Duckvil::Editor::ConsoleWidget, void, const __logger_channel_log_info&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Editor::ConsoleWidget::OnEvent, "OnEvent");
 record_function<void*, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Editor::ConsoleWidget::Cast, "Cast");
 record_function<Duckvil::Editor::ConsoleWidget, void, Duckvil::RuntimeSerializer::ISerializer*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Editor::ConsoleWidget::Serialize, "Serialize");
 Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];

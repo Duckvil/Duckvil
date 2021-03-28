@@ -6,7 +6,7 @@
 
 #include "RuntimeReflection/RuntimeReflection.h"
 
-#include "Logger/LoggerChannel.h"
+#include "Logger/Logger.h"
 
 #include "Editor/Widgets/ConsoleWidget.generated.h"
 
@@ -18,7 +18,7 @@ namespace Duckvil { namespace Editor {
     private:
         Memory::FreeList m_heap;
 
-        Memory::Vector<__logger_log_info> m_aLogs;
+        Memory::Vector<__logger_channel_log_info> m_aLogs;
 
         bool m_bScrollBottom;
 
@@ -29,7 +29,7 @@ namespace Duckvil { namespace Editor {
         void InitEditor(void* _pImguiContext);
         void OnDraw();
 
-        void OnEvent(const __logger_log_info& _event);
+        void OnEvent(const __logger_channel_log_info& _event);
     };
 
 }}
