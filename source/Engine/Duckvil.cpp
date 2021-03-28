@@ -49,7 +49,7 @@ namespace Duckvil {
     {
         std::string _outLog = (std::filesystem::path(DUCKVIL_OUTPUT) / "log.log").string();
 
-        _pData->m_logger = Logger(_pData->m_heap, _outLog.c_str(), _outLog.length(), (__logger_flags)(__logger_flags_console_output | __logger_flags_file_output | __logger_flags_editor_console_output));
+        _pData->m_logger = LoggerChannel(_pData->m_heap, _outLog.c_str(), _outLog.length(), (__logger_flags)(__logger_flags_console_output | __logger_flags_file_output | __logger_flags_editor_console_output));
 
         logger_make_current(logger_context(_pData->m_logger.GetLogger(), _pData->m_logger.GetLoggerData()));
 

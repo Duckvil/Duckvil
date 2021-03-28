@@ -1,5 +1,5 @@
 #include "RuntimeReflection/Recorder.h"
-#include "Logger/Logger.h"
+#include "Logger/LoggerChannel.h"
 DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(7)
 
 DUCKVIL_EXPORT void duckvil_plugin_make_current_runtime_reflection_context(const duckvil_frontend_reflection_context& _runtimeReflectionContext)

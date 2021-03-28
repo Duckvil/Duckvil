@@ -227,7 +227,7 @@ int main(int argc, char* argv[])
             std::ofstream _file(std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _lastPath / "plugin_info.cpp");
 
             _file << "#include \"RuntimeReflection/Recorder.h\"\n";
-            _file << "#include \"Logger/Logger.h\"\n";
+            _file << "#include \"Logger/LoggerChannel.h\"\n";
             _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(" << _index << ")\n\n";
             _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_runtime_reflection_context(const duckvil_frontend_reflection_context& _runtimeReflectionContext)\n";
             _file << "{\n";

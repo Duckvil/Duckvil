@@ -6,7 +6,7 @@
 
 #include "RuntimeReflection/RuntimeReflection.h"
 
-#include "Logger/Logger.h"
+#include "Logger/LoggerChannel.h"
 
 #include "Editor/Widgets/ConsoleWidget.generated.h"
 

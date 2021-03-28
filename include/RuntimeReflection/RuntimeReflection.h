@@ -43,9 +43,9 @@ namespace Duckvil { namespace RuntimeReflection {
 
 struct duckvil_frontend_reflection_context
 {
-    Duckvil::RuntimeReflection::__ftable* m_pReflection;
-    Duckvil::RuntimeReflection::__data* m_pReflectionData;
-    Duckvil::RuntimeReflection::__recorder_ftable* m_pRecorder;
+    Duckvil::RuntimeReflection::__ftable* m_pReflection = nullptr;
+    Duckvil::RuntimeReflection::__data* m_pReflectionData = nullptr;
+    Duckvil::RuntimeReflection::__recorder_ftable* m_pRecorder = nullptr;
 };
 
 inline duckvil_frontend_reflection_context g_duckvilFrontendReflectionContext;

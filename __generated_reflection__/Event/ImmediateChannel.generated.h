@@ -20,7 +20,6 @@ _pSerializer->SerializeProperty("m_aCallbackEvents", m_aCallbackEvents); \
 _pSerializer->SerializeProperty("m_aMemberEvents", m_aMemberEvents); \
 _pSerializer->SerializeProperty("m_pReflectionData", m_pReflectionData); \
 _pSerializer->SerializeProperty("m_pReflection", m_pReflection); \
-_pSerializer->SerializeProperty("m_mutex", m_mutex); \
 _pSerializer->SerializeProperty("m_pObject", m_pObject); \
 _pSerializer->SerializeProperty("m_fn", m_fn); \
 }

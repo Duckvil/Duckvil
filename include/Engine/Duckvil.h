@@ -11,7 +11,7 @@
 #include "PlugNPlay/Module.h"
 #include "PlugNPlay/AutoLoader.h"
 
-#include "Logger/Logger.h"
+#include "Logger/LoggerChannel.h"
 
 #include "Engine/Time.h"
 #include "Engine/ReflectionFlags.h"
@@ -88,7 +88,7 @@ namespace Duckvil {
 
         // __logger_ftable* m_pLogger;
         // __logger_data* m_pLoggerData;
-        Logger m_logger;
+        LoggerChannel m_logger;
 
         Thread::pool_ftable* m_pThread;
         Thread::pool_data* m_pThreadData;
