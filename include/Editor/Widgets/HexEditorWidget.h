@@ -2,7 +2,7 @@
 
 #include "Editor/Widget.h"
 
-#include "imgui/ImGui.h"
+#include "imgui/imgui.h"
 
 #include "imgui_memory_editor/imgui_memory_editor.h"
 

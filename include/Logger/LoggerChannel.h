@@ -107,7 +107,7 @@ namespace Duckvil {
         void (*dispatch_logs)(__logger_channel_ftable* _pFTable, __logger_channel_data* _pData);
     };
 
-    static void logger_log_v(__logger_channel_ftable* _pFTable, __logger_channel_data* _pData, uint32_t _uiLine, const char* _sFile, std::size_t _ullFileLength, const char* _sMessage, std::size_t _ullMessageLength, __logger_channel_verbosity _verbosity, const va_list& _vMessage)
+    static void logger_log_v(__logger_channel_ftable* _pFTable, __logger_channel_data* _pData, uint32_t _uiLine, const char* _sFile, std::size_t _ullFileLength, const char* _sMessage, std::size_t _ullMessageLength, __logger_channel_verbosity _verbosity, va_list _vMessage)
     {
         __logger_channel_log_info _log;
 
@@ -130,7 +130,7 @@ namespace Duckvil {
     }
 
     template <std::size_t Length, std::size_t Length2>
-    static void logger_log_v(__logger_channel_ftable* _pFTable, __logger_channel_data* _pData, uint32_t _uiLine, const char (&_sFile)[Length], const char (&_sMessage)[Length2], __logger_channel_verbosity _verbosity, const va_list& _vMessage)
+    static void logger_log_v(__logger_channel_ftable* _pFTable, __logger_channel_data* _pData, uint32_t _uiLine, const char (&_sFile)[Length], const char (&_sMessage)[Length2], __logger_channel_verbosity _verbosity, va_list _vMessage)
     {
         logger_log_v(_pFTable, _pData, _uiLine, _sFile, Length, _sMessage, Length2, _verbosity, _vMessage);
     }
