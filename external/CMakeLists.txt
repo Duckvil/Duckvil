@@ -1,6 +1,22 @@
 cmake_minimum_required(VERSION 3.17)
 
+function(download_file url filename hash_type hash)
+    if(NOT EXISTS ${filename})
+        file(DOWNLOAD ${url} ${filename}
+            TIMEOUT 60
+            EXPECTED_HASH ${hash_type}=${hash}
+            TLS_VERIFY ON)
+    endif()
+endfunction(download_file)
+
 if(NOT DUCKVIL_CICD)
+    download_file(
+        https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0.tgz
+        ${CMAKE_SOURCE_DIR}/external/glew.tgz
+        SHA512 57453646635609d54f62fb32a080b82b601fd471fcfd26e109f479b3fef6dfbc24b83f4ba62916d07d62cd06d1409ad7aa19bc1cd7cf3639c103c815b8be31d1
+    )
+    file(ARCHIVE_EXTRACT INPUT ${CMAKE_SOURCE_DIR}/external/glew.tgz DESTINATION ${CMAKE_SOURCE_DIR}/external VERBOSE)
+    file(RENAME glew-2.2.0 glew)
     add_subdirectory(SDL2)
     add_subdirectory(glew/build/cmake)
 
