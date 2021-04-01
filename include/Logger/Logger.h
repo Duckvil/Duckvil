@@ -47,29 +47,29 @@ namespace Duckvil {
         bool m_bInitialized = false;
     };
 
-    inline logger_context g_context2;
+    inline logger_context g_loggerContext;
 
     static void logger_make_current(const logger_context& _context)
     {
-        if(g_context2.m_bInitialized)
+        if(g_loggerContext.m_bInitialized)
         {
             return;
         }
 
-        g_context2.m_logger = _context.m_logger;
-        g_context2.m_loggerData = _context.m_loggerData;
-        g_context2.m_bInitialized = true;
+        g_loggerContext.m_logger = _context.m_logger;
+        g_loggerContext.m_loggerData = _context.m_loggerData;
+        g_loggerContext.m_bInitialized = true;
     }
 
     static const logger_context& logger_get_current()
     {
-        return g_context2;
+        return g_loggerContext;
     }
 
     template <typename Type>
     void logger_add(LoggerChannel _channel, const Type& _channelID)
     {
-        g_context2.m_logger.m_fnAdd(&g_context2.m_loggerData, _channel, typeid(Type).hash_code(), (uint32_t)_channelID);
+        g_loggerContext.m_logger.m_fnAdd(&g_loggerContext.m_loggerData, _channel, typeid(Type).hash_code(), (uint32_t)_channelID);
     }
 
     template <typename Type, std::size_t Length, std::size_t Length2>
@@ -78,7 +78,7 @@ namespace Duckvil {
         va_list _argList;
         va_start(_argList, _verbosity);
 
-        g_context2.m_logger.m_fnLog(&g_context2.m_loggerData, typeid(Type).hash_code(), (uint32_t)_channelID, _uiLine, _sFile, Length, _sMessage, Length2, _verbosity, _argList);
+        g_loggerContext.m_logger.m_fnLog(&g_loggerContext.m_loggerData, typeid(Type).hash_code(), (uint32_t)_channelID, _uiLine, _sFile, Length, _sMessage, Length2, _verbosity, _argList);
 
         va_end(_argList);
     }
