@@ -16,14 +16,14 @@ namespace Duckvil { namespace Memory {
             m_fnErase = nullptr;
         }
 
-        SpecifiedResizableContainer(IMemory* _pMemory, __allocator* _pAllocator) :
+        SpecifiedResizableContainer(IMemory* _pMemory, allocator* _pAllocator) :
             SpecifiedContainer<ContainerType, Type>(_pMemory, _pAllocator)
         {
             m_fnResize = nullptr;
             m_fnErase = nullptr;
         }
 
-        SpecifiedResizableContainer(IMemory* _pMemory, __allocator* _pAllocator, Type* _pSpecifiedContainer) :
+        SpecifiedResizableContainer(IMemory* _pMemory, allocator* _pAllocator, Type* _pSpecifiedContainer) :
             SpecifiedContainer<ContainerType, Type>(_pMemory, _pAllocator, _pSpecifiedContainer)
         {
             m_fnResize = nullptr;
@@ -32,7 +32,7 @@ namespace Duckvil { namespace Memory {
 
         SpecifiedResizableContainer(
             IMemory* _pMemory,
-            __allocator* _pAllocator,
+            allocator* _pAllocator,
             Type* _pContainer,
             const typename SpecifiedContainer<ContainerType, Type>::copy_callback& _fnCopy,
             const typename SpecifiedContainer<ContainerType, Type>::destruct_callback& _fnDestruct,

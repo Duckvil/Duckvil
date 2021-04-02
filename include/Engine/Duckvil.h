@@ -63,7 +63,7 @@ namespace Duckvil {
 #endif
 
         Memory::IMemory* m_pMemory;
-        Memory::__free_list_allocator* m_pHeap;
+        Memory::free_list_allocator* m_pHeap;
 
         Memory::FreeList m_heap; // General use memory
         Memory::FreeList m_objectsHeap; // Memory for hot objects
@@ -113,7 +113,7 @@ namespace Duckvil {
 
     struct __ftable
     {
-        bool (*init)(Duckvil::__data* _pData, Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator);
+        bool (*init)(Duckvil::__data* _pData, Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator);
         bool (*start)(Duckvil::__data* _pData, Duckvil::__ftable* _pFTable);
         bool (*stop)(Duckvil::__data* _pData, Duckvil::__ftable* _pFTable);
         void (*update)(Duckvil::__data* _pData, Duckvil::__ftable* _pFTable);
@@ -121,6 +121,6 @@ namespace Duckvil {
 
 }
 
-typedef Duckvil::__ftable* (*duckvil_init_callback)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator);
+typedef Duckvil::__ftable* (*duckvil_init_callback)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
 
-DUCKVIL_EXPORT Duckvil::__ftable* duckvil_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator);
+DUCKVIL_EXPORT Duckvil::__ftable* duckvil_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);

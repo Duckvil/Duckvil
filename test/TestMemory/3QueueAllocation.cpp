@@ -9,7 +9,7 @@
 DUCKVIL_TEST(FixedQueueAllocation)
 {
     {
-        Duckvil::Memory::Queue<int> _queue(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::__free_list_allocator*)__duckvil_global::m_pHeap, 4);
+        Duckvil::Memory::Queue<int> _queue(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::free_list_allocator*)__duckvil_global::m_pHeap, 4);
 
         DUCKVIL_TEST_EXP(_queue.Empty(), "Queue is not empty");
         DUCKVIL_TEST_EQUAL(_queue.GetCapacity(), 4 * sizeof(int), "Wrong capacity");

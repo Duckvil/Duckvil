@@ -21,7 +21,7 @@ namespace Duckvil { namespace LOL {
 
         // _module.load(&_threadModule);
 
-        // Thread::pool_ftable* (*init)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator);
+        // Thread::pool_ftable* (*init)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
 
         // _module.get(_threadModule, "duckvil_thread_pool_init", (void**)&init);
 

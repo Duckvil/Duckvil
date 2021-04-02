@@ -4,7 +4,7 @@
 
 namespace Duckvil { namespace Memory {
 
-    struct __allocator;
+    struct allocator;
 
 }}
 
@@ -22,7 +22,7 @@ enum duckvil_memory_allocator_type
 
 struct duckvil_memory_debug_info
 {
-    Duckvil::Memory::__allocator* m_pAllocator;
+    Duckvil::Memory::allocator* m_pAllocator;
     duckvil_memory_debug_info* m_pParent;
     duckvil_memory_allocator_type m_allocatorType;
     char m_aLabel[128] = { 0 };

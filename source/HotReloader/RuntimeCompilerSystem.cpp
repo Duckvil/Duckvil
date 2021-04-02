@@ -56,7 +56,7 @@ namespace Duckvil { namespace HotReloader {
 
         _module.load(&_threadModule);
 
-        Thread::pool_ftable* (*init)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator);
+        Thread::pool_ftable* (*init)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
 
         _module.get(_threadModule, "duckvil_thread_pool_init", (void**)&init);
 
@@ -180,7 +180,7 @@ namespace Duckvil { namespace HotReloader {
         _module.load(&_parser);
 
         {
-            RuntimeReflection::__generator_ftable* (*_runtime_reflection_generator)(Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator);
+            RuntimeReflection::__generator_ftable* (*_runtime_reflection_generator)(Memory::IMemory* _pMemory, Memory::free_list_allocator* _pAllocator);
 
             _module.get(_reflectionModule, "duckvil_runtime_reflection_generator_init", (void**)&_runtime_reflection_generator);
 
@@ -188,8 +188,8 @@ namespace Duckvil { namespace HotReloader {
         }
 
         {
-            Parser::__lexer_ftable* (*_lexer_init)(Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator);
-            Parser::__ast_ftable* (*_ast_init)(Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator);
+            Parser::__lexer_ftable* (*_lexer_init)(Memory::IMemory* _pMemory, Memory::free_list_allocator* _pAllocator);
+            Parser::__ast_ftable* (*_ast_init)(Memory::IMemory* _pMemory, Memory::free_list_allocator* _pAllocator);
 
             _module.get(_parser, "duckvil_lexer_init", (void**)&_lexer_init);
             _module.get(_parser, "duckvil_ast_init", (void**)&_ast_init);
@@ -382,7 +382,7 @@ namespace Duckvil { namespace HotReloader {
 
         PlugNPlay::__module_information _testModule(Utils::string(m_sModuleName.c_str(), strlen(m_sModuleName.c_str()) + 1), DUCKVIL_SWAP_OUTPUT);
         uint32_t (*get_recorder_index)();
-        duckvil_recorderd_types (*record)(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);
+        duckvil_recorderd_types (*record)(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);
 
         _module.load(&_testModule);
 

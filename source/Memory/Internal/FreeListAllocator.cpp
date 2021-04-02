@@ -4,7 +4,7 @@
 
 namespace Duckvil { namespace Memory {
 
-    void* impl_free_list_allocate(__free_list_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment)
+    void* impl_free_list_allocate(free_list_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment)
     {
         __free_list_node* _free_block = (__free_list_node*)_pAllocator->m_pHead;
         __free_list_node* _previous_free_block = nullptr;
@@ -66,7 +66,7 @@ namespace Duckvil { namespace Memory {
         return 0;
     }
 
-    void* impl_free_list_allocate(__free_list_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
+    void* impl_free_list_allocate(free_list_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
     {
         __free_list_node* _free_block = (__free_list_node*)_pAllocator->m_pHead;
         __free_list_node* _previous_free_block = nullptr;
@@ -132,7 +132,7 @@ namespace Duckvil { namespace Memory {
         return 0;
     }
 
-    void* impl_free_list_reallocate(__free_list_allocator* _pAllocator, void* _pData, std::size_t _ullDataSize, std::size_t _ullSize, uint8_t _ucAlignment)
+    void* impl_free_list_reallocate(free_list_allocator* _pAllocator, void* _pData, std::size_t _ullDataSize, std::size_t _ullSize, uint8_t _ucAlignment)
     {
         __free_list_node* _free_block = (__free_list_node*)_pAllocator->m_pHead;
         __free_list_node* _previous_free_block = nullptr;
@@ -200,7 +200,7 @@ namespace Duckvil { namespace Memory {
         return 0;
     }
 
-    void impl_free_list_free(__free_list_allocator* _pAllocator, void* _pointer)
+    void impl_free_list_free(free_list_allocator* _pAllocator, void* _pointer)
     {
         __free_list_header* _header = (__free_list_header*)(/*(uint8_t*)_pointer*/ reinterpret_cast<uintptr_t>(_pointer) - sizeof(__free_list_header));
         uintptr_t _node = /*(uintptr_t)_pointer*/ reinterpret_cast<uintptr_t>(_pointer) - _header->m_ucPadding;
@@ -252,9 +252,9 @@ namespace Duckvil { namespace Memory {
         _pAllocator->m_ullUsed -= _block_size;
     }
 
-    void impl_free_list_clear(__free_list_allocator* _pAllocator)
+    void impl_free_list_clear(free_list_allocator* _pAllocator)
     {
-        memset((uint8_t*)_pAllocator + sizeof(__free_list_allocator), 0, _pAllocator->m_ullCapacity);
+        memset((uint8_t*)_pAllocator + sizeof(free_list_allocator), 0, _pAllocator->m_ullCapacity);
         _pAllocator->m_ullUsed = 0;
     }
 

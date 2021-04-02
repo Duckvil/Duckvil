@@ -29,10 +29,10 @@ DUCKVIL_TEST(RuntimeReflection)
 
     Duckvil::Memory::IMemory* _memoryInterface = duckvil_memory_init();
 
-    Duckvil::Memory::__linear_allocator* _mainMemoryAllocator = 0;
+    Duckvil::Memory::linear_allocator* _mainMemoryAllocator = 0;
 
     _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024);
-    Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(_mainMemoryAllocator, 512 * 1024);
+    Duckvil::Memory::free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(_mainMemoryAllocator, 512 * 1024);
 
     Duckvil::PlugNPlay::__module_information _runtimeReflectionModule("RuntimeReflection");
 
@@ -79,7 +79,7 @@ DUCKVIL_TEST(RuntimeReflection)
 
             for(uint32_t i = 0; i < _count; i++)
             {
-                duckvil_recorderd_types (*test_type)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData);
+                duckvil_recorderd_types (*test_type)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData);
 
                 _module.get(_test_type_module, (std::string("duckvil_runtime_reflection_record_") + std::to_string(i)).c_str(), (void**)&test_type);
 

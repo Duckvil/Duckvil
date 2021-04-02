@@ -17,7 +17,7 @@ record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duc
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "PlugNPlay");
 record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 0);
 _constructor = record_constructor<Duckvil::PlugNPlay::AutoLoader, const std::filesystem::path&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
-record_function<Duckvil::PlugNPlay::AutoLoader, void, Memory::IMemory*, Memory::__free_list_allocator*, __module_information**, uint32_t*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::PlugNPlay::AutoLoader::LoadAll, "LoadAll");
+record_function<Duckvil::PlugNPlay::AutoLoader, void, Memory::IMemory*, Memory::free_list_allocator*, __module_information**, uint32_t*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::PlugNPlay::AutoLoader::LoadAll, "LoadAll");
 Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
 for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
 return duckvil_recorderd_types { _types, _recordedTypes.size(), "PlugNPlay/AutoLoader.h", 0 };

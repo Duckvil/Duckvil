@@ -65,18 +65,18 @@ int main(int argc, char* argv[])
     _module.get(_memoryModule, "duckvil_memory_init", (void**)&_fnMemoryInit);
 
     Duckvil::Memory::IMemory* _memoryInterface = _fnMemoryInit();
-    Duckvil::Memory::__linear_allocator* _mainMemoryAllocator;
+    Duckvil::Memory::linear_allocator* _mainMemoryAllocator;
 
     _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024);
-    Duckvil::Memory::__free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(_mainMemoryAllocator, 512 * 1024);
+    Duckvil::Memory::free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(_mainMemoryAllocator, 512 * 1024);
     Duckvil::Memory::FreeList _heap(_memoryInterface, _free_list);
 
     _heap.Allocate(_aModules, 1);
 
     _module.load(&_parser);
 
-    Duckvil::Parser::__lexer_ftable* (*_lexer_init)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator);
-    Duckvil::Parser::__ast_ftable* (*_ast_init)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator);
+    Duckvil::Parser::__lexer_ftable* (*_lexer_init)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator);
+    Duckvil::Parser::__ast_ftable* (*_ast_init)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator);
 
     _module.get(_parser, "duckvil_lexer_init", (void**)&_lexer_init);
     _module.get(_parser, "duckvil_ast_init", (void**)&_ast_init);
@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
     Duckvil::Parser::__ast_ftable* _ast = _ast_init(_memoryInterface, _free_list);
     Duckvil::Parser::__lexer_ftable* _lexerFtable = _lexer_init(_memoryInterface, _free_list);
 
-    Duckvil::RuntimeReflection::__generator_ftable* (*_runtime_reflection_generator)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator);
+    Duckvil::RuntimeReflection::__generator_ftable* (*_runtime_reflection_generator)(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator);
 
     _module.get(_reflectionModule, "duckvil_runtime_reflection_generator_init", (void**)&_runtime_reflection_generator);
 
@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
 
         for(uint32_t j = 0; j < _recordersCount; ++j)
         {
-            duckvil_recorderd_types (*record)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData);
+            duckvil_recorderd_types (*record)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData);
 
             _module.get(_loadedModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(j)).c_str(), (void**)&record);
 

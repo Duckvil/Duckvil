@@ -12,32 +12,32 @@
 namespace Duckvil { namespace Memory {
 
     template <typename Type>
-    class Array : public SpecifiedContainer<Type, __fixed_array_allocator>
+    class Array : public SpecifiedContainer<Type, fixed_array_allocator>
     {
     public:
         typedef Memory::Iterator<Type> Iterator;
         typedef Memory::Iterator<const Type> ConstIterator;
 
-        using SContainer = SpecifiedContainer<Type, __fixed_array_allocator>;
+        using SContainer = SpecifiedContainer<Type, fixed_array_allocator>;
 
     private:
         static void free_list_copy(IMemory* _pMemoryInterface, const SContainer& _specifiedContainer, SContainer* _pThis)
         {
-            __free_list_allocator* _allocator = (__free_list_allocator*)_specifiedContainer.m_pAllocator;
+            free_list_allocator* _allocator = (free_list_allocator*)_specifiedContainer.m_pAllocator;
             const Array& _array = (const Array&)_specifiedContainer;
 
-            _pThis->m_pContainer = (__fixed_array_allocator*)free_list_allocate(_pMemoryInterface, _allocator, sizeof(__fixed_array_allocator) + (sizeof(Type) * _array.Size()), alignof(__fixed_array_allocator));
+            _pThis->m_pContainer = (fixed_array_allocator*)free_list_allocate(_pMemoryInterface, _allocator, sizeof(fixed_array_allocator) + (sizeof(Type) * _array.Size()), alignof(fixed_array_allocator));
 
-            memcpy(_pThis->m_pContainer, _specifiedContainer.m_pContainer, sizeof(__fixed_array_allocator) + (sizeof(Type) * _array.Size()));
+            memcpy(_pThis->m_pContainer, _specifiedContainer.m_pContainer, sizeof(fixed_array_allocator) + (sizeof(Type) * _array.Size()));
 
             _pThis->m_fnCopy = _specifiedContainer.m_fnCopy;
             _pThis->m_fnDestruct = _specifiedContainer.m_fnDestruct;
             _pThis->m_pAllocator = _specifiedContainer.m_pAllocator;
         }
 
-        static void free_list_destruct(IMemory* _pMemoryInterface, __allocator* _pAllocator, SContainer* _pThis)
+        static void free_list_destruct(IMemory* _pMemoryInterface, allocator* _pAllocator, SContainer* _pThis)
         {
-            __free_list_allocator* _allocator = (__free_list_allocator*)_pAllocator;
+            free_list_allocator* _allocator = (free_list_allocator*)_pAllocator;
             uint32_t _size = fixed_array_size(_pMemoryInterface, _pThis->m_pContainer) / sizeof(Type);
 
             if(std::is_base_of<SContainer, Type>::value)
@@ -67,7 +67,7 @@ namespace Duckvil { namespace Memory {
 
         }
 
-        Array(IMemory* _pMemoryInterface, __linear_allocator* _pAllocator, std::size_t _ullCount) :
+        Array(IMemory* _pMemoryInterface, linear_allocator* _pAllocator, std::size_t _ullCount) :
             SContainer(_pMemoryInterface, _pAllocator)
         {
             SContainer::m_pMemoryInterface = _pMemoryInterface;
@@ -75,7 +75,7 @@ namespace Duckvil { namespace Memory {
             SContainer::m_pContainer = SContainer::m_pMemoryInterface->m_fnAllocateFixedArrayAllocator(_pAllocator, _ullCount * sizeof(Type), sizeof(Type));
         }
 
-        Array(IMemory* _pMemoryInterface, __free_list_allocator* _pAllocator, std::size_t _ullCount) :
+        Array(IMemory* _pMemoryInterface, free_list_allocator* _pAllocator, std::size_t _ullCount) :
             SContainer(_pMemoryInterface, _pAllocator)
         {
             SContainer::m_fnCopy = &free_list_copy;
@@ -164,7 +164,7 @@ namespace Duckvil { namespace Memory {
 
                 _container2.m_pContainer = (typename Type::type*)free_list_allocate(
                     _container.m_pMemoryInterface,
-                    (__free_list_allocator*)_container.m_pAllocator,
+                    (free_list_allocator*)_container.m_pAllocator,
                     sizeof(typename Type::type) + _container.m_pContainer->m_ullCapacity,
                     alignof(typename Type::type)
                 );

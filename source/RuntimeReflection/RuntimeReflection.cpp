@@ -6,7 +6,7 @@
 
 namespace Duckvil { namespace RuntimeReflection {
 
-    __data* init(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __ftable* _pFunctions)
+    __data* init(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __ftable* _pFunctions)
     {
         __data* _data = (__data*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__data), alignof(__data));
 
@@ -16,7 +16,7 @@ namespace Duckvil { namespace RuntimeReflection {
         return _data;
     }
 
-    duckvil_frontend_reflection_context* create_context(Memory::IMemory* _pMemoryInterface, Memory::__free_list_allocator* _pAllocator, __ftable* _pFTable, __data* _pData)
+    duckvil_frontend_reflection_context* create_context(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __ftable* _pFTable, __data* _pData)
     {
         duckvil_frontend_reflection_context* _ctx =
             (duckvil_frontend_reflection_context*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(duckvil_frontend_reflection_context), alignof(duckvil_frontend_reflection_context));
@@ -48,7 +48,7 @@ namespace Duckvil { namespace RuntimeReflection {
         return DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
     }
 
-    Memory::Vector<DUCKVIL_RESOURCE(type_t)> get_types(__data* _pData, Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator)
+    Memory::Vector<DUCKVIL_RESOURCE(type_t)> get_types(__data* _pData, Memory::IMemory* _pMemory, Memory::free_list_allocator* _pAllocator)
     {
         std::size_t _size = DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data);
         Memory::Vector<DUCKVIL_RESOURCE(type_t)> _types(_pMemory, _pAllocator, _size);
@@ -95,7 +95,7 @@ namespace Duckvil { namespace RuntimeReflection {
         return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
     }
 
-    Memory::Vector<DUCKVIL_RESOURCE(constructor_t)> get_constructors(__data* _pData, Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle)
+    Memory::Vector<DUCKVIL_RESOURCE(constructor_t)> get_constructors(__data* _pData, Memory::IMemory* _pMemory, Memory::free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         std::size_t _size = DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_constructors.m_data);
@@ -126,7 +126,7 @@ namespace Duckvil { namespace RuntimeReflection {
         return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
     }
 
-    Memory::Vector<DUCKVIL_RESOURCE(function_t)> get_functions(__data* _pData, Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle)
+    Memory::Vector<DUCKVIL_RESOURCE(function_t)> get_functions(__data* _pData, Memory::IMemory* _pMemory, Memory::free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         std::size_t _size = DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data);
@@ -219,7 +219,7 @@ namespace Duckvil { namespace RuntimeReflection {
         return nullptr;
     }
 
-    Memory::Vector<DUCKVIL_RESOURCE(argument_t)> get_arguments(__data* _pData, Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _handle)
+    Memory::Vector<DUCKVIL_RESOURCE(argument_t)> get_arguments(__data* _pData, Memory::IMemory* _pMemory, Memory::free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _handle)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         const __constructor_t _constructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_constructors, _handle.m_ID);
@@ -267,7 +267,7 @@ namespace Duckvil { namespace RuntimeReflection {
         return nullptr;
     }
 
-    Memory::Vector<DUCKVIL_RESOURCE(inheritance_t)> get_inheritances(__data* _pData, Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle)
+    Memory::Vector<DUCKVIL_RESOURCE(inheritance_t)> get_inheritances(__data* _pData, Memory::IMemory* _pMemory, Memory::free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
         Memory::Vector<DUCKVIL_RESOURCE(inheritance_t)> _inheritances(_pMemory, _pAllocator, DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_inheritances.m_data));
@@ -505,7 +505,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
 }}
 
-Duckvil::RuntimeReflection::__ftable* duckvil_runtime_reflection_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator)
+Duckvil::RuntimeReflection::__ftable* duckvil_runtime_reflection_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator)
 {
     Duckvil::RuntimeReflection::__ftable* _functions = (Duckvil::RuntimeReflection::__ftable*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Duckvil::RuntimeReflection::__ftable), alignof(Duckvil::RuntimeReflection::__ftable));
 

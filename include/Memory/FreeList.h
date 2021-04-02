@@ -15,7 +15,7 @@ namespace Duckvil { namespace Memory {
     {
     private:
         IMemory* m_pMemory;
-        __free_list_allocator* m_pContainer;
+        free_list_allocator* m_pContainer;
 
     public:
         FreeList()
@@ -25,14 +25,14 @@ namespace Duckvil { namespace Memory {
         }
 
     // Allocate FreeList allocator uisng LinearAllocator with specified size
-        FreeList(IMemory* _pMemory, __linear_allocator* _pAllocator, std::size_t _ullSize) :
+        FreeList(IMemory* _pMemory, linear_allocator* _pAllocator, std::size_t _ullSize) :
             m_pMemory(_pMemory),
             m_pContainer(_pMemory->m_fnLinearAllocateFreeListAllocator(_pAllocator, _ullSize))
         {
 
         }
 
-        FreeList(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize) :
+        FreeList(IMemory* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize) :
             m_pMemory(_pMemory),
             m_pContainer(_pMemory->m_fnFreeListAllocateFreeListAllocator(_pMemory, _pAllocator, _ullSize))
         {
@@ -40,7 +40,7 @@ namespace Duckvil { namespace Memory {
         }
 
     // Use existing FreeList allocator
-        FreeList(IMemory* _pMemory, __free_list_allocator* _pAllocator) :
+        FreeList(IMemory* _pMemory, free_list_allocator* _pAllocator) :
             m_pMemory(_pMemory),
             m_pContainer(_pAllocator)
         {
@@ -159,7 +159,7 @@ namespace Duckvil { namespace Memory {
             return m_pMemory;
         }
 
-        __free_list_allocator* GetAllocator() const
+        free_list_allocator* GetAllocator() const
         {
             return m_pContainer;
         }

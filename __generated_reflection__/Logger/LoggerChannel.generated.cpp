@@ -42,7 +42,7 @@ _type = record_type<Duckvil::__logger_channel_ftable>(DUCKVIL_RUNTIME_REFLECTION
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
-_property = record_property<__logger_channel_data*(*)(Memory::IMemory*, Memory::__free_list_allocator*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_ftable, init), "init");
+_property = record_property<__logger_channel_data*(*)(Memory::IMemory*, Memory::free_list_allocator*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_ftable, init), "init");
 _property = record_property<void(*)(__logger_channel_ftable*, __logger_channel_data*, __logger_channel_log_info&)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_ftable, log), "log");
 _property = record_property<void(*)(__logger_channel_data*, const __logger_channel_log_info&, char*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_ftable, format), "format");
 _property = record_property<void(*)(__logger_channel_ftable*, __logger_channel_data*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_ftable, dispatch_logs), "dispatch_logs");

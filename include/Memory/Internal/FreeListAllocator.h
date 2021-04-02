@@ -16,13 +16,13 @@ namespace Duckvil { namespace Memory {
         std::size_t m_ullSize = 0;
     };
 
-    void* impl_free_list_allocate(__free_list_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment = 8);
-    void* impl_free_list_allocate(__free_list_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment = 8);
-    void* impl_free_list_reallocate(__free_list_allocator* _pAllocator, void* _pData, std::size_t _ullDataSize, std::size_t _ullSize, uint8_t _ucAlignment = 8);
+    void* impl_free_list_allocate(free_list_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment = 8);
+    void* impl_free_list_allocate(free_list_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment = 8);
+    void* impl_free_list_reallocate(free_list_allocator* _pAllocator, void* _pData, std::size_t _ullDataSize, std::size_t _ullSize, uint8_t _ucAlignment = 8);
 // TODO: Not sure if it should takes pointer to pointer or just pointer...
-    void impl_free_list_free(__free_list_allocator* _pAllocator, void* _pointer);
-    void impl_free_list_clear(__free_list_allocator* _pAllocator);
+    void impl_free_list_free(free_list_allocator* _pAllocator, void* _pointer);
+    void impl_free_list_clear(free_list_allocator* _pAllocator);
 
-    __fixed_vector_allocator* impl_free_list_allocate_vector_allocator(IMemory* _pMemoryInterface, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize, uint8_t _ucAlignment);
+    fixed_vector_allocator* impl_free_list_allocate_vector_allocator(IMemory* _pMemoryInterface, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize, uint8_t _ucAlignment);
 
 }}

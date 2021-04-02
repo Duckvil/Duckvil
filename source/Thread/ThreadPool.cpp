@@ -112,7 +112,7 @@ namespace Duckvil { namespace Thread {
 
 }}
 
-Duckvil::Thread::pool_ftable* duckvil_thread_pool_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator)
+Duckvil::Thread::pool_ftable* duckvil_thread_pool_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator)
 {
     Duckvil::Thread::pool_ftable* _ftable = (Duckvil::Thread::pool_ftable*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Duckvil::Thread::pool_ftable), alignof(Duckvil::Thread::pool_ftable));
 

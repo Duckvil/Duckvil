@@ -51,4 +51,4 @@ namespace Duckvil { namespace Parser {
 
 }}
 
-DUCKVIL_EXPORT Duckvil::Parser::__lexer_ftable* duckvil_lexer_init(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::__free_list_allocator* _pAllocator);
+DUCKVIL_EXPORT Duckvil::Parser::__lexer_ftable* duckvil_lexer_init(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator);

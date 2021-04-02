@@ -13,7 +13,7 @@ namespace Duckvil { namespace PlugNPlay {
 
     }
 
-    void AutoLoader::LoadAll(Memory::IMemory* _pMemory, Memory::__free_list_allocator* _pAllocator, __module_information** _pModules, uint32_t* _pLoaded)
+    void AutoLoader::LoadAll(Memory::IMemory* _pMemory, Memory::free_list_allocator* _pAllocator, __module_information** _pModules, uint32_t* _pLoaded)
     {
         std::vector<__module_information> _toLoad;
 

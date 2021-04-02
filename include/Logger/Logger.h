@@ -85,4 +85,4 @@ namespace Duckvil {
 
 }
 
-DUCKVIL_EXPORT Duckvil::logger_ftable duckvil_logger_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::__free_list_allocator* _pAllocator);
+DUCKVIL_EXPORT Duckvil::logger_ftable duckvil_logger_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);

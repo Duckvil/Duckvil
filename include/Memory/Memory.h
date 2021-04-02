@@ -12,11 +12,11 @@ namespace Duckvil { namespace Memory {
 
     static const std::size_t g_ullMax = std::numeric_limits<std::size_t>::max();
 
-    struct __allocator
+    struct allocator
     {
 #ifdef DUCKVIL_MEMORY_DEBUGGER
-        void (*m_fnOnAllocate)(__allocator* _pParentAllocator, __allocator* _pAllocator, duckvil_memory_allocator_type _type) = 0;
-        void (*m_fnOnDeallocate)(__allocator* _pParentAllocator, __allocator* _pAllocator) = 0;
+        void (*m_fnOnAllocate)(allocator* _pParentAllocator, allocator* _pAllocator, duckvil_memory_allocator_type _type) = 0;
+        void (*m_fnOnDeallocate)(allocator* _pParentAllocator, allocator* _pAllocator) = 0;
         duckvil_memory_debug_info* m_pDebugData;
 #endif
 
@@ -24,34 +24,34 @@ namespace Duckvil { namespace Memory {
         std::size_t m_ullUsed = 0;
     };
 
-    struct __linear_allocator : public __allocator
+    struct linear_allocator : public allocator
     {
 
     };
 
-    struct __fixed_stack_allocator : public __allocator
+    struct fixed_stack_allocator : public allocator
     {
         std::size_t m_ullBlockSize;
     };
 
-    struct __fixed_queue_allocator : public __allocator
+    struct fixed_queue_allocator : public allocator
     {
         std::size_t m_ullBlockSize;
         std::size_t m_ullTail;
         std::size_t m_ullHead;
     };
 
-    struct __fixed_array_allocator : public __allocator
+    struct fixed_array_allocator : public allocator
     {
         std::size_t m_ullBlockSize;
     };
 
-    struct __free_list_allocator : public __allocator
+    struct free_list_allocator : public allocator
     {
         void* m_pHead;
     };
 
-    struct __fixed_vector_allocator : public __allocator
+    struct fixed_vector_allocator : public allocator
     {
         std::size_t m_ullBlockSize;
     };
@@ -66,7 +66,7 @@ namespace Duckvil { namespace Memory {
 
     struct IMemory
     {
-        typedef bool (*_basic_allocate)(__linear_allocator** _pAllocator, std::size_t _ullSize);
+        typedef bool (*_basic_allocate)(linear_allocator** _pAllocator, std::size_t _ullSize);
 
         typedef uintptr_t (*_calculate_aligned_pointer)(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
         typedef uint8_t (*_calculate_padding)(const uintptr_t& _ullAddress, uint8_t _ucAlignment);
@@ -75,66 +75,66 @@ namespace Duckvil { namespace Memory {
         typedef uint8_t (*_calculate_padding_)(const void* _p, uint8_t _ucAlignment);
         typedef uint8_t (*_calculate_padding_h_)(const void* _p, uint8_t _ucAlignment, uint8_t _ucHeaderSize);
 
-        typedef void* (*_linear_allocate)(__linear_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef void (*_linear_clear)(__linear_allocator* _pAllocator);
+        typedef void* (*_linear_allocate)(linear_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef void (*_linear_clear)(linear_allocator* _pAllocator);
 
-        typedef void* (*_fixed_stack_allocate_)(__fixed_stack_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef void* (*_fixed_stack_top_)(__fixed_stack_allocator* _pAllocator);
-        typedef void (*_fixed_stack_pop_)(__fixed_stack_allocator* _pAllocator);
-        typedef bool (*_fixed_stack_empty_)(__fixed_stack_allocator* _pAllocator);
-        typedef bool (*_fixed_stack_full_)(__fixed_stack_allocator* _pAllocator);
-        typedef void (*_fixed_stack_clear_)(__fixed_stack_allocator* _pAllocator);
-        typedef std::size_t (*_fixed_stack_size_)(__fixed_stack_allocator* _pAllocator);
-        typedef std::size_t (*_fixed_stack_capacity_)(__fixed_stack_allocator* _pAllocator);
+        typedef void* (*_fixed_stack_allocate_)(fixed_stack_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_fixed_stack_top_)(fixed_stack_allocator* _pAllocator);
+        typedef void (*_fixed_stack_pop_)(fixed_stack_allocator* _pAllocator);
+        typedef bool (*_fixed_stack_empty_)(fixed_stack_allocator* _pAllocator);
+        typedef bool (*_fixed_stack_full_)(fixed_stack_allocator* _pAllocator);
+        typedef void (*_fixed_stack_clear_)(fixed_stack_allocator* _pAllocator);
+        typedef std::size_t (*_fixed_stack_size_)(fixed_stack_allocator* _pAllocator);
+        typedef std::size_t (*_fixed_stack_capacity_)(fixed_stack_allocator* _pAllocator);
 
-        typedef void* (*_fixed_queue_allocate_)(__fixed_queue_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef void* (*_fixed_queue_begin_)(__fixed_queue_allocator* _pAllocator);
-        typedef void (*_fixed_queue_pop_)(__fixed_queue_allocator* _pAllocator);
-        typedef bool (*_fixed_queue_empty_)(__fixed_queue_allocator* _pAllocator);
-        typedef bool (*_fixed_queue_full_)(__fixed_queue_allocator* _pAllocator);
-        typedef void (*_fixed_queue_clear_)(__fixed_queue_allocator* _pAllocator);
-        typedef std::size_t (*_fixed_queue_size_)(__fixed_queue_allocator* _pAllocator);
-        typedef std::size_t (*_fixed_queue_capacity_)(__fixed_queue_allocator* _pAllocator);
+        typedef void* (*_fixed_queue_allocate_)(fixed_queue_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_fixed_queue_begin_)(fixed_queue_allocator* _pAllocator);
+        typedef void (*_fixed_queue_pop_)(fixed_queue_allocator* _pAllocator);
+        typedef bool (*_fixed_queue_empty_)(fixed_queue_allocator* _pAllocator);
+        typedef bool (*_fixed_queue_full_)(fixed_queue_allocator* _pAllocator);
+        typedef void (*_fixed_queue_clear_)(fixed_queue_allocator* _pAllocator);
+        typedef std::size_t (*_fixed_queue_size_)(fixed_queue_allocator* _pAllocator);
+        typedef std::size_t (*_fixed_queue_capacity_)(fixed_queue_allocator* _pAllocator);
 
-        typedef void* (*_fixed_array_allocate_)(__fixed_array_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef void* (*_fixed_array_at_)(__fixed_array_allocator* _pAllocator, std::size_t _ullIndex);
-        typedef void* (*_fixed_array_begin_)(__fixed_array_allocator* _pAllocator);
-        typedef void* (*_fixed_array_back_)(__fixed_array_allocator* _pAllocator);
-        typedef bool (*_fixed_array_empty_)(__fixed_array_allocator* _pAllocator);
-        typedef bool (*_fixed_array_full_)(__fixed_array_allocator* _pAllocator);
-        typedef std::size_t (*_fixed_array_size_)(__fixed_array_allocator* _pAllocator);
-        typedef void (*_fixed_array_clear_)(__fixed_array_allocator* _pAllocator);
+        typedef void* (*_fixed_array_allocate_)(fixed_array_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_fixed_array_at_)(fixed_array_allocator* _pAllocator, std::size_t _ullIndex);
+        typedef void* (*_fixed_array_begin_)(fixed_array_allocator* _pAllocator);
+        typedef void* (*_fixed_array_back_)(fixed_array_allocator* _pAllocator);
+        typedef bool (*_fixed_array_empty_)(fixed_array_allocator* _pAllocator);
+        typedef bool (*_fixed_array_full_)(fixed_array_allocator* _pAllocator);
+        typedef std::size_t (*_fixed_array_size_)(fixed_array_allocator* _pAllocator);
+        typedef void (*_fixed_array_clear_)(fixed_array_allocator* _pAllocator);
 
-        typedef void* (*_free_list_allocate_d_)(__free_list_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef void* (*_free_list_allocate_)(__free_list_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef void* (*_free_list_reallocate_)(__free_list_allocator* _pAllocator, void* _pData, std::size_t _ullDataSize, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef void (*_free_list_free_)(__free_list_allocator* _pAllocator, void* _pointer);
-        typedef void (*_free_list_clear_)(__free_list_allocator* _pAllocator);
+        typedef void* (*_free_list_allocate_d_)(free_list_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_free_list_allocate_)(free_list_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_free_list_reallocate_)(free_list_allocator* _pAllocator, void* _pData, std::size_t _ullDataSize, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef void (*_free_list_free_)(free_list_allocator* _pAllocator, void* _pointer);
+        typedef void (*_free_list_clear_)(free_list_allocator* _pAllocator);
 
-        typedef void* (*_fixed_vector_allocate_)(__fixed_vector_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
-        typedef void* (*_fixed_vector_at_)(__fixed_vector_allocator* _pAllocator, std::size_t _ullIndex);
-        typedef void* (*_fixed_vector_begin_)(__fixed_vector_allocator* _pAllocator);
-        typedef void* (*_fixed_vector_back_)(__fixed_vector_allocator* _pAllocator);
-        typedef void* (*_fixed_vector_end_)(__fixed_vector_allocator* _pAllocator);
-        typedef bool (*_fixed_vector_empty_)(__fixed_vector_allocator* _pAllocator);
-        typedef bool (*_fixed_vector_full_)(__fixed_vector_allocator* _pAllocator);
-        typedef void (*_fixed_vector_clear_)(__fixed_vector_allocator* _pAllocator);
-        typedef void (*_fixed_vector_resize_)(IMemory* _pInterface, __free_list_allocator* _pParentAllocator, __fixed_vector_allocator** _pAllocator, std::size_t _ullNewSize);
-        typedef std::size_t (*_fixed_vector_size_)(__fixed_vector_allocator* _pAllocator);
-        typedef std::size_t (*_fixed_vector_capacity_)(__fixed_vector_allocator* _pAllocator);
-        typedef void (*_fixed_vector_erase_)(IMemory* _pInterface, __free_list_allocator* _pParentAllocator, __fixed_vector_allocator** _pAllocator, uint32_t _uiIndex);
+        typedef void* (*_fixed_vector_allocate_)(fixed_vector_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_fixed_vector_at_)(fixed_vector_allocator* _pAllocator, std::size_t _ullIndex);
+        typedef void* (*_fixed_vector_begin_)(fixed_vector_allocator* _pAllocator);
+        typedef void* (*_fixed_vector_back_)(fixed_vector_allocator* _pAllocator);
+        typedef void* (*_fixed_vector_end_)(fixed_vector_allocator* _pAllocator);
+        typedef bool (*_fixed_vector_empty_)(fixed_vector_allocator* _pAllocator);
+        typedef bool (*_fixed_vector_full_)(fixed_vector_allocator* _pAllocator);
+        typedef void (*_fixed_vector_clear_)(fixed_vector_allocator* _pAllocator);
+        typedef void (*_fixed_vector_resize_)(IMemory* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, std::size_t _ullNewSize);
+        typedef std::size_t (*_fixed_vector_size_)(fixed_vector_allocator* _pAllocator);
+        typedef std::size_t (*_fixed_vector_capacity_)(fixed_vector_allocator* _pAllocator);
+        typedef void (*_fixed_vector_erase_)(IMemory* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, uint32_t _uiIndex);
 
-        typedef __linear_allocator* (*_linear_allocate_linear_allocator)(__linear_allocator* _pAllocator, std::size_t _ullSize);
-        typedef __fixed_stack_allocator* (*_linear_allocate_fixed_stack_allocator)(__linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
-        typedef __fixed_array_allocator* (*_linear_allocate_fixed_array_allocator)(__linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
-        typedef __free_list_allocator* (*_linear_allocate_free_list_allocator)(__linear_allocator* _pAllocator, std::size_t _ullSize);
-        typedef __fixed_vector_allocator* (*_linear_allocate_fixed_vector_allocator)(__linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef linear_allocator* (*_linear_allocate_linear_allocator)(linear_allocator* _pAllocator, std::size_t _ullSize);
+        typedef fixed_stack_allocator* (*_linear_allocate_fixed_stack_allocator)(linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef fixed_array_allocator* (*_linear_allocate_fixed_array_allocator)(linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef free_list_allocator* (*_linear_allocate_free_list_allocator)(linear_allocator* _pAllocator, std::size_t _ullSize);
+        typedef fixed_vector_allocator* (*_linear_allocate_fixed_vector_allocator)(linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
 
-        typedef __fixed_queue_allocator* (*_free_list_allocate_fixed_queue_allocator)(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
-        typedef __free_list_allocator* (*_free_list_allocate_free_list_allocator)(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize);
-        typedef __fixed_vector_allocator* (*_free_list_allocate_fixed_vector_allocator)(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
-        typedef __fixed_stack_allocator* (*_free_list_allocate_fixed_stack_allocator)(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
-        typedef __fixed_array_allocator* (*_free_list_allocate_fixed_array_allocator)(IMemory* _pMemory, __free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef fixed_queue_allocator* (*_free_list_allocate_fixed_queue_allocator)(IMemory* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef free_list_allocator* (*_free_list_allocate_free_list_allocator)(IMemory* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize);
+        typedef fixed_vector_allocator* (*_free_list_allocate_fixed_vector_allocator)(IMemory* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef fixed_stack_allocator* (*_free_list_allocate_fixed_stack_allocator)(IMemory* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef fixed_array_allocator* (*_free_list_allocate_fixed_array_allocator)(IMemory* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
 
         _basic_allocate             m_fnBasicAllocate;
 
