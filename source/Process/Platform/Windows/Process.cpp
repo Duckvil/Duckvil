@@ -90,7 +90,7 @@ namespace Duckvil { namespace Process {
         }
     }
 
-    void windows_init(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator, data* _pData)
+    void windows_init(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator, data* _pData)
     {
         windows_data* _data = (windows_data*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(windows_data), alignof(windows_data));
 

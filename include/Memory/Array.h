@@ -21,7 +21,7 @@ namespace Duckvil { namespace Memory {
         using SContainer = SpecifiedContainer<Type, fixed_array_allocator>;
 
     private:
-        static void free_list_copy(IMemory* _pMemoryInterface, const SContainer& _specifiedContainer, SContainer* _pThis)
+        static void free_list_copy(ftable* _pMemoryInterface, const SContainer& _specifiedContainer, SContainer* _pThis)
         {
             free_list_allocator* _allocator = (free_list_allocator*)_specifiedContainer.m_pAllocator;
             const Array& _array = (const Array&)_specifiedContainer;
@@ -35,7 +35,7 @@ namespace Duckvil { namespace Memory {
             _pThis->m_pAllocator = _specifiedContainer.m_pAllocator;
         }
 
-        static void free_list_destruct(IMemory* _pMemoryInterface, allocator* _pAllocator, SContainer* _pThis)
+        static void free_list_destruct(ftable* _pMemoryInterface, allocator* _pAllocator, SContainer* _pThis)
         {
             free_list_allocator* _allocator = (free_list_allocator*)_pAllocator;
             uint32_t _size = fixed_array_size(_pMemoryInterface, _pThis->m_pContainer) / sizeof(Type);
@@ -67,7 +67,7 @@ namespace Duckvil { namespace Memory {
 
         }
 
-        Array(IMemory* _pMemoryInterface, linear_allocator* _pAllocator, std::size_t _ullCount) :
+        Array(ftable* _pMemoryInterface, linear_allocator* _pAllocator, std::size_t _ullCount) :
             SContainer(_pMemoryInterface, _pAllocator)
         {
             SContainer::m_pMemoryInterface = _pMemoryInterface;
@@ -75,7 +75,7 @@ namespace Duckvil { namespace Memory {
             SContainer::m_pContainer = SContainer::m_pMemoryInterface->m_fnAllocateFixedArrayAllocator(_pAllocator, _ullCount * sizeof(Type), sizeof(Type));
         }
 
-        Array(IMemory* _pMemoryInterface, free_list_allocator* _pAllocator, std::size_t _ullCount) :
+        Array(ftable* _pMemoryInterface, free_list_allocator* _pAllocator, std::size_t _ullCount) :
             SContainer(_pMemoryInterface, _pAllocator)
         {
             SContainer::m_fnCopy = &free_list_copy;

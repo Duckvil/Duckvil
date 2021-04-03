@@ -14,10 +14,10 @@ namespace Duckvil { namespace Memory {
 
 // TODO: Implement rest of allocation types
 
-    fixed_queue_allocator* impl_free_list_allocate_fixed_queue_allocator(IMemory* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
-    free_list_allocator* impl_free_list_allocate_free_list_allocator(IMemory* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize);
-    fixed_vector_allocator* impl_free_list_allocate_fixed_vector_allocator(IMemory* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
-    fixed_stack_allocator* impl_free_list_allocate_fixed_stack_allocator(IMemory* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
-    fixed_array_allocator* impl_free_list_allocate_fixed_array_allocator(IMemory* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+    fixed_queue_allocator* impl_free_list_allocate_fixed_queue_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+    free_list_allocator* impl_free_list_allocate_free_list_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize);
+    fixed_vector_allocator* impl_free_list_allocate_fixed_vector_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+    fixed_stack_allocator* impl_free_list_allocate_fixed_stack_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+    fixed_array_allocator* impl_free_list_allocate_fixed_array_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
 
 }}

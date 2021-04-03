@@ -26,7 +26,7 @@ _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Editor");
 record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
-_property = record_property<void*(*)(Duckvil::Memory::IMemory*, Duckvil::Memory::free_list_allocator*, Window::IWindow*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnInit), "m_fnInit");
+_property = record_property<void*(*)(Duckvil::Memory::ftable*, Duckvil::Memory::free_list_allocator*, Window::IWindow*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnInit), "m_fnInit");
 _property = record_property<void(*)(void*, Window::IWindow*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnRender), "m_fnRender");
 _property = record_property<void(*)(void*, HotDraw)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnAddHotDraw), "m_fnAddHotDraw");
 _property = record_property<void(*)(void*, Draw)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnAddDraw), "m_fnAddDraw");

@@ -65,7 +65,7 @@ namespace Duckvil { namespace Memory {
         return _pAllocator->m_ullUsed == _pAllocator->m_ullCapacity;
     }
 
-    void impl_fixed_vector_resize(IMemory* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, std::size_t _ullNewSize)
+    void impl_fixed_vector_resize(ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, std::size_t _ullNewSize)
     {
         if(_pParentAllocator->m_ullCapacity < _ullNewSize + _pParentAllocator->m_ullUsed)
         {
@@ -105,7 +105,7 @@ namespace Duckvil { namespace Memory {
         free_list_free(_pInterface, _pParentAllocator, _ptr);
     }
 
-    void impl_fixed_vector_erase(IMemory* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, uint32_t _uiIndex)
+    void impl_fixed_vector_erase(ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, uint32_t _uiIndex)
     {
         uint32_t _newSize = (*_pAllocator)->m_ullCapacity - (*_pAllocator)->m_ullBlockSize;
         fixed_vector_allocator* _allocator = (fixed_vector_allocator*)free_list_allocate(_pInterface, _pParentAllocator, sizeof(fixed_vector_allocator) + _newSize, alignof(fixed_vector_allocator));

@@ -50,7 +50,7 @@ inline bool duckvil_dynamic_array_full(void* _pArray)
 #define DUCKVIL_DYNAMIC_ARRAY_FULL(arr) \
     duckvil_dynamic_array_full(arr)
 
-static inline void* duckvil_dynamic_array_resize(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, void* _pArray, std::size_t _ullSize, std::size_t _ullAmount)
+static inline void* duckvil_dynamic_array_resize(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, void* _pArray, std::size_t _ullSize, std::size_t _ullAmount)
 {
     uint32_t _capacity;
     __duckvil_dynamic_array* _data = DUCKVIL_DYNAMIC_ARRAY_HEAD(_pArray);

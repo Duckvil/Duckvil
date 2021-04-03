@@ -8,8 +8,8 @@
 
 namespace Duckvil { namespace PlugNPlay {
 
-    typedef void* (*allocator_callback)(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator);
-    typedef void (*free_callback)(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, void* _pointer);
+    typedef void* (*allocator_callback)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator);
+    typedef void (*free_callback)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, void* _pointer);
     typedef void* (*instance_callback)();
 
     enum __instantiation
@@ -29,14 +29,14 @@ namespace Duckvil { namespace PlugNPlay {
     };
 
     void* instantiate_plugin(const __module& _module, const __module_information& _module_info);
-    void* instantiate_plugin(const __module& _module, const __module_information& _module_info, Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator);
+    void* instantiate_plugin(const __module& _module, const __module_information& _module_info, Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator);
 
-    void delete_plugin_instance(const __module& _module, const __module_information& _module_info, Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, void* _pointer);
+    void delete_plugin_instance(const __module& _module, const __module_information& _module_info, Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, void* _pointer);
 
 }}
 
 #define DUCKVIL_PLUGIN(name) \
-    void* construct(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator) \
+    void* construct(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator) \
     { \
         return _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, 0, sizeof(name), alignof(name)); \
     } \
@@ -45,7 +45,7 @@ namespace Duckvil { namespace PlugNPlay {
         static name _instance; \
         return &_instance; \
     } \
-    void free(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, void* _pointer) \
+    void free(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, void* _pointer) \
     { \
         _pMemoryInterface->m_fnFreeListFree_(_pAllocator, _pointer); \
     } \

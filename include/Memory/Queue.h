@@ -22,9 +22,9 @@ namespace Duckvil { namespace Memory {
 
     private:
         // fixed_queue_allocator* m_pAllocator;
-        // IMemory* m_pMemoryInterface;
+        // ftable* m_pMemoryInterface;
 
-        static void free_list_copy(IMemory* _pMemoryInterface, const SContainer& _specifiedContainer, SContainer* _pThis)
+        static void free_list_copy(ftable* _pMemoryInterface, const SContainer& _specifiedContainer, SContainer* _pThis)
         {
             free_list_allocator* _allocator = (free_list_allocator*)_specifiedContainer.m_pAllocator;
             const Queue& _queue = (const Queue&)_specifiedContainer;
@@ -38,7 +38,7 @@ namespace Duckvil { namespace Memory {
             _pThis->m_pAllocator = _specifiedContainer.m_pAllocator;
         }
 
-        static void free_list_destruct(IMemory* _pMemoryInterface, allocator* _pAllocator, SContainer* _pThis)
+        static void free_list_destruct(ftable* _pMemoryInterface, allocator* _pAllocator, SContainer* _pThis)
         {
             free_list_allocator* _allocator = (free_list_allocator*)_pAllocator;
             uint32_t _size = fixed_queue_size(_pMemoryInterface, _pThis->m_pContainer) / sizeof(Type);
@@ -74,7 +74,7 @@ namespace Duckvil { namespace Memory {
 
         }
 
-        Queue(IMemory* _pMemoryInterface, linear_allocator* _pAllocator, std::size_t _ullCount) :
+        Queue(ftable* _pMemoryInterface, linear_allocator* _pAllocator, std::size_t _ullCount) :
             SContainer(_pMemoryInterface, _pAllocator)
         {
             this->m_pMemoryInterface = _pMemoryInterface;
@@ -82,7 +82,7 @@ namespace Duckvil { namespace Memory {
             this->m_pContainer = this->m_pMemoryInterface->m_fnLinearAllocateFixedQueueAllocator(_pAllocator, _ullCount * sizeof(Type), sizeof(Type));
         }
 
-        Queue(IMemory* _pMemoryInterface, free_list_allocator* _pAllocator, std::size_t _ullCount) :
+        Queue(ftable* _pMemoryInterface, free_list_allocator* _pAllocator, std::size_t _ullCount) :
             SContainer(_pMemoryInterface, _pAllocator)
         {
             this->m_fnCopy = &free_list_copy;
@@ -157,13 +157,13 @@ namespace Duckvil { namespace Memory {
         }
 
     // // TODO: Fix allocating other allocators in Allocator.cpp
-    //     Queue(IMemory* _pMemoryInterface, free_list_allocator* _pAllocator, std::size_t _ullCount) :
+    //     Queue(ftable* _pMemoryInterface, free_list_allocator* _pAllocator, std::size_t _ullCount) :
     //         m_pMemoryInterface(_pMemoryInterface)
     //     {
     //         m_pAllocator = m_pMemoryInterface->m_fnFreeListAllocateFixedQueueAllocator(_pMemoryInterface, _pAllocator, _ullCount * sizeof(Type), sizeof(Type));
     //     }
 
-    //     Queue(IMemory* _pMemoryInterface, fixed_queue_allocator* _pAllocator) :
+    //     Queue(ftable* _pMemoryInterface, fixed_queue_allocator* _pAllocator) :
     //         m_pMemoryInterface(_pMemoryInterface),
     //         m_pAllocator(_pAllocator)
     //     {

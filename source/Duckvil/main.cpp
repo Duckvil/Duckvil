@@ -43,12 +43,12 @@ int main(int argc, char* argv[])
     _module.load(&_engineModule);
 
     Duckvil::Memory::init_callback duckvil_memory_init;
-    Duckvil::__ftable* (*duckvil_init)(Duckvil::Memory::IMemory*, Duckvil::Memory::free_list_allocator*);
+    Duckvil::__ftable* (*duckvil_init)(Duckvil::Memory::ftable*, Duckvil::Memory::free_list_allocator*);
 
     _module.get(_memoryModule, "duckvil_memory_init", (void**)&duckvil_memory_init);
     _module.get(_engineModule, "duckvil_init", (void**)&duckvil_init);
 
-    Duckvil::Memory::IMemory* _memoryInterface = duckvil_memory_init();
+    Duckvil::Memory::ftable* _memoryInterface = duckvil_memory_init();
 
     Duckvil::Memory::linear_allocator* _mainMemoryAllocator;
 

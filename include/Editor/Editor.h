@@ -30,7 +30,7 @@ namespace Duckvil { namespace Editor {
 
     struct EditorFTable
     {
-        void* (*m_fnInit)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Window::IWindow* _pWindow);
+        void* (*m_fnInit)(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Window::IWindow* _pWindow);
         void (*m_fnRender)(void* _pData, Window::IWindow* _pWindow);
 
         void (*m_fnAddHotDraw)(void* _pData, HotDraw _draw);
@@ -43,4 +43,4 @@ namespace Duckvil { namespace Editor {
 
 }}
 
-DUCKVIL_EXPORT Duckvil::Editor::EditorFTable* duckvil_editor_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
+DUCKVIL_EXPORT Duckvil::Editor::EditorFTable* duckvil_editor_init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);

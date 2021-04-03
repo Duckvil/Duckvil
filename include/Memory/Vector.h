@@ -22,12 +22,12 @@ namespace Duckvil { namespace Memory {
 
         using SContainer = SpecifiedResizableContainer<Type, fixed_vector_allocator>;
 
-        // typedef void (*resize_callback)(IMemory* _pMemoryInterface, SpecifiedContainer* _pThis, std::size_t _ullNewSize);
+        // typedef void (*resize_callback)(ftable* _pMemoryInterface, SpecifiedContainer* _pThis, std::size_t _ullNewSize);
 
     private:
         // resize_callback m_fnResize;
 
-        static void free_list_copy(IMemory* _pMemoryInterface, const SpecifiedContainer<Type, fixed_vector_allocator>& _specifiedContainer, SpecifiedContainer<Type, fixed_vector_allocator>* _pThis)
+        static void free_list_copy(ftable* _pMemoryInterface, const SpecifiedContainer<Type, fixed_vector_allocator>& _specifiedContainer, SpecifiedContainer<Type, fixed_vector_allocator>* _pThis)
         {
             free_list_allocator* _allocator = (free_list_allocator*)_specifiedContainer.m_pAllocator;
             const Vector& _vec = (const Vector&)_specifiedContainer;
@@ -46,7 +46,7 @@ namespace Duckvil { namespace Memory {
             _pThis->m_pAllocator = _specifiedContainer.m_pAllocator;
         }
 
-        static void free_list_destruct(IMemory* _pMemoryInterface, allocator* _pAllocator, SpecifiedContainer<Type, fixed_vector_allocator>* _pThis)
+        static void free_list_destruct(ftable* _pMemoryInterface, allocator* _pAllocator, SpecifiedContainer<Type, fixed_vector_allocator>* _pThis)
         {
             free_list_allocator* _allocator = (free_list_allocator*)_pAllocator;
             uint32_t _size = fixed_vector_size(_pMemoryInterface, _pThis->m_pContainer) / sizeof(Type);
@@ -71,14 +71,14 @@ namespace Duckvil { namespace Memory {
             free_list_free(_pMemoryInterface, _allocator, _pThis->m_pContainer);
         }
 
-        static void free_list_resize(IMemory* _pMemoryInterface, SContainer* _pThis, std::size_t _ullNewSize)
+        static void free_list_resize(ftable* _pMemoryInterface, SContainer* _pThis, std::size_t _ullNewSize)
         {
             free_list_allocator* _allocator = (free_list_allocator*)_pThis->m_pAllocator;
 
             fixed_vector_resize(_pMemoryInterface, _allocator, &_pThis->m_pContainer, _ullNewSize);
         }
 
-        static void free_list_erase(IMemory* _pMemoryInterface, SContainer* _pThis, uint32_t _uiIndex)
+        static void free_list_erase(ftable* _pMemoryInterface, SContainer* _pThis, uint32_t _uiIndex)
         {
             free_list_allocator* _allocator = (free_list_allocator*)_pThis->m_pAllocator;
 
@@ -91,7 +91,7 @@ namespace Duckvil { namespace Memory {
 
         }
 
-        Vector(IMemory* _pMemoryInterface, free_list_allocator* _pAllocator, std::size_t _ullCount) :
+        Vector(ftable* _pMemoryInterface, free_list_allocator* _pAllocator, std::size_t _ullCount) :
             SContainer(_pMemoryInterface, _pAllocator)
         {
             SContainer::m_fnCopy = &free_list_copy;

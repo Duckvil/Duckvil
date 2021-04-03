@@ -10,7 +10,7 @@
 
 namespace Duckvil {
 
-    __logger_channel_data* init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator)
+    __logger_channel_data* init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator)
     {
         __logger_channel_data* _data = (__logger_channel_data*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__logger_channel_data), alignof(__logger_channel_data));
 
@@ -210,7 +210,7 @@ namespace Duckvil {
 
 }
 
-Duckvil::__logger_channel_ftable* duckvil_logger_channel_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator)
+Duckvil::__logger_channel_ftable* duckvil_logger_channel_init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator)
 {
     Duckvil::__logger_channel_ftable* _ftable = (Duckvil::__logger_channel_ftable*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Duckvil::__logger_channel_ftable), alignof(Duckvil::__logger_channel_ftable));
 

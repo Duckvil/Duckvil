@@ -14,7 +14,7 @@ namespace Duckvil { namespace Process {
         void* m_pData;
     };
 
-    void linux_init(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator, data* _pData)
+    void linux_init(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator, data* _pData)
     {
         linux_data* _data = (linux_data*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(linux_data), alignof(linux_data));
 

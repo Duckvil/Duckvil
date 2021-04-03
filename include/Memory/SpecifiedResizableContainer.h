@@ -7,8 +7,8 @@ namespace Duckvil { namespace Memory {
     template <typename ContainerType, typename Type>
     struct SpecifiedResizableContainer : public SpecifiedContainer<ContainerType, Type>
     {
-        typedef void (*resize_callback)(IMemory* _pMemoryInterface, SpecifiedResizableContainer* _pThis, std::size_t _ullNewSize);
-        typedef void (*erase_callback)(IMemory* _pMemoryInterface, SpecifiedResizableContainer* _pThis, uint32_t _uiIndex);
+        typedef void (*resize_callback)(ftable* _pMemoryInterface, SpecifiedResizableContainer* _pThis, std::size_t _ullNewSize);
+        typedef void (*erase_callback)(ftable* _pMemoryInterface, SpecifiedResizableContainer* _pThis, uint32_t _uiIndex);
 
         SpecifiedResizableContainer()
         {
@@ -16,14 +16,14 @@ namespace Duckvil { namespace Memory {
             m_fnErase = nullptr;
         }
 
-        SpecifiedResizableContainer(IMemory* _pMemory, allocator* _pAllocator) :
+        SpecifiedResizableContainer(ftable* _pMemory, allocator* _pAllocator) :
             SpecifiedContainer<ContainerType, Type>(_pMemory, _pAllocator)
         {
             m_fnResize = nullptr;
             m_fnErase = nullptr;
         }
 
-        SpecifiedResizableContainer(IMemory* _pMemory, allocator* _pAllocator, Type* _pSpecifiedContainer) :
+        SpecifiedResizableContainer(ftable* _pMemory, allocator* _pAllocator, Type* _pSpecifiedContainer) :
             SpecifiedContainer<ContainerType, Type>(_pMemory, _pAllocator, _pSpecifiedContainer)
         {
             m_fnResize = nullptr;
@@ -31,7 +31,7 @@ namespace Duckvil { namespace Memory {
         }
 
         SpecifiedResizableContainer(
-            IMemory* _pMemory,
+            ftable* _pMemory,
             allocator* _pAllocator,
             Type* _pContainer,
             const typename SpecifiedContainer<ContainerType, Type>::copy_callback& _fnCopy,

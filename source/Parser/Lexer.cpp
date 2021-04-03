@@ -123,7 +123,7 @@ namespace Duckvil { namespace Parser {
 
 }}
 
-Duckvil::Parser::__lexer_ftable* duckvil_lexer_init(Duckvil::Memory::IMemory* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator)
+Duckvil::Parser::__lexer_ftable* duckvil_lexer_init(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator)
 {
     Duckvil::Parser::__lexer_ftable* _table = (Duckvil::Parser::__lexer_ftable*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(Duckvil::Parser::__lexer_ftable), alignof(Duckvil::Parser::__lexer_ftable));
 

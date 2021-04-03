@@ -22,7 +22,7 @@ struct duckvil_recorderd_types
 #define DUCKVIL_META_CAT(...) __VA_ARGS__
 
 #define DUCKVIL_RUNTIME_REFLECTION_RECORD(index) \
-    DUCKVIL_EXPORT duckvil_recorderd_types duckvil_runtime_reflection_record_##index(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData)
+    DUCKVIL_EXPORT duckvil_recorderd_types duckvil_runtime_reflection_record_##index(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData)
 
 #define DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(count) \
     DUCKVIL_EXPORT uint32_t duckvil_get_runtime_reflection_recorder_count() { return count; }
@@ -32,7 +32,7 @@ struct duckvil_recorderd_types
 
 #define DUCKVIL_REFLECTION_META_UTIL(name, types, types2) \
     template <typename KeyType, typename ValueType> \
-    static DUCKVIL_RESOURCE(meta_t) record_meta(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, types, const KeyType& _key, const ValueType& _value) \
+    static DUCKVIL_RESOURCE(meta_t) record_meta(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, types, const KeyType& _key, const ValueType& _value) \
     { \
         __recorder_meta_info _meta = recorder_generate_meta_info(_key, _value); \
  \
@@ -40,7 +40,7 @@ struct duckvil_recorderd_types
     } \
  \
     template <typename ValueType, std::size_t Length> \
-    static DUCKVIL_RESOURCE(meta_t) record_meta(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, types, const char (&_key)[Length], const ValueType& _value) \
+    static DUCKVIL_RESOURCE(meta_t) record_meta(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, types, const char (&_key)[Length], const ValueType& _value) \
     { \
         __recorder_meta_info _meta = recorder_generate_meta_info(_key, _value, sizeof(ValueType)); \
  \
@@ -48,7 +48,7 @@ struct duckvil_recorderd_types
     } \
  \
     template <typename KeyType, std::size_t Length> \
-    static DUCKVIL_RESOURCE(meta_t) record_meta(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, types, const KeyType& _key, const char (&_value)[Length]) \
+    static DUCKVIL_RESOURCE(meta_t) record_meta(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, types, const KeyType& _key, const char (&_value)[Length]) \
     { \
         __recorder_meta_info _meta = recorder_generate_meta_info(_key, sizeof(KeyType), _value); \
  \
@@ -56,7 +56,7 @@ struct duckvil_recorderd_types
     } \
  \
     template <std::size_t Length, std::size_t Length2> \
-    static DUCKVIL_RESOURCE(meta_t) record_meta(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, types, const char (&_key)[Length], const char (&_value)[Length2]) \
+    static DUCKVIL_RESOURCE(meta_t) record_meta(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, types, const char (&_key)[Length], const char (&_value)[Length2]) \
     { \
         __recorder_meta_info _meta = recorder_generate_meta_info(_key, _value); \
  \
@@ -73,7 +73,7 @@ namespace std {
 namespace Duckvil { namespace RuntimeReflection {
 
     template <typename Type, typename... Args>
-    void* create_object(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __ftable* _pReflection, __data* _pData, bool _bTracked, Args... _vArgs)
+    void* create_object(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __ftable* _pReflection, __data* _pData, bool _bTracked, Args... _vArgs)
     {
         void* _object = new(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Type), alignof(Type))) Type(_vArgs...);
 
@@ -269,19 +269,19 @@ namespace Duckvil { namespace RuntimeReflection {
 
     struct __recorder_ftable
     {
-        DUCKVIL_RESOURCE(type_t) (*m_fnRecordType)(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, std::size_t _ullTypeID, const char* _sTypeName, std::size_t _ullLength);
-        DUCKVIL_RESOURCE(constructor_t) (*m_fnRecordConstructor)(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, uint8_t* _pConctructor, Memory::Queue<__argument_t>& _arguments);
-        DUCKVIL_RESOURCE(property_t) (*m_fnRecordProperty)(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, const char* _sName, std::size_t _ullLength, uintptr_t _ullAddress);
-        DUCKVIL_RESOURCE(namespace_t) (*m_fnRecordNamespace)(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, const char* _sName, std::size_t _ullLength);
-        DUCKVIL_RESOURCE(inheritance_t) (*m_fnRecordInheritance)(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullInheritanceTypeID, __protection _protection);
-        DUCKVIL_RESOURCE(function_t) (*m_fnRecordFunction)(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, __ifunction* _pFunction, const char* _sName, std::size_t _ullLength, std::size_t _ullReturnTypeID, std::size_t _ullArgumentsTypeID);
-        DUCKVIL_RESOURCE(meta_t) (*m_fnRecordTypeMeta)(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, const __recorder_meta_info& _meta);
-        DUCKVIL_RESOURCE(meta_t) (*m_fnRecordPropertyMeta)(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(property_t) _owner, const __recorder_meta_info& _meta);
-        DUCKVIL_RESOURCE(meta_t) (*m_fnRecordConstructorMeta)(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _owner, const __recorder_meta_info& _meta);
+        DUCKVIL_RESOURCE(type_t) (*m_fnRecordType)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, std::size_t _ullTypeID, const char* _sTypeName, std::size_t _ullLength);
+        DUCKVIL_RESOURCE(constructor_t) (*m_fnRecordConstructor)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, uint8_t* _pConctructor, Memory::Queue<__argument_t>& _arguments);
+        DUCKVIL_RESOURCE(property_t) (*m_fnRecordProperty)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, const char* _sName, std::size_t _ullLength, uintptr_t _ullAddress);
+        DUCKVIL_RESOURCE(namespace_t) (*m_fnRecordNamespace)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, const char* _sName, std::size_t _ullLength);
+        DUCKVIL_RESOURCE(inheritance_t) (*m_fnRecordInheritance)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullInheritanceTypeID, __protection _protection);
+        DUCKVIL_RESOURCE(function_t) (*m_fnRecordFunction)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, __ifunction* _pFunction, const char* _sName, std::size_t _ullLength, std::size_t _ullReturnTypeID, std::size_t _ullArgumentsTypeID);
+        DUCKVIL_RESOURCE(meta_t) (*m_fnRecordTypeMeta)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, const __recorder_meta_info& _meta);
+        DUCKVIL_RESOURCE(meta_t) (*m_fnRecordPropertyMeta)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(property_t) _owner, const __recorder_meta_info& _meta);
+        DUCKVIL_RESOURCE(meta_t) (*m_fnRecordConstructorMeta)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _owner, const __recorder_meta_info& _meta);
     };
 
     template <typename Type, std::size_t Length>
-    static DUCKVIL_RESOURCE(type_t) record_type(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, const char (&_sName)[Length])
+    static DUCKVIL_RESOURCE(type_t) record_type(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, const char (&_sName)[Length])
     {
         DUCKVIL_RESOURCE(type_t) _typeHandle = _pFunctions->m_fnRecordType(_pMemoryInterface, _pAllocator, _pData, typeid(Type).hash_code(), _sName, Length);
 
@@ -300,7 +300,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename Type, typename... Args>
-    static DUCKVIL_RESOURCE(constructor_t) record_constructor(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle)
+    static DUCKVIL_RESOURCE(constructor_t) record_constructor(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle)
     {
         Memory::Queue<__argument_t> _arguments(_pMemoryInterface, _pAllocator, sizeof...(Args));
 
@@ -323,7 +323,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename A, typename B, std::size_t Length>
-    static DUCKVIL_RESOURCE(property_t) record_property(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, uintptr_t _ullOffset, const char (&_sName)[Length])
+    static DUCKVIL_RESOURCE(property_t) record_property(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, uintptr_t _ullOffset, const char (&_sName)[Length])
     {
         static std::size_t _typeA_ID = typeid(A).hash_code();
         static std::size_t _typeB_ID = typeid(B).hash_code();
@@ -346,7 +346,7 @@ namespace Duckvil { namespace RuntimeReflection {
     DUCKVIL_REFLECTION_META_UTIL(Constructor, DUCKVIL_META_CAT(DUCKVIL_RESOURCE(type_t) _handle, DUCKVIL_RESOURCE(constructor_t) _constructorHandle), DUCKVIL_META_CAT(_handle, _constructorHandle))
 
     template <typename B, std::size_t Length>
-    static DUCKVIL_RESOURCE(property_t) record_property(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, uintptr_t _ullOffset, const char (&_sName)[Length])
+    static DUCKVIL_RESOURCE(property_t) record_property(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, uintptr_t _ullOffset, const char (&_sName)[Length])
     {
         static std::size_t _typeB_ID = typeid(B).hash_code();
 
@@ -354,19 +354,19 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <std::size_t Length>
-    static DUCKVIL_RESOURCE(namespace_t) record_namespace(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char (&_sName)[Length])
+    static DUCKVIL_RESOURCE(namespace_t) record_namespace(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char (&_sName)[Length])
     {
         return _pFunctions->m_fnRecordNamespace(_pMemoryInterface, _pAllocator, _pData, _typeHandle, _sName, Length);
     }
 
     template <typename Type>
-    static DUCKVIL_RESOURCE(inheritance_t) record_inheritance(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, __protection _protection)
+    static DUCKVIL_RESOURCE(inheritance_t) record_inheritance(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, __protection _protection)
     {
         return _pFunctions->m_fnRecordInheritance(_pMemoryInterface, _pAllocator, _pData, _typeHandle, typeid(Type).hash_code(), _protection);
     }
 
     template <typename Type, typename ReturnType, typename... Args, std::size_t Length>
-    static DUCKVIL_RESOURCE(function_t) record_function(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, ReturnType (Type::*func)(Args...), const char (&_sName)[Length])
+    static DUCKVIL_RESOURCE(function_t) record_function(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, ReturnType (Type::*func)(Args...), const char (&_sName)[Length])
     {
         void* _pointer =
             _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__function<ReturnType (Type::*)(Args...)>), alignof(__function<ReturnType (Type::*)(Args...)>));
@@ -379,7 +379,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename Type, typename ReturnType, typename... Args, std::size_t Length>
-    static DUCKVIL_RESOURCE(function_t) record_function(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, ReturnType (Type::*func)(Args...) const, const char (&_sName)[Length])
+    static DUCKVIL_RESOURCE(function_t) record_function(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, ReturnType (Type::*func)(Args...) const, const char (&_sName)[Length])
     {
         void* _pointer =
             _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__function<ReturnType (Type::*)(Args...) const>), alignof(__function<ReturnType (Type::*)(Args...) const>));
@@ -392,7 +392,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename ReturnType, typename... Args, std::size_t Length>
-    static DUCKVIL_RESOURCE(function_t) record_function(Memory::IMemory* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, ReturnType (*func)(Args...), const char (&_sName)[Length])
+    static DUCKVIL_RESOURCE(function_t) record_function(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, ReturnType (*func)(Args...), const char (&_sName)[Length])
     {
         void* _pointer =
             _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__function<ReturnType (*)(Args...)>), alignof(__function<ReturnType (*)(Args...)>));
@@ -406,6 +406,6 @@ namespace Duckvil { namespace RuntimeReflection {
 
 }}
 
-typedef Duckvil::RuntimeReflection::__recorder_ftable* (*duckvil_runtime_reflection_recorder_init_callback)(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
+typedef Duckvil::RuntimeReflection::__recorder_ftable* (*duckvil_runtime_reflection_recorder_init_callback)(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
 
-DUCKVIL_EXPORT Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_recorder_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
+DUCKVIL_EXPORT Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_recorder_init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);

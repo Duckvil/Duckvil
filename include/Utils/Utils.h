@@ -20,7 +20,7 @@ namespace Duckvil { namespace Utils {
             m_pAllocator = nullptr;
         }
 
-        string(const string& _string, Memory::IMemory* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0)
+        string(const string& _string, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0)
         {
             Allocate(_string.m_ullLength, _pMemory, _pAllocator);
             memcpy(m_sText, _string.m_sText, _string.m_ullLength);
@@ -38,14 +38,14 @@ namespace Duckvil { namespace Utils {
             _string.m_ullLength = 0;
         }
 
-        string(const char* _sText, std::size_t _ullLength, Memory::IMemory* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0)
+        string(const char* _sText, std::size_t _ullLength, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0)
         {
             Allocate(_ullLength, _pMemory, _pAllocator);
             memcpy(m_sText, _sText, _ullLength);
         }
 
         template <std::size_t Length>
-        string(const char (&_sText)[Length], Memory::IMemory* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
+        string(const char (&_sText)[Length], Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
             string(_sText, Length, _pMemory, _pAllocator)
         {
 
@@ -70,7 +70,7 @@ namespace Duckvil { namespace Utils {
 
         char* m_sText;
         std::size_t m_ullLength;
-        Memory::IMemory* m_pMemory = 0;
+        Memory::ftable* m_pMemory = 0;
         Memory::free_list_allocator* m_pAllocator = 0;
 
         template <std::size_t Length>
@@ -143,7 +143,7 @@ namespace Duckvil { namespace Utils {
             return strcmp(_lhs.m_sText, _rhs) == 0;
         }
 
-        void Allocate(std::size_t _ullLength, Memory::IMemory* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0)
+        void Allocate(std::size_t _ullLength, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0)
         {
         // TODO: Allow to allocate using Duckvil allocators
             if(_pMemory != nullptr && _pAllocator != nullptr)

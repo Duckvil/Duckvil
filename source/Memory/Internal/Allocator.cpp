@@ -172,7 +172,7 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    fixed_queue_allocator* impl_free_list_allocate_fixed_queue_allocator(IMemory* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
+    fixed_queue_allocator* impl_free_list_allocate_fixed_queue_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
         fixed_queue_allocator* _allocator = (fixed_queue_allocator*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(fixed_queue_allocator) + _ullSize, alignof(fixed_queue_allocator));
 
@@ -195,7 +195,7 @@ namespace Duckvil { namespace Memory {
         return _allocator;
     }
 
-    free_list_allocator* impl_free_list_allocate_free_list_allocator(IMemory* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize)
+    free_list_allocator* impl_free_list_allocate_free_list_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize)
     {
         free_list_allocator* _allocator = (free_list_allocator*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(free_list_allocator) + _ullSize, alignof(free_list_allocator));
 
@@ -222,7 +222,7 @@ namespace Duckvil { namespace Memory {
         return _allocator;
     }
 
-    fixed_vector_allocator* impl_free_list_allocate_fixed_vector_allocator(IMemory* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
+    fixed_vector_allocator* impl_free_list_allocate_fixed_vector_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
         fixed_vector_allocator* _allocator = (fixed_vector_allocator*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(fixed_vector_allocator) + _ullSize, alignof(fixed_vector_allocator));
         std::size_t _size = sizeof(fixed_vector_allocator);
@@ -242,7 +242,7 @@ namespace Duckvil { namespace Memory {
         return _allocator;
     }
 
-    fixed_stack_allocator* impl_free_list_allocate_fixed_stack_allocator(IMemory* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
+    fixed_stack_allocator* impl_free_list_allocate_fixed_stack_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
         fixed_stack_allocator* _allocator = (fixed_stack_allocator*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(fixed_stack_allocator) + _ullSize, alignof(fixed_stack_allocator));
         std::size_t _size = sizeof(fixed_stack_allocator);
@@ -262,7 +262,7 @@ namespace Duckvil { namespace Memory {
         return _allocator;
     }
 
-    fixed_array_allocator* impl_free_list_allocate_fixed_array_allocator(IMemory* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
+    fixed_array_allocator* impl_free_list_allocate_fixed_array_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
         fixed_array_allocator* _allocator = (fixed_array_allocator*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(fixed_array_allocator) + _ullSize, alignof(fixed_array_allocator));
         std::size_t _size = sizeof(fixed_array_allocator);

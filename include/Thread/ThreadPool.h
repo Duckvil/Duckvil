@@ -54,4 +54,4 @@ namespace Duckvil { namespace Thread {
 
 }}
 
-DUCKVIL_EXPORT Duckvil::Thread::pool_ftable* duckvil_thread_pool_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
+DUCKVIL_EXPORT Duckvil::Thread::pool_ftable* duckvil_thread_pool_init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);

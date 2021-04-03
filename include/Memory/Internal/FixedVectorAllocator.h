@@ -14,8 +14,8 @@ namespace Duckvil { namespace Memory {
     std::size_t impl_fixed_vector_capacity(fixed_vector_allocator* _pAllocator);
     bool impl_fixed_vector_empty(fixed_vector_allocator* _pAllocator);
     bool impl_fixed_vector_full(fixed_vector_allocator* _pAllocator);
-    void impl_fixed_vector_resize(IMemory* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, std::size_t _ullNewSize);
-    void impl_fixed_vector_erase(IMemory* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, uint32_t _uiIndex);
+    void impl_fixed_vector_resize(ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, std::size_t _ullNewSize);
+    void impl_fixed_vector_erase(ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, uint32_t _uiIndex);
 
     void impl_fixed_vector_clear(fixed_vector_allocator* _pAllocator);
 

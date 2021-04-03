@@ -34,7 +34,7 @@ namespace Duckvil {
 
 }
 
-Duckvil::logger_ftable duckvil_logger_init(Duckvil::Memory::IMemory* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator)
+Duckvil::logger_ftable duckvil_logger_init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator)
 {
     Duckvil::logger_ftable _ftable;
 

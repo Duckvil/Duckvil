@@ -66,11 +66,11 @@ namespace Duckvil { namespace Memory {
 
 }}
 
-Duckvil::Memory::IMemory* duckvil_memory_init()
+Duckvil::Memory::ftable* duckvil_memory_init()
 {
     using namespace Duckvil::Memory;
 
-    IMemory* memory = (IMemory*)malloc(sizeof(IMemory));
+    ftable* memory = (ftable*)malloc(sizeof(ftable));
 
     memory->m_fnBasicAllocate = &impl_allocate;
 

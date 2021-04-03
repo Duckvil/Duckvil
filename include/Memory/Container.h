@@ -12,14 +12,14 @@ namespace Duckvil { namespace Memory {
             m_pAllocator = nullptr;
         }
 
-        Container(IMemory* _pMemory, allocator* _pAllocator) :
+        Container(ftable* _pMemory, allocator* _pAllocator) :
             m_pMemoryInterface(_pMemory),
             m_pAllocator(_pAllocator)
         {
 
         }
 
-        IMemory* m_pMemoryInterface;
+        ftable* m_pMemoryInterface;
         allocator* m_pAllocator;
     };
 
