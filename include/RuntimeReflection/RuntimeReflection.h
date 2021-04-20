@@ -32,7 +32,6 @@
 
 #define DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(...) typeid(void(__VA_ARGS__)).hash_code()
 
-
 namespace Duckvil { namespace RuntimeReflection {
 
     struct __ftable;
@@ -139,7 +138,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         DUCKVIL_RESOURCE(type_t) m_owner;
         std::size_t m_ullTypeID;
-        char m_sName[DUCKVIL_RUNTIME_REFLECTION_PROPERTY_NAME_MAX];
+        char* m_sName;
         uintptr_t m_ullAddress;
         property_traits m_traits;
         DUCKVIL_SLOT_ARRAY(__meta_t) m_metas;
@@ -147,7 +146,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
     slot(__namespace_t,
     {
-        char m_sTypeName[DUCKVIL_RUNTIME_REFLECTION_NAMESPACE_NAME_MAX];
+        char* m_sNamespaceName;
     });
 
     slot(__inheritance_t,
@@ -161,7 +160,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         DUCKVIL_RESOURCE(function_t) m_uiTypeSlotIndex; // TODO: Check if set
         __ifunction* m_pFunction;
-        char m_sFunctionName[DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX];
+        char* m_sFunctionName;
         std::size_t m_ullReturnTypeID;
         std::size_t m_ullArgumentsTypeID;
     });
@@ -170,7 +169,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         DUCKVIL_RESOURCE(type_t) m_uiSlotIndex;
         std::size_t m_ullTypeID;
-        char m_sTypeName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX];
+        char* m_sTypeName;
         DUCKVIL_SLOT_ARRAY(__constructor_t) m_constructors;
         DUCKVIL_SLOT_ARRAY(__property_t) m_properties;
         DUCKVIL_SLOT_ARRAY(__namespace_t) m_namespaces;
@@ -194,7 +193,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
         const __namespace_t& _namespace = DUCKVIL_SLOT_ARRAY_GET(_typeNamespaces, _uiIndex);
 
-        if(strcmp(_namespace.m_sTypeName, _sName) != 0)
+        if(strcmp(_namespace.m_sNamespaceName, _sName) != 0)
         {
             _bRes = false;
         }
@@ -281,8 +280,8 @@ namespace Duckvil { namespace RuntimeReflection {
 
 // Create type object using type name string
 // Note: It will compare given arguments with available constructors arguments
-    template <typename... Args>
-    static void* create(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __ftable* _pReflection, __data* _pData, const char _sTypeName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX], bool _bTracked, const Args&... _vArgs)
+    template <typename... Args, std::size_t Length>
+    static void* create(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __ftable* _pReflection, __data* _pData, const char (&_sTypeName)[Length], bool _bTracked, const Args&... _vArgs)
     {
         const __data& _data = *_pData;
         static const std::size_t& _constructorTypeID = typeid(void*(Args...)).hash_code();
@@ -396,7 +395,7 @@ namespace Duckvil { namespace RuntimeReflection {
                 {
                     const __namespace_t& _namespace = DUCKVIL_SLOT_ARRAY_GET(_type.m_namespaces, j);
 
-                    if(strcmp(_namespace.m_sTypeName, _aNamespaces[j]) != 0)
+                    if(strcmp(_namespace.m_sNamespaceName, _aNamespaces[j]) != 0)
                     {
                         _valid = false;
 
@@ -645,7 +644,7 @@ namespace Duckvil { namespace RuntimeReflection {
                 {
                     const __namespace_t& _namespace = DUCKVIL_SLOT_ARRAY_GET(_type.m_namespaces, j);
 
-                    if(strcmp(_namespace.m_sTypeName, _aNamespaces[j]) != 0)
+                    if(strcmp(_namespace.m_sNamespaceName, _aNamespaces[j]) != 0)
                     {
                         _valid = false;
 
