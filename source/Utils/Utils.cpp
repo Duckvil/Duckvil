@@ -5,6 +5,48 @@
 
 namespace Duckvil { namespace Utils {
 
+    void allocate(string* _pString, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, std::size_t _ullLength)
+    {
+        if(_pMemory == nullptr || _pAllocator == nullptr)
+        {
+            allocate(_pString, _ullLength);
+
+            return;
+        }
+
+        _pString->m_sText = (char*)_pMemory->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8);
+        _pString->m_ullLength = _ullLength;
+        _pString->m_pAllocator = _pAllocator;
+        _pString->m_pMemory = _pMemory;
+
+        memset(_pString->m_sText, 0, _ullLength);
+    }
+
+    void allocate(string* _pString, std::size_t _ullLength)
+    {
+        _pString->m_sText = new char[_ullLength];
+        _pString->m_ullLength = _ullLength;
+        _pString->m_pAllocator = nullptr;
+        _pString->m_pMemory = nullptr;
+
+        memset(_pString->m_sText, 0, _ullLength);
+    }
+
+    void allocate(string* _pString, const string& _string)
+    {
+        allocate(_pString, _string.m_pMemory, _string.m_pAllocator, _string.m_ullLength);
+    }
+
+    static inline bool operator==(const string& _lhs, const string& _rhs)
+    {
+        if(_lhs.m_ullLength == -1 || _rhs.m_ullLength == -1)
+        {
+            return false;
+        }
+
+        return strcmp(_lhs.m_sText, _rhs.m_sText) == 0;
+    }
+
     void split(const std::string& s, char delim, std::back_insert_iterator<std::vector<std::string>> result)
     {
         std::stringstream ss(s);

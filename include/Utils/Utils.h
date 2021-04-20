@@ -10,6 +10,12 @@
 
 namespace Duckvil { namespace Utils {
 
+    struct string;
+
+    void allocate(string* _pString, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, std::size_t _ullLength);
+    void allocate(string* _pString, std::size_t _ullLength);
+    void allocate(string* _pString, const string& _string);
+
     struct string
     {
         string()
@@ -22,7 +28,7 @@ namespace Duckvil { namespace Utils {
 
         string(const string& _string, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0)
         {
-            Allocate(_string.m_ullLength, _pMemory, _pAllocator);
+            allocate(this, _pMemory, _pAllocator, _string.m_ullLength);
             memcpy(m_sText, _string.m_sText, _string.m_ullLength);
         }
 
@@ -40,7 +46,7 @@ namespace Duckvil { namespace Utils {
 
         string(const char* _sText, std::size_t _ullLength, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0)
         {
-            Allocate(_ullLength, _pMemory, _pAllocator);
+            allocate(this, _pMemory, _pAllocator, _ullLength);
             memcpy(m_sText, _sText, _ullLength);
         }
 
@@ -76,7 +82,7 @@ namespace Duckvil { namespace Utils {
         template <std::size_t Length>
         string& operator=(const char (&_sText)[Length])
         {
-            Allocate(Length);
+            allocate(this, Length);
             memcpy(m_sText, _sText, Length);
 
             return *this;
@@ -106,62 +112,35 @@ namespace Duckvil { namespace Utils {
         {
             m_ullLength = _string.m_ullLength;
 
-            Allocate(m_ullLength);
+            allocate(this, _string);
             memcpy(m_sText, _string.m_sText, m_ullLength);
 
             return *this;
         }
-
-        friend bool operator==(const string& _lhs, const string& _rhs)
-        {
-            if(_lhs.m_ullLength == -1 || _rhs.m_ullLength == -1)
-            {
-                return false;
-            }
-
-            return strcmp(_lhs.m_sText, _rhs.m_sText) == 0;
-        }
-
-        template <size_t Length>
-        friend bool operator==(const string& _lhs, const char (&_rhs)[Length])
-        {
-            if(_lhs.m_ullLength == -1 || Length == -1)
-            {
-                return false;
-            }
-
-            return strcmp(_lhs.m_sText, _rhs) == 0;
-        }
-
-        friend bool operator==(const string& _lhs, const char* _rhs)
-        {
-            if(_lhs.m_ullLength == -1)
-            {
-                return false;
-            }
-
-            return strcmp(_lhs.m_sText, _rhs) == 0;
-        }
-
-        void Allocate(std::size_t _ullLength, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0)
-        {
-        // TODO: Allow to allocate using Duckvil allocators
-            if(_pMemory != nullptr && _pAllocator != nullptr)
-            {
-                m_sText = (char*)_pMemory->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8);
-                m_pMemory = _pMemory;
-                m_pAllocator = _pAllocator;
-            }
-            else
-            {
-                m_sText = new char[_ullLength];
-            }
-
-            m_ullLength = _ullLength;
-
-            memset(m_sText, 0, _ullLength);
-        }
     };
+
+    static inline bool operator==(const string& _lhs, const string& _rhs);
+
+    template <size_t Length>
+    static inline bool operator==(const string& _lhs, const char (&_rhs)[Length])
+    {
+        if(_lhs.m_ullLength == -1 || Length == -1)
+        {
+            return false;
+        }
+
+        return strcmp(_lhs.m_sText, _rhs) == 0;
+    }
+
+    // static inline bool operator==(const string& _lhs, const char* _rhs)
+    // {
+    //     if(_lhs.m_ullLength == -1)
+    //     {
+    //         return false;
+    //     }
+
+    //     return strcmp(_lhs.m_sText, _rhs) == 0;
+    // }
 
     void split(const std::string& s, char delim, std::back_insert_iterator<std::vector<std::string>> result);
     std::vector<std::string> split(const std::string& s, char delim);
@@ -192,7 +171,8 @@ namespace Duckvil { namespace Utils {
             std::size_t _ullLength = 0;
             int _[] = { 0, (calculate_string_length(_sText, _ullLength), 0)... };
 
-            _buffer.Allocate(_ullLength + 1);
+            // _buffer.Allocate(_ullLength + 1);
+            allocate(&_buffer, _ullLength + 1);
         }
 
         std::size_t _index = 0;
