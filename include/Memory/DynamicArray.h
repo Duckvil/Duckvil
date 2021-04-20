@@ -58,11 +58,11 @@ static inline void* duckvil_dynamic_array_resize(Duckvil::Memory::ftable* _pMemo
     if(_pArray)
     {
         _capacity = _ullAmount;
-        _data = (__duckvil_dynamic_array*)_pMemoryInterface->m_fnFreeListReallocate_(_pAllocator, DUCKVIL_DYNAMIC_ARRAY_HEAD(_pArray), (_capacity * _ullSize) + sizeof(__duckvil_dynamic_array), (_capacity * _ullSize) + sizeof(__duckvil_dynamic_array), alignof(__duckvil_dynamic_array));
+        _data = (__duckvil_dynamic_array*)_pMemoryInterface->m_fnFreeListReallocate_(_pAllocator, DUCKVIL_DYNAMIC_ARRAY_HEAD(_pArray), (_data->m_ullCapacity * _ullSize) + sizeof(__duckvil_dynamic_array), (_capacity * _ullSize) + sizeof(__duckvil_dynamic_array), alignof(__duckvil_dynamic_array));
     }
     else
     {
-        _capacity = 0;
+        _capacity = _ullAmount;
         _data = (__duckvil_dynamic_array*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, (_capacity * _ullSize) + sizeof(__duckvil_dynamic_array), alignof(__duckvil_dynamic_array));
     }
 
@@ -84,6 +84,27 @@ static inline void* duckvil_dynamic_array_resize(Duckvil::Memory::ftable* _pMemo
 inline bool duckvil_dynamic_array_need_grow(void* _pArray, uint32_t _ullN)
 {
     return (_pArray == nullptr || duckvil_dynamic_array_size(_pArray) + _ullN >= duckvil_dynamic_array_capacity(_pArray));
+}
+
+inline void duckvil_dynamic_array_push_data(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, void** _pArray, void* _pData, std::size_t _ullSize)
+{
+    if(duckvil_dynamic_array_need_grow(*_pArray, 1))
+    {
+        uint32_t _capacity = duckvil_dynamic_array_capacity(*_pArray);
+
+        *_pArray = duckvil_dynamic_array_resize(_pMemoryInterface, _pAllocator, *_pArray, _ullSize, _capacity ? _capacity * 2 : 1);
+    }
+
+    size_t _offset = DUCKVIL_DYNAMIC_ARRAY_SIZE(*_pArray);
+
+    memcpy(((uint8_t*)*_pArray) + (_offset * _ullSize), _pData, _ullSize);
+
+    DUCKVIL_DYNAMIC_ARRAY_HEAD(*_pArray)->m_ullSize++;
+}
+
+inline void duckvil_dynamic_array_set_data_i(void** _ppArray, void* _pData, std::size_t _ullSize, uint32_t _uiOffset)
+{
+    memcpy(((uint8_t*)*_ppArray) + (_uiOffset * _ullSize), _pData, _ullSize);
 }
 
 #define DUCKVIL_DYNAMIC_ARRAY_NEED_GROW(arr, n) \
