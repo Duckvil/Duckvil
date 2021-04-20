@@ -7,6 +7,7 @@
 #include "Memory/Internal/FixedArrayAllocator.h"
 #include "Memory/Internal/FreeListAllocator.h"
 #include "Memory/Internal/FixedVectorAllocator.h"
+#include "Memory/Internal/ByteBuffer.h"
 
 #include <memory>
 
@@ -130,6 +131,15 @@ Duckvil::Memory::ftable* duckvil_memory_init()
     memory->m_fnFixedVectorCapacity_ =  &impl_fixed_vector_capacity;
     memory->m_fnFixedVectorErase_ =     &impl_fixed_vector_erase;
 
+    memory->m_fnByteBufferWillFit_ =        &impl_byte_buffer_will_fit;
+    memory->m_fnByteBufferClear_ =          &impl_byte_buffer_clear;
+    memory->m_fnByteBufferResize_ =         &impl_byte_buffer_resize;
+    memory->m_fnByteBufferSeekToBegin_ =    &impl_byte_buffer_seek_to_begin;
+    memory->m_fnByteBufferSeekToEnd_ =      &impl_byte_buffer_seek_to_end;
+    memory->m_fnByteBufferAdvance_ =        &impl_byte_buffer_advance;
+    memory->m_fnByteBufferWrite_ =          &impl_byte_buffer_write;
+    memory->m_fnByteBufferRead_ =           &impl_byte_buffer_read;
+
     memory->m_fnLinearAllocateLinearAllocator =         &impl_linear_allocate_linear_allocator;
     memory->m_fnLinearAllocateFixedStackAllocator =     &impl_linear_allocate_fixed_stack_allocator;
     memory->m_fnLinearAllocateFixedArrayAllocator =     &impl_linear_allocate_fixed_array_allocator;
@@ -141,6 +151,7 @@ Duckvil::Memory::ftable* duckvil_memory_init()
     memory->m_fnFreeListAllocateFixedVectorAllocator =  &impl_free_list_allocate_fixed_vector_allocator;
     memory->m_fnFreeListAllocateFixedStackAllocator =   &impl_free_list_allocate_fixed_stack_allocator;
     memory->m_fnFreeListAllocateFixedArrayAllocator =   &impl_free_list_allocate_fixed_array_allocator;
+    memory->m_fnFreeListAllocateByteBufferAllocator =   &impl_free_list_allocate_byte_buffer_allocator;
 
     return memory;
 }
