@@ -15,6 +15,7 @@ _pSerializer->SerializeProperty("m_ullHead", m_ullHead); \
 _pSerializer->SerializeProperty("m_ullBlockSize", m_ullBlockSize); \
 _pSerializer->SerializeProperty("m_pHead", m_pHead); \
 _pSerializer->SerializeProperty("m_ullBlockSize", m_ullBlockSize); \
+_pSerializer->SerializeProperty("m_ullPosition", m_ullPosition); \
 _pSerializer->SerializeProperty("m_fnBasicAllocate", m_fnBasicAllocate); \
 _pSerializer->SerializeProperty("m_fnCalculateAlignedPointer", m_fnCalculateAlignedPointer); \
 _pSerializer->SerializeProperty("m_fnCalculatePadding", m_fnCalculatePadding); \
@@ -65,6 +66,14 @@ _pSerializer->SerializeProperty("m_fnFixedVectorResize_", m_fnFixedVectorResize_
 _pSerializer->SerializeProperty("m_fnFixedVectorSize_", m_fnFixedVectorSize_); \
 _pSerializer->SerializeProperty("m_fnFixedVectorCapacity_", m_fnFixedVectorCapacity_); \
 _pSerializer->SerializeProperty("m_fnFixedVectorErase_", m_fnFixedVectorErase_); \
+_pSerializer->SerializeProperty("m_fnByteBufferWillFit_", m_fnByteBufferWillFit_); \
+_pSerializer->SerializeProperty("m_fnByteBufferClear_", m_fnByteBufferClear_); \
+_pSerializer->SerializeProperty("m_fnByteBufferResize_", m_fnByteBufferResize_); \
+_pSerializer->SerializeProperty("m_fnByteBufferSeekToBegin_", m_fnByteBufferSeekToBegin_); \
+_pSerializer->SerializeProperty("m_fnByteBufferSeekToEnd_", m_fnByteBufferSeekToEnd_); \
+_pSerializer->SerializeProperty("m_fnByteBufferAdvance_", m_fnByteBufferAdvance_); \
+_pSerializer->SerializeProperty("m_fnByteBufferWrite_", m_fnByteBufferWrite_); \
+_pSerializer->SerializeProperty("m_fnByteBufferRead_", m_fnByteBufferRead_); \
 _pSerializer->SerializeProperty("m_fnLinearAllocateLinearAllocator", m_fnLinearAllocateLinearAllocator); \
 _pSerializer->SerializeProperty("m_fnLinearAllocateFixedStackAllocator", m_fnLinearAllocateFixedStackAllocator); \
 _pSerializer->SerializeProperty("m_fnLinearAllocateFixedArrayAllocator", m_fnLinearAllocateFixedArrayAllocator); \
@@ -75,4 +84,5 @@ _pSerializer->SerializeProperty("m_fnFreeListAllocateFreeListAllocator", m_fnFre
 _pSerializer->SerializeProperty("m_fnFreeListAllocateFixedVectorAllocator", m_fnFreeListAllocateFixedVectorAllocator); \
 _pSerializer->SerializeProperty("m_fnFreeListAllocateFixedStackAllocator", m_fnFreeListAllocateFixedStackAllocator); \
 _pSerializer->SerializeProperty("m_fnFreeListAllocateFixedArrayAllocator", m_fnFreeListAllocateFixedArrayAllocator); \
+_pSerializer->SerializeProperty("m_fnFreeListAllocateByteBufferAllocator", m_fnFreeListAllocateByteBufferAllocator); \
 }

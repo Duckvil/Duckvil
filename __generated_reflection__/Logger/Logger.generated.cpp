@@ -28,7 +28,7 @@ _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 0);
 _property = record_property<logger_data(*)(const Memory::FreeList&)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::logger_ftable, m_fnInitLogger), "m_fnInitLogger");
-_property = record_property<void(*)(logger_data*, LoggerChannel, std::size_t, uint32_t)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::logger_ftable, m_fnAdd), "m_fnAdd");
+_property = record_property<void(*)(logger_data*, const LoggerChannel&, std::size_t, uint32_t)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::logger_ftable, m_fnAdd), "m_fnAdd");
 _property = record_property<void(*)(logger_data*, std::size_t, uint32_t, uint32_t, const char*, std::size_t, const char*, std::size_t, __logger_channel_verbosity, const va_list&)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::logger_ftable, m_fnLog), "m_fnLog");
 _type = record_type<Duckvil::logger_context>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "logger_context");
 _recordedTypes.push_back(_type);
