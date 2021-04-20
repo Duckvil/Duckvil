@@ -17,6 +17,8 @@
 
 #include "Logger/Logger.h"
 
+#include "Memory/ByteBuffer.h"
+
 #undef max
 #undef GetObject
 #undef allocator
@@ -49,30 +51,22 @@ namespace Duckvil {
 
     bool init_logger(__data* _pData, PlugNPlay::__module* _pModule)
     {
-        std::string _outLog = (std::filesystem::path(DUCKVIL_OUTPUT) / "log.log").string();
-
-        _pData->m_logger = LoggerChannel(_pData->m_heap, _outLog.c_str(), _outLog.length(), (__logger_channel_flags)(__logger_flags_console_output | __logger_flags_file_output | __logger_flags_editor_console_output));
-
-        // logger_channel_make_current(logger_channel_context(_pData->m_logger.GetLogger(), _pData->m_logger.GetLoggerData()));
-
-
-
-        // Logger _logger(_pData->m_heap);
-
-        // _logger.Add(_pData->m_logger, LoggerChannelID::Default);
-        // _logger.Log(LoggerChannelID::Default, 10, "aaa", "vvv", __logger_channel_verbosity::__verbosity_info);
-
-        logger_ftable (*_duckvilLoggerInit)(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
+        logger_ftable(*_duckvilLoggerInit)(Duckvil::Memory::ftable * _pMemoryInterface, Duckvil::Memory::free_list_allocator * _pAllocator);
 
         PlugNPlay::__module_information _loggerModule("Logger");
 
         _pModule->load(&_loggerModule);
         _pModule->get(_loggerModule, "duckvil_logger_init", (void**)&_duckvilLoggerInit);
 
-        logger_ftable _loggerFTable = _duckvilLoggerInit(_pData->m_pMemory, _pData->m_pHeap);
-        logger_data _loggerData = _loggerFTable.m_fnInitLogger(_pData->m_heap);
+        static logger_ftable _loggerFTable = _duckvilLoggerInit(_pData->m_pMemory, _pData->m_pHeap);
+        static logger_data _loggerData = _loggerFTable.m_fnInitLogger(_pData->m_heap);
 
         logger_make_current({ _loggerFTable, _loggerData });
+
+        std::string _outLog = (std::filesystem::path(DUCKVIL_OUTPUT) / "log.log").string();
+
+        _pData->m_logger = LoggerChannel(_pData->m_heap, _outLog.c_str(), _outLog.length(), (__logger_channel_flags)(__logger_flags_console_output | __logger_flags_file_output | __logger_flags_editor_console_output));
+        
         logger_add(_pData->m_logger, LoggerChannelID::Default);
 
         return true;
@@ -141,6 +135,20 @@ namespace Duckvil {
         _pData->m_dOneSecond = 0;
         _pData->m_time = time_init();
         _pData->m_heap = Memory::FreeList(_pData->m_pMemory, _pData->m_pHeap);
+
+        Memory::byte_buffer_allocator* _byteBuffer = _pMemoryInterface->m_fnFreeListAllocateByteBufferAllocator(_pMemoryInterface, _pAllocator, 4);
+
+        Memory::byte_buffer_write(_pMemoryInterface, _byteBuffer, 10);
+
+        if(Memory::byte_buffer_will_fit<double>(_pMemoryInterface, _byteBuffer))
+            Memory::byte_buffer_write(_pMemoryInterface, _byteBuffer, .10);
+
+        _pMemoryInterface->m_fnByteBufferSeekToBegin_(_byteBuffer);
+
+        int* _a = (int*)_pMemoryInterface->m_fnByteBufferRead_(_byteBuffer, sizeof(int));
+        double* _b = (double*)_pMemoryInterface->m_fnByteBufferRead_(_byteBuffer, sizeof(double));
+
+        _pMemoryInterface->m_fnFreeListFree_(_pAllocator, _byteBuffer);
 
         _pData->m_heap.Allocate(_pData->m_objectsHeap, 1024);
         _pData->m_heap.Allocate(_pData->m_eventsHeap, 1024 * 2);
