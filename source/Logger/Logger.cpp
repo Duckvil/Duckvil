@@ -6,19 +6,35 @@ namespace Duckvil {
     {
         logger_data _data;
 
+        RuntimeReflection::ReflectedType<__logger_channel_data> _loggerType(_heap);
+
+        static Event::Pool<Event::mode::immediate> _eventPool(_heap, RuntimeReflection::get_current().m_pReflection, RuntimeReflection::get_current().m_pReflectionData);
+        static Memory::Vector<__logger_channel_data*> _loggers;
+
+        _heap.Allocate(_loggers, 1);
+
+        RuntimeReflection::record_meta(_heap.GetMemoryInterface(), _heap.GetAllocator(), RuntimeReflection::get_current().m_pRecorder, RuntimeReflection::get_current().m_pReflectionData, _loggerType.GetTypeHandle(), "EventPool", _eventPool);
+        RuntimeReflection::record_meta(_heap.GetMemoryInterface(), _heap.GetAllocator(), RuntimeReflection::get_current().m_pRecorder, RuntimeReflection::get_current().m_pReflectionData, _loggerType.GetTypeHandle(), "Loggers", _loggers);
+
         _heap.Allocate(_data.m_aChannels, 1);
 
         return _data;
     }
 
-    void logger_add(logger_data* _pData, LoggerChannel _channel, std::size_t _ullTypeID, uint32_t _uiChannel)
+    void logger_add(logger_data* _pData, const LoggerChannel& _channel, std::size_t _ullTypeID, uint32_t _uiChannel)
     {
         if(_pData->m_aChannels.Full())
         {
             _pData->m_aChannels.Resize(_pData->m_aChannels.Size() * 2);
         }
 
-        _pData->m_aChannels.Allocate({ _channel, _ullTypeID, _uiChannel });
+        logger_channel_lookup _lookup;
+
+        _lookup.m_channel = _channel;
+        _lookup.m_uiValue = _uiChannel;
+        _lookup.m_ullTypeID = _ullTypeID;
+
+        _pData->m_aChannels.Allocate(_lookup);
     }
 
     void logger_log(logger_data* _pData, std::size_t _ullTypeID, uint32_t _uiChannel, uint32_t _uiLine, const char* _sFile, std::size_t _ullFileLength, const char* _sMessage, std::size_t _ullMessageLength, __logger_channel_verbosity _verbosity, const va_list& _vMessage)

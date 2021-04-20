@@ -179,16 +179,6 @@ namespace Duckvil {
 
             _module.get(_loggerModule, "duckvil_logger_channel_init", (void**)&_loggerInit);
 
-            RuntimeReflection::ReflectedType<__logger_channel_data> _loggerType(_heap);
-
-            static Event::Pool<Event::mode::immediate> _eventPool(_heap, RuntimeReflection::get_current().m_pReflection, RuntimeReflection::get_current().m_pReflectionData);
-            static Memory::Vector<__logger_channel_data*> _loggers;
-
-            _heap.Allocate(_loggers, 1);
-
-            RuntimeReflection::record_meta(_heap.GetMemoryInterface(), _heap.GetAllocator(), RuntimeReflection::get_current().m_pRecorder, RuntimeReflection::get_current().m_pReflectionData, _loggerType.GetTypeHandle(), "EventPool", _eventPool);
-            RuntimeReflection::record_meta(_heap.GetMemoryInterface(), _heap.GetAllocator(), RuntimeReflection::get_current().m_pRecorder, RuntimeReflection::get_current().m_pReflectionData, _loggerType.GetTypeHandle(), "Loggers", _loggers);
-
             m_pLogger = _loggerInit(_heap.GetMemoryInterface(), _heap.GetAllocator());
             m_pLoggerData = m_pLogger->init(_heap.GetMemoryInterface(), _heap.GetAllocator());
 

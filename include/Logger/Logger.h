@@ -36,7 +36,7 @@ namespace Duckvil {
     struct logger_ftable
     {
         logger_data (*m_fnInitLogger)(const Memory::FreeList& _heap);
-        void (*m_fnAdd)(logger_data* _pData, LoggerChannel _channel, std::size_t _ullTypeID, uint32_t _uiChannel);
+        void (*m_fnAdd)(logger_data* _pData, const LoggerChannel& _channel, std::size_t _ullTypeID, uint32_t _uiChannel);
         void (*m_fnLog)(logger_data* _pData, std::size_t _ullTypeID, uint32_t _uiChannel, uint32_t _uiLine, const char* _sFile, std::size_t _ullFileLength, const char* _sMessage, std::size_t _ullMessageLength, __logger_channel_verbosity _verbosity, const va_list& _vMessage);
     };
 
@@ -67,7 +67,7 @@ namespace Duckvil {
     }
 
     template <typename Type>
-    void logger_add(LoggerChannel _channel, const Type& _channelID)
+    void logger_add(const LoggerChannel& _channel, const Type& _channelID)
     {
         g_loggerContext.m_logger.m_fnAdd(&g_loggerContext.m_loggerData, _channel, typeid(Type).hash_code(), (uint32_t)_channelID);
     }
