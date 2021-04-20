@@ -1604,8 +1604,9 @@ namespace Duckvil { namespace Parser {
             {
                 bool _wasNewLine = false;
                 uint32_t _ifdefCount = 0;
+                bool _break = false;
 
-                while(_pLexer->next_token(&_lexerData, &_token))
+                while(!_break && _pLexer->next_token(&_lexerData, &_token))
                 {
                     if(_token == "\\")
                     {
@@ -1629,6 +1630,8 @@ namespace Duckvil { namespace Parser {
 
                                 if(_ifdefCount == 0)
                                 {
+                                    _break = true;
+
                                     break;
                                 }
                             }
