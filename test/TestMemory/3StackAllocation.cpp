@@ -20,7 +20,7 @@ DUCKVIL_TEST(FixedStackAllocation)
     Duckvil::Memory::Stack<int> _stack(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::linear_allocator*)__duckvil_global::m_pMemoryChunk, 4);
 
     DUCKVIL_TEST_EXP(_stack.Empty(), "Stack is not empty");
-    DUCKVIL_TEST_EQUAL(_stack.GetCapacity(), 4 * sizeof(int), "Wrong capacity");
+    DUCKVIL_TEST_EQUAL(_stack.GetCapacity(), (size_t)4, "Wrong capacity");
 
 // Overflow detection
     {
@@ -30,7 +30,7 @@ DUCKVIL_TEST(FixedStackAllocation)
         _stack.Allocate(4);
         _stack.Allocate(5);
 
-        DUCKVIL_TEST_EQUAL(_stack.GetSize(), 4 * sizeof(int), "Wrong size");
+        DUCKVIL_TEST_EQUAL(_stack.GetSize(), (size_t)4, "Wrong size");
         DUCKVIL_TEST_EXP(_stack.Full(), "Overflow not detected");
         DUCKVIL_TEST_EQUAL(_stack.Top(), 4, "Overflow not detected");
 

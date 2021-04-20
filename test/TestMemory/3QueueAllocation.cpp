@@ -12,7 +12,7 @@ DUCKVIL_TEST(FixedQueueAllocation)
         Duckvil::Memory::Queue<int> _queue(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::free_list_allocator*)__duckvil_global::m_pHeap, 4);
 
         DUCKVIL_TEST_EXP(_queue.Empty(), "Queue is not empty");
-        DUCKVIL_TEST_EQUAL(_queue.GetCapacity(), 4 * sizeof(int), "Wrong capacity");
+        DUCKVIL_TEST_EQUAL(_queue.GetCapacity(), (size_t)4, "Wrong capacity");
 
     // Contiguous allocation
         {
@@ -22,7 +22,7 @@ DUCKVIL_TEST(FixedQueueAllocation)
             _queue.Allocate(4);
 
             DUCKVIL_TEST_EXP(_queue.Full(), "Queue is not full");
-            DUCKVIL_TEST_EQUAL(_queue.GetSize(), 4 * sizeof(int), "Wrong size");
+            DUCKVIL_TEST_EQUAL(_queue.GetSize(), (size_t)4, "Wrong size");
 
             DUCKVIL_TEST_EQUAL(_queue.Begin(), 1, "Wrong value");
             _queue.Pop();
