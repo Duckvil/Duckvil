@@ -79,8 +79,8 @@ namespace Duckvil { namespace Event {
     private:
         Memory::Vector<reflected_event> m_aRefelctedEvents;
         Memory::Vector<tracked_event> m_aTrackedEvents;
-        std::vector<Callback> m_aCallbackEvents;
-        std::vector<imember_event*> m_aMemberEvents;
+        Memory::Vector<Callback> m_aCallbackEvents;
+        Memory::Vector<imember_event*> m_aMemberEvents;
 
         RuntimeReflection::__data* m_pReflectionData;
         RuntimeReflection::__ftable* m_pReflection;
@@ -97,6 +97,8 @@ namespace Duckvil { namespace Event {
         {
             _heap.Allocate(m_aRefelctedEvents, 1);
             _heap.Allocate(m_aTrackedEvents, 1);
+            _heap.Allocate(m_aCallbackEvents, 1);
+            _heap.Allocate(m_aMemberEvents, 1);
             DUCKVIL_DEBUG_MEMORY(m_aRefelctedEvents.GetAllocator(), "m_aRefelctedEvents");
         }
 
@@ -147,13 +149,13 @@ namespace Duckvil { namespace Event {
 
         void Add(const Callback& _fn)
         {
-            m_aCallbackEvents.push_back(_fn);
+            m_aCallbackEvents.Allocate(_fn);
         }
 
         template <typename Handler>
         void Add(Handler* _pHandler, void (Handler::*_fn)(const Message&))
         {
-            m_aMemberEvents.push_back(new member_event<Handler>(_pHandler, _fn));
+            m_aMemberEvents.Allocate(new member_event<Handler>(_pHandler, _fn));
         }
 
         template <typename Handler>
@@ -172,13 +174,13 @@ namespace Duckvil { namespace Event {
 
         void Remove(const Callback& _fn)
         {
-            for(uint32_t i = 0; i < m_aCallbackEvents.size(); ++i)
+            for(uint32_t i = 0; i < m_aCallbackEvents.Size(); ++i)
             {
                 void (*_fnI)(const Message&) = m_aCallbackEvents[i];
 
                 if(_fnI == _fn)
                 {
-                    m_aCallbackEvents.erase(m_aCallbackEvents.begin() + i);
+                    m_aCallbackEvents.Erase(i);
                 }
             }
         }
