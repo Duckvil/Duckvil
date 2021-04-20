@@ -124,7 +124,7 @@ namespace Duckvil { namespace Memory {
         _allocator->m_ullCapacity = _ullSize;
         _allocator->m_ullUsed = 0;
 
-        _allocator->m_pHead = (uint8_t*)_allocator + sizeof(free_list_allocator);
+        _allocator->m_pHead = (__free_list_node*)((uint8_t*)_allocator + sizeof(free_list_allocator));
 
         memset((uint8_t*)_allocator + sizeof(free_list_allocator), 0, _ullSize);
 
@@ -204,7 +204,7 @@ namespace Duckvil { namespace Memory {
         _allocator->m_ullCapacity = _ullSize;
         _allocator->m_ullUsed = 0;
 
-        _allocator->m_pHead = (uint8_t*)_allocator + sizeof(free_list_allocator);
+        _allocator->m_pHead = (__free_list_node*)((uint8_t*)_allocator + sizeof(free_list_allocator));
 
         memset((uint8_t*)_allocator + sizeof(free_list_allocator), 0, _ullSize);
 
@@ -278,6 +278,27 @@ namespace Duckvil { namespace Memory {
         _allocator->m_fnOnDeallocate = _pAllocator->m_fnOnDeallocate;
         _allocator->m_fnOnAllocate(_pAllocator, _allocator, duckvil_memory_allocator_type_stack);
 #endif
+
+        return _allocator;
+    }
+
+    byte_buffer_allocator* impl_free_list_allocate_byte_buffer_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize)
+    {
+        byte_buffer_allocator* _allocator = (byte_buffer_allocator*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(byte_buffer_allocator) + _ullSize, alignof(byte_buffer_allocator));
+        std::size_t _size = sizeof(byte_buffer_allocator);
+
+        _allocator->m_ullCapacity = _ullSize;
+        _allocator->m_ullUsed = 0;
+        _allocator->m_ullPosition = 0;
+
+        memset((uint8_t*)_allocator + sizeof(byte_buffer_allocator), 0, _ullSize);
+
+// TODO:
+// #ifdef DUCKVIL_MEMORY_DEBUGGER
+//         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
+//         _allocator->m_fnOnDeallocate = _pAllocator->m_fnOnDeallocate;
+//         _allocator->m_fnOnAllocate(_pAllocator, _allocator, duckvil_memory_allocator_type_stack);
+// #endif
 
         return _allocator;
     }
