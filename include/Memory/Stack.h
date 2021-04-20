@@ -222,12 +222,12 @@ namespace Duckvil { namespace Memory {
 
         inline std::size_t GetSize() const
         {
-            return fixed_stack_size(this->m_pMemoryInterface, this->m_pContainer);
+            return fixed_stack_size(this->m_pMemoryInterface, this->m_pContainer) / sizeof(Type);
         }
 
         inline std::size_t GetCapacity() const
         {
-            return fixed_stack_capacity(this->m_pMemoryInterface, this->m_pContainer);
+            return fixed_stack_capacity(this->m_pMemoryInterface, this->m_pContainer) / sizeof(Type);
         }
     };
 

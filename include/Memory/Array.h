@@ -236,7 +236,7 @@ namespace Duckvil { namespace Memory {
 
         std::size_t Size() const
         {
-            return fixed_array_size(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
+            return fixed_array_size(SContainer::m_pMemoryInterface, SContainer::m_pContainer) / sizeof(Type);
         }
 
         void Clear() const
