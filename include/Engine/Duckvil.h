@@ -71,6 +71,9 @@ namespace Duckvil {
 
         size_t m_ullLastTimeUsed;
 
+        logger_ftable _loggerFTable;
+        logger_data _loggerData;
+
         RuntimeReflection::__ftable* m_pRuntimeReflection;
         RuntimeReflection::__recorder_ftable* m_pRuntimeReflectionRecorder;
         RuntimeReflection::__data* m_pRuntimeReflectionData;
@@ -88,7 +91,8 @@ namespace Duckvil {
 
         // __logger_ftable* m_pLogger;
         // __logger_data* m_pLoggerData;
-        LoggerChannel m_logger;
+        __logger_channel_data* m_pLoggerChannelData;
+        __logger_channel_ftable* m_pLoggerChannel;
 
         Thread::pool_ftable* m_pThread;
         Thread::pool_data* m_pThreadData;

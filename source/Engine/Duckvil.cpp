@@ -58,16 +58,40 @@ namespace Duckvil {
         _pModule->load(&_loggerModule);
         _pModule->get(_loggerModule, "duckvil_logger_init", (void**)&_duckvilLoggerInit);
 
-        static logger_ftable _loggerFTable = _duckvilLoggerInit(_pData->m_pMemory, _pData->m_pHeap);
-        static logger_data _loggerData = _loggerFTable.m_fnInitLogger(_pData->m_heap);
+        _pData->_loggerFTable = _duckvilLoggerInit(_pData->m_pMemory, _pData->m_pHeap);
+        _pData->_loggerData = _pData->_loggerFTable.m_fnInitLogger(_pData->m_heap);
 
-        logger_make_current({ _loggerFTable, _loggerData });
+        {
+            PlugNPlay::__module _module;
+
+            PlugNPlay::module_init(&_module);
+
+            PlugNPlay::__module_information _loggerModule("Logger");
+
+            _module.load(&_loggerModule);
+
+            duckvil_logger_channel_init_callback _loggerInit;
+
+            _module.get(_loggerModule, "duckvil_logger_channel_init", (void**)&_loggerInit);
+
+            _pData->m_pLoggerChannel = _loggerInit(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator());
+
+            logger_make_current({ _pData->_loggerFTable, _pData->_loggerData, _pData->m_pLoggerChannel });
+        }
 
         std::string _outLog = (std::filesystem::path(DUCKVIL_OUTPUT) / "log.log").string();
 
-        _pData->m_logger = LoggerChannel(_pData->m_heap, _outLog.c_str(), _outLog.length(), (__logger_channel_flags)(__logger_flags_console_output | __logger_flags_file_output | __logger_flags_editor_console_output));
-        
-        logger_add(_pData->m_logger, LoggerChannelID::Default);
+        // _pData->m_logger = LoggerChannel(_pData->m_heap, _outLog.c_str(), _outLog.length(), (__logger_channel_flags)(__logger_flags_console_output | __logger_flags_file_output | __logger_flags_editor_console_output));
+
+        /*_pData->m_logger = */_pData->m_pLoggerChannelData = logger_add(
+            _pData->m_heap,
+            { 
+                _outLog.c_str(),
+                _outLog.length(),
+                (__logger_channel_flags)(__logger_flags_console_output | __logger_flags_file_output | __logger_flags_editor_console_output)
+            },
+            LoggerChannelID::Default
+        );
 
         return true;
     }
@@ -476,6 +500,8 @@ namespace Duckvil {
 
     void update(__data* _pData, __ftable* _pFTable)
     {
+        auto start = std::chrono::high_resolution_clock::now();
+
         _pData->m_time.update(&_pData->m_timeData);
 
         _pData->m_dOneSecond += _pData->m_timeData.m_dDelta;
@@ -503,7 +529,8 @@ namespace Duckvil {
 #endif
 
             // _pData->m_pLogger->dispatch_logs(/*_pData->m_pLogger, _pData->m_pLoggerData*/ logger_get_current().m_pLogger, logger_get_current().m_pLoggerData);
-            _pData->m_logger.Dispatch();
+            // _pData->m_logger->Dispatch();
+            _pData->m_pLoggerChannel->dispatch_logs(_pData->m_pLoggerChannel, _pData->m_pLoggerChannelData);
 
             // DUCKVIL_LOG_INFO("Delta: %f ms", _pData->m_timeData.m_dDelta * 1000.0);
             // DUCKVIL_LOG_INFO("Used memory: %d of %d", _pData->m_pHeap->m_ullUsed, _pData->m_pHeap->m_ullCapacity);
@@ -538,6 +565,18 @@ namespace Duckvil {
         _pData->m_windowEventPool.Reset();
 
         // _pData->m_pRenderer->m_fnRender(&_pData->m_renderData, 0);
+
+        auto finish = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed = finish - start;
+
+        // static double _lol = 0;
+        // static size_t _lol2 = 0;
+
+        // _lol += elapsed.count() * 1000.0;
+        // _lol2++;
+
+        // printf("%lf\n", elapsed.count() * 1000.0);
+
         _pData->m_pEditor->m_fnRender(_pData->m_pEditorData, _pData->m_pWindow);
 
         _pData->m_pWindow->Refresh();
