@@ -18,6 +18,8 @@ _pSerializer->SerializeProperty("m_heap", m_heap); \
 _pSerializer->SerializeProperty("m_objectsHeap", m_objectsHeap); \
 _pSerializer->SerializeProperty("m_eventsHeap", m_eventsHeap); \
 _pSerializer->SerializeProperty("m_ullLastTimeUsed", m_ullLastTimeUsed); \
+_pSerializer->SerializeProperty("_loggerFTable", _loggerFTable); \
+_pSerializer->SerializeProperty("_loggerData", _loggerData); \
 _pSerializer->SerializeProperty("m_pRuntimeReflection", m_pRuntimeReflection); \
 _pSerializer->SerializeProperty("m_pRuntimeReflectionRecorder", m_pRuntimeReflectionRecorder); \
 _pSerializer->SerializeProperty("m_pRuntimeReflectionData", m_pRuntimeReflectionData); \
@@ -27,7 +29,8 @@ _pSerializer->SerializeProperty("m_uiLoadedModulesCount", m_uiLoadedModulesCount
 _pSerializer->SerializeProperty("m_pRuntimeCompiler", m_pRuntimeCompiler); \
 _pSerializer->SerializeProperty("m_fnRuntimeCompilerUpdate", m_fnRuntimeCompilerUpdate); \
 _pSerializer->SerializeProperty("m_fnRuntimeCompilerInit", m_fnRuntimeCompilerInit); \
-_pSerializer->SerializeProperty("m_logger", m_logger); \
+_pSerializer->SerializeProperty("m_pLoggerChannelData", m_pLoggerChannelData); \
+_pSerializer->SerializeProperty("m_pLoggerChannel", m_pLoggerChannel); \
 _pSerializer->SerializeProperty("m_pThread", m_pThread); \
 _pSerializer->SerializeProperty("m_pThreadData", m_pThreadData); \
 _pSerializer->SerializeProperty("m_time", m_time); \
