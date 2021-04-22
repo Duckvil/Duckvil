@@ -76,14 +76,14 @@ namespace Duckvil { namespace RuntimeReflection {
         is_const            = 1 << 8
     };
 
-    enum __protection
+    enum __protection : uint8_t
     {
         __protection_public,
         __protection_protected,
         __protection_private
     };
 
-    enum __variant_owner
+    enum __variant_owner : uint8_t
     {
         __variant_owner_type,
         __variant_owner_property,
@@ -127,21 +127,21 @@ namespace Duckvil { namespace RuntimeReflection {
 
     slot(__constructor_t,
     {
-        std::size_t m_ullTypeID;
-        DUCKVIL_RESOURCE(type_t) m_owner;
-        uint8_t* m_pData;
         DUCKVIL_SLOT_ARRAY(__argument_t) m_arguments;
         DUCKVIL_SLOT_ARRAY(__meta_t) m_metas;
+        std::size_t m_ullTypeID;
+        uint8_t* m_pData;
+        DUCKVIL_RESOURCE(type_t) m_owner;
     });
 
     slot(__property_t,
     {
-        DUCKVIL_RESOURCE(type_t) m_owner;
+        DUCKVIL_SLOT_ARRAY(__meta_t) m_metas;
         std::size_t m_ullTypeID;
         char* m_sName;
         uintptr_t m_ullAddress;
+        DUCKVIL_RESOURCE(type_t) m_owner;
         property_traits m_traits;
-        DUCKVIL_SLOT_ARRAY(__meta_t) m_metas;
     });
 
     slot(__namespace_t,
@@ -158,18 +158,15 @@ namespace Duckvil { namespace RuntimeReflection {
 
     slot(__function_t,
     {
-        DUCKVIL_RESOURCE(function_t) m_uiTypeSlotIndex; // TODO: Check if set
         __ifunction* m_pFunction;
         char* m_sFunctionName;
         std::size_t m_ullReturnTypeID;
         std::size_t m_ullArgumentsTypeID;
+        DUCKVIL_RESOURCE(function_t) m_uiTypeSlotIndex; // TODO: Check if set
     });
 
     slot(__type_t,
     {
-        DUCKVIL_RESOURCE(type_t) m_uiSlotIndex;
-        std::size_t m_ullTypeID;
-        char* m_sTypeName;
         DUCKVIL_SLOT_ARRAY(__constructor_t) m_constructors;
         DUCKVIL_SLOT_ARRAY(__property_t) m_properties;
         DUCKVIL_SLOT_ARRAY(__namespace_t) m_namespaces;
@@ -181,6 +178,10 @@ namespace Duckvil { namespace RuntimeReflection {
         DUCKVIL_SLOT_ARRAY(__variant_t) m_variantValues;
     // This contains only metas for specific type
         DUCKVIL_SLOT_ARRAY(__meta_t) m_metas;
+
+        std::size_t m_ullTypeID;
+        char* m_sTypeName;
+        DUCKVIL_RESOURCE(type_t) m_uiSlotIndex;
     });
 
     template <std::size_t Length>
