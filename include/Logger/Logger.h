@@ -39,6 +39,7 @@ namespace Duckvil {
     struct logger_data
     {
         Memory::Vector<logger_channel_lookup> m_aChannels;
+        Memory::Vector<__logger_channel_data*> _loggers;
     };
 
     struct logger_ftable
@@ -95,4 +96,4 @@ namespace Duckvil {
 
 }
 
-DUCKVIL_EXPORT Duckvil::logger_ftable duckvil_logger_init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
+DUCKVIL_EXPORT Duckvil::logger_ftable duckvil_logger_init();

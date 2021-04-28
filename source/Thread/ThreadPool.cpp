@@ -112,14 +112,14 @@ namespace Duckvil { namespace Thread {
 
 }}
 
-Duckvil::Thread::pool_ftable* duckvil_thread_pool_init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator)
+Duckvil::Thread::pool_ftable* duckvil_thread_pool_init()
 {
-    Duckvil::Thread::pool_ftable* _ftable = (Duckvil::Thread::pool_ftable*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Duckvil::Thread::pool_ftable), alignof(Duckvil::Thread::pool_ftable));
+    static Duckvil::Thread::pool_ftable _ftable = { 0 };
 
-    _ftable->m_fnInit = &Duckvil::Thread::impl_pool_init;
-    _ftable->m_fnStart = &Duckvil::Thread::impl_pool_start;
-    _ftable->m_fnTerminate = &Duckvil::Thread::impl_pool_terminate;
-    _ftable->m_fnOrderTask = &Duckvil::Thread::impl_pool_order_task;
+    _ftable.m_fnInit = &Duckvil::Thread::impl_pool_init;
+    _ftable.m_fnStart = &Duckvil::Thread::impl_pool_start;
+    _ftable.m_fnTerminate = &Duckvil::Thread::impl_pool_terminate;
+    _ftable.m_fnOrderTask = &Duckvil::Thread::impl_pool_order_task;
 
-    return _ftable;
+    return &_ftable;
 }

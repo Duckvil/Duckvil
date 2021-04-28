@@ -123,13 +123,13 @@ namespace Duckvil { namespace Parser {
 
 }}
 
-Duckvil::Parser::__lexer_ftable* duckvil_lexer_init(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator)
+Duckvil::Parser::__lexer_ftable* duckvil_lexer_init()
 {
-    Duckvil::Parser::__lexer_ftable* _table = (Duckvil::Parser::__lexer_ftable*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(Duckvil::Parser::__lexer_ftable), alignof(Duckvil::Parser::__lexer_ftable));
+    static Duckvil::Parser::__lexer_ftable _ftable = { 0 };
 
-    _table->load_file = &Duckvil::Parser::load_file;
-    _table->next_token = &Duckvil::Parser::next_token;
-    _table->space = &Duckvil::Parser::space;
+    _ftable.load_file = &Duckvil::Parser::load_file;
+    _ftable.next_token = &Duckvil::Parser::next_token;
+    _ftable.space = &Duckvil::Parser::space;
 
-    return _table;
+    return &_ftable;
 }

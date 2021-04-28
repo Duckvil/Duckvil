@@ -75,16 +75,16 @@ int main(int argc, char* argv[])
 
     _module.load(&_parser);
 
-    Duckvil::Parser::__lexer_ftable* (*_lexer_init)(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator);
-    Duckvil::Parser::__ast_ftable* (*_ast_init)(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator);
+    Duckvil::Parser::__lexer_ftable* (*_lexer_init)();
+    Duckvil::Parser::__ast_ftable* (*_ast_init)();
 
     _module.get(_parser, "duckvil_lexer_init", (void**)&_lexer_init);
     _module.get(_parser, "duckvil_ast_init", (void**)&_ast_init);
 
-    Duckvil::Parser::__ast_ftable* _ast = _ast_init(_memoryInterface, _free_list);
-    Duckvil::Parser::__lexer_ftable* _lexerFtable = _lexer_init(_memoryInterface, _free_list);
+    Duckvil::Parser::__ast_ftable* _ast = _ast_init();
+    Duckvil::Parser::__lexer_ftable* _lexerFtable = _lexer_init();
 
-    Duckvil::RuntimeReflection::__generator_ftable* (*_runtime_reflection_generator)(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator);
+    Duckvil::RuntimeReflection::__generator_ftable* (*_runtime_reflection_generator)();
 
     _module.get(_reflectionModule, "duckvil_runtime_reflection_generator_init", (void**)&_runtime_reflection_generator);
 
@@ -94,12 +94,12 @@ int main(int argc, char* argv[])
     _module.get(_reflectionModule, "duckvil_runtime_reflection_init", (void**)&_runtimeReflectionInit);
     _module.get(_reflectionModule, "duckvil_runtime_reflection_recorder_init", (void**)&_runtimeReflectionRecorderInit);
 
-    _reflectionFTable = _runtimeReflectionInit(_memoryInterface, _free_list);
-    Duckvil::RuntimeReflection::__recorder_ftable* _reflectionRecorderFTable = _runtimeReflectionRecorderInit(_memoryInterface, _free_list);
+    _reflectionFTable = _runtimeReflectionInit();
+    Duckvil::RuntimeReflection::__recorder_ftable* _reflectionRecorderFTable = _runtimeReflectionRecorderInit();
 
     _runtimeReflectionData = _reflectionFTable->m_fnInit(_memoryInterface, _free_list, _reflectionFTable);
 
-    Duckvil::RuntimeReflection::__generator_ftable* _generatorFtable = _runtime_reflection_generator(_memoryInterface, _free_list);
+    Duckvil::RuntimeReflection::__generator_ftable* _generatorFtable = _runtime_reflection_generator();
     std::filesystem::path _lastPath;
     uint32_t _index = 0;
     Duckvil::PlugNPlay::__module_information* _loadedModules;

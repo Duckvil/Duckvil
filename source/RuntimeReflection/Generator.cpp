@@ -438,12 +438,12 @@ namespace Duckvil { namespace RuntimeReflection {
 
 }}
 
-Duckvil::RuntimeReflection::__generator_ftable* duckvil_runtime_reflection_generator_init(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator)
+Duckvil::RuntimeReflection::__generator_ftable* duckvil_runtime_reflection_generator_init()
 {
-    Duckvil::RuntimeReflection::__generator_ftable* _ftable = (Duckvil::RuntimeReflection::__generator_ftable*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(Duckvil::RuntimeReflection::__generator_ftable), alignof(Duckvil::RuntimeReflection::__generator_ftable));
+    static Duckvil::RuntimeReflection::__generator_ftable _ftable = { 0 };
 
-    _ftable->init = &Duckvil::RuntimeReflection::init;
-    _ftable->generate = &Duckvil::RuntimeReflection::generate;
+    _ftable.init = &Duckvil::RuntimeReflection::init;
+    _ftable.generate = &Duckvil::RuntimeReflection::generate;
 
-    return _ftable;
+    return &_ftable;
 }

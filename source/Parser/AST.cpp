@@ -1719,12 +1719,12 @@ namespace Duckvil { namespace Parser {
 
 }}
 
-Duckvil::Parser::__ast_ftable* duckvil_ast_init(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator)
+Duckvil::Parser::__ast_ftable* duckvil_ast_init()
 {
-    Duckvil::Parser::__ast_ftable* _table = (Duckvil::Parser::__ast_ftable*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(Duckvil::Parser::__ast_ftable), alignof(Duckvil::Parser::__ast_ftable));
+    static Duckvil::Parser::__ast_ftable _ftable = { 0 };
 
-    _table->ast_generate = &Duckvil::Parser::ast_generate;
-    _table->ast_print = &Duckvil::Parser::ast_print;
+    _ftable.ast_generate = &Duckvil::Parser::ast_generate;
+    _ftable.ast_print = &Duckvil::Parser::ast_print;
 
-    return _table;
+    return &_ftable;
 }

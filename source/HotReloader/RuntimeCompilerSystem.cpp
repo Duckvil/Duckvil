@@ -56,11 +56,11 @@ namespace Duckvil { namespace HotReloader {
 
         _module.load(&_threadModule);
 
-        Thread::pool_ftable* (*init)(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
+        Thread::pool_ftable* (*init)();
 
         _module.get(_threadModule, "duckvil_thread_pool_init", (void**)&init);
 
-        m_pThread = init(_heap.GetMemoryInterface(), _heap.GetAllocator());
+        m_pThread = init();
     }
 
     RuntimeCompilerSystem::~RuntimeCompilerSystem()
@@ -180,22 +180,22 @@ namespace Duckvil { namespace HotReloader {
         _module.load(&_parser);
 
         {
-            RuntimeReflection::__generator_ftable* (*_runtime_reflection_generator)(Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator);
+            RuntimeReflection::__generator_ftable* (*_runtime_reflection_generator)();
 
             _module.get(_reflectionModule, "duckvil_runtime_reflection_generator_init", (void**)&_runtime_reflection_generator);
 
-            m_pReflectionGenerator = _runtime_reflection_generator(m_heap.GetMemoryInterface(), m_heap.GetAllocator());
+            m_pReflectionGenerator = _runtime_reflection_generator();
         }
 
         {
-            Parser::__lexer_ftable* (*_lexer_init)(Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator);
-            Parser::__ast_ftable* (*_ast_init)(Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator);
+            Parser::__lexer_ftable* (*_lexer_init)();
+            Parser::__ast_ftable* (*_ast_init)();
 
             _module.get(_parser, "duckvil_lexer_init", (void**)&_lexer_init);
             _module.get(_parser, "duckvil_ast_init", (void**)&_ast_init);
 
-            m_pAST_FTable = _ast_init(m_heap.GetMemoryInterface(), m_heap.GetAllocator());
-            m_pLexerFTable = _lexer_init(m_heap.GetMemoryInterface(), m_heap.GetAllocator());
+            m_pAST_FTable = _ast_init();
+            m_pLexerFTable = _lexer_init();
         }
 
         return true;

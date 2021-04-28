@@ -343,19 +343,19 @@ namespace Duckvil { namespace Editor {
 
 }}
 
-Duckvil::Editor::EditorFTable* duckvil_editor_init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator)
+Duckvil::Editor::EditorFTable* duckvil_editor_init()
 {
-    Duckvil::Editor::EditorFTable* _result = (Duckvil::Editor::EditorFTable*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Duckvil::Editor::EditorFTable), alignof(Duckvil::Editor::EditorFTable));
+    static Duckvil::Editor::EditorFTable _ftable = { 0 };
 
-    _result->m_fnInit = &Duckvil::Editor::init;
-    _result->m_fnRender = &Duckvil::Editor::render;
+    _ftable.m_fnInit = &Duckvil::Editor::init;
+    _ftable.m_fnRender = &Duckvil::Editor::render;
 
-    _result->m_fnAddHotDraw = &Duckvil::Editor::add_hot_draw;
-    _result->m_fnAddDraw = &Duckvil::Editor::add_draw;
+    _ftable.m_fnAddHotDraw = &Duckvil::Editor::add_hot_draw;
+    _ftable.m_fnAddDraw = &Duckvil::Editor::add_draw;
     // _result->m_fnRemoveDraw = &Duckvil::Editor::remove_draw;
 
-    _result->m_fnPostInit = &Duckvil::Editor::post_init;
-    _result->m_fnHotReloadInit = &Duckvil::Editor::hot_reload_init;
+    _ftable.m_fnPostInit = &Duckvil::Editor::post_init;
+    _ftable.m_fnHotReloadInit = &Duckvil::Editor::hot_reload_init;
 
-    return _result;
+    return &_ftable;
 }

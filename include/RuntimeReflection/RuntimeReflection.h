@@ -853,6 +853,6 @@ namespace Duckvil { namespace RuntimeReflection {
 
 }}
 
-typedef Duckvil::RuntimeReflection::__ftable* (*duckvil_runtime_reflection_init_callback)(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
+typedef Duckvil::RuntimeReflection::__ftable* (*duckvil_runtime_reflection_init_callback)();
 
-DUCKVIL_EXPORT Duckvil::RuntimeReflection::__ftable* duckvil_runtime_reflection_init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
+DUCKVIL_EXPORT Duckvil::RuntimeReflection::__ftable* duckvil_runtime_reflection_init();

@@ -10,14 +10,14 @@
 
 namespace Duckvil {
 
-    __logger_channel_data* init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator)
+    __logger_channel_data* init(const Memory::FreeList& _heap)
     {
-        __logger_channel_data* _data = (__logger_channel_data*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__logger_channel_data), alignof(__logger_channel_data));
+        __logger_channel_data* _data = _heap.Allocate<__logger_channel_data>();
 
         _data->m_llInitTime = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-        _data->m_logs = Memory::Queue<__logger_channel_log_info>(_pMemoryInterface, _pAllocator, 64);
         _data->m_flags = {};
 
+        _heap.Allocate(_data->m_logs, 1);
         memset(_data->m_buffer, 0, 128);
 
         // _data->m_aCustomLogs = Memory::Vector<custom_log_t>(_pMemoryInterface, _pAllocator, 1);
@@ -210,14 +210,14 @@ namespace Duckvil {
 
 }
 
-Duckvil::__logger_channel_ftable* duckvil_logger_channel_init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator)
+Duckvil::__logger_channel_ftable* duckvil_logger_channel_init()
 {
-    Duckvil::__logger_channel_ftable* _ftable = (Duckvil::__logger_channel_ftable*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Duckvil::__logger_channel_ftable), alignof(Duckvil::__logger_channel_ftable));
+    static Duckvil::__logger_channel_ftable _ftable = { 0 };
 
-    _ftable->init = &Duckvil::init;
-    _ftable->log = &Duckvil::log;
-    _ftable->format = &Duckvil::format;
-    _ftable->dispatch_logs = &Duckvil::dispatch_logs;
+    _ftable.init = &Duckvil::init;
+    _ftable.log = &Duckvil::log;
+    _ftable.format = &Duckvil::format;
+    _ftable.dispatch_logs = &Duckvil::dispatch_logs;
 
-    return _ftable;
+    return &_ftable;
 }

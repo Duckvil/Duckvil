@@ -383,19 +383,19 @@ namespace Duckvil { namespace RuntimeReflection {
 
 }}
 
-Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_recorder_init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator)
+Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_recorder_init()
 {
-    Duckvil::RuntimeReflection::__recorder_ftable* _functions = (Duckvil::RuntimeReflection::__recorder_ftable*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Duckvil::RuntimeReflection::__recorder_ftable), alignof(Duckvil::RuntimeReflection::__recorder_ftable));
+    static Duckvil::RuntimeReflection::__recorder_ftable _functions = { 0 };
 
-    _functions->m_fnRecordType = &Duckvil::RuntimeReflection::record_type;
-    _functions->m_fnRecordConstructor = &Duckvil::RuntimeReflection::record_constructor;
-    _functions->m_fnRecordProperty = &Duckvil::RuntimeReflection::record_property;
-    _functions->m_fnRecordNamespace = &Duckvil::RuntimeReflection::record_namespace;
-    _functions->m_fnRecordInheritance = &Duckvil::RuntimeReflection::record_inheritance;
-    _functions->m_fnRecordFunction = &Duckvil::RuntimeReflection::record_function;
-    _functions->m_fnRecordTypeMeta = &Duckvil::RuntimeReflection::record_type_meta;
-    _functions->m_fnRecordPropertyMeta = &Duckvil::RuntimeReflection::record_property_meta;
-    _functions->m_fnRecordConstructorMeta = &Duckvil::RuntimeReflection::record_constructor_meta;
+    _functions.m_fnRecordType = &Duckvil::RuntimeReflection::record_type;
+    _functions.m_fnRecordConstructor = &Duckvil::RuntimeReflection::record_constructor;
+    _functions.m_fnRecordProperty = &Duckvil::RuntimeReflection::record_property;
+    _functions.m_fnRecordNamespace = &Duckvil::RuntimeReflection::record_namespace;
+    _functions.m_fnRecordInheritance = &Duckvil::RuntimeReflection::record_inheritance;
+    _functions.m_fnRecordFunction = &Duckvil::RuntimeReflection::record_function;
+    _functions.m_fnRecordTypeMeta = &Duckvil::RuntimeReflection::record_type_meta;
+    _functions.m_fnRecordPropertyMeta = &Duckvil::RuntimeReflection::record_property_meta;
+    _functions.m_fnRecordConstructorMeta = &Duckvil::RuntimeReflection::record_constructor_meta;
 
-    return _functions;
+    return &_functions;
 }

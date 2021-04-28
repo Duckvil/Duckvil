@@ -50,8 +50,8 @@ DUCKVIL_TEST(RuntimeReflection)
         DUCKVIL_TEST_IS_NOT_NULL((void*)_rr_init, "Could not get 'duckvil_runtime_reflection_init'");
         DUCKVIL_TEST_IS_NOT_NULL((void*)_rr_recorder_init, "Could not get 'duckvil_runtime_reflection_recorder_init'");
 
-        Duckvil::RuntimeReflection::__ftable* _rr_ftable = _rr_init(_memoryInterface, _free_list);
-        Duckvil::RuntimeReflection::__recorder_ftable* _rr_recorder = _rr_recorder_init(_memoryInterface, _free_list);
+        Duckvil::RuntimeReflection::__ftable* _rr_ftable = _rr_init();
+        Duckvil::RuntimeReflection::__recorder_ftable* _rr_recorder = _rr_recorder_init();
 
         DUCKVIL_TEST_IS_NOT_NULL(_rr_ftable, "Could not init runtime reflection functions table");
         DUCKVIL_TEST_IS_NOT_NULL(_rr_recorder, "Could not init runtime reflection recorder functions table");

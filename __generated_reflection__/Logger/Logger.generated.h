@@ -13,6 +13,7 @@ _pSerializer->SerializeProperty("m_sPathFile", m_sPathFile); \
 _pSerializer->SerializeProperty("m_ullLength", m_ullLength); \
 _pSerializer->SerializeProperty("m_flags", m_flags); \
 _pSerializer->SerializeProperty("m_aChannels", m_aChannels); \
+_pSerializer->SerializeProperty("_loggers", _loggers); \
 _pSerializer->SerializeProperty("m_logger", m_logger); \
 _pSerializer->SerializeProperty("m_loggerData", m_loggerData); \
 _pSerializer->SerializeProperty("m_pLoggerChannel", m_pLoggerChannel); \

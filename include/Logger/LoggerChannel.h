@@ -101,7 +101,7 @@ namespace Duckvil {
 
     struct __logger_channel_ftable
     {
-        __logger_channel_data* (*init)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator);
+        __logger_channel_data* (*init)(const Memory::FreeList& _heap);
         void (*log)(__logger_channel_ftable* _pFTable, __logger_channel_data* _pData, __logger_channel_log_info& _logInfo);
         void (*format)(__logger_channel_data* _pData, const __logger_channel_log_info& _logInfo, char* _ppBuffer);
         void (*dispatch_logs)(__logger_channel_ftable* _pFTable, __logger_channel_data* _pData);
@@ -148,6 +148,6 @@ namespace Duckvil {
 
 }
 
-typedef Duckvil::__logger_channel_ftable* (*duckvil_logger_channel_init_callback)(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
+typedef Duckvil::__logger_channel_ftable* (*duckvil_logger_channel_init_callback)();
 
-DUCKVIL_EXPORT Duckvil::__logger_channel_ftable* duckvil_logger_channel_init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
+DUCKVIL_EXPORT Duckvil::__logger_channel_ftable* duckvil_logger_channel_init();

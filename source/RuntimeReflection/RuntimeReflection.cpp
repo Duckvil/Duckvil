@@ -505,50 +505,50 @@ namespace Duckvil { namespace RuntimeReflection {
 
 }}
 
-Duckvil::RuntimeReflection::__ftable* duckvil_runtime_reflection_init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator)
+Duckvil::RuntimeReflection::__ftable* duckvil_runtime_reflection_init()
 {
-    Duckvil::RuntimeReflection::__ftable* _functions = (Duckvil::RuntimeReflection::__ftable*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Duckvil::RuntimeReflection::__ftable), alignof(Duckvil::RuntimeReflection::__ftable));
+    static Duckvil::RuntimeReflection::__ftable _functions = { 0 };
 
-    _functions->m_fnInit = &Duckvil::RuntimeReflection::init;
+    _functions.m_fnInit = &Duckvil::RuntimeReflection::init;
 
-    _functions->m_fnCreateContext = &Duckvil::RuntimeReflection::create_context;
+    _functions.m_fnCreateContext = &Duckvil::RuntimeReflection::create_context;
 
-    _functions->m_fnGetTypeHandleByName = &Duckvil::RuntimeReflection::get_type_by_name;
-    _functions->m_fnGetPropertyByName = &Duckvil::RuntimeReflection::get_property_by_name;
-    _functions->m_fnGetTypeHandleByTypeID = &Duckvil::RuntimeReflection::get_type_by_type_id;
-    _functions->m_fnGetType = &Duckvil::RuntimeReflection::get_type_data;
-    _functions->m_fnGetTypes = &Duckvil::RuntimeReflection::get_types;
-    _functions->m_fnGetPropertyHandleByName = &Duckvil::RuntimeReflection::get_property_handle_by_name;
-    _functions->m_fnGetArguments = &Duckvil::RuntimeReflection::get_arguments;
-    _functions->m_fnGetArgument = &Duckvil::RuntimeReflection::get_argument;
-    _functions->m_fnGetPropertyByName = &Duckvil::RuntimeReflection::get_property_by_name;
-    _functions->m_fnGetInheritances = &Duckvil::RuntimeReflection::get_inheritances;
-    _functions->m_fnGetInheritance = &Duckvil::RuntimeReflection::get_inheritance;
-    _functions->m_fnInherits = &Duckvil::RuntimeReflection::inherits;
-    _functions->m_fnInheritsByTypeID = &Duckvil::RuntimeReflection::inherits_by_type_id;
+    _functions.m_fnGetTypeHandleByName = &Duckvil::RuntimeReflection::get_type_by_name;
+    _functions.m_fnGetPropertyByName = &Duckvil::RuntimeReflection::get_property_by_name;
+    _functions.m_fnGetTypeHandleByTypeID = &Duckvil::RuntimeReflection::get_type_by_type_id;
+    _functions.m_fnGetType = &Duckvil::RuntimeReflection::get_type_data;
+    _functions.m_fnGetTypes = &Duckvil::RuntimeReflection::get_types;
+    _functions.m_fnGetPropertyHandleByName = &Duckvil::RuntimeReflection::get_property_handle_by_name;
+    _functions.m_fnGetArguments = &Duckvil::RuntimeReflection::get_arguments;
+    _functions.m_fnGetArgument = &Duckvil::RuntimeReflection::get_argument;
+    _functions.m_fnGetPropertyByName = &Duckvil::RuntimeReflection::get_property_by_name;
+    _functions.m_fnGetInheritances = &Duckvil::RuntimeReflection::get_inheritances;
+    _functions.m_fnGetInheritance = &Duckvil::RuntimeReflection::get_inheritance;
+    _functions.m_fnInherits = &Duckvil::RuntimeReflection::inherits;
+    _functions.m_fnInheritsByTypeID = &Duckvil::RuntimeReflection::inherits_by_type_id;
 
-    _functions->m_fnGetConstructors = &Duckvil::RuntimeReflection::get_constructors;
-    _functions->m_fnGetConstructorHandleByTypeID = &Duckvil::RuntimeReflection::get_constructor_handle_by_type_id;
+    _functions.m_fnGetConstructors = &Duckvil::RuntimeReflection::get_constructors;
+    _functions.m_fnGetConstructorHandleByTypeID = &Duckvil::RuntimeReflection::get_constructor_handle_by_type_id;
 
-    _functions->m_fnGetFunctions = &Duckvil::RuntimeReflection::get_functions;
-    _functions->m_fnGetFunctionHandle = &Duckvil::RuntimeReflection::get_function_handle;
-    _functions->m_fnGetFunctionCallback = &Duckvil::RuntimeReflection::get_function_callback;
-    _functions->m_fnGetFunctionCallbackByHandle = &Duckvil::RuntimeReflection::get_function_callback_by_handle;
-    _functions->m_fnGetFunctionByHandle = &Duckvil::RuntimeReflection::get_function_by_handle;
+    _functions.m_fnGetFunctions = &Duckvil::RuntimeReflection::get_functions;
+    _functions.m_fnGetFunctionHandle = &Duckvil::RuntimeReflection::get_function_handle;
+    _functions.m_fnGetFunctionCallback = &Duckvil::RuntimeReflection::get_function_callback;
+    _functions.m_fnGetFunctionCallbackByHandle = &Duckvil::RuntimeReflection::get_function_callback_by_handle;
+    _functions.m_fnGetFunctionByHandle = &Duckvil::RuntimeReflection::get_function_by_handle;
 
-    _functions->m_fnGetProperty = &Duckvil::RuntimeReflection::get_property;
+    _functions.m_fnGetProperty = &Duckvil::RuntimeReflection::get_property;
 
-    _functions->m_fnGetTypeMetaHandle = &Duckvil::RuntimeReflection::get_type_meta_handle;
-    _functions->m_fnGetTypeMetaValue = &Duckvil::RuntimeReflection::get_type_meta_value;
-    _functions->m_fnGetTypeMetaVariant = &Duckvil::RuntimeReflection::get_type_meta_variant;
+    _functions.m_fnGetTypeMetaHandle = &Duckvil::RuntimeReflection::get_type_meta_handle;
+    _functions.m_fnGetTypeMetaValue = &Duckvil::RuntimeReflection::get_type_meta_value;
+    _functions.m_fnGetTypeMetaVariant = &Duckvil::RuntimeReflection::get_type_meta_variant;
 
-    _functions->m_fnGetPropertyMetaHandle = &Duckvil::RuntimeReflection::get_property_meta_handle;
-    _functions->m_fnGetPropertyMetaValue = &Duckvil::RuntimeReflection::get_property_meta_value;
-    _functions->m_fnGetPropertyMetaVariant = &Duckvil::RuntimeReflection::get_property_meta_variant;
+    _functions.m_fnGetPropertyMetaHandle = &Duckvil::RuntimeReflection::get_property_meta_handle;
+    _functions.m_fnGetPropertyMetaValue = &Duckvil::RuntimeReflection::get_property_meta_value;
+    _functions.m_fnGetPropertyMetaVariant = &Duckvil::RuntimeReflection::get_property_meta_variant;
 
-    _functions->m_fnGetConstructorMetaHandle = &Duckvil::RuntimeReflection::get_constructor_meta_handle;
-    _functions->m_fnGetConstructorMetaValue = &Duckvil::RuntimeReflection::get_constructor_meta_value;
-    _functions->m_fnGetConstructorMetaVariant = &Duckvil::RuntimeReflection::get_constructor_meta_variant;
+    _functions.m_fnGetConstructorMetaHandle = &Duckvil::RuntimeReflection::get_constructor_meta_handle;
+    _functions.m_fnGetConstructorMetaValue = &Duckvil::RuntimeReflection::get_constructor_meta_value;
+    _functions.m_fnGetConstructorMetaVariant = &Duckvil::RuntimeReflection::get_constructor_meta_variant;
 
-    return _functions;
+    return &_functions;
 }

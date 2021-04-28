@@ -43,4 +43,4 @@ namespace Duckvil { namespace Editor {
 
 }}
 
-DUCKVIL_EXPORT Duckvil::Editor::EditorFTable* duckvil_editor_init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
+DUCKVIL_EXPORT Duckvil::Editor::EditorFTable* duckvil_editor_init();

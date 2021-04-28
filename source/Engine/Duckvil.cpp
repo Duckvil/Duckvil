@@ -38,8 +38,8 @@ namespace Duckvil {
         _pModule->get(_runtimeReflectionModule, "duckvil_runtime_reflection_init", (void**)&_runtimeReflectionInit);
         _pModule->get(_runtimeReflectionModule, "duckvil_runtime_reflection_recorder_init", (void**)&_runtimeReflectionRecorderInit);
 
-        _pData->m_pRuntimeReflection = _runtimeReflectionInit(_pData->m_pMemory, _pData->m_pHeap);
-        _pData->m_pRuntimeReflectionRecorder = _runtimeReflectionRecorderInit(_pData->m_pMemory, _pData->m_pHeap);
+        _pData->m_pRuntimeReflection = _runtimeReflectionInit();
+        _pData->m_pRuntimeReflectionRecorder = _runtimeReflectionRecorderInit();
         _pData->m_pRuntimeReflectionData = _pData->m_pRuntimeReflection->m_fnInit(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pRuntimeReflection);
 
         RuntimeReflection::make_current({ _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _pData->m_pRuntimeReflectionRecorder });
@@ -51,14 +51,14 @@ namespace Duckvil {
 
     bool init_logger(__data* _pData, PlugNPlay::__module* _pModule)
     {
-        logger_ftable(*_duckvilLoggerInit)(Duckvil::Memory::ftable * _pMemoryInterface, Duckvil::Memory::free_list_allocator * _pAllocator);
+        logger_ftable(*_duckvilLoggerInit)();
 
         PlugNPlay::__module_information _loggerModule("Logger");
 
         _pModule->load(&_loggerModule);
         _pModule->get(_loggerModule, "duckvil_logger_init", (void**)&_duckvilLoggerInit);
 
-        _pData->_loggerFTable = _duckvilLoggerInit(_pData->m_pMemory, _pData->m_pHeap);
+        _pData->_loggerFTable = _duckvilLoggerInit();
         _pData->_loggerData = _pData->_loggerFTable.m_fnInitLogger(_pData->m_heap);
 
         {
@@ -74,16 +74,16 @@ namespace Duckvil {
 
             _module.get(_loggerModule, "duckvil_logger_channel_init", (void**)&_loggerInit);
 
-            _pData->m_pLoggerChannel = _loggerInit(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator());
+            _pData->m_pLoggerChannel = _loggerInit();
 
             logger_make_current({ _pData->_loggerFTable, _pData->_loggerData, _pData->m_pLoggerChannel });
         }
 
-        std::string _outLog = (std::filesystem::path(DUCKVIL_OUTPUT) / "log.log").string();
+        static std::string _outLog = (std::filesystem::path(DUCKVIL_OUTPUT) / "log.log").string();
 
         // _pData->m_logger = LoggerChannel(_pData->m_heap, _outLog.c_str(), _outLog.length(), (__logger_channel_flags)(__logger_flags_console_output | __logger_flags_file_output | __logger_flags_editor_console_output));
 
-        /*_pData->m_logger = */_pData->m_pLoggerChannelData = logger_add(
+        _pData->m_pLoggerChannelData = logger_add(
             _pData->m_heap,
             { 
                 _outLog.c_str(),
@@ -102,11 +102,11 @@ namespace Duckvil {
 
         _pModule->load(&_threadModule);
 
-        Thread::pool_ftable* (*init)(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
+        Thread::pool_ftable* (*init)();
 
         _pModule->get(_threadModule, "duckvil_thread_pool_init", (void**)&init);
 
-        _pData->m_pThread = init(_pData->m_pMemory, _pData->m_pHeap);
+        _pData->m_pThread = init();
         _pData->m_pThreadData = _pData->m_pThread->m_fnInit(_pData->m_heap);
 
         _pData->m_pThread->m_fnStart(_pData->m_pThreadData);
@@ -139,11 +139,11 @@ namespace Duckvil {
 
         _pModule->load(&_editorModule);
 
-        Editor::EditorFTable* (*init)(Memory::ftable*, Memory::free_list_allocator*);
+        Editor::EditorFTable* (*init)();
 
         _pModule->get(_editorModule, "duckvil_editor_init", (void**)&init);
 
-        _pData->m_pEditor = init(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator());
+        _pData->m_pEditor = init();
 
         _pData->m_pEditorData = (Editor::ImGuiEditorData*)_pData->m_pEditor->m_fnInit(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _pData->m_pWindow);
 
@@ -584,14 +584,14 @@ namespace Duckvil {
 
 }
 
-Duckvil::__ftable* duckvil_init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator)
+Duckvil::__ftable* duckvil_init()
 {
-    Duckvil::__ftable* _ftable = (Duckvil::__ftable*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Duckvil::__ftable), alignof(Duckvil::__ftable));
+    static Duckvil::__ftable _ftable = { 0 };
 
-    _ftable->init = Duckvil::init;
-    _ftable->start = Duckvil::start;
-    _ftable->stop = Duckvil::stop;
-    _ftable->update = Duckvil::update;
+    _ftable.init = Duckvil::init;
+    _ftable.start = Duckvil::start;
+    _ftable.stop = Duckvil::stop;
+    _ftable.update = Duckvil::update;
 
-    return _ftable;
+    return &_ftable;
 }

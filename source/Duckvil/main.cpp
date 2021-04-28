@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
     _module.load(&_engineModule);
 
     Duckvil::Memory::init_callback duckvil_memory_init;
-    Duckvil::__ftable* (*duckvil_init)(Duckvil::Memory::ftable*, Duckvil::Memory::free_list_allocator*);
+    Duckvil::__ftable* (*duckvil_init)();
 
     _module.get(_memoryModule, "duckvil_memory_init", (void**)&duckvil_memory_init);
     _module.get(_engineModule, "duckvil_init", (void**)&duckvil_init);
@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 
     Duckvil::Memory::linear_allocator* _mainMemoryAllocator;
 
-    _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 2048 * 1024);
+    _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 512 * 1024);
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
     duckvil_memory_debug_info _memoryDebug = {};
@@ -90,9 +90,9 @@ int main(int argc, char* argv[])
     });
 #endif
 
-    Duckvil::Memory::free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(_mainMemoryAllocator, 2000 * 1024);
+    Duckvil::Memory::free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(_mainMemoryAllocator, 500 * 1024);
 
-    Duckvil::__ftable* _engine = duckvil_init(_memoryInterface, _free_list);
+    Duckvil::__ftable* _engine = duckvil_init();
     Duckvil::__data _engineData = {};
 
     _engine->init(&_engineData, _memoryInterface, _free_list);

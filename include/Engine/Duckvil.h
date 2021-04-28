@@ -125,6 +125,6 @@ namespace Duckvil {
 
 }
 
-typedef Duckvil::__ftable* (*duckvil_init_callback)(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
+typedef Duckvil::__ftable* (*duckvil_init_callback)();
 
-DUCKVIL_EXPORT Duckvil::__ftable* duckvil_init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator);
+DUCKVIL_EXPORT Duckvil::__ftable* duckvil_init();

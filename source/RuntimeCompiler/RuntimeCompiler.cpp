@@ -19,11 +19,11 @@ namespace Duckvil { namespace RuntimeCompiler {
 
         _module.load(&_processModuleInfo);
 
-        void (*_duckvilProcessInit)(Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, Process::ftable* _pFTable);
+        void (*_duckvilProcessInit)(Process::ftable* _pFTable);
 
         _module.get(_processModuleInfo, "duckvil_process_init", (void**)&_duckvilProcessInit);
 
-        _duckvilProcessInit(_heap.GetMemoryInterface(), _heap.GetAllocator(), &m_processFTable);
+        _duckvilProcessInit(&m_processFTable);
 
         m_processFTable.m_fnInit(_heap.GetMemoryInterface(), _heap.GetAllocator(), &m_processData);
         m_processFTable.m_fnSetup(&m_processData);
