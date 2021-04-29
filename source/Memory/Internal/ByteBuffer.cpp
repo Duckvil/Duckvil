@@ -1,5 +1,7 @@
 #include "Memory/Internal/ByteBuffer.h"
 
+#include <cstring>
+
 namespace Duckvil { namespace Memory {
 
     bool impl_byte_buffer_will_fit(byte_buffer_allocator* _pAllocator, std::size_t _ullSize)
