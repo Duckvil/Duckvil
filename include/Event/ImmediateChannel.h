@@ -149,12 +149,22 @@ namespace Duckvil { namespace Event {
 
         void Add(const Callback& _fn)
         {
+            if(m_aCallbackEvents.Full())
+            {
+                m_aCallbackEvents.Resize(m_aCallbackEvents.Size() * 2);
+            }
+
             m_aCallbackEvents.Allocate(_fn);
         }
 
         template <typename Handler>
         void Add(Handler* _pHandler, void (Handler::*_fn)(const Message&))
         {
+            if(m_aMemberEvents.Full())
+            {
+                m_aMemberEvents.Resize(m_aMemberEvents.Size() * 2);
+            }
+
             m_aMemberEvents.Allocate(new member_event<Handler>(_pHandler, _fn));
         }
 
