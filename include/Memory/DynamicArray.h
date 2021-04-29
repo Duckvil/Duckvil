@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstring>
 
 #include "Memory/Internal/FreeListAllocator.h"
 
