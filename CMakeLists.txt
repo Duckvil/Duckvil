@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 
 project(Duckvil)
 
@@ -27,6 +27,7 @@ else()
         SET(GCC_COVERAGE_LINK_FLAGS "--coverage -lgcov")
 
         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS} -fPIC")
+        SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
         SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")
     endif()
 endif()
