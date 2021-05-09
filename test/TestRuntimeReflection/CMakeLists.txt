@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 
 FILE(GLOB SRC_FILES *.cpp)
 FILE(GLOB TEST_TYPE_SRC_FILES TestType/*.cpp)
