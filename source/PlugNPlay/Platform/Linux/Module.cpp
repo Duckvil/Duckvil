@@ -18,6 +18,8 @@ namespace Duckvil { namespace PlugNPlay { namespace Platform {
 
         if(_pModule->m_pModule == nullptr)
         {
+            printf("Cannot open shared library: %s\n", dlerror());
+
             return false;
         }
 
