@@ -13,3 +13,9 @@ target_include_directories(
     Thread
     PRIVATE
 )
+if(UNIX)
+    target_link_libraries(
+        Thread
+        pthread
+    )
+endif()
