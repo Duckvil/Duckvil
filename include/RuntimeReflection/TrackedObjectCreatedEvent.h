@@ -1,12 +1,12 @@
 #pragma once
 
-#include "HotReloader/TrackKeeper.h"
+#include "HotReloader/ITrackKeeper.h"
 
 namespace Duckvil { namespace RuntimeReflection {
 
     struct TrackedObjectCreatedEvent
     {
-        HotReloader::TrackKeeper* m_pTrackKeeper;
+        HotReloader::ITrackKeeper* m_pTrackKeeper;
     };
 
 }}

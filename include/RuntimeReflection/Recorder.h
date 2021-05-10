@@ -84,7 +84,7 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             RuntimeReflection::__duckvil_resource_type_t _typHandle = RuntimeReflection::get_type<Type>(_pReflection, _pData);
             RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type(_pData, "TrackKeeper", { "Duckvil", "HotReloader" });
-            HotReloader::TrackKeeper* _trackKeeper = (HotReloader::TrackKeeper*)RuntimeReflection::create(_pMemoryInterface, _pAllocator, _pReflection, _pData, _trackKeeperHandle, false, _object, _typHandle);
+            HotReloader::ITrackKeeper* _trackKeeper = (HotReloader::ITrackKeeper*)RuntimeReflection::create(_pMemoryInterface, _pAllocator, _pReflection, _pData, _trackKeeperHandle, false, _object, _typHandle);
 
             if(_events == nullptr)
             {

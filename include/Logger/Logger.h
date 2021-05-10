@@ -46,7 +46,7 @@ namespace Duckvil {
     {
         logger_data (*m_fnInitLogger)(const Memory::FreeList& _heap);
         __logger_channel_data* (*m_fnAdd)(const Memory::FreeList& _heap, logger_data* _pData, const logger_channel_descriptor& _channel, std::size_t _ullTypeID, uint32_t _uiChannel);
-        void (*m_fnLog)(__logger_channel_ftable* _pLoggerChannel, logger_data* _pData, std::size_t _ullTypeID, uint32_t _uiChannel, uint32_t _uiLine, const char* _sFile, std::size_t _ullFileLength, const char* _sMessage, std::size_t _ullMessageLength, __logger_channel_verbosity _verbosity, const va_list& _vMessage);
+        void (*m_fnLog)(__logger_channel_ftable* _pLoggerChannel, logger_data* _pData, std::size_t _ullTypeID, uint32_t _uiChannel, uint32_t _uiLine, const char* _sFile, std::size_t _ullFileLength, const char* _sMessage, std::size_t _ullMessageLength, __logger_channel_verbosity _verbosity, va_list _vMessage);
     };
 
     struct logger_context

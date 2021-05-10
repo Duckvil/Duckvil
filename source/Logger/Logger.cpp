@@ -58,7 +58,7 @@ namespace Duckvil {
         return _lookup.m_pChannel;
     }
 
-    void logger_log(__logger_channel_ftable* _pLoggerChannel, logger_data* _pData, std::size_t _ullTypeID, uint32_t _uiChannel, uint32_t _uiLine, const char* _sFile, std::size_t _ullFileLength, const char* _sMessage, std::size_t _ullMessageLength, __logger_channel_verbosity _verbosity, const va_list& _vMessage)
+    void logger_log(__logger_channel_ftable* _pLoggerChannel, logger_data* _pData, std::size_t _ullTypeID, uint32_t _uiChannel, uint32_t _uiLine, const char* _sFile, std::size_t _ullFileLength, const char* _sMessage, std::size_t _ullMessageLength, __logger_channel_verbosity _verbosity, va_list _vMessage)
     {
         for(const logger_channel_lookup& _channelLookup : _pData->m_aChannels)
         {
