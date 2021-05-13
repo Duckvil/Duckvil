@@ -365,6 +365,7 @@ namespace Duckvil {
 
                     if(RuntimeReflection::inherits<Editor::Widget>(_typeHandle))
                     {
+#ifdef DUCKVIL_HOT_RELOADING
                         _pData->m_pEditor->m_fnAddHotDraw(_pData->m_pEditorData,
                             Editor::HotDraw
                             {
@@ -373,23 +374,30 @@ namespace Duckvil {
                                 DUCKVIL_TRACK_KEEPER_CAST(Editor::Widget, _testSystem), _typeHandle
                             }
                         );
+#else
+                        _pData->m_pEditor->m_fnAddDraw(_pData->m_pEditorData,
+                            Editor::Draw
+                            {
+                                _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction,
+                                _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction,
+                                _testSystem, _typeHandle
+                            }
+                        );
+#endif
                     }
 
                     _pData->m_eventPool.AddA<HotReloader::SwapEvent>([_pData, _typeHandle](const HotReloader::SwapEvent& _event)
                     {
-                        // if(_event.m_stage == HotReloader::HotReloadedEvent::stage_after_swap)
+                        for(uint32_t j = 0; j < _pData->m_aEngineSystems.Size(); ++j)
                         {
-                            for(uint32_t j = 0; j < _pData->m_aEngineSystems.Size(); ++j)
+                            system& _system = _pData->m_aEngineSystems[j];
+
+                            if(_system.m_type.m_ID == _event.m_pTrackKeeper->GetTypeHandle().m_ID)
                             {
-                                system& _system = _pData->m_aEngineSystems[j];
+                                RuntimeReflection::ReflectedType<> _systemType(_pData->m_heap, _system.m_type);
 
-                                if(_system.m_type.m_ID == _event.m_pTrackKeeper->GetTypeHandle().m_ID)
-                                {
-                                    RuntimeReflection::ReflectedType<> _systemType(_pData->m_heap, _system.m_type);
-
-                                    _system.m_fnUpdateCallback = _systemType.GetFunctionCallback<ISystem>("Update")->m_fnFunction;
-                                    _system.m_fnInitCallback = _systemType.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
-                                }
+                                _system.m_fnUpdateCallback = _systemType.GetFunctionCallback<ISystem>("Update")->m_fnFunction;
+                                _system.m_fnInitCallback = _systemType.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
                             }
                         }
                     });
@@ -500,8 +508,6 @@ namespace Duckvil {
 
     void update(__data* _pData, __ftable* _pFTable)
     {
-        auto start = std::chrono::high_resolution_clock::now();
-
         _pData->m_time.update(&_pData->m_timeData);
 
         _pData->m_dOneSecond += _pData->m_timeData.m_dDelta;
@@ -565,17 +571,6 @@ namespace Duckvil {
         _pData->m_windowEventPool.Reset();
 
         // _pData->m_pRenderer->m_fnRender(&_pData->m_renderData, 0);
-
-        auto finish = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed = finish - start;
-
-        // static double _lol = 0;
-        // static size_t _lol2 = 0;
-
-        // _lol += elapsed.count() * 1000.0;
-        // _lol2++;
-
-        // printf("%lf\n", elapsed.count() * 1000.0);
 
         _pData->m_pEditor->m_fnRender(_pData->m_pEditorData, _pData->m_pWindow);
 
