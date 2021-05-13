@@ -48,6 +48,7 @@ _property = record_property<__ast_entity_type>(DUCKVIL_RUNTIME_REFLECTION_RECORD
 _property = record_property<std::vector<__ast_entity*>>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast_entity, m_aScopes), "m_aScopes");
 _property = record_property<__ast_entity*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast_entity, m_pParentScope), "m_pParentScope");
 _property = record_property<std::vector<__ast_meta>>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast_entity, m_aMeta), "m_aMeta");
+_property = record_property<std::vector<std::string>>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast_entity, m_aNeededDefines), "m_aNeededDefines");
 _type = record_type<Duckvil::Parser::__ast_entity_define>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__ast_entity_define");
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
@@ -177,7 +178,9 @@ _property = record_property<__ast_entity>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_ST
 _property = record_property<__ast_entity*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast, m_pCurrentScope), "m_pCurrentScope");
 _property = record_property<__ast_entity*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast, m_pPendingScope), "m_pPendingScope");
 _property = record_property<__ast_access>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast, m_currentAccess), "m_currentAccess");
+_property = record_property<std::string>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast, m_sCurrentDefineNeeded), "m_sCurrentDefineNeeded");
 _property = record_property<std::vector<user_define>>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast, m_aUserDefines), "m_aUserDefines");
+_property = record_property<bool>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast, m_bPendingIfdef), "m_bPendingIfdef");
 _type = record_type<Duckvil::Parser::__ast_ftable>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__ast_ftable");
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");

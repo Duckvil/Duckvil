@@ -16,6 +16,15 @@ _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Memory");
 record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 20);
+#ifdef DUCKVIL_MEMORY_DEBUGGER
+_property = record_property<void(*)(allocator*, allocator*, duckvil_memory_allocator_type)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::allocator, m_fnOnAllocate), "m_fnOnAllocate");
+#endif
+#ifdef DUCKVIL_MEMORY_DEBUGGER
+_property = record_property<void(*)(allocator*, allocator*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::allocator, m_fnOnDeallocate), "m_fnOnDeallocate");
+#endif
+#ifdef DUCKVIL_MEMORY_DEBUGGER
+_property = record_property<duckvil_memory_debug_info*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::allocator, m_pDebugData), "m_pDebugData");
+#endif
 _property = record_property<std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::allocator, m_ullCapacity), "m_ullCapacity");
 _property = record_property<std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::allocator, m_ullUsed), "m_ullUsed");
 _type = record_type<Duckvil::Memory::linear_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "linear_allocator");

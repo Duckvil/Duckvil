@@ -2,7 +2,7 @@
 
 #define DUCKVIL_GENERATED_BODY \
 public: \
-static void* Cast(void* _pObject) { return static_cast<allocator*>(_pObject); } \
+static void* Cast(void* _pObject) { return static_cast<duckvil_memory_debug_info*>(_pObject); } \
 public: \
 void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\

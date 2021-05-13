@@ -17,6 +17,7 @@ _pSerializer->SerializeProperty("m_scopeType", m_scopeType); \
 _pSerializer->SerializeProperty("m_aScopes", m_aScopes); \
 _pSerializer->SerializeProperty("m_pParentScope", m_pParentScope); \
 _pSerializer->SerializeProperty("m_aMeta", m_aMeta); \
+_pSerializer->SerializeProperty("m_aNeededDefines", m_aNeededDefines); \
 _pSerializer->SerializeProperty("m_sName", m_sName); \
 _pSerializer->SerializeProperty("m_sType", m_sType); \
 _pSerializer->SerializeProperty("m_sName", m_sName); \
@@ -46,5 +47,7 @@ _pSerializer->SerializeProperty("m_main", m_main); \
 _pSerializer->SerializeProperty("m_pCurrentScope", m_pCurrentScope); \
 _pSerializer->SerializeProperty("m_pPendingScope", m_pPendingScope); \
 _pSerializer->SerializeProperty("m_currentAccess", m_currentAccess); \
+_pSerializer->SerializeProperty("m_sCurrentDefineNeeded", m_sCurrentDefineNeeded); \
 _pSerializer->SerializeProperty("m_aUserDefines", m_aUserDefines); \
+_pSerializer->SerializeProperty("m_bPendingIfdef", m_bPendingIfdef); \
 }

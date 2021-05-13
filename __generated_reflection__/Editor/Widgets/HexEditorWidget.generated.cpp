@@ -19,6 +19,9 @@ record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::
 record_inheritance<Widget>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, __protection::__protection_public);
 _constructor = record_constructor<Duckvil::Editor::HexEditorWidget, const Memory::FreeList&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
 _property = record_property<MemoryEditor>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Editor::HexEditorWidget, m_hexEditor), "m_hexEditor");
+#ifdef DUCKVIL_MEMORY_DEBUGGER
+_property = record_property<duckvil_memory_debug_info*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Editor::HexEditorWidget, m_pSelected), "m_pSelected");
+#endif
 record_function<Duckvil::Editor::HexEditorWidget, void, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Editor::HexEditorWidget::InitEditor, "InitEditor");
 record_function<Duckvil::Editor::HexEditorWidget, void>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Editor::HexEditorWidget::OnDraw, "OnDraw");
 record_function<Duckvil::Editor::HexEditorWidget, void, const HexEditorWidgetInitEvent&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Editor::HexEditorWidget::OnEvent, "OnEvent");
