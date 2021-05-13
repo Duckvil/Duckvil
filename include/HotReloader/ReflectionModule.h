@@ -20,7 +20,7 @@ namespace Duckvil { namespace HotReloader {
 
     class RuntimeCompilerReflectionModule;
 
-    void recursive(RuntimeCompilerReflectionModule* _pData, Parser::__ast_entity* _entity);
+    void recursive(RuntimeCompilerReflectionModule* _pData, const Parser::__ast& _ast, Parser::__ast_entity* _entity);
 
     DUCKVIL_CLASS(Duckvil::ReflectionFlags::ReflectionFlags_ReflectionModule)
     class RuntimeCompilerReflectionModule
@@ -51,7 +51,7 @@ namespace Duckvil { namespace HotReloader {
 
         void ProcessAST(Parser::__ast* _ast)
         {
-            recursive(this, &_ast->m_main);
+            recursive(this, *_ast, &_ast->m_main);
         }
 
         void GenerateCustom(std::ofstream& _file)
@@ -82,7 +82,7 @@ namespace Duckvil { namespace HotReloader {
         }
     };
 
-    void recursive(RuntimeCompilerReflectionModule* _pData, Parser::__ast_entity* _entity)
+    void recursive(RuntimeCompilerReflectionModule* _pData, const Parser::__ast& _ast, Parser::__ast_entity* _entity)
     {
         if(_entity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_structure)
         {
@@ -160,7 +160,7 @@ namespace Duckvil { namespace HotReloader {
 
                 {
                     Parser::__ast_entity_argument _arg;
-                    
+
                     _arg.m_sName = "_pSerializer";
                     _arg.m_sType = "Duckvil::RuntimeSerializer::ISerializer*";
                     _arg.m_pParentScope = _func;
@@ -176,15 +176,41 @@ namespace Duckvil { namespace HotReloader {
                 if(_child->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_variable)
                 {
                     Parser::__ast_entity_variable* _var = (Parser::__ast_entity_variable*)_child;
-                    
-                    _pData->m_aVars.push_back(_var->m_sName);
+                    bool _skip = false;
+
+                    for(const auto& _needed : _var->m_aNeededDefines)
+                    {
+                        bool _contain = false;
+
+                        for(const auto& _declared : _ast.m_aUserDefines)
+                        {
+                            if(_needed == _declared.m_sUserDefine)
+                            {
+                                _contain = true;
+
+                                break;
+                            }
+                        }
+
+                        if(!_contain)
+                        {
+                            _skip = true;
+
+                            break;
+                        }
+                    }
+
+                    if(!_skip)
+                    {
+                        _pData->m_aVars.push_back(_var->m_sName);
+                    }
                 }
             }
         }
 
         for(Parser::__ast_entity* _ent : _entity->m_aScopes)
         {
-            recursive(_pData, _ent);
+            recursive(_pData, _ast, _ent);
         }
     }
 

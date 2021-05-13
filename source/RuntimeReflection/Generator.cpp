@@ -25,7 +25,7 @@ namespace Duckvil { namespace RuntimeReflection {
         return _res;
     }
 
-    void generate_inheritance(const Parser::__ast_entity_structure* _pEntity, std::ofstream& _file)
+    void generate_inheritance(const Parser::__ast& _ast, const Parser::__ast_entity_structure* _pEntity, std::ofstream& _file)
     {
         for(const Parser::__ast_inheritance& _inheritance : _pEntity->m_aInheritance)
         {
@@ -46,7 +46,7 @@ namespace Duckvil { namespace RuntimeReflection {
         }
     }
 
-    void generate_constructor(const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
+    void generate_constructor(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
         const Parser::__ast_entity_constructor* _castedConstructor = (const Parser::__ast_entity_constructor*)_pEntity;
         bool _skip = false;
@@ -94,7 +94,7 @@ namespace Duckvil { namespace RuntimeReflection {
         }
     }
 
-    void generate_variable(const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
+    void generate_variable(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
         const Parser::__ast_entity_variable* _castedVariable = (const Parser::__ast_entity_variable*)_pEntity;
         bool _skip = false;
@@ -145,15 +145,25 @@ namespace Duckvil { namespace RuntimeReflection {
             }
         }
 
+        for(const auto& _define : _castedVariable->m_aNeededDefines)
+        {
+            _file << "#ifdef " << _define << "\n";
+        }
+
         _file << "_property = record_property<" + _additionalNamespaceTypedef + _castedVariable->m_sType + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(" + _sNamespace + _pParentEntity->m_sName + ", " + _castedVariable->m_sName + "), \"" + _castedVariable->m_sName + "\");\n";
 
         for(const Parser::__ast_meta& _meta : _castedVariable->m_aMeta)
         {
             _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _property, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
         }
+
+        for(const auto& _define : _castedVariable->m_aNeededDefines)
+        {
+            _file << "#endif\n";
+        }
     }
 
-    void generate_callback(const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
+    void generate_callback(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
         const Parser::__ast_entity_callback* _castedCallback = (const Parser::__ast_entity_callback*)_pEntity;
         bool _skip = false;
@@ -176,6 +186,11 @@ namespace Duckvil { namespace RuntimeReflection {
             return;
         }
 
+        for(const auto& _define : _castedCallback->m_aNeededDefines)
+        {
+            _file << "#ifdef " << _define << "\n";
+        }
+
         _file << "_property = record_property<" << _castedCallback->m_sReturnType << "(" << _castedCallback->m_sMemberType << ")(";
 
         for(uint32_t i = 0; i < _castedCallback->m_aArguments.size(); ++i)
@@ -189,9 +204,14 @@ namespace Duckvil { namespace RuntimeReflection {
         }
 
         _file << ")>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(" << _sNamespace + _pParentEntity->m_sName << ", " << _castedCallback->m_sName << "), \"" << _castedCallback->m_sName << "\");\n";
+
+        for(const auto& _define : _castedCallback->m_aNeededDefines)
+        {
+            _file << "#endif\n";
+        }
     }
 
-    void generate_function(const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
+    void generate_function(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
         const Parser::__ast_entity_function* _castedFunction = (const Parser::__ast_entity_function*)_pEntity;
         bool _skip = false;
@@ -212,6 +232,11 @@ namespace Duckvil { namespace RuntimeReflection {
         if(_skip || !_castedFunction->m_aTemplates.empty())
         {
             return;
+        }
+
+        for(const auto& _define : _castedFunction->m_aNeededDefines)
+        {
+            _file << "#ifdef " << _define << "\n";
         }
 
         _file << "record_function<";
@@ -242,9 +267,14 @@ namespace Duckvil { namespace RuntimeReflection {
         }
 
         _file << ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &" << _sNamespace + _pParentEntity->m_sName + "::" + _castedFunction->m_sName << ", \"" << _castedFunction->m_sName << "\");\n";
+
+        for(const auto& _define : _castedFunction->m_aNeededDefines)
+        {
+            _file << "#endif\n";
+        }
     }
 
-    void generate_structure(__generator_data* _pData, const Parser::__ast_entity* _pEntity, std::ofstream& _file)
+    void generate_structure(__generator_data* _pData, const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, std::ofstream& _file)
     {
         const Parser::__ast_entity_structure* _casted = (const Parser::__ast_entity_structure*)_pEntity;
         const Parser::__ast_entity_structure* _parent = _casted;
@@ -274,6 +304,11 @@ namespace Duckvil { namespace RuntimeReflection {
             _additionalNamespace += ((Parser::__ast_entity_structure*)_parent->m_pParentScope)->m_sName + "::";
 
             _parent = (Parser::__ast_entity_structure*)_parent->m_pParentScope;
+        }
+
+        for(const auto& _define : _casted->m_aNeededDefines)
+        {
+            _file << "#ifdef " << _define << "\n";
         }
 
         _file << "_type = record_type<" + _additionalNamespace + _casted->m_sName + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, \"" + _casted->m_sName + "\");\n";
@@ -315,23 +350,28 @@ namespace Duckvil { namespace RuntimeReflection {
             }
         }
 
-        generate_inheritance(_casted, _file);
+        generate_inheritance(_ast, _casted, _file);
+
+        for(const auto& _define : _casted->m_aNeededDefines)
+        {
+            _file << "#endif\n";
+        }
 
         for(Parser::__ast_entity* _ent : _pEntity->m_aScopes)
         {
             switch(_ent->m_scopeType)
             {
             case Parser::__ast_entity_type::__ast_entity_type_variable:
-                generate_variable(_ent, _casted, _file, _additionalNamespace);
+                generate_variable(_ast, _ent, _casted, _file, _additionalNamespace);
                 break;
             case Parser::__ast_entity_type::__ast_entity_type_callback:
-                generate_callback(_ent, _casted, _file, _additionalNamespace);
+                generate_callback(_ast, _ent, _casted, _file, _additionalNamespace);
                 break;
             case Parser::__ast_entity_type::__ast_entity_type_constructor:
-                generate_constructor(_ent, _casted, _file, _additionalNamespace);
+                generate_constructor(_ast, _ent, _casted, _file, _additionalNamespace);
                 break;
             case Parser::__ast_entity_type::__ast_entity_type_function:
-                generate_function(_ent, _casted, _file, _additionalNamespace);
+                generate_function(_ast, _ent, _casted, _file, _additionalNamespace);
                 break;
             default:
                 break;
@@ -342,7 +382,7 @@ namespace Duckvil { namespace RuntimeReflection {
         // _file << "_types.Allocate(_type);\n";
     }
 
-    void recursive(__generator_data* _pData, const Parser::__ast_entity* _entity, std::ofstream& _file)
+    void recursive(__generator_data* _pData, const Parser::__ast& _ast, const Parser::__ast_entity* _entity, std::ofstream& _file)
     {
         if(_entity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_namespace)
         {
@@ -360,14 +400,14 @@ namespace Duckvil { namespace RuntimeReflection {
         }
         else if(_entity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_structure)
         {
-            generate_structure(_pData, _entity, _file);
+            generate_structure(_pData, _ast, _entity, _file);
 
             // _pData->m_pCurrent = _casted;
         }
 
         for(Parser::__ast_entity* _ent : _entity->m_aScopes)
         {
-            recursive(_pData, _ent, _file);
+            recursive(_pData, _ast, _ent, _file);
         }
 
         if(_entity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_namespace)
@@ -418,7 +458,7 @@ namespace Duckvil { namespace RuntimeReflection {
             _file << "DUCKVIL_RESOURCE(constructor_t) _constructor;\n";
             _file << "std::vector<" << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) << "> _recordedTypes;\n";
 
-            recursive(_pData, &_ast.m_main, _file);
+            recursive(_pData, _ast, &_ast.m_main, _file);
 
             _file << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) << "* _types = new " << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) <<"[_recordedTypes.size()];\n";
             _file << "for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }\n";

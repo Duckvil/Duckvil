@@ -192,6 +192,10 @@ int main(int argc, char* argv[])
         _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_GENERATED_BODY", &Duckvil::Utils::user_define_behavior });
         _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_RESOURCE", &Duckvil::Utils::user_define_resource_behavior });
 
+#ifdef DUCKVIL_HOT_RELOADING
+        _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_HOT_RELOADING", &Duckvil::Utils::user_define_behavior });
+#endif
+
         _ast->ast_generate(&_astData, _lexerFtable, _data);
         // _ast->ast_print(_astData);
 
