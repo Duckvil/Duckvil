@@ -219,6 +219,20 @@ namespace Duckvil { namespace RuntimeReflection {
         return nullptr;
     }
 
+    Memory::Vector<DUCKVIL_RESOURCE(property_t)> get_properties(__data* _pData, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+        std::size_t _size = DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_properties.m_data);
+        Memory::Vector<DUCKVIL_RESOURCE(property_t)> _properties(_pMemory, _pAllocator, _size);
+
+        for(uint32_t i = 0; i < _size; ++i)
+        {
+            _properties.Allocate({ i });
+        }
+
+        return _properties;
+    }
+
     Memory::Vector<DUCKVIL_RESOURCE(argument_t)> get_arguments(__data* _pData, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _handle)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
@@ -441,6 +455,27 @@ namespace Duckvil { namespace RuntimeReflection {
         return _result;
     }
 
+    Memory::Vector<DUCKVIL_RESOURCE(meta_t)> get_property_metas(const Memory::FreeList& _heap, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(property_t) _propertyHandle)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+        const __property_t& _property = DUCKVIL_SLOT_ARRAY_GET(_type.m_properties, _propertyHandle.m_ID);
+        Memory::Vector<DUCKVIL_RESOURCE(meta_t)> _result;
+
+        _heap.Allocate(_result, 1);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_property.m_metas.m_data); ++i)
+        {
+            if(_result.Full())
+            {
+                _result.Resize(_result.Size() * 2);
+            }
+
+            _result.Allocate({ i });
+        }
+
+        return _result;
+    }
+
     DUCKVIL_RESOURCE(variant_t) get_constructor_meta_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _constructorHandle, const void* _pKey, const std::size_t& _ullSize, const std::size_t& _ullTypeID)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
@@ -537,6 +572,7 @@ Duckvil::RuntimeReflection::__ftable* duckvil_runtime_reflection_init()
     _functions.m_fnGetFunctionByHandle = &Duckvil::RuntimeReflection::get_function_by_handle;
 
     _functions.m_fnGetProperty = &Duckvil::RuntimeReflection::get_property;
+    _functions.m_fnGetProperties = &Duckvil::RuntimeReflection::get_properties;
 
     _functions.m_fnGetTypeMetaHandle = &Duckvil::RuntimeReflection::get_type_meta_handle;
     _functions.m_fnGetTypeMetaValue = &Duckvil::RuntimeReflection::get_type_meta_value;
@@ -545,6 +581,7 @@ Duckvil::RuntimeReflection::__ftable* duckvil_runtime_reflection_init()
     _functions.m_fnGetPropertyMetaHandle = &Duckvil::RuntimeReflection::get_property_meta_handle;
     _functions.m_fnGetPropertyMetaValue = &Duckvil::RuntimeReflection::get_property_meta_value;
     _functions.m_fnGetPropertyMetaVariant = &Duckvil::RuntimeReflection::get_property_meta_variant;
+    _functions.m_fnGetPropertyMetas = &Duckvil::RuntimeReflection::get_property_metas;
 
     _functions.m_fnGetConstructorMetaHandle = &Duckvil::RuntimeReflection::get_constructor_meta_handle;
     _functions.m_fnGetConstructorMetaValue = &Duckvil::RuntimeReflection::get_constructor_meta_value;
