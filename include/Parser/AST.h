@@ -81,6 +81,7 @@ namespace Duckvil { namespace Parser {
         std::vector<__ast_entity*> m_aScopes;
         __ast_entity* m_pParentScope;
         std::vector<__ast_meta> m_aMeta;
+        std::vector<std::string> m_aNeededDefines;
     };
 
     struct __ast_entity_define : public __ast_entity
@@ -246,7 +247,9 @@ namespace Duckvil { namespace Parser {
         __ast_entity* m_pCurrentScope;
         __ast_entity* m_pPendingScope;
         __ast_access m_currentAccess;
+        std::string m_sCurrentDefineNeeded;
         std::vector<user_define> m_aUserDefines;
+        bool m_bPendingIfdef = false;
     };
 
     struct __ast_ftable

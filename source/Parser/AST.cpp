@@ -867,6 +867,11 @@ namespace Duckvil { namespace Parser {
             _entity->m_sType = _type;
             _entity->m_sName = _name;
 
+            if(_pAST->m_bPendingIfdef)
+            {
+                _entity->m_aNeededDefines.push_back(_pAST->m_sCurrentDefineNeeded);
+            }
+
             _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
 
             _entity->m_pParentScope = _pAST->m_pCurrentScope;
@@ -1092,6 +1097,11 @@ namespace Duckvil { namespace Parser {
                 _entity->m_sName = _internalTmp;
                 _entity->m_flags = _flags;
 
+                if(_pAST->m_bPendingIfdef)
+                {
+                    _entity->m_aNeededDefines.push_back(_pAST->m_sCurrentDefineNeeded);
+                }
+
                 _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
 
                 _entity->m_pParentScope = _pAST->m_pCurrentScope;
@@ -1121,6 +1131,11 @@ namespace Duckvil { namespace Parser {
                 _entity->m_sType = _type;
                 _entity->m_accessLevel = _pAST->m_currentAccess;
 
+                if(_pAST->m_bPendingIfdef)
+                {
+                    _entity->m_aNeededDefines.push_back(_pAST->m_sCurrentDefineNeeded);
+                }
+
                 _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
 
                 _entity->m_pParentScope = _pAST->m_pCurrentScope;
@@ -1147,6 +1162,11 @@ namespace Duckvil { namespace Parser {
             _entity->m_accessLevel = _pAST->m_currentAccess;
             _entity->m_sName = _internalTmp;
             _entity->m_sMemberType = _callbackMemberType;
+
+            if(_pAST->m_bPendingIfdef)
+            {
+                _entity->m_aNeededDefines.push_back(_pAST->m_sCurrentDefineNeeded);
+            }
 
             std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _pAST, _exp.m_sCurrentLine.substr(_exp.m_uiCurrentCharacterIndex + 1));
 
@@ -1327,6 +1347,7 @@ namespace Duckvil { namespace Parser {
 
         std::string _token;
         std::string _tmpExpression;
+        uint32_t _ifdefCount = 0;
 
         bool _oneSlash = false;
         bool _continue = false;
@@ -1559,6 +1580,11 @@ namespace Duckvil { namespace Parser {
                     _pLexer->next_token(&_lexerData, &_token); // Skip ;
                 }
 
+                if(_pAST->m_bPendingIfdef)
+                {
+                    _pAST->m_pCurrentScope->m_aNeededDefines.push_back(_pAST->m_sCurrentDefineNeeded);
+                }
+
                 if(_pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure ||
                     _pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_enum ||
                     _pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_namespace)
@@ -1600,42 +1626,68 @@ namespace Duckvil { namespace Parser {
                     }
                 }
             }
-            else if(_token == "#")
+            else if(_pAST->m_bPendingIfdef && _token == "ifdef")
+            {
+                _ifdefCount++;
+
+                _pLexer->next_token(&_lexerData, &_token);
+                _pLexer->next_token(&_lexerData, &_pAST->m_sCurrentDefineNeeded); // ifdef name
+            }
+            else if(_pAST->m_bPendingIfdef && _token == "if")
+            {
+                uint32_t _ifdefCountInternal = 1;
+
+                while(_pLexer->next_token(&_lexerData, &_token))
+                {
+                    if(_token == "if")
+                    {
+                        _ifdefCountInternal++;
+                    }
+                    else if(_token == "endif")
+                    {
+                        _ifdefCountInternal--;
+
+                        if(_ifdefCountInternal == 0)
+                        {
+                            _pAST->m_bPendingIfdef = false;
+
+                            break;
+                        }
+                    }
+                }
+            }
+            else if(_pAST->m_bPendingIfdef && _token == "endif")
+            {
+                _ifdefCount--;
+
+                if(_ifdefCount == 0)
+                {
+                    _pAST->m_bPendingIfdef = false;
+                    _pAST->m_sCurrentDefineNeeded.clear();
+                }
+            }
+            else if(_pAST->m_bPendingIfdef && _token == "undef")
+            {
+                _pLexer->next_token(&_lexerData, &_token);
+                _pLexer->next_token(&_lexerData, &_pAST->m_sCurrentDefineNeeded); // undef name
+
+                _pAST->m_bPendingIfdef = false;
+            }
+            else if(_pAST->m_bPendingIfdef && _token == "else")
+            {
+                continue;
+            }
+            else if(_pAST->m_bPendingIfdef && _token == "define")
             {
                 bool _wasNewLine = false;
-                uint32_t _ifdefCount = 0;
-                bool _break = false;
 
-                while(!_break && _pLexer->next_token(&_lexerData, &_token))
+                while(_pLexer->next_token(&_lexerData, &_token))
                 {
                     if(_token == "\\")
                     {
                         _wasNewLine = true;
 
                         continue;
-                    }
-                    else if(_token == "ifdef")
-                    {
-                        _ifdefCount++;
-
-                        while(_pLexer->next_token(&_lexerData, &_token))
-                        {
-                            if(_token == "ifdef")
-                            {
-                                _ifdefCount++;
-                            }
-                            else if(_token == "endif")
-                            {
-                                _ifdefCount--;
-
-                                if(_ifdefCount == 0)
-                                {
-                                    _break = true;
-
-                                    break;
-                                }
-                            }
-                        }
                     }
                     else if(_token == "" && _lexerData.m_bNewLine)
                     {
@@ -1649,6 +1701,124 @@ namespace Duckvil { namespace Parser {
                         }
                     }
                 }
+
+                _pAST->m_bPendingIfdef = false;
+            }
+            else if(_pAST->m_bPendingIfdef && _token == "include")
+            {
+                bool _wasNewLine = false;
+
+                while(_pLexer->next_token(&_lexerData, &_token))
+                {
+                    if(_token == "\\")
+                    {
+                        _wasNewLine = true;
+
+                        continue;
+                    }
+                    else if(_token == "" && _lexerData.m_bNewLine)
+                    {
+                        if(_wasNewLine)
+                        {
+                            _wasNewLine = false;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                _pAST->m_bPendingIfdef = false;
+            }
+            else if(_pAST->m_bPendingIfdef && _token == "pragma")
+            {
+                bool _wasNewLine = false;
+
+                while(_pLexer->next_token(&_lexerData, &_token))
+                {
+                    if(_token == "\\")
+                    {
+                        _wasNewLine = true;
+
+                        continue;
+                    }
+                    else if(_token == "" && _lexerData.m_bNewLine)
+                    {
+                        if(_wasNewLine)
+                        {
+                            _wasNewLine = false;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                _pAST->m_bPendingIfdef = false;
+            }
+            else if(_token == "#")
+            {
+                _pAST->m_bPendingIfdef = true;
+                // bool _wasNewLine = false;
+                // uint32_t _ifdefCount = 0;
+                // bool _break = false;
+
+                // while(!_break && _pLexer->next_token(&_lexerData, &_token))
+                // {
+                //     if(_token == "\\")
+                //     {
+                //         _wasNewLine = true;
+
+                //         continue;
+                //     }
+                //     else if(_token == "ifdef")
+                //     {
+                //         _ifdefCount++;
+
+                //         _pLexer->next_token(&_lexerData, &_token);
+                //         _pLexer->next_token(&_lexerData, &_token);
+
+                //         for(const auto& _define : _pAST->m_aUserDefines)
+                //         {
+                //             if(_token == _define.m_sUserDefine)
+                //             {
+                //                 printf("AAAAA\n");
+                //             }
+                //         }
+
+                //         while(_pLexer->next_token(&_lexerData, &_token))
+                //         {
+                //             if(_token == "ifdef")
+                //             {
+                //                 _ifdefCount++;
+                //             }
+                //             else if(_token == "endif")
+                //             {
+                //                 _ifdefCount--;
+
+                //                 if(_ifdefCount == 0)
+                //                 {
+                //                     _break = true;
+
+                //                     break;
+                //                 }
+                //             }
+                //         }
+                //     }
+                //     else if(_token == "" && _lexerData.m_bNewLine)
+                //     {
+                //         if(_wasNewLine)
+                //         {
+                //             _wasNewLine = false;
+                //         }
+                //         else
+                //         {
+                //             break;
+                //         }
+                //     }
+                // }
             }
             else if(_token == "/")
             {
