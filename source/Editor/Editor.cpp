@@ -26,7 +26,9 @@ namespace Duckvil { namespace Editor {
     {
         ImGuiEditorData* _data = (ImGuiEditorData*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(ImGuiEditorData), alignof(ImGuiEditorData));
 
+#ifdef DUCKVIL_HOT_RELOADING
         _data->m_aHotDraws = Memory::Vector<HotDraw>(_pMemoryInterface, _pAllocator, 1);
+#endif
         _data->m_aDraws = Memory::Vector<Draw>(_pMemoryInterface, _pAllocator, 1);
 
         SDL_GL_MakeCurrent((SDL_Window*)_pWindow->GetWindow(), _pWindow->GetContext());
@@ -76,6 +78,7 @@ namespace Duckvil { namespace Editor {
 
             if(RuntimeReflection::inherits<Editor::Widget>(_typeHandle) && !RuntimeReflection::inherits<ISystem>(_typeHandle))
             {
+#ifdef DUCKVIL_HOT_RELOADING
                 void* _object = _type.CreateTracked<const Memory::FreeList&>(_heap);
 
                 if(_data->m_aHotDraws.Full())
@@ -91,6 +94,23 @@ namespace Duckvil { namespace Editor {
                         DUCKVIL_TRACK_KEEPER_CAST(Editor::Widget, _object), _typeHandle
                     }
                 );
+#else
+                void* _object = _type.Create<const Memory::FreeList&>(_heap);
+
+                if(_data->m_aDraws.Full())
+                {
+                    _data->m_aDraws.Resize(_data->m_aDraws.Size() * 2);
+                }
+
+                _data->m_aDraws.Allocate(
+                    Editor::Draw
+                    {
+                        _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction,
+                        _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction,
+                        _object, _typeHandle
+                    }
+                );
+#endif
 
                 if(_type.GetFunctionHandle<const HexEditorWidgetInitEvent&>("OnEvent").m_ID != -1)
                 {
@@ -107,6 +127,7 @@ namespace Duckvil { namespace Editor {
             }
         }
 
+#ifdef DUCKVIL_HOT_RELOADING
         for(uint32_t i = 0; i < _data->m_aHotDraws.Size(); ++i)
         {
             const HotDraw& _widget = _data->m_aHotDraws[i];
@@ -114,6 +135,7 @@ namespace Duckvil { namespace Editor {
 
             (_pWidget->*_widget.m_fnInit)(_data->_ctx);
         }
+#endif
 
         for(uint32_t i = 0; i < _data->m_aDraws.Size(); ++i)
         {
@@ -225,12 +247,14 @@ namespace Duckvil { namespace Editor {
 
         ::ImGui::End();
 
+#ifdef DUCKVIL_HOT_RELOADING
         for(uint32_t i = 0; i < _data->m_aHotDraws.Size(); ++i)
         {
             const HotDraw& _widget = _data->m_aHotDraws[i];
 
             ((Widget*)DUCKVIL_TRACK_KEEPER_GET_OBJECT(_widget.m_pTrackKeeper)->*_widget.m_fnDraw)();
         }
+#endif
 
         for(uint32_t i = 0; i < _data->m_aDraws.Size(); ++i)
         {
@@ -256,6 +280,7 @@ namespace Duckvil { namespace Editor {
 
     void add_hot_draw(void* _pData, HotDraw _draw)
     {
+#ifdef DUCKVIL_HOT_RELOADING
         ImGuiEditorData* _data = (ImGuiEditorData*)_pData;
         uint32_t _found = -1;
 
@@ -287,6 +312,7 @@ namespace Duckvil { namespace Editor {
         }
 
         _data->m_aHotDraws.Allocate(_draw);
+#endif
     }
 
     void add_draw(void* _pData, Draw _draw)

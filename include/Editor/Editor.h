@@ -21,7 +21,9 @@ namespace Duckvil { namespace Editor {
 
     struct ImGuiEditorData
     {
+#ifdef DUCKVIL_HOT_RELOADING
         Memory::Vector<Editor::HotDraw> m_aHotDraws;
+#endif
         Memory::Vector<Editor::Draw> m_aDraws;
         void* _ctx;
         Event::Pool<Event::mode::immediate> m_pEditorEvents;
