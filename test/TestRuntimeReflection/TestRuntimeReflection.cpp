@@ -105,7 +105,7 @@ DUCKVIL_TEST(RuntimeReflection)
 
         DUCKVIL_TEST_NOT_EQUAL(_funcHandle.m_ID, DUCKVIL_SLOT_ARRAY_INVALID_HANDLE, "Could not get 'test2'");
 
-        void* _testT = Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_ftable, _rr_data, _t, 10.f);
+        void* _testT = Duckvil::RuntimeReflection::create(_memoryInterface, _free_list, _rr_ftable, _rr_data, _t, false, 10.f);
 
         DUCKVIL_TEST_IS_NOT_NULL(_testT, "Could not create 'TestType' object");
 
