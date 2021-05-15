@@ -143,6 +143,7 @@ namespace Duckvil { namespace Memory {
         typedef fixed_array_allocator* (*_linear_allocate_fixed_array_allocator)(linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
         typedef free_list_allocator* (*_linear_allocate_free_list_allocator)(linear_allocator* _pAllocator, std::size_t _ullSize);
         typedef fixed_vector_allocator* (*_linear_allocate_fixed_vector_allocator)(linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef byte_buffer_allocator* (*_linear_allocate_byte_buffer_allocator)(linear_allocator* _pAllocator, std::size_t _ullSize);
 
         typedef fixed_queue_allocator* (*_free_list_allocate_fixed_queue_allocator)(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
         typedef free_list_allocator* (*_free_list_allocate_free_list_allocator)(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize);
@@ -223,6 +224,7 @@ namespace Duckvil { namespace Memory {
         _linear_allocate_fixed_array_allocator          m_fnLinearAllocateFixedArrayAllocator;
         _linear_allocate_free_list_allocator            m_fnLinearAllocateFreeListAllocator;
         _linear_allocate_fixed_vector_allocator         m_fnLinearAllocateFixedVectorAllocator;
+        _linear_allocate_byte_buffer_allocator          m_fnLinearAllocateByteBufferAllocator;
 
         _free_list_allocate_fixed_queue_allocator       m_fnFreeListAllocateFixedQueueAllocator;
         _free_list_allocate_free_list_allocator         m_fnFreeListAllocateFreeListAllocator;

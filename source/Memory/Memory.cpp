@@ -147,6 +147,7 @@ Duckvil::Memory::ftable* duckvil_memory_init()
     memory.m_fnLinearAllocateFixedArrayAllocator =     &impl_linear_allocate_fixed_array_allocator;
     memory.m_fnLinearAllocateFreeListAllocator =       &impl_linear_allocate_free_list_allocator;
     memory.m_fnLinearAllocateFixedVectorAllocator =    &impl_linear_allocate_fixed_vector_allocator;
+    memory.m_fnLinearAllocateByteBufferAllocator =     &impl_linear_allocate_byte_buffer_allocator;
 
     memory.m_fnFreeListAllocateFixedQueueAllocator =   &impl_free_list_allocate_fixed_queue_allocator;
     memory.m_fnFreeListAllocateFreeListAllocator =     &impl_free_list_allocate_free_list_allocator;

@@ -11,6 +11,7 @@ namespace Duckvil { namespace Memory {
     fixed_array_allocator* impl_linear_allocate_fixed_array_allocator(linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
     free_list_allocator* impl_linear_allocate_free_list_allocator(linear_allocator* _pAllocator, std::size_t _ullSize);
     fixed_vector_allocator* impl_linear_allocate_fixed_vector_allocator(linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+    byte_buffer_allocator* impl_linear_allocate_byte_buffer_allocator(linear_allocator* _pAllocator, std::size_t _ullSize);
 
 // TODO: Implement rest of allocation types
 

@@ -172,6 +172,33 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
+    byte_buffer_allocator* impl_linear_allocate_byte_buffer_allocator(linear_allocator* _pAllocator, std::size_t _ullSize)
+    {
+        if(_pAllocator->m_ullCapacity < _ullSize + _pAllocator->m_ullUsed)
+        {
+            return 0;
+        }
+
+        uint8_t _padding = 0;
+        byte_buffer_allocator* _memory = (byte_buffer_allocator*)calculate_aligned_pointer((uint8_t*)_pAllocator + sizeof(linear_allocator) + _pAllocator->m_ullUsed, alignof(byte_buffer_allocator), _padding);
+        std::size_t _size = sizeof(byte_buffer_allocator);
+
+        _memory->m_ullCapacity = _ullSize;
+        _memory->m_ullUsed = 0;
+
+        memset((uint8_t*)_memory + sizeof(byte_buffer_allocator), 0, _ullSize);
+
+        _pAllocator->m_ullUsed += _size + _ullSize;
+
+// #ifdef DUCKVIL_MEMORY_DEBUGGER
+//         _memory->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
+//         _memory->m_fnOnDeallocate = _pAllocator->m_fnOnDeallocate;
+//         _memory->m_fnOnAllocate(_pAllocator, _memory, duckvil_memory_allocator_type_vector);
+// #endif
+
+        return _memory;
+    }
+
     fixed_queue_allocator* impl_free_list_allocate_fixed_queue_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
         fixed_queue_allocator* _allocator = (fixed_queue_allocator*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(fixed_queue_allocator) + _ullSize, alignof(fixed_queue_allocator));
