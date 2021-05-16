@@ -75,7 +75,8 @@ Duckvil::Memory::ftable* duckvil_memory_init()
 
     static ftable memory = { 0 };
 
-    memory.m_fnBasicAllocate = &impl_allocate;
+    memory.m_fnBasicAllocate =  &impl_allocate;
+    memory.m_fnBasicFree =      &impl_free;
 
     memory.m_fnCalculateAlignedPointer =   &calculate_aligned_pointer;
     memory.m_fnCalculatePadding =          &calculate_padding;

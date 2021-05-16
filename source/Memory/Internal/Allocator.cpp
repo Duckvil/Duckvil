@@ -14,16 +14,30 @@ namespace Duckvil { namespace Memory {
             return false;
         }
 
-        *_pAllocator = (linear_allocator*)std::malloc(_ullSize);
+        *_pAllocator = (linear_allocator*)std::malloc(_ullSize + sizeof(linear_allocator));
 
         if(*_pAllocator == nullptr)
         {
             return false;
         }
 
-        memset(*_pAllocator, 0, _ullSize);
+        memset(*_pAllocator, 0, _ullSize + sizeof(linear_allocator));
 
         (*_pAllocator)->m_ullCapacity = _ullSize;
+
+        return true;
+    }
+
+    bool impl_free(linear_allocator** _pAllocator)
+    {
+        if(*_pAllocator == nullptr)
+        {
+            return false;
+        }
+
+        std::free(*_pAllocator);
+
+        *_pAllocator = nullptr;
 
         return true;
     }

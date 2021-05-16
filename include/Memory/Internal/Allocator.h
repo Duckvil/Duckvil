@@ -5,6 +5,7 @@
 namespace Duckvil { namespace Memory {
 
     bool impl_allocate(linear_allocator** _pAllocator, std::size_t _ullSize);
+    bool impl_free(linear_allocator** _pAllocator);
 
     linear_allocator* impl_linear_allocate_linear_allocator(linear_allocator* _pAllocator, std::size_t _ullSize);
     fixed_stack_allocator* impl_linear_allocate_fixed_stack_allocator(linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);

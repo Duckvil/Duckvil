@@ -72,6 +72,7 @@ namespace Duckvil { namespace Memory {
     struct ftable
     {
         typedef bool (*_basic_allocate)(linear_allocator** _pAllocator, std::size_t _ullSize);
+        typedef bool (*_basic_free)(linear_allocator** _pAllocator);
 
         typedef uintptr_t (*_calculate_aligned_pointer)(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
         typedef uint8_t (*_calculate_padding)(const uintptr_t& _ullAddress, uint8_t _ucAlignment);
@@ -153,6 +154,7 @@ namespace Duckvil { namespace Memory {
         typedef byte_buffer_allocator* (*_free_list_allocate_byte_buffer_allocator)(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize);
 
         _basic_allocate             m_fnBasicAllocate;
+        _basic_free                 m_fnBasicFree;
 
         _calculate_aligned_pointer  m_fnCalculateAlignedPointer;
         _calculate_padding          m_fnCalculatePadding;
