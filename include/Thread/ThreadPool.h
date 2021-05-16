@@ -15,7 +15,13 @@
 
 namespace Duckvil { namespace Thread {
 
-    typedef void (*TaskCallback)();
+    typedef void (*TaskCallback)(void*);
+
+    struct task
+    {
+        TaskCallback m_callback;
+        void* m_pData;
+    };
 
     struct pool_data
     {
@@ -25,9 +31,10 @@ namespace Duckvil { namespace Thread {
         std::mutex m_lock;
         std::mutex m_threadPoolLock;
         std::condition_variable m_condition;
-        Memory::Queue<TaskCallback> m_aTasks;
+        Memory::Queue<task> m_aTasks;
         bool m_bRunning;
         bool m_bTerminate;
+        std::atomic<uint32_t> m_uiTaskCount;
     };
 
     struct pool_ftable
@@ -36,6 +43,9 @@ namespace Duckvil { namespace Thread {
         void (*m_fnStart)(pool_data*);
         void (*m_fnTerminate)(pool_data*);
         void (*m_fnOrderTask)(pool_data*, TaskCallback _task);
+        void (*m_fnOrderDataTask)(pool_data*, TaskCallback _task, void* _pTaskData);
+        bool (*m_fnRemainingTasks)(pool_data*);
+        uint32_t (*m_fnGetTaskCount)(pool_data*);
     };
 
     template <typename F, typename... Args>

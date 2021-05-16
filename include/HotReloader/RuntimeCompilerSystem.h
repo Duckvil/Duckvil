@@ -100,7 +100,7 @@ namespace Duckvil { namespace HotReloader {
 
                     _userData->m_file = _file;
 
-                    _userData->m_pRuntimeCompiler->m_pThread->m_fnOrderTask(_userData->m_pRuntimeCompiler->m_pThreadData, Utils::lambda([_userData]()
+                    _userData->m_pRuntimeCompiler->m_pThread->m_fnOrderTask(_userData->m_pRuntimeCompiler->m_pThreadData, Utils::lambda([_userData](void*)
                     {
                         _userData->m_pRuntimeCompiler->Compile(_userData->m_file.string());
                     }));
