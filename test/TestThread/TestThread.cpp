@@ -6,6 +6,10 @@
 
 #include "State.h"
 
+#ifdef DUCKVIL_PLATFORM_LINUX
+#include <unistd.h>
+#endif
+
 Duckvil::PlugNPlay::__module duckvil_global::m_module;
 Duckvil::PlugNPlay::__module_information duckvil_global::m_memoryModule = Duckvil::PlugNPlay::__module_information("Memory");
 Duckvil::Memory::ftable* duckvil_global::m_pMemoryInterface = nullptr;
@@ -34,11 +38,20 @@ DUCKVIL_TEST(Init)
 void some_expensive_task(void* _pData)
 {
     std::atomic<uint32_t>* _counter = (std::atomic<uint32_t>*)_pData;
+    uint32_t _index = 0;
 
-    for(uint32_t j = 0; j < 1000000; ++j)
+    for(; _index < 1000000; ++_index)
     {
-        (*_counter)++;
+        _index++;
     }
+
+    (*_counter) += _index;
+
+#ifdef DUCKVIL_PLATFORM_LINUX
+    sleep(1);
+#else
+    _sleep(1000);
+#endif
 }
 
 DUCKVIL_TEST(ThreadPool)
@@ -52,22 +65,13 @@ DUCKVIL_TEST(ThreadPool)
     duckvil_global::m_module.get(_memoryModule, "duckvil_thread_pool_init", (void**)&_threadPoolinit);
 
     Duckvil::Thread::pool_ftable* _thread = _threadPoolinit();
-
     Duckvil::Thread::pool_data* _threadData = _thread->m_fnInit({ duckvil_global::m_pMemoryInterface, duckvil_global::m_pHeap });
-
-    // WTF?! Without it, starting pool crashes(but only on Linux, on Windows without it is fine)
-    {
-        std::thread aaa([](){});
-
-        aaa.join();
-    }
 
     _thread->m_fnStart(_threadData);
 
     std::atomic<uint32_t> _counter = 0;
-    uint32_t _index = 0;
 
-    for(; _index < 50; ++_index)
+    for(uint32_t i = 0; i < 10; ++i)
     {
         _thread->m_fnOrderDataTask(_threadData, &some_expensive_task, &_counter);
     }
@@ -77,7 +81,7 @@ DUCKVIL_TEST(ThreadPool)
 
     }
 
-    DUCKVIL_TEST_EQUAL(_counter.load(), (uint32_t)50000000, "Wrong value");
+    DUCKVIL_TEST_EQUAL(_counter.load(), (uint32_t)10000000, "Wrong value");
 
     _thread->m_fnTerminate(_threadData);
 
