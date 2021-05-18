@@ -160,20 +160,6 @@ namespace Duckvil {
         _pData->m_time = time_init();
         _pData->m_heap = Memory::FreeList(_pData->m_pMemory, _pData->m_pHeap);
 
-        Memory::byte_buffer_allocator* _byteBuffer = _pMemoryInterface->m_fnFreeListAllocateByteBufferAllocator(_pMemoryInterface, _pAllocator, 4);
-
-        Memory::byte_buffer_write(_pMemoryInterface, _byteBuffer, 10);
-
-        if(Memory::byte_buffer_will_fit<double>(_pMemoryInterface, _byteBuffer))
-            Memory::byte_buffer_write(_pMemoryInterface, _byteBuffer, .10);
-
-        _pMemoryInterface->m_fnByteBufferSeekToBegin_(_byteBuffer);
-
-        int* _a = (int*)_pMemoryInterface->m_fnByteBufferRead_(_byteBuffer, sizeof(int));
-        double* _b = (double*)_pMemoryInterface->m_fnByteBufferRead_(_byteBuffer, sizeof(double));
-
-        _pMemoryInterface->m_fnFreeListFree_(_pAllocator, _byteBuffer);
-
         _pData->m_heap.Allocate(_pData->m_objectsHeap, 1024);
         _pData->m_heap.Allocate(_pData->m_eventsHeap, 1024 * 2);
         _pData->m_heap.Allocate(_pData->m_aEngineSystems, 1);
