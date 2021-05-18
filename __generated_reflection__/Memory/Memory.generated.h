@@ -17,6 +17,7 @@ _pSerializer->SerializeProperty("m_pHead", m_pHead); \
 _pSerializer->SerializeProperty("m_ullBlockSize", m_ullBlockSize); \
 _pSerializer->SerializeProperty("m_ullPosition", m_ullPosition); \
 _pSerializer->SerializeProperty("m_fnBasicAllocate", m_fnBasicAllocate); \
+_pSerializer->SerializeProperty("m_fnBasicFree", m_fnBasicFree); \
 _pSerializer->SerializeProperty("m_fnCalculateAlignedPointer", m_fnCalculateAlignedPointer); \
 _pSerializer->SerializeProperty("m_fnCalculatePadding", m_fnCalculatePadding); \
 _pSerializer->SerializeProperty("m_fnCalculatePaddingH", m_fnCalculatePaddingH); \
@@ -79,6 +80,7 @@ _pSerializer->SerializeProperty("m_fnLinearAllocateFixedStackAllocator", m_fnLin
 _pSerializer->SerializeProperty("m_fnLinearAllocateFixedArrayAllocator", m_fnLinearAllocateFixedArrayAllocator); \
 _pSerializer->SerializeProperty("m_fnLinearAllocateFreeListAllocator", m_fnLinearAllocateFreeListAllocator); \
 _pSerializer->SerializeProperty("m_fnLinearAllocateFixedVectorAllocator", m_fnLinearAllocateFixedVectorAllocator); \
+_pSerializer->SerializeProperty("m_fnLinearAllocateByteBufferAllocator", m_fnLinearAllocateByteBufferAllocator); \
 _pSerializer->SerializeProperty("m_fnFreeListAllocateFixedQueueAllocator", m_fnFreeListAllocateFixedQueueAllocator); \
 _pSerializer->SerializeProperty("m_fnFreeListAllocateFreeListAllocator", m_fnFreeListAllocateFreeListAllocator); \
 _pSerializer->SerializeProperty("m_fnFreeListAllocateFixedVectorAllocator", m_fnFreeListAllocateFixedVectorAllocator); \

@@ -6,6 +6,7 @@ static void* Cast(void* _pObject) { return static_cast<EditorFTable*>(_pObject);
 public: \
 void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\
+_pSerializer->SerializeProperty("m_aHotDraws", m_aHotDraws); \
 _pSerializer->SerializeProperty("m_aDraws", m_aDraws); \
 _pSerializer->SerializeProperty("_ctx", _ctx); \
 _pSerializer->SerializeProperty("m_pEditorEvents", m_pEditorEvents); \

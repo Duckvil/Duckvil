@@ -88,6 +88,7 @@ record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duc
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Memory");
 record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 20);
 _property = record_property<ftable::_basic_allocate>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnBasicAllocate), "m_fnBasicAllocate");
+_property = record_property<ftable::_basic_free>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnBasicFree), "m_fnBasicFree");
 _property = record_property<ftable::_calculate_aligned_pointer>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnCalculateAlignedPointer), "m_fnCalculateAlignedPointer");
 _property = record_property<ftable::_calculate_padding>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnCalculatePadding), "m_fnCalculatePadding");
 _property = record_property<ftable::_calculate_padding_h>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnCalculatePaddingH), "m_fnCalculatePaddingH");
@@ -150,6 +151,7 @@ _property = record_property<ftable::_linear_allocate_fixed_stack_allocator>(DUCK
 _property = record_property<ftable::_linear_allocate_fixed_array_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnLinearAllocateFixedArrayAllocator), "m_fnLinearAllocateFixedArrayAllocator");
 _property = record_property<ftable::_linear_allocate_free_list_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnLinearAllocateFreeListAllocator), "m_fnLinearAllocateFreeListAllocator");
 _property = record_property<ftable::_linear_allocate_fixed_vector_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnLinearAllocateFixedVectorAllocator), "m_fnLinearAllocateFixedVectorAllocator");
+_property = record_property<ftable::_linear_allocate_byte_buffer_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnLinearAllocateByteBufferAllocator), "m_fnLinearAllocateByteBufferAllocator");
 _property = record_property<ftable::_free_list_allocate_fixed_queue_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFreeListAllocateFixedQueueAllocator), "m_fnFreeListAllocateFixedQueueAllocator");
 _property = record_property<ftable::_free_list_allocate_free_list_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFreeListAllocateFreeListAllocator), "m_fnFreeListAllocateFreeListAllocator");
 _property = record_property<ftable::_free_list_allocate_fixed_vector_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFreeListAllocateFixedVectorAllocator), "m_fnFreeListAllocateFixedVectorAllocator");
