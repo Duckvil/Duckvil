@@ -7,11 +7,16 @@
 #include "Memory/Queue.h"
 
 #include <mutex>
-#include <thread>
 #include <future>
 #include <type_traits>
 
 #include "Event/ImmediateChannel.h"
+
+#ifdef DUCKVIL_PLATFORM_LINUX
+#include <pthread.h>
+#else
+#include <thread>
+#endif
 
 namespace Duckvil { namespace Thread {
 
@@ -23,6 +28,22 @@ namespace Duckvil { namespace Thread {
         void* m_pData;
     };
 
+#ifdef DUCKVIL_PLATFORM_LINUX
+    struct pool_data
+    {
+        uint32_t m_uiThreadsCount;
+        bool m_bRunning;
+        bool m_bTerminate;
+        pthread_mutex_t  m_lock;
+        pthread_mutex_t  m_threadPoolLock;
+        pthread_cond_t   m_condition;
+        Memory::Queue<task> m_aTasks;
+        Memory::Vector<pthread_t> m_aWorkers;
+        Memory::FreeList m_heap;
+        std::atomic<uint32_t> m_uiTaskCount;
+
+    };
+#else
     struct pool_data
     {
         uint32_t m_uiThreadsCount;
@@ -36,6 +57,7 @@ namespace Duckvil { namespace Thread {
         bool m_bTerminate;
         std::atomic<uint32_t> m_uiTaskCount;
     };
+#endif
 
     struct pool_ftable
     {

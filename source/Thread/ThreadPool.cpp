@@ -2,6 +2,48 @@
 
 namespace Duckvil { namespace Thread {
 
+#ifdef DUCKVIL_PLATFORM_LINUX
+    void* pool_worker(void* _pData)
+    {
+        pool_data* _data = (pool_data*)_pData;
+
+        while(!_data->m_bTerminate)
+        {
+            task _task;
+
+            pthread_mutex_lock(&(_data->m_lock));
+
+            while(_data->m_aTasks.Empty() && !_data->m_bTerminate)
+            {
+                pthread_cond_wait(&(_data->m_condition), &(_data->m_lock));
+            }
+
+            if(_data->m_bTerminate)
+            {
+                continue;
+            }
+
+            _task = _data->m_aTasks.Begin();
+
+            _data->m_aTasks.Pop();
+
+            pthread_mutex_unlock(&(_data->m_lock));
+
+            try
+            {
+                _task.m_callback(_task.m_pData);
+
+                _data->m_uiTaskCount--;
+            }
+            catch(const std::exception& _e)
+            {
+                printf("%s\n", _e.what());
+            }
+        }
+
+        return nullptr;
+    }
+#else
     void pool_worker(pool_data* _pData)
     {
         while(!_pData->m_bTerminate)
@@ -38,6 +80,7 @@ namespace Duckvil { namespace Thread {
             }
         }
     }
+#endif
 
     pool_data* impl_pool_init(const Memory::FreeList& _heap)
     {
@@ -50,6 +93,12 @@ namespace Duckvil { namespace Thread {
 
         _res->m_bRunning = false;
         _res->m_bTerminate = false;
+
+#ifdef DUCKVIL_PLATFORM_LINUX
+        _res->m_lock =              PTHREAD_MUTEX_INITIALIZER;
+        _res->m_threadPoolLock =    PTHREAD_MUTEX_INITIALIZER;
+        _res->m_condition =         PTHREAD_COND_INITIALIZER;
+#endif
 
         return _res;
     }
@@ -65,7 +114,13 @@ namespace Duckvil { namespace Thread {
 
         for(uint32_t i = 0; i < _pData->m_uiThreadsCount; ++i)
         {
+#ifdef DUCKVIL_PLATFORM_LINUX
+            pthread_t _thread;
+
+            pthread_create(&_thread, nullptr, pool_worker, _pData);
+#else
             std::thread* _thread = _pData->m_heap.Allocate<std::thread>(&pool_worker, _pData);
+#endif
 
             _pData->m_aWorkers.Allocate(_thread);
         }
@@ -78,10 +133,17 @@ namespace Duckvil { namespace Thread {
             return;
         }
 
+#ifdef DUCKVIL_PLATFORM_LINUX
+        pthread_mutex_lock(&(_pData->m_threadPoolLock));
+#else
         std::unique_lock<std::mutex> lock(_pData->m_threadPoolLock);
+#endif
 
         _pData->m_bTerminate = true;
 
+#ifdef DUCKVIL_PLATFORM_LINUX
+        pthread_cond_broadcast(&(_pData->m_condition));
+#else
         _pData->m_condition.notify_all();
 
         for(std::thread* _worker : _pData->m_aWorkers)
@@ -90,10 +152,15 @@ namespace Duckvil { namespace Thread {
 
             _pData->m_heap.Free(_worker);
         }
+#endif
 
         _pData->m_aWorkers.Clear();
 
         _pData->m_bRunning = false;
+
+#ifdef DUCKVIL_PLATFORM_LINUX
+        pthread_mutex_unlock(&(_pData->m_threadPoolLock));
+#endif
     }
 
     void impl_pool_order_task(pool_data* _pData, TaskCallback _task)
@@ -103,6 +170,16 @@ namespace Duckvil { namespace Thread {
             return;
         }
 
+#ifdef DUCKVIL_PLATFORM_LINUX
+        pthread_mutex_lock(&(_pData->m_lock));
+
+        _pData->m_aTasks.Allocate({ _task });
+
+        _pData->m_uiTaskCount++;
+
+        pthread_mutex_unlock(&(_pData->m_lock));
+        pthread_cond_signal(&(_pData->m_condition));
+#else
         {
             std::unique_lock<std::mutex> lock(_pData->m_lock);
             
@@ -112,6 +189,7 @@ namespace Duckvil { namespace Thread {
         }
 
         _pData->m_condition.notify_one();
+#endif
     }
 
     void impl_pool_order_data_task(pool_data* _pData, TaskCallback _task, void* _pTaskData)
@@ -121,6 +199,16 @@ namespace Duckvil { namespace Thread {
             return;
         }
 
+#ifdef DUCKVIL_PLATFORM_LINUX
+        pthread_mutex_lock(&(_pData->m_lock));
+
+        _pData->m_aTasks.Allocate({ _task, _pTaskData });
+
+        _pData->m_uiTaskCount++;
+
+        pthread_mutex_unlock(&(_pData->m_lock));
+        pthread_cond_signal(&(_pData->m_condition));
+#else
         {
             std::unique_lock<std::mutex> lock(_pData->m_lock);
             
@@ -130,6 +218,7 @@ namespace Duckvil { namespace Thread {
         }
 
         _pData->m_condition.notify_one();
+#endif
     }
 
     bool impl_pool_remaining_tasks(pool_data* _pData)
@@ -139,7 +228,7 @@ namespace Duckvil { namespace Thread {
 
     uint32_t impl_pool_get_task_count(pool_data* _pData)
     {
-        std::unique_lock<std::mutex> lock(_pData->m_lock);
+        // std::unique_lock<std::mutex> lock(_pData->m_lock);
 
         return _pData->m_uiTaskCount.load();
     }
