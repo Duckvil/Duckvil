@@ -12,6 +12,7 @@ add_library(
 target_include_directories(
     Graphics
     PRIVATE
+    ${CMAKE_SOURCE_DIR}/external
 )
 target_link_libraries(
     Graphics

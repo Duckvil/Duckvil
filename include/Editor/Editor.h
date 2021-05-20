@@ -17,6 +17,8 @@
 
 #include "HotReloader/RuntimeCompilerSystem.h"
 
+#include "Graphics/Renderer/Renderer.h"
+
 namespace Duckvil { namespace Editor {
 
     struct ImGuiEditorData
@@ -29,12 +31,17 @@ namespace Duckvil { namespace Editor {
         Event::Pool<Event::mode::immediate> m_pEditorEvents;
         Memory::FreeList m_heap;
 
+        Memory::Vector<uint32_t> m_aTextures;
+
+        Graphics::Renderer::renderer_ftable* m_pRenderer;
+        Graphics::Renderer::renderer_data* m_pRendererData;
+
         // Store viewports, and retrieve them
     };
 
     struct EditorFTable
     {
-        void* (*m_fnInit)(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Window::IWindow* _pWindow);
+        void* (*m_fnInit)(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Window::IWindow* _pWindow, Graphics::Renderer::renderer_ftable* _pRenderer, Graphics::Renderer::renderer_data* _pRendererData);
         void (*m_fnRender)(void* _pData, Window::IWindow* _pWindow);
 
         void (*m_fnAddHotDraw)(void* _pData, HotDraw _draw);

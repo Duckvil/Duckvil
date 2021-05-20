@@ -145,7 +145,7 @@ namespace Duckvil {
 
         _pData->m_pEditor = init();
 
-        _pData->m_pEditorData = (Editor::ImGuiEditorData*)_pData->m_pEditor->m_fnInit(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _pData->m_pWindow);
+        _pData->m_pEditorData = (Editor::ImGuiEditorData*)_pData->m_pEditor->m_fnInit(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _pData->m_pWindow, _pData->m_pRenderer, &_pData->m_pRendererData);
 
         return true;
     }
@@ -559,6 +559,9 @@ namespace Duckvil {
         // _pData->m_pRenderer->m_fnRender(&_pData->m_renderData, 0);
 
         _pData->m_pRenderer->m_fnUpdate(_pData->m_pMemory, &_pData->m_pRendererData);
+
+        _pData->m_pRenderer->m_fnBindAsRenderTarget();
+
         _pData->m_pEditor->m_fnRender(_pData->m_pEditorData, _pData->m_pWindow);
 
         _pData->m_pWindow->Refresh();

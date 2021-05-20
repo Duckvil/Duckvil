@@ -6,6 +6,8 @@
 
 #include "RuntimeReflection/RuntimeReflection.h"
 
+#include "Graphics/Renderer/Renderer.h"
+
 #include "Editor/Widgets/ViewportWidget.generated.h"
 
 namespace Duckvil { namespace Editor {
@@ -14,7 +16,10 @@ namespace Duckvil { namespace Editor {
     {
         DUCKVIL_GENERATED_BODY
     private:
-        void* m_pTextureID;
+        uint32_t m_uiTextureID;
+
+        Graphics::Renderer::renderer_ftable* m_pRenderer;
+        Graphics::Renderer::renderer_data* m_pRendererData;
 
     public:
         ViewportWidget(const Memory::FreeList& _heap);
@@ -23,7 +28,8 @@ namespace Duckvil { namespace Editor {
         void InitEditor(void* _pImguiContext);
         void OnDraw();
 
-        void SetViewportTexture(void* _pTexture);
+        void SetViewportTexture(uint32_t _pTexture);
+        void SetRenderer(Graphics::Renderer::renderer_ftable* _pRenderer, Graphics::Renderer::renderer_data* _pRendererData);
     };
 
 }}

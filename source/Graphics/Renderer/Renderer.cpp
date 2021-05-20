@@ -1,11 +1,12 @@
 #include "Graphics/Renderer/Renderer.h"
 
-#include "glew/include/GL/glew.h"
-
 #include <fstream>
 #include <string>
 
 #include "SDL2/include/SDL.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb/stb_image.h"
 
 namespace Duckvil { namespace Graphics { namespace Renderer {
 
@@ -80,7 +81,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         return _shader;
     }
 
-    uint32_t impl_renderer_create_shader(const char* _sVertexFilename, const char* _sFragmentFilename)
+    uint32_t impl_renderer_create_shader(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const char* _sVertexFilename, const char* _sFragmentFilename)
     {
         GLuint _program = glCreateProgram();
         GLuint _shaders[2] = { create_shader(load_shader(_sVertexFilename), GL_VERTEX_SHADER), create_shader(load_shader(_sFragmentFilename), GL_FRAGMENT_SHADER) };
@@ -96,7 +97,148 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         glValidateProgram(_program);
         check_shader_error(_program, GL_VALIDATE_STATUS, true, "Error: Program validate failed!");
 
-        return _program;
+        return duckvil_slot_array_insert(
+            _pMemoryInterface,
+            _pAllocator,
+            _pData->m_shader,
+            _program
+        );
+    }
+
+    uint32_t impl_renderer_create_texture(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const texture_descriptor& _descriptor)
+    {
+        GLuint _texture = -1;
+
+        glGenTextures(1, &_texture);
+        glBindTexture(_descriptor.m_target, _texture);
+
+        glTexParameterf(_descriptor.m_target, GL_TEXTURE_MIN_FILTER, _descriptor.m_filter);
+        glTexParameterf(_descriptor.m_target, GL_TEXTURE_MAG_FILTER, _descriptor.m_filter);
+
+        glTexImage2D(_descriptor.m_target, 0, GL_RGBA, _descriptor.m_width, _descriptor.m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, _descriptor.m_pData);
+
+        return duckvil_slot_array_insert(
+            _pMemoryInterface,
+            _pAllocator,
+            _pData->m_texture,
+            _texture
+        );
+    }
+
+    uint32_t impl_renderer_create_texture_object(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const texture_object_descriptor& _descriptor)
+    {
+        GLuint* _texture = (GLuint*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(GLuint) * _descriptor.m_uiCount, 8);
+
+        glGenTextures(_descriptor.m_uiCount, _texture);
+
+        for(uint32_t i = 0; i < _descriptor.m_uiCount; ++i)
+        {
+            glBindTexture(_descriptor.m_target, _texture[i]);
+
+            glTexParameterf(_descriptor.m_target, GL_TEXTURE_MIN_FILTER, _descriptor.m_filter[i]);
+            glTexParameterf(_descriptor.m_target, GL_TEXTURE_MAG_FILTER, _descriptor.m_filter[i]);
+
+            glTexImage2D(_descriptor.m_target, 0, GL_RGBA, _descriptor.m_width, _descriptor.m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, _descriptor.m_pData[i]);
+        }
+
+        return duckvil_slot_array_insert(
+            _pMemoryInterface,
+            _pAllocator,
+            _pData->m_textureObject,
+            texture_object{ _texture, _descriptor.m_uiCount }
+        );
+    }
+
+    uint32_t impl_renderer_create_framebuffer(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const framebuffer_descriptor& _descriptor)
+    {
+        GLuint _framebuffer = -1;
+
+        glGenFramebuffers(1, &_framebuffer);
+        glBindFramebuffer(_descriptor.m_target, _framebuffer);
+
+        GLenum* _drawBuffers = (GLenum*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(GLenum) * _descriptor.m_uiCount, 8);
+
+        for(uint32_t i = 0; i < _descriptor.m_uiCount; ++i)
+        {
+            if(_descriptor.m_aAttachments[i] == GL_DEPTH_ATTACHMENT)
+            {
+                _drawBuffers[i] = GL_NONE;
+            }
+            else
+            {
+                _drawBuffers[i] = _descriptor.m_aAttachments[i];
+            }
+
+            if(_descriptor.m_aAttachments[i] == GL_NONE)
+            {
+                continue;
+            }
+
+            glFramebufferTexture2D(_descriptor.m_target, _descriptor.m_aAttachments[i], _descriptor.m_textureTarget, _descriptor.m_aTextures[i], 0);
+        }
+
+        glDrawBuffers(_descriptor.m_uiCount, _drawBuffers);
+
+        if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        {
+            printf("ERROR!\n");
+
+            return -1;
+        }
+
+        return duckvil_slot_array_insert(
+            _pMemoryInterface,
+            _pAllocator,
+            _pData->m_fbo,
+            framebuffer{ _framebuffer }
+        );
+    }
+
+    uint32_t impl_renderer_create_vao(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const vertex_array_object_descriptor& _descriptor)
+    {
+        GLuint _vao = -1;
+        GLuint* _vbo = (GLuint*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(GLuint) * _descriptor.m_uiVBO_Count, 8);
+
+        glGenVertexArrays(1, &_vao);
+        glBindVertexArray(_vao);
+
+        glGenBuffers(_descriptor.m_uiVBO_Count, _vbo);
+
+        for(uint32_t i = 0; i < _descriptor.m_uiVBO_Count; ++i)
+        {
+            const vertex_buffer_object_descriptor& _vboDesc = _descriptor.m_aVBO[i];
+
+            glBindBuffer(GL_ARRAY_BUFFER, _vbo[i]);
+            glBufferData(GL_ARRAY_BUFFER, _vboDesc.m_uiTypeSize * _descriptor.m_uiCount, _vboDesc.m_pData, GL_STATIC_DRAW);
+            glEnableVertexAttribArray(i);
+            glVertexAttribPointer(i, _vboDesc.m_usNumber, GL_FLOAT, GL_FALSE, 0, 0);
+        }
+
+        glBindVertexArray(0);
+
+        return duckvil_slot_array_insert(
+            _pMemoryInterface,
+            _pAllocator,
+            _pData->m_vao,
+            vertex_array_object{ _vao, _descriptor.m_uiCount }
+        );
+    }
+
+    void impl_renderer_bind_as_render_target()
+    {
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    }
+
+    void* impl_renderer_get_texture(renderer_data* _pData, uint32_t _uiID)
+    {
+        return DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_texture, _uiID);
+    }
+
+    GLuint* impl_renderer_get_textures(renderer_data* _pData, uint32_t _uiID)
+    {
+        const auto& _textureObject = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_textureObject, _uiID);
+
+        return _textureObject->m_pTexture;
     }
 
 
@@ -104,6 +246,11 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
     bool impl_renderer_init(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, Window::IWindow* _pWindow, renderer_data* _pData)
     {
         _pData->m_shader = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, shader);
+        _pData->m_texture = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, texture);
+        _pData->m_textureObject = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, texture_object);
+        _pData->m_fbo = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, framebuffer);
+        _pData->m_vao = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, vertex_array_object);
+
         _pData->m_pCommandBuffer = command_buffer_new(_pMemoryInterface, _pAllocator);
         _pData->m_pAllocator = _pAllocator;
 
@@ -118,14 +265,93 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
             // printf("%s\n", glewGetErrorString(err));
         }
 
-        _pData->m_shaderID = duckvil_slot_array_insert(
-            _pMemoryInterface,
-            _pAllocator,
-            _pData->m_shader,
+        _pData->m_shaderID =
             impl_renderer_create_shader(
+                _pMemoryInterface,
+                _pAllocator,
+                _pData,
                 "F:/Projects/C++/Duckvil/resource/shader/test.vs",
                 "F:/Projects/C++/Duckvil/resource/shader/test.fs"
-            )
+            );
+
+        int _x, _y, _bytesPerPixels;
+        unsigned char* _textureData = stbi_load("F:/Projects/C++/Duckvil/resource/texture/test.jpg", &_x, &_y, &_bytesPerPixels, 4);
+
+        _pData->m_textureID =
+            impl_renderer_create_texture(
+                _pMemoryInterface,
+                _pAllocator,
+                _pData,
+                texture_descriptor
+                {
+                    GL_TEXTURE_2D,
+                    GL_LINEAR,
+                    _x,
+                    _y,
+                    _textureData
+                }
+            );
+
+        stbi_image_free(_textureData);
+
+        float _vertices[] =
+        {
+            -0.5, -0.5, 0,
+            0, 0.5, 0,
+            0.5, -0.5, 0
+        };
+
+        vertex_buffer_object_descriptor _desc =
+        {
+            sizeof(float) * 3,
+            _vertices,
+            3
+        };
+
+        _pData->m_meshID = impl_renderer_create_vao(
+            _pMemoryInterface,
+            _pAllocator,
+            _pData,
+            vertex_array_object_descriptor
+            {
+                1,
+                &_desc,
+                3
+            }
+        );
+
+        GLfloat _filtes[1] = { GL_LINEAR };
+        void* _data[1] = { 0 };
+
+        _pData->m_fboTextureObject =
+            impl_renderer_create_texture_object(
+                _pMemoryInterface,
+                _pAllocator,
+                _pData,
+                Graphics::Renderer::texture_object_descriptor
+            {
+                GL_TEXTURE_2D,
+                _filtes,
+                1920, 1080,
+                _data,
+                1
+            });
+
+        GLenum _attachments[1] = { GL_COLOR_ATTACHMENT0 };
+
+        _pData->m_fboA =
+            impl_renderer_create_framebuffer(
+                _pMemoryInterface,
+                _pAllocator,
+                _pData,
+                Graphics::Renderer::framebuffer_descriptor
+                {
+                    GL_DRAW_FRAMEBUFFER,
+                    _attachments,
+                    1,
+                    impl_renderer_get_textures(_pData, _pData->m_fboTextureObject),
+                    GL_TEXTURE_2D
+                }
         );
 
         return true;
@@ -154,9 +380,67 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 glUseProgram(_shader);
             }
                 break;
+            case renderer_op_code_bind_texture:
+            {
+                uint32_t _textureID = -1;
+
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_textureID);
+
+                uint32_t _texture = DUCKVIL_SLOT_ARRAY_GET(_pData->m_shader, _textureID);
+
+                glBindTexture(GL_TEXTURE_2D, _texture);
+            }
+                break;
+            case renderer_op_code_bind_texture_object:
+            {
+                uint32_t _textureObjectID = -1;
+                uint32_t _textureID = -1;
+
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_textureObjectID);
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_textureID);
+
+                texture_object _texture = DUCKVIL_SLOT_ARRAY_GET(_pData->m_textureObject, _textureObjectID);
+
+                glBindTexture(GL_TEXTURE_2D, _texture.m_pTexture[_textureID]);
+            }
+                break;
+            case renderer_op_code_bind_framebuffer:
+            {
+                uint32_t _framebufferID = -1;
+
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_framebufferID);
+
+                framebuffer _fbo = DUCKVIL_SLOT_ARRAY_GET(_pData->m_fbo, _framebufferID);
+
+                glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _fbo.m_FBO);
+            }
+                break;
+            case renderer_op_code_draw:
+            {
+                uint32_t _vaoID = -1;
+
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_vaoID);
+
+                vertex_array_object _vao = DUCKVIL_SLOT_ARRAY_GET(_pData->m_vao, _vaoID);
+
+                glBindVertexArray(_vao.m_vao);
+                glDrawArrays(GL_TRIANGLES, 0, _vao.m_uiDrawCount);
+            }
+                break;
             case renderer_op_code_clear_color:
             {
-                glClearColor(0, 0, 0, 0);
+                glClearColor(1, 0, 0, 1);
+            }
+                break;
+            case renderer_op_code_viewport:
+            {
+                uint32_t _width = -1;
+                uint32_t _height = -1;
+
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_width);
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_height);
+
+                glViewport(0, 0, _width, _height);
             }
                 break;
             default:
@@ -170,8 +454,11 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
 
     void impl_renderer_update(Memory::ftable* _pMemoryInterface, renderer_data* _pData)
     {
+        bind_framebuffer(_pMemoryInterface, _pData, 0);
         clear_color(_pMemoryInterface, _pData);
+        viewport(_pMemoryInterface, _pData, 1920, 1080);
         bind_shader(_pMemoryInterface, _pData, _pData->m_shaderID);
+        draw(_pMemoryInterface, _pData, _pData->m_meshID);
 
         impl_renderer_submit_command_buffer(_pMemoryInterface, _pData);
 
@@ -188,7 +475,16 @@ Duckvil::Graphics::Renderer::renderer_ftable* duckvil_graphics_renderer_init()
     _result.m_fnUpdate = &Duckvil::Graphics::Renderer::impl_renderer_update;
     _result.m_fnSubmitCommandBuffer = &Duckvil::Graphics::Renderer::impl_renderer_submit_command_buffer;
 
+    _result.m_fnBindAsRenderTarget = &Duckvil::Graphics::Renderer::impl_renderer_bind_as_render_target;
+
     _result.m_fnCreateShader = &Duckvil::Graphics::Renderer::impl_renderer_create_shader;
+    _result.m_fnCreateTexture = &Duckvil::Graphics::Renderer::impl_renderer_create_texture;
+    _result.m_fnCreateTextureObject = &Duckvil::Graphics::Renderer::impl_renderer_create_texture_object;
+    _result.m_fnCreateFramebuffer = &Duckvil::Graphics::Renderer::impl_renderer_create_framebuffer;
+    _result.m_fnCreateVAO = &Duckvil::Graphics::Renderer::impl_renderer_create_vao;
+
+    _result.m_fnGetTexture = &Duckvil::Graphics::Renderer::impl_renderer_get_texture;
+    _result.m_fnGetTextures = &Duckvil::Graphics::Renderer::impl_renderer_get_textures;
 
     return &_result;
 }

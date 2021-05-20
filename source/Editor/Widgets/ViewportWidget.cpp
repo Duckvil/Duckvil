@@ -9,7 +9,7 @@ namespace Duckvil { namespace Editor {
 
     ViewportWidget::ViewportWidget(const Memory::FreeList& _heap)
     {
-        m_pTextureID = 0;
+        m_uiTextureID = 1;
     }
 
     ViewportWidget::~ViewportWidget()
@@ -26,14 +26,22 @@ namespace Duckvil { namespace Editor {
     {
         ImGui::Begin("Viewport");
 
-        ImGui::Image(m_pTextureID, ImVec2(500, 500));
+        uint32_t* _texture = (uint32_t*)m_pRenderer->m_fnGetTextures(m_pRendererData, m_uiTextureID);
+
+        ImGui::Image((void*)(intptr_t)*_texture, ImVec2(500, 500));
 
         ImGui::End();
     }
 
-    void ViewportWidget::SetViewportTexture(void* _pTexture)
+    void ViewportWidget::SetViewportTexture(uint32_t _pTexture)
     {
-        m_pTextureID = _pTexture;
+        m_uiTextureID = _pTexture;
+    }
+
+    void ViewportWidget::SetRenderer(Graphics::Renderer::renderer_ftable* _pRenderer, Graphics::Renderer::renderer_data* _pRendererData)
+    {
+        m_pRenderer = _pRenderer;
+        m_pRendererData = _pRendererData;
     }
 
 }}

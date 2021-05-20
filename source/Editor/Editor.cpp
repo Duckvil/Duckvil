@@ -22,14 +22,20 @@
 
 namespace Duckvil { namespace Editor {
 
-    void* init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Window::IWindow* _pWindow)
+    void* init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Window::IWindow* _pWindow, Graphics::Renderer::renderer_ftable* _pRenderer, Graphics::Renderer::renderer_data* _pRendererData)
     {
         ImGuiEditorData* _data = (ImGuiEditorData*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(ImGuiEditorData), alignof(ImGuiEditorData));
+
+        _data->m_pRenderer = _pRenderer;
+        _data->m_pRendererData = _pRendererData;
 
 #ifdef DUCKVIL_HOT_RELOADING
         _data->m_aHotDraws = Memory::Vector<HotDraw>(_pMemoryInterface, _pAllocator, 1);
 #endif
         _data->m_aDraws = Memory::Vector<Draw>(_pMemoryInterface, _pAllocator, 1);
+        _data->m_aTextures = Memory::Vector<uint32_t>(_pMemoryInterface, _pAllocator, 1);
+
+        _data->m_aTextures.Allocate(0);
 
         SDL_GL_MakeCurrent((SDL_Window*)_pWindow->GetWindow(), _pWindow->GetContext());
 
@@ -134,6 +140,12 @@ namespace Duckvil { namespace Editor {
             Widget* _pWidget = (Widget*)DUCKVIL_TRACK_KEEPER_GET_OBJECT(_widget.m_pTrackKeeper);
 
             (_pWidget->*_widget.m_fnInit)(_data->_ctx);
+
+            if(RuntimeReflection::get_type(_widget.m_typeHandle).m_ullTypeID == RuntimeReflection::get_type(RuntimeReflection::get_type("ViewportWidget", { "Duckvil", "Editor" })).m_ullTypeID)
+            {
+                const auto& _func = RuntimeReflection::get_function_handle<Graphics::Renderer::renderer_ftable*, Graphics::Renderer::renderer_data*>(_widget.m_typeHandle, "SetRenderer");
+                RuntimeReflection::invoke_member(_widget.m_typeHandle, _func, _pWidget, _data->m_pRenderer, _data->m_pRendererData);
+            }
         }
 #endif
 
@@ -143,6 +155,12 @@ namespace Duckvil { namespace Editor {
             Widget* _pWidget = (Widget*)_widget.m_pObject;
 
             (_pWidget->*_widget.m_fnInit)(_data->_ctx);
+
+            if(RuntimeReflection::get_type(_widget.m_typeHandle).m_ullTypeID == RuntimeReflection::get_type(RuntimeReflection::get_type("ViewportWidget", { "Duckvil", "Editor" })).m_ullTypeID)
+            {
+                const auto& _func = RuntimeReflection::get_function_handle<Graphics::Renderer::renderer_ftable*, Graphics::Renderer::renderer_data*>(_widget.m_typeHandle, "SetRenderer");
+                RuntimeReflection::invoke_member(_widget.m_typeHandle, _func, _pWidget, _data->m_pRenderer, _data->m_pRendererData);
+            }
         }
     }
 
