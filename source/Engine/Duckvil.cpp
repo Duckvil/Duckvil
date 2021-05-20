@@ -116,22 +116,22 @@ namespace Duckvil {
         return true;
     }
 
-    // bool init_renderer(__data* _pData, PlugNPlay::__module* _pModule)
-    // {
-    //     PlugNPlay::__module_information _rendererModule("Renderer");
+    bool init_renderer(__data* _pData, PlugNPlay::__module* _pModule)
+    {
+        PlugNPlay::__module_information _rendererModule("Graphics");
 
-    //     _pModule->load(&_rendererModule);
+        _pModule->load(&_rendererModule);
 
-    //     Renderer::RendererFTable* (*init)(Memory::ftable*, Memory::free_list_allocator*);
+        Graphics::Renderer::renderer_ftable* (*init)();
 
-    //     _pModule->get(_rendererModule, "duckvil_renderer_init", (void**)&init);
+        _pModule->get(_rendererModule, "duckvil_graphics_renderer_init", (void**)&init);
 
-    //     _pData->m_pRenderer = init(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator());
+        _pData->m_pRenderer = init();
 
-    //     _pData->m_pRenderer->m_fnInitRenderer(&_pData->m_renderData, _pData->m_pRenderer, _pData->m_pWindow);
+        _pData->m_pRenderer->m_fnInit(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pWindow, &_pData->m_pRendererData);
 
-    //     return true;
-    // }
+        return true;
+    }
 
     bool init_editor(__data* _pData, PlugNPlay::__module* _pModule)
     {
@@ -265,7 +265,7 @@ namespace Duckvil {
 
         _pData->m_pWindow->Create("Duckvil", 1920, 1080);
 
-        // init_renderer(_pData, &_module);
+        init_renderer(_pData, &_module);
         init_editor(_pData, &_module);
 
         {
@@ -558,6 +558,7 @@ namespace Duckvil {
 
         // _pData->m_pRenderer->m_fnRender(&_pData->m_renderData, 0);
 
+        _pData->m_pRenderer->m_fnUpdate(_pData->m_pMemory, &_pData->m_pRendererData);
         _pData->m_pEditor->m_fnRender(_pData->m_pEditorData, _pData->m_pWindow);
 
         _pData->m_pWindow->Refresh();

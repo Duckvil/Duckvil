@@ -38,6 +38,8 @@
 
 #include "Memory/SmartPointer/SharedPointer.h"
 
+#include "Graphics/Renderer/Renderer.h"
+
 namespace Duckvil {
 
     struct system
@@ -113,6 +115,9 @@ namespace Duckvil {
 
         Editor::EditorFTable* m_pEditor;
         Editor::ImGuiEditorData* m_pEditorData;
+
+        Graphics::Renderer::renderer_ftable* m_pRenderer;
+        Graphics::Renderer::renderer_data m_pRendererData;
     };
 
     struct __ftable
