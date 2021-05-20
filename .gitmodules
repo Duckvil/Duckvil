@@ -8,3 +8,6 @@
 [submodule "external/hex_editor"]
 	path = external/hex_editor
 	url = https://github.com/ocornut/imgui_club.git
+[submodule "external/stb"]
+	path = external/stb
+	url = https://github.com/nothings/stb.git
