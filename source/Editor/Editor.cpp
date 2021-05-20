@@ -38,7 +38,7 @@ namespace Duckvil { namespace Editor {
 
         if(err != GLEW_OK)
         {
-            // throw std::exception("Failed to init GLEW!\n");
+            throw std::exception("Failed to init GLEW!");
             // printf("%s\n", glewGetErrorString(err));
         }
 

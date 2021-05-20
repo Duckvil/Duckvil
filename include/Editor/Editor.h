@@ -28,6 +28,8 @@ namespace Duckvil { namespace Editor {
         void* _ctx;
         Event::Pool<Event::mode::immediate> m_pEditorEvents;
         Memory::FreeList m_heap;
+
+        // Store viewports, and retrieve them
     };
 
     struct EditorFTable

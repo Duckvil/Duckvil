@@ -26,13 +26,6 @@ target_include_directories(
 )
 target_link_libraries(
     Editor
-    glew_s
-)
-target_link_libraries(
-    Editor
     glew
-)
-target_link_libraries(
-    Editor
     SDL2
 )
