@@ -34,6 +34,7 @@ namespace Duckvil { namespace Memory {
         byte_buffer_allocator* _allocator = _pInterface->m_fnFreeListAllocateByteBufferAllocator(_pInterface, _pParentAllocator, _ullNewSize);
 
         _allocator->m_ullUsed = (*_pAllocator)->m_ullUsed;
+        _allocator->m_ullPosition = (*_pAllocator)->m_ullPosition;
 
         memcpy((uint8_t*)_allocator + sizeof(byte_buffer_allocator), (uint8_t*)(*_pAllocator) + sizeof(byte_buffer_allocator), (*_pAllocator)->m_ullUsed);
 
