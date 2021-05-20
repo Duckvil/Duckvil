@@ -62,4 +62,10 @@ namespace Duckvil { namespace Memory {
         return (Type*)_pMemory->m_fnByteBufferRead_(_pAllocator, sizeof(Type));
     }
 
+    template <typename Type>
+    inline void byte_buffer_read(ftable* _pMemory, byte_buffer_allocator* _pAllocator, Type* _pValue)
+    {
+        *_pValue = *(Type*)_pMemory->m_fnByteBufferRead_(_pAllocator, sizeof(Type));
+    }
+
 }}
