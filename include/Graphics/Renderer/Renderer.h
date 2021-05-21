@@ -62,16 +62,16 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
 
     struct vertex_buffer_object_descriptor
     {
-        uint32_t m_uiTypeSize;
-        void* m_pData;
-        uint16_t m_usNumber;
+        uint32_t m_uiTypeSize; // Size of single vertex
+        void* m_pData; // Pointer to data
+        uint16_t m_usNumber; // Count of single vertex type
     };
 
     struct vertex_array_object_descriptor
     {
-        uint32_t m_uiVBO_Count;
-        vertex_buffer_object_descriptor* m_aVBO;
-        uint32_t m_uiCount;
+        uint32_t m_uiVBO_Count; // Number of vertex buffer objects
+        vertex_buffer_object_descriptor* m_aVBO; // Array of vertex buffer objects
+        uint32_t m_uiCount; // Count of vertices
     };
 
     typedef uint32_t shader;
@@ -88,16 +88,9 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         GLuint m_FBO;
     };
 
-    // struct vertex_buffer_object
-    // {
-    //     GLuint m_vbo;
-    // };
-
     struct vertex_array_object
     {
         GLuint m_vao;
-        // GLuint* m_vbo;
-        // uint32_t m_uiCount;
         uint32_t m_uiDrawCount;
     };
 
@@ -117,12 +110,6 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
 
         command_buffer m_pCommandBuffer;
         Memory::free_list_allocator* m_pAllocator;
-
-        uint32_t m_shaderID;
-        uint32_t m_textureID;
-        uint32_t m_meshID;
-        uint32_t m_fboA;
-        uint32_t m_fboTextureObject;
     };
 
     struct renderer_ftable
@@ -152,11 +139,12 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         );
     }
 
-    static inline void bind_texture(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _textureID)
+    static inline void bind_texture(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _textureID, uint32_t _unit)
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_bind_texture,
             {
                 Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _textureID);
+                Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _unit);
             }
         );
     }

@@ -118,6 +118,12 @@ namespace Duckvil {
 
         Graphics::Renderer::renderer_ftable* m_pRenderer;
         Graphics::Renderer::renderer_data m_pRendererData;
+
+        uint32_t m_shaderID;
+        uint32_t m_meshID;
+        uint32_t m_fbo;
+        uint32_t m_fboTextureObject;
+        uint32_t m_textureID;
     };
 
     struct __ftable

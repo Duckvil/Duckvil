@@ -19,6 +19,9 @@
 
 #include "Memory/ByteBuffer.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb/stb_image.h"
+
 #undef max
 #undef GetObject
 #undef allocator
@@ -129,6 +132,109 @@ namespace Duckvil {
         _pData->m_pRenderer = init();
 
         _pData->m_pRenderer->m_fnInit(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pWindow, &_pData->m_pRendererData);
+
+        _pData->m_shaderID =
+            _pData->m_pRenderer->m_fnCreateShader(
+                _pData->m_pMemory,
+                _pData->m_pHeap,
+                &_pData->m_pRendererData,
+                "F:/Projects/C++/Duckvil/resource/shader/test.vs",
+                "F:/Projects/C++/Duckvil/resource/shader/test.fs"
+            );
+
+        float _vertices[] =
+        {
+            -0.5, -0.5, 0,
+            0, 0.5, 0,
+            0.5, -0.5, 0
+        };
+
+        float _texCoords[] =
+        {
+            0.0, 0.0,
+            0.5, 1.0,
+            1.0, 0.0
+        };
+
+        Graphics::Renderer::vertex_buffer_object_descriptor _desc[] =
+        {
+            {
+                sizeof(float),
+                _vertices,
+                3
+            },
+            {
+                sizeof(float),
+                _texCoords,
+                2
+            }
+        };
+
+        _pData->m_meshID = _pData->m_pRenderer->m_fnCreateVAO(
+            _pData->m_pMemory,
+            _pData->m_pHeap,
+            &_pData->m_pRendererData,
+            Graphics::Renderer::vertex_array_object_descriptor
+            {
+                2,
+                _desc,
+                3
+            }
+        );
+
+        GLfloat _filtes[1] = { GL_LINEAR };
+        void* _data[1] = { 0 };
+
+        _pData->m_fboTextureObject =
+            _pData->m_pRenderer->m_fnCreateTextureObject(
+                _pData->m_pMemory,
+                _pData->m_pHeap,
+                &_pData->m_pRendererData,
+                Graphics::Renderer::texture_object_descriptor
+            {
+                GL_TEXTURE_2D,
+                _filtes,
+                1920, 1080,
+                _data,
+                1
+            });
+
+        GLenum _attachments[1] = { GL_COLOR_ATTACHMENT0 };
+
+        _pData->m_fbo =
+            _pData->m_pRenderer->m_fnCreateFramebuffer(
+                _pData->m_pMemory,
+                _pData->m_pHeap,
+                &_pData->m_pRendererData,
+                Graphics::Renderer::framebuffer_descriptor
+                {
+                    GL_DRAW_FRAMEBUFFER,
+                    _attachments,
+                    1,
+                    _pData->m_pRenderer->m_fnGetTextures(&_pData->m_pRendererData, _pData->m_fboTextureObject),
+                    GL_TEXTURE_2D
+                }
+        );
+
+        int _x, _y, _bytesPerPixels;
+        unsigned char* _textureData = stbi_load("F:/Projects/C++/Duckvil/resource/texture/test.jpg", &_x, &_y, &_bytesPerPixels, 4);
+
+        _pData->m_textureID =
+            _pData->m_pRenderer->m_fnCreateTexture(
+                _pData->m_pMemory,
+                _pData->m_pHeap,
+                &_pData->m_pRendererData,
+                Graphics::Renderer::texture_descriptor
+                {
+                    GL_TEXTURE_2D,
+                    GL_LINEAR,
+                    _x,
+                    _y,
+                    _textureData
+                }
+            );
+
+        stbi_image_free(_textureData);
 
         return true;
     }
@@ -557,6 +663,13 @@ namespace Duckvil {
         _pData->m_windowEventPool.Reset();
 
         // _pData->m_pRenderer->m_fnRender(&_pData->m_renderData, 0);
+
+        Graphics::Renderer::bind_framebuffer(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_fbo);
+        Graphics::Renderer::clear_color(_pData->m_pMemory, &_pData->m_pRendererData);
+        Graphics::Renderer::viewport(_pData->m_pMemory, &_pData->m_pRendererData, 1920, 1080);
+        Graphics::Renderer::bind_shader(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_shaderID);
+        Graphics::Renderer::bind_texture(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_textureID, 0);
+        Graphics::Renderer::draw(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_meshID);
 
         _pData->m_pRenderer->m_fnUpdate(_pData->m_pMemory, &_pData->m_pRendererData);
 
