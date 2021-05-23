@@ -6,6 +6,9 @@
 
 #include "Window/Events/CloseEvent.h"
 #include "Window/Events/ResizeEvent.h"
+#include "Window/Events/KeyDownEvent.h"
+#include "Window/Events/KeyUpEvent.h"
+#include "Window/Events/MouseMotionEvent.h"
 
 namespace Duckvil { namespace Window {
 
@@ -26,6 +29,8 @@ namespace Duckvil { namespace Window {
 
         void* GetWindow() const override;
         void* GetContext() const override;
+
+        void SetMousePosition(int _iX, int _iY) override;
     };
 
 }}

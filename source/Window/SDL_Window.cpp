@@ -9,6 +9,9 @@ namespace Duckvil { namespace Window {
     {
         _pEventsPool->Add<CloseEvent>();
         _pEventsPool->Add<ResizeEvent>();
+        _pEventsPool->Add<KeyDownEvent>();
+        _pEventsPool->Add<KeyUpEvent>();
+        _pEventsPool->Add<MouseMotionEvent>();
     }
 
     WindowSDL::~WindowSDL()
@@ -48,13 +51,63 @@ namespace Duckvil { namespace Window {
 
         while(SDL_PollEvent(&_event))
         {
-            if(_event.type == SDL_QUIT)
+            switch(_event.type)
             {
+            case SDL_QUIT:
                 m_pEvents->Broadcast(CloseEvent{ });
-            }
-            else if(_event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
-            {
+                break;
+            case SDL_WINDOWEVENT_SIZE_CHANGED:
                 m_pEvents->Broadcast(ResizeEvent{ _event.window.data1, _event.window.data2 });
+                break;
+            case SDL_KEYDOWN:
+                switch(_event.key.keysym.sym)
+                {
+                case SDLK_w:
+                    m_pEvents->Broadcast(KeyDownEvent{ key_w });
+                    break;
+                case SDLK_s:
+                    m_pEvents->Broadcast(KeyDownEvent{ key_s });
+                    break;
+                case SDLK_a:
+                    m_pEvents->Broadcast(KeyDownEvent{ key_a });
+                    break;
+                case SDLK_d:
+                    m_pEvents->Broadcast(KeyDownEvent{ key_d });
+                    break;
+                case SDLK_k:
+                    m_pEvents->Broadcast(KeyDownEvent{ key_k });
+                    break;
+                default:
+                    break;
+                }
+                break;
+            case SDL_KEYUP:
+                switch(_event.key.keysym.sym)
+                {
+                case SDLK_w:
+                    m_pEvents->Broadcast(KeyUpEvent{ key_w });
+                    break;
+                case SDLK_s:
+                    m_pEvents->Broadcast(KeyUpEvent{ key_s });
+                    break;
+                case SDLK_a:
+                    m_pEvents->Broadcast(KeyUpEvent{ key_a });
+                    break;
+                case SDLK_d:
+                    m_pEvents->Broadcast(KeyUpEvent{ key_d });
+                    break;
+                case SDLK_k:
+                    m_pEvents->Broadcast(KeyUpEvent{ key_k });
+                    break;
+                default:
+                    break;
+                }
+                break;
+            case SDL_MOUSEMOTION:
+                m_pEvents->Broadcast(MouseMotionEvent{ _event.motion.x, _event.motion.y });
+                break;
+            default:
+                break;
             }
         }
 
@@ -70,4 +123,10 @@ namespace Duckvil { namespace Window {
     {
         return m_pContext;
     }
+
+    void WindowSDL::SetMousePosition(int _iX, int _iY)
+    {
+        SDL_WarpMouseInWindow((SDL_Window*)m_pWindow, _iX, _iY);
+    }
+
 }}

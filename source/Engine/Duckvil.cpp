@@ -31,6 +31,7 @@
 #include "glm/glm.hpp"
 #include "glm/gtx/transform.hpp"
 #include "glm/gtx/quaternion.hpp"
+#include "glm/gtx/rotate_vector.hpp"
 
 namespace Duckvil {
 
@@ -268,8 +269,9 @@ namespace Duckvil {
         _pData->m_projection = glm::perspective(70.f, 1920.f / 1080.f, 0.1f, 1000.f);
 
         _pData->m_position = glm::vec3(0, 0, -5);
-        _pData->m_forward = glm::vec3(0, 0, 1);
-        _pData->m_up = glm::vec3(0, 1, 0);
+        _pData->m_rotation = glm::quat(0, 0, 0, 1);
+        //_pData->m_forward = glm::vec3(0, 0, 1);
+        //_pData->m_up = glm::vec3(0, 1, 0);
 
         _pData->m_counter = 0.f;
 
@@ -682,6 +684,9 @@ namespace Duckvil {
         {
             Window::CloseEvent _closeEvent;
             Window::ResizeEvent _resizeEvent;
+            Window::KeyDownEvent _keyDownEvent;
+            Window::KeyUpEvent _keyUpEvent;
+            Window::MouseMotionEvent _mouseMotionEvent;
 
             if(_pData->m_windowEventPool.GetMessage(&_closeEvent))
             {
@@ -695,6 +700,65 @@ namespace Duckvil {
 
                 _pData->m_windowEventPool.EventHandled<Window::ResizeEvent>();
             }
+            else if(_pData->m_windowEventPool.GetMessage(&_keyDownEvent))
+            {
+                _pData->m_aKeys[_keyDownEvent.m_key] = true;
+
+                _pData->m_windowEventPool.EventHandled<Window::KeyDownEvent>();
+            }
+            else if(_pData->m_windowEventPool.GetMessage(&_keyUpEvent))
+            {
+                _pData->m_aKeys[_keyUpEvent.m_key] = false;
+
+                _pData->m_windowEventPool.EventHandled<Window::KeyUpEvent>();
+            }
+            else if(_pData->m_windowEventPool.GetMessage(&_mouseMotionEvent))
+            {
+                if(!_pData->m_bWrapCamera)
+                {
+                    _pData->m_windowEventPool.EventHandled<Window::MouseMotionEvent>();
+
+                    continue;
+                }
+
+                int _x = (1920 / 2) - _mouseMotionEvent.m_iX;
+                int _y = (1080 / 2) - _mouseMotionEvent.m_iY;
+
+                _pData->m_rotation = glm::normalize(glm::angleAxis(_y * (float)_pData->m_timeData.m_dDelta * -1.f, _pData->m_rotation * glm::vec3(1, 0, 0)) * _pData->m_rotation);
+                _pData->m_rotation = glm::normalize(glm::angleAxis(_x * (float)_pData->m_timeData.m_dDelta * 1.f, glm::vec3(0, 1, 0)) * _pData->m_rotation);
+
+                if(_pData->m_fWrapTime >= 0.5f)
+                {
+                    _pData->m_pWindow->SetMousePosition(1920 / 2, 1080 / 2);
+                }
+
+                _pData->m_windowEventPool.EventHandled<Window::MouseMotionEvent>();
+            }
+        }
+
+        if(_pData->m_aKeys[Window::key_a])
+        {
+            _pData->m_position += glm::normalize(_pData->m_rotation * glm::vec3(1, 0, 0)) * (float)_pData->m_timeData.m_dDelta * 10.f;
+        }
+
+        if(_pData->m_aKeys[Window::key_d])
+        {
+            _pData->m_position -= glm::normalize(_pData->m_rotation * glm::vec3(1, 0, 0)) * (float)_pData->m_timeData.m_dDelta * 10.f;
+        }
+
+        if(_pData->m_aKeys[Window::key_w])
+        {
+            _pData->m_position += glm::normalize(_pData->m_rotation * glm::vec3(0, 0, 1)) * (float)_pData->m_timeData.m_dDelta * 10.f;
+        }
+
+        if(_pData->m_aKeys[Window::key_s])
+        {
+            _pData->m_position -= glm::normalize(_pData->m_rotation * glm::vec3(0, 0, 1)) * (float)_pData->m_timeData.m_dDelta * 10.f;
+        }
+
+        if(_pData->m_aKeys[Window::key_k])
+        {
+            _pData->m_bWrapCamera = !_pData->m_bWrapCamera;
         }
 
         _pData->m_windowEventPool.Reset();
@@ -705,10 +769,10 @@ namespace Duckvil {
 
         Graphics::Renderer::bind_framebuffer(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_fbo);
         Graphics::Renderer::viewport(_pData->m_pMemory, &_pData->m_pRendererData, 1920, 1080);
-        Graphics::Renderer::clear_color(_pData->m_pMemory, &_pData->m_pRendererData, glm::vec4(0, 0, 0, 0));
+        Graphics::Renderer::clear_color(_pData->m_pMemory, &_pData->m_pRendererData, glm::vec4(0, 0, 0, 1));
         Graphics::Renderer::clear(_pData->m_pMemory, &_pData->m_pRendererData, GL_COLOR_BUFFER_BIT);
         Graphics::Renderer::bind_shader(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_shaderID);
-        Graphics::Renderer::set_uniform(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_transformID, _pData->m_projection * glm::lookAt(_pData->m_position, _pData->m_position + _pData->m_forward, _pData->m_up) * _pData->m_transform);
+        Graphics::Renderer::set_uniform(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_transformID, _pData->m_projection * glm::lookAt(_pData->m_position, _pData->m_position + (_pData->m_rotation * glm::vec3(0, 0, 1)), (_pData->m_rotation * glm::vec3(0, 1, 0))) * _pData->m_transform);
         Graphics::Renderer::bind_texture(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_textureID, 0);
         Graphics::Renderer::draw(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_meshID);
 
@@ -721,6 +785,7 @@ namespace Duckvil {
         _pData->m_pWindow->Refresh();
 
         _pData->m_counter += _pData->m_timeData.m_dDelta;
+        _pData->m_fWrapTime += _pData->m_timeData.m_dDelta;
     }
 
 }

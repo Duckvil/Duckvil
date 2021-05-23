@@ -26,6 +26,9 @@
 
 #include "Window/Events/CloseEvent.h"
 #include "Window/Events/ResizeEvent.h"
+#include "Window/Events/KeyDownEvent.h"
+#include "Window/Events/KeyUpEvent.h"
+#include "Window/Events/MouseMotionEvent.h"
 
 // #include "Renderer/Renderer.h"
 
@@ -39,6 +42,8 @@
 #include "Memory/SmartPointer/SharedPointer.h"
 
 #include "Graphics/Renderer/Renderer.h"
+
+#include "glm/gtx/quaternion.hpp"
 
 namespace Duckvil {
 
@@ -125,10 +130,13 @@ namespace Duckvil {
         glm::mat4 m_transform;
         glm::mat4 m_projection;
         glm::mat4 m_view;
-        glm::vec3 m_forward;
-        glm::vec3 m_up;
+        glm::quat m_rotation;
         glm::vec3 m_position;
         float m_counter;
+
+        bool m_aKeys[Window::key_size];
+        bool m_bWrapCamera = false;
+        float m_fWrapTime = 0.f;
     };
 
     struct __ftable
