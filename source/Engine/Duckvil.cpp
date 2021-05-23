@@ -267,6 +267,13 @@ namespace Duckvil {
         glm::quat _rotation = glm::rotate(1.f, glm::vec3(0, 0, 1));
 
         _pData->m_transform = glm::translate(glm::vec3(0, 0, 0)) * glm::toMat4(_rotation) * glm::scale(glm::vec3(1, 1, 1));
+        _pData->m_projection = glm::perspective(70.f, 1920.f / 1080.f, 0.1f, 1000.f);
+
+        _pData->m_position = glm::vec3(0, 0, -5);
+        _pData->m_forward = glm::vec3(0, 0, 1);
+        _pData->m_up = glm::vec3(0, 1, 0);
+
+        _pData->m_counter = 0.f;
 
         return true;
     }
@@ -694,13 +701,16 @@ namespace Duckvil {
 
         _pData->m_windowEventPool.Reset();
 
-        // _pData->m_pRenderer->m_fnRender(&_pData->m_renderData, 0);
+        glm::quat _rotation = glm::rotate(_pData->m_counter, glm::vec3(0, 0, 1));
+
+        _pData->m_transform = glm::translate(glm::vec3(0, 0, 0)) * glm::toMat4(_rotation) * glm::scale(glm::vec3(1, 1, 1));
 
         Graphics::Renderer::bind_framebuffer(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_fbo);
-        Graphics::Renderer::clear_color(_pData->m_pMemory, &_pData->m_pRendererData);
         Graphics::Renderer::viewport(_pData->m_pMemory, &_pData->m_pRendererData, 1920, 1080);
+        Graphics::Renderer::clear_color(_pData->m_pMemory, &_pData->m_pRendererData, glm::vec4(0, 0, 0, 0));
+        Graphics::Renderer::clear(_pData->m_pMemory, &_pData->m_pRendererData, GL_COLOR_BUFFER_BIT);
         Graphics::Renderer::bind_shader(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_shaderID);
-        Graphics::Renderer::set_uniform(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_transformID, _pData->m_transform);
+        Graphics::Renderer::set_uniform(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_transformID, _pData->m_projection * glm::lookAt(_pData->m_position, _pData->m_position + _pData->m_forward, _pData->m_up) * _pData->m_transform);
         Graphics::Renderer::bind_texture(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_textureID, 0);
         Graphics::Renderer::draw(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_meshID);
 
@@ -711,6 +721,8 @@ namespace Duckvil {
         _pData->m_pEditor->m_fnRender(_pData->m_pEditorData, _pData->m_pWindow);
 
         _pData->m_pWindow->Refresh();
+
+        _pData->m_counter += _pData->m_timeData.m_dDelta;
     }
 
 }

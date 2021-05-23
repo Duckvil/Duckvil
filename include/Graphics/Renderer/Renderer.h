@@ -31,6 +31,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         renderer_op_code_set_uniform,
 
         renderer_op_code_clear_color,
+        renderer_op_code_clear,
         renderer_op_code_viewport,
 
         renderer_op_code_none
@@ -196,9 +197,20 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         );
     }
 
-    static inline void clear_color(Memory::ftable* _pMemoryInterface, renderer_data* _pData)
+    static inline void clear_color(Memory::ftable* _pMemoryInterface, renderer_data* _pData, const glm::vec4& _color = glm::vec4(0, 0, 0, 0))
     {
-        DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_clear_color);
+        DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_clear_color,
+        {
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _color);
+        });
+    }
+
+    static inline void clear(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _mask)
+    {
+        DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_clear,
+        {
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _mask);
+        });
     }
 
     static inline void viewport(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiWidth, uint32_t _uiHeight)

@@ -123,6 +123,12 @@ namespace Duckvil {
         uint32_t m_textureID;
         uint32_t m_transformID;
         glm::mat4 m_transform;
+        glm::mat4 m_projection;
+        glm::mat4 m_view;
+        glm::vec3 m_forward;
+        glm::vec3 m_up;
+        glm::vec3 m_position;
+        float m_counter;
     };
 
     struct __ftable

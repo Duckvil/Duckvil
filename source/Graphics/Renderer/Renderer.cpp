@@ -355,7 +355,20 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 break;
             case renderer_op_code_clear_color:
             {
-                glClearColor(1, 0, 0, 1);
+                glm::vec4 _color;
+
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_color);
+
+                glClearColor(_color.x, _color.y, _color.z, _color.w);
+            }
+                break;
+            case renderer_op_code_clear:
+            {
+                uint32_t _mask = -1;
+
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_mask);
+
+                glClear(_mask);
             }
                 break;
             case renderer_op_code_viewport:
