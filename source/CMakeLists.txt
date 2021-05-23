@@ -6,6 +6,7 @@ list(APPEND INCLUDES
     "${CMAKE_SOURCE_DIR}/include"
     "${CMAKE_SOURCE_DIR}/__generated_reflection__"
     "${CMAKE_SOURCE_DIR}/external"
+    ${CMAKE_SOURCE_DIR}/external/glm
 )
 
 list(APPEND STATIC_LIBRARIES "")

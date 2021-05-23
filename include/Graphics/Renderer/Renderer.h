@@ -10,6 +10,8 @@
 
 #include "glew/include/GL/glew.h"
 
+#include "glm/glm.hpp"
+
 #define DUCKVIL_RENDERER_PUSH_COMMAND(memory, allocator, cb, op_code, ...) \
     Duckvil::Graphics::Renderer::command_buffer_write(memory, allocator, cb, op_code); \
     __VA_ARGS__ \
@@ -26,10 +28,22 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
 
         renderer_op_code_draw,
 
+        renderer_op_code_set_uniform,
+
         renderer_op_code_clear_color,
         renderer_op_code_viewport,
 
         renderer_op_code_none
+    };
+
+    enum uniform_type
+    {
+        uniform_type_int,
+        uniform_type_float,
+        uniform_type_vec2,
+        uniform_type_vec3,
+        uniform_type_vec4,
+        uniform_type_mat4
     };
 
     struct texture_descriptor
@@ -76,6 +90,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
 
     typedef uint32_t shader;
     typedef uint32_t texture;
+    typedef uint32_t uniform;
 
     struct texture_object
     {
@@ -99,6 +114,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
     DUCKVIL_SLOT_ARRAY_DECLARE(texture_object);
     DUCKVIL_SLOT_ARRAY_DECLARE(framebuffer);
     DUCKVIL_SLOT_ARRAY_DECLARE(vertex_array_object);
+    DUCKVIL_SLOT_ARRAY_DECLARE(uniform);
 
     struct renderer_data
     {
@@ -107,6 +123,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         DUCKVIL_SLOT_ARRAY(texture_object) m_textureObject;
         DUCKVIL_SLOT_ARRAY(framebuffer) m_fbo;
         DUCKVIL_SLOT_ARRAY(vertex_array_object) m_vao;
+        DUCKVIL_SLOT_ARRAY(uniform) m_uniform;
 
         command_buffer m_pCommandBuffer;
         Memory::free_list_allocator* m_pAllocator;
@@ -125,6 +142,8 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         uint32_t (*m_fnCreateTextureObject)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const texture_object_descriptor& _descriptor);
         uint32_t (*m_fnCreateFramebuffer)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const framebuffer_descriptor& _descriptor);
         uint32_t (*m_fnCreateVAO)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const vertex_array_object_descriptor& _descriptor);
+
+        uint32_t (*m_fnGetUniformLocation)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiID, const char* _sName);
 
         void* (*m_fnGetTexture)(renderer_data* _pData, uint32_t _uiID);
         GLuint* (*m_fnGetTextures)(renderer_data* _pData, uint32_t _uiID);
@@ -188,6 +207,66 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         {
             Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiWidth);
             Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiHeight);
+        });
+    }
+
+    static inline void set_uniform(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const int& _value)
+    {
+        DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_set_uniform,
+        {
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiLocation);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), uniform_type_int);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _value);
+        });
+    }
+
+    static inline void set_uniform(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const float& _value)
+    {
+        DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_set_uniform,
+        {
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiLocation);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), uniform_type_float);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _value);
+        });
+    }
+
+    static inline void set_uniform(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const glm::vec2& _value)
+    {
+        DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_set_uniform,
+        {
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiLocation);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), uniform_type_vec2);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _value);
+        });
+    }
+
+    static inline void set_uniform(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const glm::vec3& _value)
+    {
+        DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_set_uniform,
+        {
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiLocation);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), uniform_type_vec3);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _value);
+        });
+    }
+
+    static inline void set_uniform(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const glm::vec4& _value)
+    {
+        DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_set_uniform,
+        {
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiLocation);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), uniform_type_vec4);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _value);
+        });
+    }
+
+    static inline void set_uniform(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const glm::mat4& _value)
+    {
+        DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_set_uniform,
+        {
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiLocation);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), uniform_type_mat4);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _value);
         });
     }
 

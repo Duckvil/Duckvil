@@ -232,6 +232,14 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     }
 
+    uint32_t impl_renderer_get_uniform_location(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiID, const char* _sName)
+    {
+        const auto& _shader = DUCKVIL_SLOT_ARRAY_GET(_pData->m_shader, _uiID);
+        const auto& _uniformLocation = glGetUniformLocation(_shader, _sName);
+
+        return duckvil_slot_array_insert(_pMemoryInterface, _pAllocator, _pData->m_uniform, _uniformLocation);
+    }
+
     void* impl_renderer_get_texture(renderer_data* _pData, uint32_t _uiID)
     {
         return DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_texture, _uiID);
@@ -253,6 +261,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         _pData->m_textureObject = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, texture_object);
         _pData->m_fbo = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, framebuffer);
         _pData->m_vao = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, vertex_array_object);
+        _pData->m_uniform = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, uniform);
 
         _pData->m_pCommandBuffer = command_buffer_new(_pMemoryInterface, _pAllocator);
         _pData->m_pAllocator = _pAllocator;
@@ -360,6 +369,75 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 glViewport(0, 0, _width, _height);
             }
                 break;
+            case renderer_op_code_set_uniform:
+            {
+                uint32_t _id = -1;
+                uniform_type _type;
+
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_id);
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_type);
+
+                GLuint _location = DUCKVIL_SLOT_ARRAY_GET(_pData->m_uniform, _id);
+
+                switch(_type)
+                {
+                case uniform_type_int:
+                    {
+                        int _value;
+
+                        Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_value);
+
+                        glUniform1i(_location, _value);
+                    }
+                    break;
+                case uniform_type_float:
+                    {
+                        float _value;
+
+                        Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_value);
+
+                        glUniform1f(_location, _value);
+                    }
+                    break;
+                case uniform_type_vec2:
+                    {
+                        glm::vec2 _value;
+
+                        Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_value);
+
+                        glUniform2f(_location, _value.x, _value.y);
+                    }
+                    break;
+                case uniform_type_vec3:
+                    {
+                        glm::vec3 _value;
+
+                        Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_value);
+
+                        glUniform3f(_location, _value.x, _value.y, _value.z);
+                    }
+                    break;
+                case uniform_type_vec4:
+                    {
+                        glm::vec4 _value;
+
+                        Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_value);
+
+                        glUniform4f(_location, _value.x, _value.y, _value.z, _value.w);
+                    }
+                    break;
+                case uniform_type_mat4:
+                    {
+                        glm::mat4 _value;
+
+                        Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_value);
+
+                        glUniformMatrix4fv(_location, 1, GL_FALSE, &_value[0][0]);
+                    }
+                    break;
+                };
+            }
+                break;
             default:
                 break;
             }
@@ -393,6 +471,8 @@ Duckvil::Graphics::Renderer::renderer_ftable* duckvil_graphics_renderer_init()
     _result.m_fnCreateTextureObject = &Duckvil::Graphics::Renderer::impl_renderer_create_texture_object;
     _result.m_fnCreateFramebuffer = &Duckvil::Graphics::Renderer::impl_renderer_create_framebuffer;
     _result.m_fnCreateVAO = &Duckvil::Graphics::Renderer::impl_renderer_create_vao;
+
+    _result.m_fnGetUniformLocation = &Duckvil::Graphics::Renderer::impl_renderer_get_uniform_location;
 
     _result.m_fnGetTexture = &Duckvil::Graphics::Renderer::impl_renderer_get_texture;
     _result.m_fnGetTextures = &Duckvil::Graphics::Renderer::impl_renderer_get_textures;

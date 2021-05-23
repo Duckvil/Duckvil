@@ -110,9 +110,6 @@ namespace Duckvil {
 
         Window::IWindow* m_pWindow;
 
-        // Renderer::RendererFTable* m_pRenderer;
-        // Renderer::Imgui::render_data m_renderData;
-
         Editor::EditorFTable* m_pEditor;
         Editor::ImGuiEditorData* m_pEditorData;
 
@@ -124,6 +121,8 @@ namespace Duckvil {
         uint32_t m_fbo;
         uint32_t m_fboTextureObject;
         uint32_t m_textureID;
+        uint32_t m_transformID;
+        glm::mat4 m_transform;
     };
 
     struct __ftable

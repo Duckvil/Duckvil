@@ -23,9 +23,14 @@
 #include "stb/stb_image.h"
 
 #undef max
+#undef min
 #undef GetObject
 #undef allocator
 #undef GetMessage
+
+#include "glm/glm.hpp"
+#include "glm/gtx/transform.hpp"
+#include "glm/gtx/quaternion.hpp"
 
 namespace Duckvil {
 
@@ -142,18 +147,32 @@ namespace Duckvil {
                 "F:/Projects/C++/Duckvil/resource/shader/test.fs"
             );
 
-        float _vertices[] =
+        // float _vertices[] =
+        // {
+        //     -0.5, -0.5, 0,
+        //     0, 0.5, 0,
+        //     0.5, -0.5, 0
+        // };
+
+        // float _texCoords[] =
+        // {
+        //     0.0, 0.0,
+        //     0.5, 1.0,
+        //     1.0, 0.0
+        // };
+
+        glm::vec3 _vertices[] =
         {
-            -0.5, -0.5, 0,
-            0, 0.5, 0,
-            0.5, -0.5, 0
+            glm::vec3(-0.5, -0.5, 0),
+            glm::vec3(0, 0.5, 0),
+            glm::vec3(0.5, -0.5, 0)
         };
 
-        float _texCoords[] =
+        glm::vec2 _texCoords[] =
         {
-            0.0, 0.0,
-            0.5, 1.0,
-            1.0, 0.0
+            glm::vec2(0, 0),
+            glm::vec2(0.5, 1),
+            glm::vec2(1, 0)
         };
 
         Graphics::Renderer::vertex_buffer_object_descriptor _desc[] =
@@ -235,6 +254,19 @@ namespace Duckvil {
             );
 
         stbi_image_free(_textureData);
+
+        _pData->m_transformID =
+            _pData->m_pRenderer->m_fnGetUniformLocation(
+                _pData->m_pMemory,
+                _pData->m_pHeap,
+                &_pData->m_pRendererData,
+                _pData->m_shaderID,
+                "transform"
+            );
+
+        glm::quat _rotation = glm::rotate(1.f, glm::vec3(0, 0, 1));
+
+        _pData->m_transform = glm::translate(glm::vec3(0, 0, 0)) * glm::toMat4(_rotation) * glm::scale(glm::vec3(1, 1, 1));
 
         return true;
     }
@@ -668,6 +700,7 @@ namespace Duckvil {
         Graphics::Renderer::clear_color(_pData->m_pMemory, &_pData->m_pRendererData);
         Graphics::Renderer::viewport(_pData->m_pMemory, &_pData->m_pRendererData, 1920, 1080);
         Graphics::Renderer::bind_shader(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_shaderID);
+        Graphics::Renderer::set_uniform(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_transformID, _pData->m_transform);
         Graphics::Renderer::bind_texture(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_textureID, 0);
         Graphics::Renderer::draw(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_meshID);
 
