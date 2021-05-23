@@ -28,7 +28,7 @@ namespace Duckvil { namespace Editor {
 
         uint32_t* _texture = (uint32_t*)m_pRenderer->m_fnGetTextures(m_pRendererData, m_uiTextureID);
 
-        ImGui::Image((void*)(intptr_t)*_texture, ImVec2(500, 500));
+        ImGui::Image((void*)(intptr_t)*_texture, ImVec2(500, 500), ImVec2(0, 1), ImVec2(1, 0));
 
         ImGui::End();
     }
