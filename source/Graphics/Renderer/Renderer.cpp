@@ -211,10 +211,18 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         {
             const vertex_buffer_object_descriptor& _vboDesc = _descriptor.m_aVBO[i];
 
-            glBindBuffer(GL_ARRAY_BUFFER, _vbo[i]);
-            glBufferData(GL_ARRAY_BUFFER, _vboDesc.m_uiTypeSize * _vboDesc.m_usNumber * _descriptor.m_uiCount, _vboDesc.m_pData, GL_STATIC_DRAW);
-            glEnableVertexAttribArray(i);
-            glVertexAttribPointer(i, _vboDesc.m_usNumber, GL_FLOAT, GL_FALSE, 0, 0);
+            if(_vboDesc.m_target == GL_ARRAY_BUFFER)
+            {
+                glBindBuffer(_vboDesc.m_target, _vbo[i]);
+                glBufferData(_vboDesc.m_target, _vboDesc.m_uiTypeSize * _vboDesc.m_usNumber * _descriptor.m_uiCount, _vboDesc.m_pData, GL_STATIC_DRAW);
+                glEnableVertexAttribArray(i);
+                glVertexAttribPointer(i, _vboDesc.m_usNumber, GL_FLOAT, GL_FALSE, 0, 0);
+            }
+            else if(_vboDesc.m_target == GL_ELEMENT_ARRAY_BUFFER)
+            {
+                glBindBuffer(_vboDesc.m_target, _vbo[i]);
+                glBufferData(_vboDesc.m_target, _vboDesc.m_uiTypeSize * _descriptor.m_uiCount, _vboDesc.m_pData, GL_STATIC_DRAW);
+            }
         }
 
         glBindVertexArray(0);
@@ -350,7 +358,8 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 vertex_array_object _vao = DUCKVIL_SLOT_ARRAY_GET(_pData->m_vao, _vaoID);
 
                 glBindVertexArray(_vao.m_vao);
-                glDrawArrays(GL_TRIANGLES, 0, _vao.m_uiDrawCount);
+                // glDrawArrays(GL_TRIANGLES, 0, _vao.m_uiDrawCount);
+                glDrawElements(GL_TRIANGLES, _vao.m_uiDrawCount, GL_UNSIGNED_INT, 0);
             }
                 break;
             case renderer_op_code_clear_color:

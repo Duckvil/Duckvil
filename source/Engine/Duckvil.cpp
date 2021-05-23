@@ -175,18 +175,16 @@ namespace Duckvil {
             glm::vec2(1, 0)
         };
 
+        uint32_t _indices[] =
+        {
+            0, 1, 2
+        };
+
         Graphics::Renderer::vertex_buffer_object_descriptor _desc[] =
         {
-            {
-                sizeof(float),
-                _vertices,
-                3
-            },
-            {
-                sizeof(float),
-                _texCoords,
-                2
-            }
+            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _vertices, 3),
+            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _texCoords, 2),
+            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ELEMENT_ARRAY_BUFFER, _indices)
         };
 
         _pData->m_meshID = _pData->m_pRenderer->m_fnCreateVAO(
@@ -195,7 +193,7 @@ namespace Duckvil {
             &_pData->m_pRendererData,
             Graphics::Renderer::vertex_array_object_descriptor
             {
-                2,
+                3,
                 _desc,
                 3
             }

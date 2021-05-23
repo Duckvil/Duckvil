@@ -80,6 +80,26 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         uint32_t m_uiTypeSize; // Size of single vertex
         void* m_pData; // Pointer to data
         uint16_t m_usNumber; // Count of single vertex type
+        GLenum m_target;
+
+        vertex_buffer_object_descriptor(GLenum _target, uint32_t _uiTypeSize, void* _pData, uint16_t _usNumber = 0) :
+            m_target(_target),
+            m_uiTypeSize(_uiTypeSize),
+            m_pData(_pData),
+            m_usNumber(_usNumber)
+        {
+
+        }
+
+        template <typename Type>
+        vertex_buffer_object_descriptor(GLenum _target, Type* _pData, uint16_t _usNumber = 0) :
+            m_target(_target),
+            m_uiTypeSize(sizeof(Type)),
+            m_pData(_pData),
+            m_usNumber(_usNumber)
+        {
+
+        }
     };
 
     struct vertex_array_object_descriptor
