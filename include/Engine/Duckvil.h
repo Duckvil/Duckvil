@@ -29,6 +29,7 @@
 #include "Window/Events/KeyDownEvent.h"
 #include "Window/Events/KeyUpEvent.h"
 #include "Window/Events/MouseMotionEvent.h"
+#include "Window/Events/SetMousePositionEvent.h"
 
 // #include "Renderer/Renderer.h"
 
@@ -44,6 +45,8 @@
 #include "Graphics/Renderer/Renderer.h"
 
 #include "glm/gtx/quaternion.hpp"
+
+#include "Editor/Viewport.h"
 
 namespace Duckvil {
 
@@ -120,23 +123,6 @@ namespace Duckvil {
 
         Graphics::Renderer::renderer_ftable* m_pRenderer;
         Graphics::Renderer::renderer_data m_pRendererData;
-
-        uint32_t m_shaderID;
-        uint32_t m_meshID;
-        uint32_t m_fbo;
-        uint32_t m_fboTextureObject;
-        uint32_t m_textureID;
-        uint32_t m_transformID;
-        glm::mat4 m_transform;
-        glm::mat4 m_projection;
-        glm::mat4 m_view;
-        glm::quat m_rotation;
-        glm::vec3 m_position;
-        float m_counter;
-
-        bool m_aKeys[Window::key_size];
-        bool m_bWrapCamera = false;
-        float m_fWrapTime = 0.f;
     };
 
     struct __ftable

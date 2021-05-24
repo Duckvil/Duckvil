@@ -36,6 +36,8 @@ namespace Duckvil { namespace Editor {
         Graphics::Renderer::renderer_ftable* m_pRenderer;
         Graphics::Renderer::renderer_data* m_pRendererData;
 
+        Event::Pool<Event::mode::buffered>* m_pWindowEventPool;
+
         // Store viewports, and retrieve them
     };
 
@@ -47,6 +49,8 @@ namespace Duckvil { namespace Editor {
         void (*m_fnAddHotDraw)(void* _pData, HotDraw _draw);
         void (*m_fnAddDraw)(void* _pData, Draw _draw);
         // void (*m_fnRemoveDraw)(void* _pData, void* _pObject);
+
+        void (*m_fnSetWindowEventPool)(void* _pData, Event::Pool<Event::mode::buffered>*);
 
         void (*m_fnPostInit)(const Memory::FreeList& _heap, void* _pData, EditorFTable* _pEditor, Event::Pool<Event::mode::immediate>* _pEventPool, HotReloader::RuntimeCompilerSystem* _pHotReloader);
         void (*m_fnHotReloadInit)(ImGuiEditorData* _pData, const HotReloader::SwapEvent& _event);

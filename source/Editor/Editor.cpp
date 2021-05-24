@@ -139,13 +139,16 @@ namespace Duckvil { namespace Editor {
             const HotDraw& _widget = _data->m_aHotDraws[i];
             Widget* _pWidget = (Widget*)DUCKVIL_TRACK_KEEPER_GET_OBJECT(_widget.m_pTrackKeeper);
 
-            (_pWidget->*_widget.m_fnInit)(_data->_ctx);
-
             if(RuntimeReflection::get_type(_widget.m_typeHandle).m_ullTypeID == RuntimeReflection::get_type(RuntimeReflection::get_type("ViewportWidget", { "Duckvil", "Editor" })).m_ullTypeID)
             {
                 const auto& _func = RuntimeReflection::get_function_handle<Graphics::Renderer::renderer_ftable*, Graphics::Renderer::renderer_data*>(_widget.m_typeHandle, "SetRenderer");
+                const auto& _func2 = RuntimeReflection::get_function_handle<Event::Pool<Event::mode::buffered>*>(_widget.m_typeHandle, "SetEventPool");
+
                 RuntimeReflection::invoke_member(_widget.m_typeHandle, _func, _pWidget, _data->m_pRenderer, _data->m_pRendererData);
+                RuntimeReflection::invoke_member(_widget.m_typeHandle, _func2, _pWidget, _data->m_pWindowEventPool);
             }
+
+            (_pWidget->*_widget.m_fnInit)(_data->_ctx);
         }
 #endif
 
@@ -154,13 +157,16 @@ namespace Duckvil { namespace Editor {
             const Draw& _widget = _data->m_aDraws[i];
             Widget* _pWidget = (Widget*)_widget.m_pObject;
 
-            (_pWidget->*_widget.m_fnInit)(_data->_ctx);
-
             if(RuntimeReflection::get_type(_widget.m_typeHandle).m_ullTypeID == RuntimeReflection::get_type(RuntimeReflection::get_type("ViewportWidget", { "Duckvil", "Editor" })).m_ullTypeID)
             {
                 const auto& _func = RuntimeReflection::get_function_handle<Graphics::Renderer::renderer_ftable*, Graphics::Renderer::renderer_data*>(_widget.m_typeHandle, "SetRenderer");
+                const auto& _func2 = RuntimeReflection::get_function_handle<Event::Pool<Event::mode::buffered>*>(_widget.m_typeHandle, "SetEventPool");
+
                 RuntimeReflection::invoke_member(_widget.m_typeHandle, _func, _pWidget, _data->m_pRenderer, _data->m_pRendererData);
+                RuntimeReflection::invoke_member(_widget.m_typeHandle, _func2, _pWidget, _data->m_pWindowEventPool);
             }
+
+            (_pWidget->*_widget.m_fnInit)(_data->_ctx);
         }
     }
 
@@ -385,6 +391,11 @@ namespace Duckvil { namespace Editor {
     //     }
     // }
 
+    void set_window_event_pool(void* _pData, Event::Pool<Event::mode::buffered>* _pWindowEventPool)
+    {
+        ((ImGuiEditorData*)_pData)->m_pWindowEventPool = _pWindowEventPool;
+    }
+
 }}
 
 Duckvil::Editor::EditorFTable* duckvil_editor_init()
@@ -397,6 +408,8 @@ Duckvil::Editor::EditorFTable* duckvil_editor_init()
     _ftable.m_fnAddHotDraw = &Duckvil::Editor::add_hot_draw;
     _ftable.m_fnAddDraw = &Duckvil::Editor::add_draw;
     // _result->m_fnRemoveDraw = &Duckvil::Editor::remove_draw;
+
+    _ftable.m_fnSetWindowEventPool = &Duckvil::Editor::set_window_event_pool;
 
     _ftable.m_fnPostInit = &Duckvil::Editor::post_init;
     _ftable.m_fnHotReloadInit = &Duckvil::Editor::hot_reload_init;

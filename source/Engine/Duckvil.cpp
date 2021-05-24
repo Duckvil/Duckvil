@@ -1,3 +1,4 @@
+#define STB_IMAGE_IMPLEMENTATION
 #include "Engine/Duckvil.h"
 
 #ifdef DUCKVIL_PLATFORM_WINDOWS
@@ -18,9 +19,6 @@
 #include "Logger/Logger.h"
 
 #include "Memory/ByteBuffer.h"
-
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb/stb_image.h"
 
 #undef max
 #undef min
@@ -139,142 +137,6 @@ namespace Duckvil {
 
         _pData->m_pRenderer->m_fnInit(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pWindow, &_pData->m_pRendererData);
 
-        _pData->m_shaderID =
-            _pData->m_pRenderer->m_fnCreateShader(
-                _pData->m_pMemory,
-                _pData->m_pHeap,
-                &_pData->m_pRendererData,
-                "F:/Projects/C++/Duckvil/resource/shader/test.vs",
-                "F:/Projects/C++/Duckvil/resource/shader/test.fs"
-            );
-
-        // float _vertices[] =
-        // {
-        //     -0.5, -0.5, 0,
-        //     0, 0.5, 0,
-        //     0.5, -0.5, 0
-        // };
-
-        // float _texCoords[] =
-        // {
-        //     0.0, 0.0,
-        //     0.5, 1.0,
-        //     1.0, 0.0
-        // };
-
-        glm::vec3 _vertices[] =
-        {
-            glm::vec3(-0.5, -0.5, 0),
-            glm::vec3(0, 0.5, 0),
-            glm::vec3(0.5, -0.5, 0)
-        };
-
-        glm::vec2 _texCoords[] =
-        {
-            glm::vec2(0, 0),
-            glm::vec2(0.5, 1),
-            glm::vec2(1, 0)
-        };
-
-        uint32_t _indices[] =
-        {
-            0, 1, 2
-        };
-
-        Graphics::Renderer::vertex_buffer_object_descriptor _desc[] =
-        {
-            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _vertices, 3),
-            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _texCoords, 2),
-            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ELEMENT_ARRAY_BUFFER, _indices)
-        };
-
-        _pData->m_meshID = _pData->m_pRenderer->m_fnCreateVAO(
-            _pData->m_pMemory,
-            _pData->m_pHeap,
-            &_pData->m_pRendererData,
-            Graphics::Renderer::vertex_array_object_descriptor
-            {
-                3,
-                _desc,
-                3
-            }
-        );
-
-        GLfloat _filtes[1] = { GL_LINEAR };
-        void* _data[1] = { 0 };
-
-        _pData->m_fboTextureObject =
-            _pData->m_pRenderer->m_fnCreateTextureObject(
-                _pData->m_pMemory,
-                _pData->m_pHeap,
-                &_pData->m_pRendererData,
-                Graphics::Renderer::texture_object_descriptor
-            {
-                GL_TEXTURE_2D,
-                _filtes,
-                1920, 1080,
-                _data,
-                1
-            });
-
-        GLenum _attachments[1] = { GL_COLOR_ATTACHMENT0 };
-
-        _pData->m_fbo =
-            _pData->m_pRenderer->m_fnCreateFramebuffer(
-                _pData->m_pMemory,
-                _pData->m_pHeap,
-                &_pData->m_pRendererData,
-                Graphics::Renderer::framebuffer_descriptor
-                {
-                    GL_DRAW_FRAMEBUFFER,
-                    _attachments,
-                    1,
-                    _pData->m_pRenderer->m_fnGetTextures(&_pData->m_pRendererData, _pData->m_fboTextureObject),
-                    GL_TEXTURE_2D
-                }
-        );
-
-        int _x, _y, _bytesPerPixels;
-        unsigned char* _textureData = stbi_load("F:/Projects/C++/Duckvil/resource/texture/test.jpg", &_x, &_y, &_bytesPerPixels, 4);
-
-        _pData->m_textureID =
-            _pData->m_pRenderer->m_fnCreateTexture(
-                _pData->m_pMemory,
-                _pData->m_pHeap,
-                &_pData->m_pRendererData,
-                Graphics::Renderer::texture_descriptor
-                {
-                    GL_TEXTURE_2D,
-                    GL_LINEAR,
-                    _x,
-                    _y,
-                    _textureData
-                }
-            );
-
-        stbi_image_free(_textureData);
-
-        _pData->m_transformID =
-            _pData->m_pRenderer->m_fnGetUniformLocation(
-                _pData->m_pMemory,
-                _pData->m_pHeap,
-                &_pData->m_pRendererData,
-                _pData->m_shaderID,
-                "transform"
-            );
-
-        glm::quat _rotation = glm::rotate(1.f, glm::vec3(0, 0, 1));
-
-        _pData->m_transform = glm::translate(glm::vec3(0, 0, 0)) * glm::toMat4(_rotation) * glm::scale(glm::vec3(1, 1, 1));
-        _pData->m_projection = glm::perspective(70.f, 1920.f / 1080.f, 0.1f, 1000.f);
-
-        _pData->m_position = glm::vec3(0, 0, -5);
-        _pData->m_rotation = glm::quat(0, 0, 0, 1);
-        //_pData->m_forward = glm::vec3(0, 0, 1);
-        //_pData->m_up = glm::vec3(0, 1, 0);
-
-        _pData->m_counter = 0.f;
-
         return true;
     }
 
@@ -291,6 +153,10 @@ namespace Duckvil {
         _pData->m_pEditor = init();
 
         _pData->m_pEditorData = (Editor::ImGuiEditorData*)_pData->m_pEditor->m_fnInit(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _pData->m_pWindow, _pData->m_pRenderer, &_pData->m_pRendererData);
+
+        _pData->m_pEditor->m_fnSetWindowEventPool(_pData->m_pEditorData, &_pData->m_windowEventPool);
+
+        _pData->m_windowEventPool.Add<Window::SetMousePositionEvent>();
 
         return true;
     }
@@ -680,13 +546,19 @@ namespace Duckvil {
             _pData->m_dOneSecond = 0.0;
         }
 
+        _pData->m_pRenderer->m_fnUpdate(_pData->m_pMemory, &_pData->m_pRendererData);
+
+        _pData->m_pRenderer->m_fnBindAsRenderTarget();
+
+        _pData->m_pEditor->m_fnRender(_pData->m_pEditorData, _pData->m_pWindow);
+
+        _pData->m_windowEventPool.Reset();
+
         while(_pData->m_windowEventPool.AnyEvents())
         {
             Window::CloseEvent _closeEvent;
             Window::ResizeEvent _resizeEvent;
-            Window::KeyDownEvent _keyDownEvent;
-            Window::KeyUpEvent _keyUpEvent;
-            Window::MouseMotionEvent _mouseMotionEvent;
+            Window::SetMousePositionEvent _setMousePositionEvent;
 
             if(_pData->m_windowEventPool.GetMessage(&_closeEvent))
             {
@@ -700,92 +572,15 @@ namespace Duckvil {
 
                 _pData->m_windowEventPool.EventHandled<Window::ResizeEvent>();
             }
-            else if(_pData->m_windowEventPool.GetMessage(&_keyDownEvent))
+            else if(_pData->m_windowEventPool.GetMessage(&_setMousePositionEvent))
             {
-                _pData->m_aKeys[_keyDownEvent.m_key] = true;
+                _pData->m_pWindow->SetMousePosition(_setMousePositionEvent.m_iX, _setMousePositionEvent.m_iY);
 
-                _pData->m_windowEventPool.EventHandled<Window::KeyDownEvent>();
-            }
-            else if(_pData->m_windowEventPool.GetMessage(&_keyUpEvent))
-            {
-                _pData->m_aKeys[_keyUpEvent.m_key] = false;
-
-                _pData->m_windowEventPool.EventHandled<Window::KeyUpEvent>();
-            }
-            else if(_pData->m_windowEventPool.GetMessage(&_mouseMotionEvent))
-            {
-                if(!_pData->m_bWrapCamera)
-                {
-                    _pData->m_windowEventPool.EventHandled<Window::MouseMotionEvent>();
-
-                    continue;
-                }
-
-                int _x = (1920 / 2) - _mouseMotionEvent.m_iX;
-                int _y = (1080 / 2) - _mouseMotionEvent.m_iY;
-
-                _pData->m_rotation = glm::normalize(glm::angleAxis(_y * (float)_pData->m_timeData.m_dDelta * -1.f, _pData->m_rotation * glm::vec3(1, 0, 0)) * _pData->m_rotation);
-                _pData->m_rotation = glm::normalize(glm::angleAxis(_x * (float)_pData->m_timeData.m_dDelta * 1.f, glm::vec3(0, 1, 0)) * _pData->m_rotation);
-
-                if(_pData->m_fWrapTime >= 0.5f)
-                {
-                    _pData->m_pWindow->SetMousePosition(1920 / 2, 1080 / 2);
-                }
-
-                _pData->m_windowEventPool.EventHandled<Window::MouseMotionEvent>();
+                _pData->m_windowEventPool.EventHandled<Window::SetMousePositionEvent>();
             }
         }
-
-        if(_pData->m_aKeys[Window::key_a])
-        {
-            _pData->m_position += glm::normalize(_pData->m_rotation * glm::vec3(1, 0, 0)) * (float)_pData->m_timeData.m_dDelta * 10.f;
-        }
-
-        if(_pData->m_aKeys[Window::key_d])
-        {
-            _pData->m_position -= glm::normalize(_pData->m_rotation * glm::vec3(1, 0, 0)) * (float)_pData->m_timeData.m_dDelta * 10.f;
-        }
-
-        if(_pData->m_aKeys[Window::key_w])
-        {
-            _pData->m_position += glm::normalize(_pData->m_rotation * glm::vec3(0, 0, 1)) * (float)_pData->m_timeData.m_dDelta * 10.f;
-        }
-
-        if(_pData->m_aKeys[Window::key_s])
-        {
-            _pData->m_position -= glm::normalize(_pData->m_rotation * glm::vec3(0, 0, 1)) * (float)_pData->m_timeData.m_dDelta * 10.f;
-        }
-
-        if(_pData->m_aKeys[Window::key_k])
-        {
-            _pData->m_bWrapCamera = !_pData->m_bWrapCamera;
-        }
-
-        _pData->m_windowEventPool.Reset();
-
-        glm::quat _rotation = glm::rotate(_pData->m_counter, glm::vec3(0, 0, 1));
-
-        _pData->m_transform = glm::translate(glm::vec3(0, 0, 0)) * glm::toMat4(_rotation) * glm::scale(glm::vec3(1, 1, 1));
-
-        Graphics::Renderer::bind_framebuffer(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_fbo);
-        Graphics::Renderer::viewport(_pData->m_pMemory, &_pData->m_pRendererData, 1920, 1080);
-        Graphics::Renderer::clear_color(_pData->m_pMemory, &_pData->m_pRendererData, glm::vec4(0, 0, 0, 1));
-        Graphics::Renderer::clear(_pData->m_pMemory, &_pData->m_pRendererData, GL_COLOR_BUFFER_BIT);
-        Graphics::Renderer::bind_shader(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_shaderID);
-        Graphics::Renderer::set_uniform(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_transformID, _pData->m_projection * glm::lookAt(_pData->m_position, _pData->m_position + (_pData->m_rotation * glm::vec3(0, 0, 1)), (_pData->m_rotation * glm::vec3(0, 1, 0))) * _pData->m_transform);
-        Graphics::Renderer::bind_texture(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_textureID, 0);
-        Graphics::Renderer::draw(_pData->m_pMemory, &_pData->m_pRendererData, _pData->m_meshID);
-
-        _pData->m_pRenderer->m_fnUpdate(_pData->m_pMemory, &_pData->m_pRendererData);
-
-        _pData->m_pRenderer->m_fnBindAsRenderTarget();
-
-        _pData->m_pEditor->m_fnRender(_pData->m_pEditorData, _pData->m_pWindow);
 
         _pData->m_pWindow->Refresh();
-
-        _pData->m_counter += _pData->m_timeData.m_dDelta;
-        _pData->m_fWrapTime += _pData->m_timeData.m_dDelta;
     }
 
 }
