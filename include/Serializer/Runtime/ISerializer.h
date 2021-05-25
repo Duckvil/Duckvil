@@ -44,7 +44,7 @@ namespace Duckvil { namespace RuntimeSerializer {
         }
 
         template <typename Type, std::size_t N>
-        bool SerializeProperty(const char* _sPropertyName, const Type (&_value)[N])
+        bool SerializeProperty(const char* _sPropertyName, Type (&_value)[N])
         {
             if(IsLoading())
             {
