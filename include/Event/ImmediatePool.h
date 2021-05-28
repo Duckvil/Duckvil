@@ -36,7 +36,7 @@ namespace Duckvil { namespace Event {
             m_pReflectionData(_pReflectionData),
             m_pReflection(_pReflection)
         {
-            _heap.Allocate(m_aChannels, 2);
+            _heap.Allocate(m_aChannels, 10);
         }
 
         Pool(const Memory::FreeList& _heap) :
@@ -45,7 +45,7 @@ namespace Duckvil { namespace Event {
             m_pReflection = RuntimeReflection::get_current().m_pReflection;
             m_pReflectionData = RuntimeReflection::get_current().m_pReflectionData;
 
-            _heap.Allocate(m_aChannels, 2);
+            _heap.Allocate(m_aChannels, 10);
         }
 
         Pool(Pool&& _pool) noexcept :
