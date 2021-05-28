@@ -20,17 +20,19 @@
 
 #include "Window/Events/SetMousePositionEvent.h"
 
+#include "Engine/ISystem.h"
+#include "Engine/ReflectionFlags.h"
+
 #include "Editor/Widgets/ViewportWidget.generated.h"
 
 namespace Duckvil { namespace Editor {
 
-    class ViewportWidget : public Widget
+    DUCKVIL_CLASS(Duckvil::ReflectionFlags::ReflectionFlags_UserSystem)
+    class ViewportWidget : public Widget, public ISystem
     {
         DUCKVIL_GENERATED_BODY
     private:
         Memory::FreeList m_heap;
-
-        uint32_t m_uiTextureID;
 
         Graphics::Renderer::renderer_ftable* m_pRenderer;
         Graphics::Renderer::renderer_data* m_pRendererData;
@@ -47,14 +49,19 @@ namespace Duckvil { namespace Editor {
 
         Window::SetMousePositionEvent m_setMousePosition;
 
+        bool m_bSkip = false;
+
     public:
+        ViewportWidget();
         ViewportWidget(const Memory::FreeList& _heap);
         ~ViewportWidget();
+
+        bool Init();
+        void Update(double _dDelta);
 
         void InitEditor(void* _pImguiContext);
         void OnDraw();
 
-        void SetViewportTexture(uint32_t _pTexture);
         void SetRenderer(Graphics::Renderer::renderer_ftable* _pRenderer, Graphics::Renderer::renderer_data* _pRendererData);
         void SetEventPool(Event::Pool<Event::mode::buffered>* _pEventPool);
     };

@@ -143,9 +143,7 @@ namespace Duckvil { namespace Editor {
                 "transform"
             );
 
-        glm::quat _rotation = glm::rotate(1.f, glm::vec3(0, 0, 1));
-
-        _pViewport->m_transform = glm::translate(glm::vec3(0, 0, 0)) * glm::toMat4(_rotation) * glm::scale(glm::vec3(1, 1, 1));
+        _pViewport->m_transform = glm::translate(glm::vec3(0, 0, 0)) * glm::toMat4(glm::quat(0, 0, 0, 1)) * glm::scale(glm::vec3(1, 1, 1));
         _pViewport->m_projection = glm::perspective(70.f, 1920.f / 1080.f, 0.1f, 1000.f);
 
         _pViewport->m_position = glm::vec3(0, 0, -5);

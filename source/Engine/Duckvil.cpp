@@ -31,6 +31,8 @@
 #include "glm/gtx/quaternion.hpp"
 #include "glm/gtx/rotate_vector.hpp"
 
+#include "tracy/Tracy.hpp"
+
 namespace Duckvil {
 
     bool init_runtime_reflection(__data* _pData, PlugNPlay::__module* _pModule)
@@ -163,6 +165,8 @@ namespace Duckvil {
 
     bool init(__data* _pData, Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator)
     {
+        TracyMessageL("Initializing engine");
+
         _pData->m_pHeap = _pAllocator;
         _pData->m_pMemory = _pMemoryInterface;
         _pData->m_aLoadedModules = nullptr;
@@ -172,7 +176,7 @@ namespace Duckvil {
         _pData->m_heap = Memory::FreeList(_pData->m_pMemory, _pData->m_pHeap);
 
         _pData->m_heap.Allocate(_pData->m_objectsHeap, 1024);
-        _pData->m_heap.Allocate(_pData->m_eventsHeap, 1024 * 2);
+        _pData->m_heap.Allocate(_pData->m_eventsHeap, 1024 * 4);
         _pData->m_heap.Allocate(_pData->m_aEngineSystems, 1);
         _pData->m_heap.Allocate(_pData->m_aRecordedTypes, 1);
 
@@ -297,7 +301,7 @@ namespace Duckvil {
 
                 ((Event::Pool<Event::mode::immediate>*)_pData->m_pRuntimeReflectionData->m_pEvents)->Add<RuntimeReflection::TrackedObjectCreatedEvent>(_pData->m_pRuntimeCompiler);
 
-                _pData->m_fnRuntimeCompilerUpdate = _type.GetFunctionCallback<ISystem>("Update")->m_fnFunction;
+                _pData->m_fnRuntimeCompilerUpdate = _type.GetFunctionCallback<ISystem, double>("Update")->m_fnFunction;
                 _pData->m_fnRuntimeCompilerInit = _type.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
 
                 _pData->m_pRuntimeCompiler->m_aRecordedTypes = _pData->m_aRecordedTypes;
@@ -340,7 +344,7 @@ namespace Duckvil {
 
                     _system.m_type = _typeHandle;
                     _system.m_pTrackKeeper = DUCKVIL_TRACK_KEEPER_CAST(ISystem, _testSystem);
-                    _system.m_fnUpdateCallback = _type.GetFunctionCallback<ISystem>("Update")->m_fnFunction;
+                    _system.m_fnUpdateCallback = _type.GetFunctionCallback<ISystem, double>("Update")->m_fnFunction;
                     _system.m_fnInitCallback = _type.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
 
                     if(RuntimeReflection::get_meta(_typeHandle, ReflectionFlags_AutoEventsAdding).m_ullTypeID != -1)
@@ -393,7 +397,7 @@ namespace Duckvil {
                             {
                                 RuntimeReflection::ReflectedType<> _systemType(_pData->m_heap, _system.m_type);
 
-                                _system.m_fnUpdateCallback = _systemType.GetFunctionCallback<ISystem>("Update")->m_fnFunction;
+                                _system.m_fnUpdateCallback = _systemType.GetFunctionCallback<ISystem, double>("Update")->m_fnFunction;
                                 _system.m_fnInitCallback = _systemType.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
                             }
                         }
@@ -413,6 +417,8 @@ namespace Duckvil {
                 return false;
             }
         }
+
+        TracyMessageL("Initializing engine finished");
 
         return true;
     }
@@ -505,15 +511,17 @@ namespace Duckvil {
 
     void update(__data* _pData, __ftable* _pFTable)
     {
-        _pData->m_time.update(&_pData->m_timeData);
+        ZoneScopedN("Update");
 
-        _pData->m_dOneSecond += _pData->m_timeData.m_dDelta;
+        double _delta = _pData->m_timeData.m_dDelta;
+
+        _pData->m_dOneSecond += _delta;
 
         for(uint32_t i = 0; i < _pData->m_aEngineSystems.Size(); ++i)
         {
             system& _system = _pData->m_aEngineSystems[i];
 
-            ((ISystem*)DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pTrackKeeper)->*_system.m_fnUpdateCallback)();
+            ((ISystem*)DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pTrackKeeper)->*_system.m_fnUpdateCallback)(_delta);
         }
 
         if(_pData->m_ullLastTimeUsed != _pData->m_pHeap->m_ullUsed)
@@ -528,14 +536,14 @@ namespace Duckvil {
         if(_pData->m_dOneSecond >= 1.0)
         {
 #ifdef DUCKVIL_HOT_RELOADING
-            (_pData->m_pRuntimeCompiler->*_pData->m_fnRuntimeCompilerUpdate)();
+            (_pData->m_pRuntimeCompiler->*_pData->m_fnRuntimeCompilerUpdate)(_delta);
 #endif
 
             // _pData->m_pLogger->dispatch_logs(/*_pData->m_pLogger, _pData->m_pLoggerData*/ logger_get_current().m_pLogger, logger_get_current().m_pLoggerData);
             // _pData->m_logger->Dispatch();
             _pData->m_pLoggerChannel->dispatch_logs(_pData->m_pLoggerChannel, _pData->m_pLoggerChannelData);
 
-            // DUCKVIL_LOG_INFO("Delta: %f ms", _pData->m_timeData.m_dDelta * 1000.0);
+            // DUCKVIL_LOG_INFO("Delta: %f ms", _delta * 1000.0);
             // DUCKVIL_LOG_INFO("Used memory: %d of %d", _pData->m_pHeap->m_ullUsed, _pData->m_pHeap->m_ullCapacity);
 
 // #ifdef DUCKVIL_MEMORY_DEBUGGER
@@ -581,6 +589,7 @@ namespace Duckvil {
         }
 
         _pData->m_pWindow->Refresh();
+        _pData->m_time.update(&_pData->m_timeData);
     }
 
 }

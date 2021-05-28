@@ -121,7 +121,7 @@ namespace Duckvil { namespace HotReloader {
         Memory::Vector<RuntimeCompilerSystem::reflection_module> m_aModules;
 
         bool Init();
-        void Update();
+        void Update(double _dDelta);
 
         void InitEditor(void* _pImguiContext);
         void OnDraw();

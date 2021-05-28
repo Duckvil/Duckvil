@@ -53,7 +53,7 @@ namespace Duckvil {
     struct system
     {
     // TODO: Currently it is workaround for member callbacks, need to be fixed(Reflection recorder)
-        typedef void (ISystem::*UpdateCallback)();
+        typedef void (ISystem::*UpdateCallback)(double _dDelta);
         typedef bool (ISystem::*InitCallback)();
 
         RuntimeReflection::__duckvil_resource_type_t m_type;
