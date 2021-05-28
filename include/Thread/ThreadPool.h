@@ -18,6 +18,8 @@
 #include <thread>
 #endif
 
+#include "tracy/Tracy.hpp"
+
 namespace Duckvil { namespace Thread {
 
     typedef void (*TaskCallback)(void*);
@@ -49,9 +51,11 @@ namespace Duckvil { namespace Thread {
         uint32_t m_uiThreadsCount;
         Memory::Vector<std::thread*> m_aWorkers;
         Memory::FreeList m_heap;
-        std::mutex m_lock;
-        std::mutex m_threadPoolLock;
-        std::condition_variable m_condition;
+        // std::mutex m_lock;
+        // std::mutex m_threadPoolLock;
+        TracyLockable(std::mutex, m_lock);
+        TracyLockable(std::mutex, m_threadPoolLock);
+        std::condition_variable_any m_condition;
         Memory::Queue<task> m_aTasks;
         bool m_bRunning;
         bool m_bTerminate;

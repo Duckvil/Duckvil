@@ -20,6 +20,8 @@
 
 #include "Engine/ReflectionFlags.h"
 
+#include "tracy/Tracy.hpp"
+
 namespace Duckvil { namespace Editor {
 
     void* init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Window::IWindow* _pWindow, Graphics::Renderer::renderer_ftable* _pRenderer, Graphics::Renderer::renderer_data* _pRendererData)
@@ -230,6 +232,8 @@ namespace Duckvil { namespace Editor {
 
     void render(void* _pData, Window::IWindow* _pWindow)
     {
+        ZoneScopedN("Editor");
+
         ImGuiEditorData* _data = (ImGuiEditorData*)_pData;
 
         ImGui_ImplOpenGL3_NewFrame();

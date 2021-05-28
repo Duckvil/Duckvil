@@ -5,6 +5,8 @@
 
 #include "SDL2/include/SDL.h"
 
+#include "tracy/Tracy.hpp"
+
 namespace Duckvil { namespace Graphics { namespace Renderer {
 
     static void check_shader_error(GLuint _uiShader, GLuint _uiFlag, bool _bIsProgram, const char* _sErrorMessage)
@@ -471,6 +473,8 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
 
     void impl_renderer_update(Memory::ftable* _pMemoryInterface, renderer_data* _pData)
     {
+        ZoneScopedN("Submit renderer command buffer");
+
         impl_renderer_submit_command_buffer(_pMemoryInterface, _pData);
 
         command_buffer_clear(_pMemoryInterface, &_pData->m_pCommandBuffer);

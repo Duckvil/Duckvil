@@ -2,10 +2,23 @@
 
 #ifdef DUCKVIL_PLATFORM_WINDOWS
 #include <Windows.h>
+#include <DbgHelp.h>
+#include <processthreadsapi.h>
 
 #include <cstddef>
 
 #include "Utils/Utils.h"
+
+#include "tracy/Tracy.hpp"
+
+extern "C"
+{
+    static HANDLE dbgHelpLock;
+
+    void DbgHelpInit() { dbgHelpLock = CreateMutex(nullptr, FALSE, nullptr); }
+    void DbgHelpLock() { WaitForSingleObject(dbgHelpLock , INFINITE); }
+    void DbgHelpUnlock() { ReleaseMutex(dbgHelpLock); }
+}
 
 namespace Duckvil { namespace PlugNPlay { namespace Platform {
 
@@ -21,6 +34,8 @@ namespace Duckvil { namespace PlugNPlay { namespace Platform {
         {
             return false;
         }
+
+        SymRefreshModuleList(GetCurrentProcess());
 
         return true;
     }

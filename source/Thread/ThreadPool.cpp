@@ -1,5 +1,7 @@
 #include "Thread/ThreadPool.h"
 
+#include "tracy/common/TracySystem.hpp"
+
 namespace Duckvil { namespace Thread {
 
 #ifdef DUCKVIL_PLATFORM_LINUX
@@ -44,14 +46,18 @@ namespace Duckvil { namespace Thread {
         return nullptr;
     }
 #else
-    void pool_worker(pool_data* _pData)
+    void pool_worker(pool_data* _pData, const char* _sName)
     {
+        tracy::SetThreadName(_sName);
+
         while(!_pData->m_bTerminate)
         {
             task _task;
 
             {
-                std::unique_lock<std::mutex> _lock(_pData->m_lock);
+                std::unique_lock<LockableBase(std::mutex)> _lock(_pData->m_lock);
+                LockableBase(std::mutex)& l = *_lock.mutex();
+                LockMark(l);
 
                 _pData->m_condition.wait(_lock, [_pData]()
                 {
@@ -112,6 +118,8 @@ namespace Duckvil { namespace Thread {
 
         _pData->m_bRunning = true;
 
+        const char* _names[] = { "a", "vb", "c" };
+
         for(uint32_t i = 0; i < _pData->m_uiThreadsCount; ++i)
         {
 #ifdef DUCKVIL_PLATFORM_LINUX
@@ -119,7 +127,7 @@ namespace Duckvil { namespace Thread {
 
             pthread_create(&_thread, nullptr, pool_worker, _pData);
 #else
-            std::thread* _thread = _pData->m_heap.Allocate<std::thread>(&pool_worker, _pData);
+            std::thread* _thread = _pData->m_heap.Allocate<std::thread>(&pool_worker, _pData, _names[i]);
 #endif
 
             _pData->m_aWorkers.Allocate(_thread);
@@ -136,7 +144,9 @@ namespace Duckvil { namespace Thread {
 #ifdef DUCKVIL_PLATFORM_LINUX
         pthread_mutex_lock(&(_pData->m_threadPoolLock));
 #else
-        std::unique_lock<std::mutex> lock(_pData->m_threadPoolLock);
+        std::unique_lock<LockableBase(std::mutex)> _lock(_pData->m_threadPoolLock);
+        LockableBase(std::mutex)& l = *_lock.mutex();
+        LockMark(l);
 #endif
 
         _pData->m_bTerminate = true;
@@ -181,8 +191,10 @@ namespace Duckvil { namespace Thread {
         pthread_cond_signal(&(_pData->m_condition));
 #else
         {
-            std::unique_lock<std::mutex> lock(_pData->m_lock);
-            
+            std::unique_lock<LockableBase(std::mutex)> _lock(_pData->m_lock);
+            LockableBase(std::mutex)& l = *_lock.mutex();
+            LockMark(l);
+
             _pData->m_aTasks.Allocate({ _task });
 
             _pData->m_uiTaskCount++;
@@ -210,7 +222,9 @@ namespace Duckvil { namespace Thread {
         pthread_cond_signal(&(_pData->m_condition));
 #else
         {
-            std::unique_lock<std::mutex> lock(_pData->m_lock);
+            std::unique_lock<LockableBase(std::mutex)> _lock(_pData->m_lock);
+            LockableBase(std::mutex)& l = *_lock.mutex();
+            LockMark(l);
             
             _pData->m_aTasks.Allocate({ _task, _pTaskData });
 

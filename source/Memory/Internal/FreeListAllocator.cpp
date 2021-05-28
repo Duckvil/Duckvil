@@ -2,6 +2,8 @@
 
 #include <cstring>
 
+#include "tracy/Tracy.hpp"
+
 namespace Duckvil { namespace Memory {
 
     void* impl_free_list_allocate(free_list_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment)
@@ -59,6 +61,8 @@ namespace Duckvil { namespace Memory {
             _header->m_ucPadding = _padding;
 
             _pAllocator->m_ullUsed += _total_size;
+
+            TracyAllocN((void*)_aligned_address, _ullSize, "FreeList");
 
             return (void*)_aligned_address;
         }
@@ -125,6 +129,8 @@ namespace Duckvil { namespace Memory {
             __free_list_node* _new_node = (__free_list_node*)_aligned_address;
 
             memcpy(_new_node, _pData, _ullSize);
+
+            TracyAllocN((void*)_aligned_address, _ullSize, "FreeList");
 
             return (void*)_aligned_address;
         }
@@ -194,6 +200,8 @@ namespace Duckvil { namespace Memory {
 
             impl_free_list_free(_pAllocator, _pData);
 
+            TracyAllocN((void*)_aligned_address, _ullSize, "FreeList");
+
             return (void*)_aligned_address;
         }
 
@@ -250,6 +258,8 @@ namespace Duckvil { namespace Memory {
         }
 
         _pAllocator->m_ullUsed -= _block_size;
+
+        TracyFreeN(_pointer, "FreeList");
     }
 
     void impl_free_list_clear(free_list_allocator* _pAllocator)
