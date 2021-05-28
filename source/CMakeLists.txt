@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
+option(DUCKVIL_TRACY_PROFILER "Tracy profiler" OFF)
+
 FILE(GLOB children */CMakeLists.txt)
 
 list(APPEND INCLUDES
@@ -7,6 +9,7 @@ list(APPEND INCLUDES
     "${CMAKE_SOURCE_DIR}/__generated_reflection__"
     "${CMAKE_SOURCE_DIR}/external"
     ${CMAKE_SOURCE_DIR}/external/glm
+    ${CMAKE_SOURCE_DIR}/external/tracy
 )
 
 list(APPEND STATIC_LIBRARIES "")
@@ -88,6 +91,29 @@ if(NOT DUCKVIL_CICD)
                 ${STATIC_LIBRARIES}
                 ${LIBS}
             )
+
+            if(${DUCKVIL_TRACY_PROFILER})
+                if(NOT ${PROJECT_ID} STREQUAL "_tracy")
+                    target_link_libraries(
+                        ${PROJECT_ID}
+                        _tracy
+                    )
+                endif()
+
+                target_compile_definitions(${PROJECT_ID} PRIVATE TRACY_ENABLE)
+                target_compile_definitions(${PROJECT_ID} PRIVATE TRACY_CALLSTACK=40)
+                target_compile_options(${PROJECT_ID} PRIVATE
+                    $<$<CXX_COMPILER_ID:MSVC>:/Zi>
+                    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-g>
+                )
+                target_link_options(${PROJECT_ID} PRIVATE
+                    $<$<CXX_COMPILER_ID:MSVC>:/DEBUG:FULL>
+                )
+                target_link_libraries(${PROJECT_ID} dbghelp)
+                target_compile_options(${PROJECT_ID} PRIVATE
+                    $<$<CXX_COMPILER_ID:MSVC>:/GF>
+                )
+            endif()
         endif()
     ENDFOREACH()
 else()

@@ -13,3 +13,4 @@ target_include_directories(
     Memory
     PRIVATE
 )
+target_compile_definitions(Memory PRIVATE TRACY_DBGHELP_LOCK=DbgHelp)
