@@ -371,9 +371,7 @@ namespace Duckvil { namespace RuntimeReflection {
         void* _pointer =
             _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__function<ReturnType (Type::*)(Args...)>), alignof(__function<ReturnType (Type::*)(Args...)>));
 
-        __function<ReturnType (Type::*)(Args...)>* _function = new(_pointer) __function<ReturnType (Type::*)(Args...)>();
-
-        _function->m_fnFunction = func;
+        __function<ReturnType (Type::*)(Args...)>* _function = new(_pointer) __function<ReturnType (Type::*)(Args...)>(func);
 
         return _pFunctions->m_fnRecordFunction(_pMemoryInterface, _pAllocator, _pData, _typeHandle, _function, _sName, Length, typeid(ReturnType).hash_code(), typeid(void(Args...)).hash_code());
     }
@@ -384,9 +382,7 @@ namespace Duckvil { namespace RuntimeReflection {
         void* _pointer =
             _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__function<ReturnType (Type::*)(Args...) const>), alignof(__function<ReturnType (Type::*)(Args...) const>));
 
-        __function<ReturnType (Type::*)(Args...) const>* _function = new(_pointer) __function<ReturnType (Type::*)(Args...) const>();
-
-        _function->m_fnFunction = func;
+        __function<ReturnType (Type::*)(Args...) const>* _function = new(_pointer) __function<ReturnType (Type::*)(Args...) const>(func);
 
         return _pFunctions->m_fnRecordFunction(_pMemoryInterface, _pAllocator, _pData, _typeHandle, _function, _sName, Length, typeid(ReturnType).hash_code(), typeid(void(Args...)).hash_code());
     }
@@ -397,9 +393,7 @@ namespace Duckvil { namespace RuntimeReflection {
         void* _pointer =
             _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__function<ReturnType (*)(Args...)>), alignof(__function<ReturnType (*)(Args...)>));
 
-        __function<ReturnType (*)(Args...)>* _function = new(_pointer) __function<ReturnType (*)(Args...)>();
-
-        _function->m_fnFunction = func;
+        __function<ReturnType (*)(Args...)>* _function = new(_pointer) __function<ReturnType (*)(Args...)>(func);
 
         return _pFunctions->m_fnRecordFunction(_pMemoryInterface, _pAllocator, _pData, _typeHandle, _function, _sName, Length, typeid(ReturnType).hash_code(), typeid(void(Args...)).hash_code());
     }

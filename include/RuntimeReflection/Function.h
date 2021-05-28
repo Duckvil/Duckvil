@@ -6,18 +6,22 @@ namespace Duckvil { namespace RuntimeReflection {
 
     struct __ifunction
     {
-
+        virtual ~__ifunction() { }
     };
 
     template <typename ReturnType, typename... Args>
     struct __proxy_static_function : public __ifunction
     {
+        virtual ~__proxy_static_function() { }
+
         virtual ReturnType Invoke(const Args&... _vArgs) = 0;
     };
 
     template <typename ReturnType, typename... Args>
     struct __proxy_member_function : public __ifunction
     {
+        virtual ~__proxy_member_function() { }
+
         virtual ReturnType Invoke(void* _pObject, const Args&... _vArgs) = 0;
     };
 
@@ -31,6 +35,14 @@ namespace Duckvil { namespace RuntimeReflection {
         typedef void (Type::*FunctionCallback)(Args...);
 
         FunctionCallback m_fnFunction;
+
+        __function(FunctionCallback _fnCallback) :
+            m_fnFunction(_fnCallback)
+        {
+
+        }
+
+        ~__function() { }
 
         inline void Invoke(void* _pObject, const Args&... _vArgs) final override
         {
@@ -48,6 +60,14 @@ namespace Duckvil { namespace RuntimeReflection {
 
         FunctionCallback m_fnFunction;
 
+        __function(FunctionCallback _fnCallback) :
+            m_fnFunction(_fnCallback)
+        {
+
+        }
+
+        ~__function() { }
+
         inline ReturnType Invoke(void* _pObject, const Args&... _vArgs) final override
         {
             Type* _object = (Type*)_pObject;
@@ -64,6 +84,14 @@ namespace Duckvil { namespace RuntimeReflection {
 
         FunctionCallback m_fnFunction;
 
+        __function(FunctionCallback _fnCallback) :
+            m_fnFunction(_fnCallback)
+        {
+
+        }
+
+        ~__function() { }
+
         inline void Invoke(const Args&... _vArgs) final override
         {
             m_fnFunction(_vArgs...);
@@ -78,6 +106,14 @@ namespace Duckvil { namespace RuntimeReflection {
 
         FunctionCallback m_fnFunction;
 
+        __function(FunctionCallback _fnCallback) :
+            m_fnFunction(_fnCallback)
+        {
+
+        }
+
+        ~__function() { }
+
         inline ReturnType Invoke(const Args&... _vArgs) final override
         {
             return m_fnFunction(_vArgs...);
@@ -91,6 +127,14 @@ namespace Duckvil { namespace RuntimeReflection {
         typedef void (Type::*FunctionCallback)(Args...) const;
 
         FunctionCallback m_fnFunction;
+
+        __function(FunctionCallback _fnCallback) :
+            m_fnFunction(_fnCallback)
+        {
+
+        }
+
+        ~__function() { }
 
         inline void Invoke(void* _pObject, const Args&... _vArgs) final override
         {
@@ -107,6 +151,14 @@ namespace Duckvil { namespace RuntimeReflection {
         typedef ReturnType (Type::*FunctionCallback)(Args...) const;
 
         FunctionCallback m_fnFunction;
+
+        __function(FunctionCallback _fnCallback) :
+            m_fnFunction(_fnCallback)
+        {
+
+        }
+
+        ~__function() { }
 
         inline ReturnType Invoke(void* _pObject, const Args&... _vArgs) final override
         {

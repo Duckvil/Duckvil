@@ -10,6 +10,29 @@ namespace Duckvil { namespace RuntimeReflection {
 
             if(_type.m_ullTypeID == _ullTypeID)
             {
+                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); ++j)
+                {
+                    __function_t _func = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, j);
+
+                    Memory::free_list_free(_pMemoryInterface, _pAllocator, _func.m_pFunction);
+
+                    delete[] _func.m_sFunctionName;
+                }
+
+                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantKeys.m_data); ++j)
+                {
+                    __variant_t _variant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, j);
+
+                    Memory::free_list_free(_pMemoryInterface, _pAllocator, _variant.m_variant.m_pData);
+                }
+
+                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantValues.m_data); ++j)
+                {
+                    __variant_t _variant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantValues, j);
+
+                    Memory::free_list_free(_pMemoryInterface, _pAllocator, _variant.m_variant.m_pData);
+                }
+
                 DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_constructors);
                 DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_properties);
                 DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_namespaces);
