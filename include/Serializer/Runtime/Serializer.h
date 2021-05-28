@@ -38,7 +38,10 @@ namespace Duckvil { namespace RuntimeSerializer {
 
         ~Serializer()
         {
-
+            for(ValueGroup::iterator it = m_serializationMap.begin(); it != m_serializationMap.end(); ++it)
+            {
+                delete it->second;
+            }
         }
 
         void Serialize(void* _pHotObject, RuntimeReflection::__function<void(HotReloader::HotObject::*)(RuntimeSerializer::ISerializer*)>* _fnSerialize)
