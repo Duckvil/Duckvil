@@ -9,6 +9,8 @@
 #include <utility>
 #include <cstring>
 
+#include "tracy/Tracy.hpp"
+
 namespace Duckvil { namespace Memory {
 
     template <typename Type>
@@ -31,6 +33,8 @@ namespace Duckvil { namespace Memory {
 
             _pThis->m_pContainer = (fixed_queue_allocator*)free_list_allocate(_pMemoryInterface, _allocator, sizeof(fixed_queue_allocator) + (sizeof(Type) * _queue.GetSize()), alignof(fixed_queue_allocator));
 
+            TracyMessageL("Copy queue");
+
             memcpy(_pThis->m_pContainer, _specifiedContainer.m_pContainer, sizeof(fixed_queue_allocator) + (sizeof(Type) * _queue.GetSize()));
 
             _pThis->m_fnCopy = _specifiedContainer.m_fnCopy;
@@ -40,9 +44,6 @@ namespace Duckvil { namespace Memory {
 
         static void free_list_destruct(ftable* _pMemoryInterface, allocator* _pAllocator, SContainer* _pThis)
         {
-            free_list_allocator* _allocator = (free_list_allocator*)_pAllocator;
-            uint32_t _size = fixed_queue_size(_pMemoryInterface, _pThis->m_pContainer) / sizeof(Type);
-
             if(std::is_base_of<SContainer, Type>::value)
             {
                 while(!fixed_queue_empty(_pMemoryInterface, _pThis->m_pContainer))
@@ -65,7 +66,7 @@ namespace Duckvil { namespace Memory {
             }
 
             // _pMemoryInterface->m_fnFreeListFree_(_allocator, _pThis->m_pContainer);
-            free_list_free(_pMemoryInterface, _allocator, _pThis->m_pContainer);
+            free_list_free(_pMemoryInterface, (free_list_allocator*)_pAllocator, _pThis->m_pContainer);
         }
 
     public:
