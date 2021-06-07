@@ -48,7 +48,9 @@ namespace Duckvil { namespace Thread {
 #else
     void pool_worker(pool_data* _pData, const char* _sName)
     {
+#ifdef TRACY_ENABLE
         tracy::SetThreadName(_sName);
+#endif
 
         while(!_pData->m_bTerminate)
         {
