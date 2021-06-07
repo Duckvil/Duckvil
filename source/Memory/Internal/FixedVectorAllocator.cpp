@@ -107,35 +107,13 @@ namespace Duckvil { namespace Memory {
 
     void impl_fixed_vector_erase(ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, uint32_t _uiIndex)
     {
-        uint32_t _newSize = (*_pAllocator)->m_ullCapacity - (*_pAllocator)->m_ullBlockSize;
-        fixed_vector_allocator* _allocator = (fixed_vector_allocator*)free_list_allocate(_pInterface, _pParentAllocator, sizeof(fixed_vector_allocator) + _newSize, alignof(fixed_vector_allocator));
+        memcpy(
+            (uint8_t*)*_pAllocator + sizeof(fixed_vector_allocator) + (_uiIndex * (*_pAllocator)->m_ullBlockSize),
+            (uint8_t*)*_pAllocator + sizeof(fixed_vector_allocator) + ((_uiIndex + 1) * (*_pAllocator)->m_ullBlockSize),
+            (*_pAllocator)->m_ullCapacity - ((_uiIndex + 1) * (*_pAllocator)->m_ullBlockSize)
+        );
 
-        // _allocator->m_pMemory = (uint8_t*)_allocator + sizeof(fixed_vector_allocator);
-        _allocator->m_ullCapacity = _newSize;
-        _allocator->m_ullUsed = (*_pAllocator)->m_ullUsed - (*_pAllocator)->m_ullBlockSize;
-        _allocator->m_ullBlockSize = (*_pAllocator)->m_ullBlockSize;
-
-    // Edge case: if it is the first index we have nothing to copy before it
-        if((_uiIndex + 1) * (*_pAllocator)->m_ullBlockSize > (*_pAllocator)->m_ullBlockSize)
-        {
-            memcpy((uint8_t*)_allocator + sizeof(fixed_vector_allocator), (uint8_t*)(*_pAllocator) + sizeof(fixed_vector_allocator), _uiIndex * (*_pAllocator)->m_ullBlockSize);
-        }
-
-    // Egde case: if it is the last index we have nothing to copy behind it
-        if((_uiIndex + 1) * (*_pAllocator)->m_ullBlockSize < (*_pAllocator)->m_ullCapacity)
-        {
-            memcpy(
-                (uint8_t*)_allocator + sizeof(fixed_vector_allocator) + (_uiIndex * (*_pAllocator)->m_ullBlockSize),
-                (uint8_t*)(*_pAllocator) + sizeof(fixed_vector_allocator) + ((_uiIndex + 1) * (*_pAllocator)->m_ullBlockSize),
-                (*_pAllocator)->m_ullCapacity - ((_uiIndex + 1) * (*_pAllocator)->m_ullBlockSize)
-            );
-        }
-
-        fixed_vector_allocator* _ptr = *_pAllocator;
-
-        *_pAllocator = _allocator;
-
-        _pInterface->m_fnFreeListFree_(_pParentAllocator, _ptr);
+        (*_pAllocator)->m_ullUsed -= (*_pAllocator)->m_ullBlockSize;
     }
 
     void impl_fixed_vector_clear(fixed_vector_allocator* _pAllocator)
