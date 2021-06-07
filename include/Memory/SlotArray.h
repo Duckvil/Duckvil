@@ -75,6 +75,12 @@ _force_inline uint32_t duckvil_slot_array_insert_func(Duckvil::Memory::ftable* _
     DUCKVIL_DYNAMIC_ARRAY_CLEAR(s.m_indices); \
     DUCKVIL_DYNAMIC_ARRAY_CLEAR(s.m_data);
 
+#define DUCKVIL_SLOT_ARRAY_FREE(memory_interface, allocator, s) \
+    DUCKVIL_DYNAMIC_ARRAY_FREE(memory_interface, allocator, s.m_indices); \
+    s.m_indices = nullptr; \
+    DUCKVIL_DYNAMIC_ARRAY_FREE(memory_interface, allocator, s.m_data); \
+    s.m_data = nullptr;
+
 #define DUCKVIL_SLOT_ARRAY_SIZE(s) \
     DUCKVIL_DYNAMIC_ARRAY_SIZE(s.m_data)
 
