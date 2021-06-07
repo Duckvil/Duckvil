@@ -460,7 +460,8 @@ namespace Duckvil { namespace RuntimeReflection {
 
             recursive(_pData, _ast, &_ast.m_main, _file);
 
-            _file << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) << "* _types = new " << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) <<"[_recordedTypes.size()];\n";
+            // _file << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) << "* _types = new " << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) <<"[_recordedTypes.size()];\n";
+            _file << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) << "* _types = (" << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) << "*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _recordedTypes.size() * sizeof(" << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) << "), 8);\n";
             _file << "for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }\n";
             _file << "return duckvil_recorderd_types { _types, _recordedTypes.size(), \"" << _pData->m_sInclude << "\", " << _pData->m_uiRecorderIndex << " };\n";
             _file << "}\n";
