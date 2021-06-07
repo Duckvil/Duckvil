@@ -9,6 +9,8 @@
 #include <utility>
 #include <cstring>
 
+#include "tracy/Tracy.hpp"
+
 namespace Duckvil { namespace Memory {
 
 // Copied Vector will allocate new memory and copy data from which we copied it
@@ -36,6 +38,8 @@ namespace Duckvil { namespace Memory {
 
             _pThis->m_pContainer = (fixed_vector_allocator*)free_list_allocate(_pMemoryInterface, _allocator, sizeof(fixed_vector_allocator) + (sizeof(Type) * _vec.Size()), alignof(fixed_vector_allocator));
 
+            TracyMessageL("Copy vector");
+
             memcpy(_pThis->m_pContainer, _specifiedContainer.m_pContainer, sizeof(fixed_vector_allocator) + (sizeof(Type) * _vec.Size()));
 
             // DUCKVIL_DEBUG_MEMORY(_pThis->m_pContainer, "Copied Vector");
@@ -48,7 +52,6 @@ namespace Duckvil { namespace Memory {
 
         static void free_list_destruct(ftable* _pMemoryInterface, allocator* _pAllocator, SpecifiedContainer<Type, fixed_vector_allocator>* _pThis)
         {
-            free_list_allocator* _allocator = (free_list_allocator*)_pAllocator;
             uint32_t _size = fixed_vector_size(_pMemoryInterface, _pThis->m_pContainer) / sizeof(Type);
 
             if(std::is_base_of<SContainer, Type>::value)
@@ -64,11 +67,11 @@ namespace Duckvil { namespace Memory {
             {
                 for(uint32_t i = 0; i < _size; ++i)
                 {
-                    ((Type*)fixed_vector_at(_pMemoryInterface, _pThis->m_pContainer, i))->~Type();
+                    fixed_vector_erase<Type>(_pMemoryInterface, (free_list_allocator*)_pAllocator, &_pThis->m_pContainer, i);
                 }
             }
 
-            free_list_free(_pMemoryInterface, _allocator, _pThis->m_pContainer);
+            free_list_free(_pMemoryInterface, (free_list_allocator*)_pAllocator, _pThis->m_pContainer);
         }
 
         static void free_list_resize(ftable* _pMemoryInterface, SContainer* _pThis, std::size_t _ullNewSize)
@@ -82,7 +85,7 @@ namespace Duckvil { namespace Memory {
         {
             free_list_allocator* _allocator = (free_list_allocator*)_pThis->m_pAllocator;
 
-            fixed_vector_erase(_pMemoryInterface, _allocator, &_pThis->m_pContainer, _uiIndex);
+            fixed_vector_erase<Type>(_pMemoryInterface, _allocator, &_pThis->m_pContainer, _uiIndex);
         }
 
     public:
