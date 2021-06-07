@@ -4,6 +4,8 @@
 
 #include "PlugNPlay/Module.h"
 
+#include "Memory/Vector.h"
+
 namespace Duckvil { namespace PlugNPlay {
 
     class AutoLoader
@@ -17,6 +19,7 @@ namespace Duckvil { namespace PlugNPlay {
         ~AutoLoader();
 
         void LoadAll(Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, __module_information** _pModules, uint32_t* _pLoaded);
+        void LoadAll(Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, Memory::Vector<__module_information>* _aLoaded);
     };
 
 }}
