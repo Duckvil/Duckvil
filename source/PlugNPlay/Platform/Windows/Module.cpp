@@ -5,12 +5,16 @@
 #include <DbgHelp.h>
 #include <processthreadsapi.h>
 
+#undef max
+#undef min
+
 #include <cstddef>
 
 #include "Utils/Utils.h"
 
 #include "tracy/Tracy.hpp"
 
+#ifdef TRACY_ENABLE
 extern "C"
 {
     static HANDLE dbgHelpLock;
@@ -19,6 +23,7 @@ extern "C"
     void DbgHelpLock() { WaitForSingleObject(dbgHelpLock , INFINITE); }
     void DbgHelpUnlock() { ReleaseMutex(dbgHelpLock); }
 }
+#endif
 
 namespace Duckvil { namespace PlugNPlay { namespace Platform {
 
@@ -35,7 +40,9 @@ namespace Duckvil { namespace PlugNPlay { namespace Platform {
             return false;
         }
 
+#ifdef TRACY_ENABLE
         SymRefreshModuleList(GetCurrentProcess());
+#endif
 
         return true;
     }
