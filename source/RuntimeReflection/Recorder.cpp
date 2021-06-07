@@ -1,5 +1,7 @@
 #include "RuntimeReflection/Recorder.h"
 
+#include "tracy/Tracy.hpp"
+
 namespace Duckvil { namespace RuntimeReflection {
 
     DUCKVIL_RESOURCE(type_t) record_type(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, __data* _pData, std::size_t _ullTypeID, const char* _sTypeName, std::size_t _ullLength)
@@ -10,27 +12,50 @@ namespace Duckvil { namespace RuntimeReflection {
 
             if(_type.m_ullTypeID == _ullTypeID)
             {
+                FrameMarkStart("CleaningOldTypeReflection");
+
                 for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); ++j)
                 {
-                    __function_t _func = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, j);
+                    __function_t& _func = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, j);
 
                     Memory::free_list_free(_pMemoryInterface, _pAllocator, _func.m_pFunction);
-
-                    delete[] _func.m_sFunctionName;
+                    Memory::free_list_free(_pMemoryInterface, _pAllocator, _func.m_sFunctionName);
                 }
 
                 for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantKeys.m_data); ++j)
                 {
-                    __variant_t _variant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, j);
+                    __variant_t& _variant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, j);
 
                     Memory::free_list_free(_pMemoryInterface, _pAllocator, _variant.m_variant.m_pData);
                 }
 
                 for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_variantValues.m_data); ++j)
                 {
-                    __variant_t _variant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantValues, j);
+                    __variant_t& _variant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantValues, j);
 
                     Memory::free_list_free(_pMemoryInterface, _pAllocator, _variant.m_variant.m_pData);
+                }
+
+                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_constructors.m_data); ++j)
+                {
+                    __constructor_t& _constructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_constructors, j);
+
+                    DUCKVIL_SLOT_ARRAY_FREE(_pMemoryInterface, _pAllocator, _constructor.m_arguments);
+                    DUCKVIL_SLOT_ARRAY_FREE(_pMemoryInterface, _pAllocator, _constructor.m_metas);
+                }
+
+                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_properties.m_data); ++j)
+                {
+                    __property_t& _property = DUCKVIL_SLOT_ARRAY_GET(_type.m_properties, j);
+
+                    DUCKVIL_SLOT_ARRAY_FREE(_pMemoryInterface, _pAllocator, _property.m_metas);
+                }
+
+                for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_namespaces.m_data); ++j)
+                {
+                    __namespace_t& _namespace = DUCKVIL_SLOT_ARRAY_GET(_type.m_namespaces, j);
+
+                    Memory::free_list_free(_pMemoryInterface, _pAllocator, _namespace.m_sNamespaceName);
                 }
 
                 DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_constructors);
@@ -41,6 +66,8 @@ namespace Duckvil { namespace RuntimeReflection {
                 DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_variantKeys);
                 DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_variantValues);
                 DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_metas);
+
+                FrameMarkEnd("CleaningOldTypeReflection");
 
                 return _type.m_uiSlotIndex;
             }
@@ -58,7 +85,8 @@ namespace Duckvil { namespace RuntimeReflection {
         _type.m_variantValues = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __variant_t);
         _type.m_metas =         DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __meta_t);
 
-        _type.m_sTypeName = new char[_ullLength];
+        // _type.m_sTypeName = new char[_ullLength];
+        _type.m_sTypeName = (char*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8);
 
         memcpy(_type.m_sTypeName, _sTypeName, _ullLength);
 
@@ -342,7 +370,8 @@ namespace Duckvil { namespace RuntimeReflection {
         _property.m_owner = _owner;
         _property.m_metas = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __meta_t);
 
-        _property.m_sName = new char[_ullLength];
+        // _property.m_sName = new char[_ullLength];
+        _property.m_sName = (char*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8);
 
         memcpy(_property.m_sName, _sName, _ullLength);
 
@@ -358,7 +387,8 @@ namespace Duckvil { namespace RuntimeReflection {
         __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aTypes, _owner.m_ID);
         __namespace_t _namespace = {};
 
-        _namespace.m_sNamespaceName = new char[_ullLength];
+        // _namespace.m_sNamespaceName = new char[_ullLength];
+        _namespace.m_sNamespaceName = (char*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8);
 
         memcpy(_namespace.m_sNamespaceName, _sName, _ullLength);
 
@@ -393,7 +423,8 @@ namespace Duckvil { namespace RuntimeReflection {
         _function.m_ullReturnTypeID = _ullReturnTypeID;
         _function.m_ullArgumentsTypeID = _ullArgumentsTypeID;
 
-        _function.m_sFunctionName = new char[_ullLength];
+        // _function.m_sFunctionName = new char[_ullLength];
+        _function.m_sFunctionName = (char*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8);
 
         memcpy(_function.m_sFunctionName, _sName, _ullLength);
 
