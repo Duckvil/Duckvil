@@ -169,16 +169,21 @@ namespace Duckvil {
 
         _pData->m_pHeap = _pAllocator;
         _pData->m_pMemory = _pMemoryInterface;
-        _pData->m_aLoadedModules = nullptr;
-        _pData->m_uiLoadedModulesCount = 0;
+        // _pData->m_aLoadedModules = nullptr;
+        // _pData->m_uiLoadedModulesCount = 0;
         _pData->m_dOneSecond = 0;
         _pData->m_time = time_init();
         _pData->m_heap = Memory::FreeList(_pData->m_pMemory, _pData->m_pHeap);
+
+        FrameMarkStart("Initializing memory");
 
         _pData->m_heap.Allocate(_pData->m_objectsHeap, 1024);
         _pData->m_heap.Allocate(_pData->m_eventsHeap, 1024 * 4);
         _pData->m_heap.Allocate(_pData->m_aEngineSystems, 1);
         _pData->m_heap.Allocate(_pData->m_aRecordedTypes, 1);
+        _pData->m_heap.Allocate(_pData->m_aLoadedModules, 1);
+
+        FrameMarkEnd("Initializing memory");
 
         DUCKVIL_DEBUG_MEMORY(_pData->m_objectsHeap.GetAllocator(), "m_objectsHeap");
         DUCKVIL_DEBUG_MEMORY(_pData->m_eventsHeap.GetAllocator(), "m_eventsHeap");
@@ -198,13 +203,20 @@ namespace Duckvil {
 
         PlugNPlay::AutoLoader _autoLoader(DUCKVIL_OUTPUT);
 
-        _autoLoader.LoadAll(_pMemoryInterface, _pAllocator, &_pData->m_aLoadedModules, &_pData->m_uiLoadedModulesCount);
+        FrameMarkStart("Loading engine modules");
+
+        // _autoLoader.LoadAll(_pMemoryInterface, _pAllocator, &_pData->m_aLoadedModules, &_pData->m_uiLoadedModulesCount);
+        _autoLoader.LoadAll(_pMemoryInterface, _pAllocator, &_pData->m_aLoadedModules);
+
+        FrameMarkEnd("Loading engine modules");
 
         // DUCKVIL_LOG_INFO_("Modules to load %i", _pData->m_uiLoadedModulesCount);
 
-        for(uint32_t i = 0; i < _pData->m_uiLoadedModulesCount; ++i)
+        FrameMarkStart("Initializing reflection");
+
+        for(uint32_t i = 0; i < _pData->m_aLoadedModules.Size(); ++i)
         {
-            const PlugNPlay::__module_information& _loadedModule = _pData->m_aLoadedModules[i];
+            PlugNPlay::__module_information& _loadedModule = _pData->m_aLoadedModules[i];
             uint32_t (*get_recorder_count)();
             void (*make_current_runtime_reflection_context)(const duckvil_frontend_reflection_context&);
             // void (*make_current_logger_context)(const logger_channel_context&);
@@ -239,12 +251,16 @@ namespace Duckvil {
                     continue;
                 }
 
+                duckvil_recorderd_types _types = record(_pMemoryInterface, _pAllocator, _pData->m_pRuntimeReflectionRecorder, _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
+
+                _types.m_pModule = &_loadedModule;
+
                 if(_pData->m_aRecordedTypes.Full())
                 {
                     _pData->m_aRecordedTypes.Resize(_pData->m_aRecordedTypes.Size() * 2);
                 }
 
-                _pData->m_aRecordedTypes.Allocate(record(_pMemoryInterface, _pAllocator, _pData->m_pRuntimeReflectionRecorder, _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData));
+                _pData->m_aRecordedTypes.Allocate(_types);
             }
 
             if(make_current_runtime_reflection_context != nullptr)
@@ -253,12 +269,14 @@ namespace Duckvil {
             }
         }
 
+        FrameMarkEnd("Initializing reflection");
+
         init_logger(_pData, &_module);
         init_threading(_pData, &_module);
 
         RuntimeReflection::record_meta(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), RuntimeReflection::get_current().m_pRecorder, RuntimeReflection::get_current().m_pReflectionData, RuntimeReflection::get_type<__data>(), "Time", &(_pData->m_timeData));
 
-        for(uint32_t i = 0; i < _pData->m_uiLoadedModulesCount; ++i)
+        for(uint32_t i = 0; i < _pData->m_aLoadedModules.Size(); ++i)
         {
             const PlugNPlay::__module_information& _loadedModule = _pData->m_aLoadedModules[i];
 
@@ -317,6 +335,8 @@ namespace Duckvil {
                 );
 
                 _type.Invoke<const Memory::FreeList&>("SetObjectsHeap", _pData->m_pRuntimeCompiler, _pData->m_objectsHeap);
+                _type.Invoke<Memory::Vector<PlugNPlay::__module_information>*>("SetModules", _pData->m_pRuntimeCompiler, &_pData->m_aLoadedModules);
+                _type.Invoke<Memory::Vector<duckvil_recorderd_types>*>("SetReflectedTypes", _pData->m_pRuntimeCompiler, &_pData->m_aRecordedTypes);
             }
 
             for(uint32_t i = 0; i < _types.Size(); ++i)

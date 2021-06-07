@@ -83,6 +83,9 @@ namespace Duckvil { namespace HotReloader {
         Thread::pool_ftable* m_pThread;
         Thread::pool_data* m_pThreadData;
 
+        Memory::Vector<PlugNPlay::__module_information>* m_aLoadedModules;
+        Memory::Vector<duckvil_recorderd_types>* m_aReflectedTypes;
+
         static void Action(const std::filesystem::path& _file, FileWatcher::FileStatus _status, void* _pUserData)
         {
             user_data* _userData = (user_data*)_pUserData;
@@ -131,6 +134,8 @@ namespace Duckvil { namespace HotReloader {
         void AddHotObject(ITrackKeeper* _pTrackKeeper);
 
         void SetObjectsHeap(const Memory::FreeList& _heap);
+        void SetModules(Memory::Vector<PlugNPlay::__module_information>* _aLoaded);
+        void SetReflectedTypes(Memory::Vector<duckvil_recorderd_types>* _aReflected);
 
         void OnEvent(const RuntimeReflection::TrackedObjectCreatedEvent& _event);
     };

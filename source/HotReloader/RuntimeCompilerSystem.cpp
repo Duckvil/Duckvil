@@ -415,14 +415,23 @@ namespace Duckvil { namespace HotReloader {
         _module.get(_testModule, "duckvil_plugin_make_current_runtime_reflection_context", (void**)&make_current_runtime_reflection_context);
         _module.get(_testModule, "duckvil_plugin_make_current_logger_context", (void**)&make_current_logger_context);
 
+        FrameMarkStart("SetupContexts");
+
         make_current_runtime_reflection_context(RuntimeReflection::get_current());
         make_current_logger_context(logger_get_current());
 
+        FrameMarkEnd("SetupContexts");
+        FrameMarkStart("RecordTypeReflection");
+
         duckvil_recorderd_types _types = record(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), g_duckvilFrontendReflectionContext.m_pRecorder, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData);
+
+        FrameMarkEnd("RecordTypeReflection");
 
         FrameMarkEnd("PrepareForSwap");
         DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Swapping objects");
         FrameMarkStart("Swapping");
+
+        PlugNPlay::__module_information* _moduleToRelease = nullptr;
 
         for(uint32_t i = 0; i < m_aHotObjects.Size(); ++i)
         {
@@ -468,12 +477,47 @@ namespace Duckvil { namespace HotReloader {
                     m_pEventPool->Broadcast(_swapEvent);
 
                     m_objectsHeap.Free(_oldObject);
+
+                    for(size_t k = 0; k < m_aReflectedTypes->Size(); ++k)
+                    {
+                        const duckvil_recorderd_types& _types2 = m_aReflectedTypes->At(k);
+
+                        if(strcmp(_types2.m_sFile, _types.m_sFile) == 0)
+                        {
+                            m_heap.Free(_types2.m_aTypes);
+
+                            // printf("AAAA\n");
+                            _moduleToRelease = _types2.m_pModule;
+
+                            m_aReflectedTypes->Erase(k);
+                            m_aReflectedTypes->Allocate(_types);
+
+                            break;
+                        }
+                    }
                 }
             }
         }
 
         FrameMarkEnd("Swapping");
         DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Swapping objects finished");
+
+        FrameMarkStart("Releasing module");
+
+        if(_moduleToRelease != nullptr)
+        {
+            // TODO: Here we should release global contexts
+
+            void (*free_current_logger_context)();
+
+            _module.get(_testModule, "duckvil_plugin_free_current_logger_context", (void**)&free_current_logger_context);
+
+            // free_current_logger_context();
+
+            _module.free(_moduleToRelease);
+        }
+
+        FrameMarkEnd("Releasing module");
 
         FrameMarkEnd("Compile");
     }
@@ -491,6 +535,16 @@ namespace Duckvil { namespace HotReloader {
     void RuntimeCompilerSystem::SetObjectsHeap(const Memory::FreeList& _heap)
     {
         m_objectsHeap = _heap;
+    }
+
+    void RuntimeCompilerSystem::SetModules(Memory::Vector<PlugNPlay::__module_information>* _aLoaded)
+    {
+        m_aLoadedModules = _aLoaded;
+    }
+
+    void RuntimeCompilerSystem::SetReflectedTypes(Memory::Vector<duckvil_recorderd_types>* _aReflected)
+    {
+        m_aReflectedTypes = _aReflected;
     }
 
     void RuntimeCompilerSystem::OnEvent(const RuntimeReflection::TrackedObjectCreatedEvent& _event)

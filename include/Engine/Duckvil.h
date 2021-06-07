@@ -92,8 +92,9 @@ namespace Duckvil {
         // size_t m_ullRecordedTypesCount;
         Memory::Vector<duckvil_recorderd_types> m_aRecordedTypes;
 
-        PlugNPlay::__module_information* m_aLoadedModules;
-        uint32_t m_uiLoadedModulesCount;
+        // PlugNPlay::__module_information* m_aLoadedModules;
+        // uint32_t m_uiLoadedModulesCount;
+        Memory::Vector<PlugNPlay::__module_information> m_aLoadedModules;
 
         HotReloader::RuntimeCompilerSystem* m_pRuntimeCompiler;
         system::UpdateCallback m_fnRuntimeCompilerUpdate;

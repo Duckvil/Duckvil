@@ -8,6 +8,8 @@
 
 #include "Event/ImmediatePool.h"
 
+#include "PlugNPlay/Module.h"
+
 // Index will be incremented each source file to avoid function name collision
 // Each plugin/__module will be created file which contains total count of recorders
 
@@ -17,6 +19,7 @@ struct duckvil_recorderd_types
     size_t m_ullCount;
     const char* m_sFile;
     uint32_t m_uiRecorderID;
+    Duckvil::PlugNPlay::__module_information* m_pModule;
 };
 
 #define DUCKVIL_META_CAT(...) __VA_ARGS__
