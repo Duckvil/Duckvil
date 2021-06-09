@@ -99,6 +99,7 @@ namespace Duckvil { namespace Memory {
         typedef bool (*_fixed_queue_empty_)(fixed_queue_allocator* _pAllocator);
         typedef bool (*_fixed_queue_full_)(fixed_queue_allocator* _pAllocator);
         typedef void (*_fixed_queue_clear_)(fixed_queue_allocator* _pAllocator);
+        typedef void (*_fixed_queue_resize_)(ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_queue_allocator** _pAllocator, std::size_t _ullNewSize);
         typedef std::size_t (*_fixed_queue_size_)(fixed_queue_allocator* _pAllocator);
         typedef std::size_t (*_fixed_queue_capacity_)(fixed_queue_allocator* _pAllocator);
 
@@ -181,6 +182,7 @@ namespace Duckvil { namespace Memory {
         _fixed_queue_empty_         m_fnFixedQueueEmpty_;
         _fixed_queue_full_          m_fnFixedQueueFull_;
         _fixed_queue_clear_         m_fnFixedQueueClear_;
+        _fixed_queue_resize_        m_fnFixedQueueResize_;
         _fixed_queue_size_          m_fnFixedQueueSize_;
         _fixed_queue_capacity_      m_fnFixedQueueCapacity_;
 

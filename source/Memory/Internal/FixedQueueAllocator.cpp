@@ -2,6 +2,8 @@
 
 #include <cstring>
 
+#include "Memory/FreeListAllocator.h"
+
 namespace Duckvil { namespace Memory {
 
     void* impl_fixed_queue_allocate(fixed_queue_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
@@ -69,6 +71,32 @@ namespace Duckvil { namespace Memory {
         _pAllocator->m_ullHead = 0;
         _pAllocator->m_ullUsed = 0;
         _pAllocator->m_ullTail = 0;
+    }
+
+    void impl_fixed_queue_resize(ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_queue_allocator** _pAllocator, std::size_t _ullNewSize)
+    {
+        if(_pParentAllocator->m_ullCapacity < _ullNewSize + _pParentAllocator->m_ullUsed)
+        {
+            return;
+        }
+
+        fixed_queue_allocator* _allocator = _pInterface->m_fnFreeListAllocateFixedQueueAllocator(_pInterface, _pParentAllocator, _ullNewSize * (*_pAllocator)->m_ullBlockSize, (*_pAllocator)->m_ullBlockSize);
+
+        _allocator->m_ullUsed = (*_pAllocator)->m_ullUsed;
+        _allocator->m_ullTail = (*_pAllocator)->m_ullTail;
+        _allocator->m_ullHead = (*_pAllocator)->m_ullHead;
+
+        memcpy((uint8_t*)_allocator + sizeof(fixed_queue_allocator), (uint8_t*)(*_pAllocator) + sizeof(fixed_queue_allocator), (*_pAllocator)->m_ullUsed);
+
+#ifdef DUCKVIL_MEMORY_DEBUGGER
+        memcpy(_allocator->m_pDebugData->m_aLabel, (*_pAllocator)->m_pDebugData->m_aLabel, 128);
+#endif
+
+        fixed_queue_allocator* _ptr = *_pAllocator;
+
+        *_pAllocator = _allocator;
+
+        free_list_free(_pInterface, _pParentAllocator, _ptr);
     }
 
     std::size_t impl_fixed_queue_size(fixed_queue_allocator* _pAllocator)

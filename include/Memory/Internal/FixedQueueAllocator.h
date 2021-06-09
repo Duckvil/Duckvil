@@ -10,6 +10,7 @@ namespace Duckvil { namespace Memory {
     void impl_fixed_queue_pop(fixed_queue_allocator* _pAllocator);
     bool impl_fixed_queue_empty(fixed_queue_allocator* _pAllocator);
     bool impl_fixed_queue_full(fixed_queue_allocator* _pAllocator);
+    void impl_fixed_queue_resize(ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_queue_allocator** _pAllocator, std::size_t _ullNewSize);
     std::size_t impl_fixed_queue_size(fixed_queue_allocator* _pAllocator);
     std::size_t impl_fixed_queue_capacity(fixed_queue_allocator* _pAllocator);
 

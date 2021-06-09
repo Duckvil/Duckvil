@@ -32,6 +32,11 @@ namespace Duckvil { namespace Memory {
         // return _pAllocator->m_ullUsed == _pAllocator->m_ullCapacity;
     }
 
+    inline void fixed_queue_resize(ftable* _pMemory, free_list_allocator* m_pParentAllocator, fixed_queue_allocator** _pAllocator, std::size_t _ullNewSize)
+    {
+        _pMemory->m_fnFixedQueueResize_(_pMemory, m_pParentAllocator, _pAllocator, _ullNewSize);
+    }
+
     inline std::size_t fixed_queue_size(ftable* _pMemory, fixed_queue_allocator* _pAllocator)
     {
         return _pMemory->m_fnFixedQueueSize_(_pAllocator);
