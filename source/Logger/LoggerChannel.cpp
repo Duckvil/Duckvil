@@ -48,6 +48,11 @@ namespace Duckvil {
             }
             else
             {
+                if(_pData->m_logs.Full())
+                {
+                    _pData->m_logs.Resize(_pData->m_logs.GetSize() * 2);
+                }
+
                 _pData->m_logs.Allocate(_logInfo);
             }
         }
@@ -59,6 +64,11 @@ namespace Duckvil {
             }
             else
             {
+                if(_pData->m_logs.Full())
+                {
+                    _pData->m_logs.Resize(_pData->m_logs.GetSize() * 2);
+                }
+
                 _pData->m_logs.Allocate(_logInfo);
             }
         }
