@@ -96,16 +96,16 @@ namespace Duckvil {
             switch(_logInfo.m_verbosity)
             {
             case __logger_channel_verbosity::__verbosity_info:
-                sprintf(_ppBuffer, "%s %f{ INFO }: %s", _timeStr, _upTime * 0.000000001f, _logInfo.m_sMessage);
+                sprintf(_ppBuffer, "%s %f{ INFO }: %s", _timeStr, _upTime * 0.000000001, _logInfo.m_sMessage);
                 break;
             case __logger_channel_verbosity::__verbosity_warning:
-                sprintf(_ppBuffer, "%s %f{ WARN }: %s", _timeStr, _upTime * 0.000000001f, _logInfo.m_sMessage);
+                sprintf(_ppBuffer, "%s %f{ WARN }: %s", _timeStr, _upTime * 0.000000001, _logInfo.m_sMessage);
                 break;
             case __logger_channel_verbosity::__verbosity_error:
-                sprintf(_ppBuffer, "%s %f{ ERROR }: %s", _timeStr, _upTime * 0.000000001f, _logInfo.m_sMessage);
+                sprintf(_ppBuffer, "%s %f{ ERROR }: %s", _timeStr, _upTime * 0.000000001, _logInfo.m_sMessage);
                 break;
             case __logger_channel_verbosity::__verbosity_fatal:
-                sprintf(_ppBuffer, "%s %f{ FATAL }: %s", _timeStr, _upTime * 0.000000001f, _logInfo.m_sMessage);
+                sprintf(_ppBuffer, "%s %f{ FATAL }: %s", _timeStr, _upTime * 0.000000001, _logInfo.m_sMessage);
                 break;
             }
 
@@ -116,16 +116,16 @@ namespace Duckvil {
             switch(_logInfo.m_verbosity)
             {
             case __logger_channel_verbosity::__verbosity_info:
-                sprintf(_ppBuffer, " %f{ INFO }: %s", _upTime * 0.000000001f, _logInfo.m_sMessage);
+                sprintf(_ppBuffer, " %f{ INFO }: %s", _upTime * 0.000000001, _logInfo.m_sMessage);
                 break;
             case __logger_channel_verbosity::__verbosity_warning:
-                sprintf(_ppBuffer, " %f{ WARN }: %s", _upTime * 0.000000001f, _logInfo.m_sMessage);
+                sprintf(_ppBuffer, " %f{ WARN }: %s", _upTime * 0.000000001, _logInfo.m_sMessage);
                 break;
             case __logger_channel_verbosity::__verbosity_error:
-                sprintf(_ppBuffer, " %f{ ERROR }: %s", _upTime * 0.000000001f, _logInfo.m_sMessage);
+                sprintf(_ppBuffer, " %f{ ERROR }: %s", _upTime * 0.000000001, _logInfo.m_sMessage);
                 break;
             case __logger_channel_verbosity::__verbosity_fatal:
-                sprintf(_ppBuffer, " %f{ FATAL }: %s", _upTime * 0.000000001f, _logInfo.m_sMessage);
+                sprintf(_ppBuffer, " %f{ FATAL }: %s", _upTime * 0.000000001, _logInfo.m_sMessage);
                 break;
             }
         }

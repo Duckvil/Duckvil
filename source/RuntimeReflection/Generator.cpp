@@ -51,15 +51,15 @@ namespace Duckvil { namespace RuntimeReflection {
         const Parser::__ast_entity_constructor* _castedConstructor = (const Parser::__ast_entity_constructor*)_pEntity;
         bool _skip = false;
 
-        if(_pParentEntity->m_structureType == Parser::__ast_structure_type_class && _castedConstructor->m_accessLevel == Parser::__ast_access_not_specified)
+        if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_class && _castedConstructor->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
         {
             _skip = true;
         }
-        else if(_pParentEntity->m_structureType == Parser::__ast_structure_type_struct && _castedConstructor->m_accessLevel == Parser::__ast_access_not_specified)
+        else if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_struct && _castedConstructor->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
         {
             _skip = false;
         }
-        else if(_castedConstructor->m_accessLevel != Parser::__ast_access_public)
+        else if(_castedConstructor->m_accessLevel != Parser::__ast_access::__ast_access_public)
         {
             _skip = true;
         }
@@ -99,15 +99,15 @@ namespace Duckvil { namespace RuntimeReflection {
         const Parser::__ast_entity_variable* _castedVariable = (const Parser::__ast_entity_variable*)_pEntity;
         bool _skip = false;
 
-        if(_pParentEntity->m_structureType == Parser::__ast_structure_type_class && _castedVariable->m_accessLevel == Parser::__ast_access_not_specified)
+        if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_class && _castedVariable->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
         {
             _skip = true;
         }
-        else if(_pParentEntity->m_structureType == Parser::__ast_structure_type_struct && _castedVariable->m_accessLevel == Parser::__ast_access_not_specified)
+        else if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_struct && _castedVariable->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
         {
             _skip = false;
         }
-        else if(_castedVariable->m_accessLevel != Parser::__ast_access_public)
+        else if(_castedVariable->m_accessLevel != Parser::__ast_access::__ast_access_public)
         {
             _skip = true;
         }
@@ -168,15 +168,15 @@ namespace Duckvil { namespace RuntimeReflection {
         const Parser::__ast_entity_callback* _castedCallback = (const Parser::__ast_entity_callback*)_pEntity;
         bool _skip = false;
 
-        if(_pParentEntity->m_structureType == Parser::__ast_structure_type_class && _castedCallback->m_accessLevel == Parser::__ast_access_not_specified)
+        if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_class && _castedCallback->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
         {
             _skip = true;
         }
-        else if(_pParentEntity->m_structureType == Parser::__ast_structure_type_struct && _castedCallback->m_accessLevel == Parser::__ast_access_not_specified)
+        else if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_struct && _castedCallback->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
         {
             _skip = false;
         }
-        else if(_castedCallback->m_accessLevel != Parser::__ast_access_public)
+        else if(_castedCallback->m_accessLevel != Parser::__ast_access::__ast_access_public)
         {
             _skip = true;
         }
@@ -216,15 +216,15 @@ namespace Duckvil { namespace RuntimeReflection {
         const Parser::__ast_entity_function* _castedFunction = (const Parser::__ast_entity_function*)_pEntity;
         bool _skip = false;
 
-        if(_pParentEntity->m_structureType == Parser::__ast_structure_type_class && _castedFunction->m_accessLevel == Parser::__ast_access_not_specified)
+        if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_class && _castedFunction->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
         {
             _skip = true;
         }
-        else if(_pParentEntity->m_structureType == Parser::__ast_structure_type_struct && _castedFunction->m_accessLevel == Parser::__ast_access_not_specified)
+        else if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_struct && _castedFunction->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
         {
             _skip = false;
         }
-        else if(_castedFunction->m_accessLevel != Parser::__ast_access_public)
+        else if(_castedFunction->m_accessLevel != Parser::__ast_access::__ast_access_public)
         {
             _skip = true;
         }

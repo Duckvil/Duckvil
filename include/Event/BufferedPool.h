@@ -40,7 +40,7 @@ namespace Duckvil { namespace Event {
 
         }
 
-        Pool& operator=(Pool&& _pool)
+        Pool& operator=(Pool&& _pool) noexcept
         {
             if(&_pool == this)
             {

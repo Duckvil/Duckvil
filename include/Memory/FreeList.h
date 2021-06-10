@@ -75,7 +75,7 @@ namespace Duckvil { namespace Memory {
             return *this;
         }
 
-        FreeList& operator=(FreeList&& _freeList)
+        FreeList& operator=(FreeList&& _freeList) noexcept
         {
             m_pMemory = std::move(_freeList.m_pMemory);
             m_pContainer = std::move(_freeList.m_pContainer);

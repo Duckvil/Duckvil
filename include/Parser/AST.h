@@ -8,7 +8,7 @@
 
 namespace Duckvil { namespace Parser {
 
-    enum __ast_entity_type
+    enum class __ast_entity_type : uint8_t
     {
         __ast_entity_type_function,
         __ast_entity_type_constructor,
@@ -21,30 +21,39 @@ namespace Duckvil { namespace Parser {
         __ast_entity_type_main,
         __ast_entity_type_typedef,
         __ast_entity_type_callback_typedef,
-        __ast_entity_type_define
+        __ast_entity_type_define,
+        __ast_entity_type_undefined
     };
 
-    enum __ast_structure_type
+    enum class __ast_structure_type : uint8_t
     {
         __ast_structure_type_class,
-        __ast_structure_type_struct
+        __ast_structure_type_struct,
+        __ast_structure_type_undefined
     };
 
-    enum __ast_access
+    enum class __ast_access : uint8_t
     {
         __ast_access_public,
         __ast_access_protected,
         __ast_access_private,
-        __ast_access_not_specified
+        __ast_access_not_specified,
+        __ast_access_undefined
     };
 
-    enum __ast_flags : uint8_t
+    enum class __ast_flags : uint8_t
     {
+        __ast_flags_undefined,
         __ast_flags_static = 1 << 0,
         __ast_flags_const = 1 << 1,
         __ast_flags_inline = 1 << 2,
         __ast_flags_virtual = 1 << 3
     };
+
+    inline bool operator&(const __ast_flags& _left, const __ast_flags& _right)
+    {
+        return static_cast<uint8_t>(_left) & static_cast<uint8_t>(_right);
+    }
 
     struct __ast_inheritance
     {
@@ -74,7 +83,7 @@ namespace Duckvil { namespace Parser {
         __ast_entity(__ast_entity_type _scopeType = __ast_entity_type::__ast_entity_type_main) :
             m_scopeType(_scopeType)
         {
-
+            m_pParentScope = nullptr;
         }
 
         __ast_entity_type m_scopeType;
@@ -112,7 +121,7 @@ namespace Duckvil { namespace Parser {
         __ast_entity_variable(__ast_entity_type _entityType = __ast_entity_type::__ast_entity_type_variable) :
             __ast_entity_argument(_entityType)
         {
-
+            m_accessLevel = __ast_access::__ast_access_undefined;
         }
 
         __ast_access m_accessLevel;
@@ -161,7 +170,7 @@ namespace Duckvil { namespace Parser {
         __ast_entity_callable(__ast_entity_type _entityType) :
             __ast_entity(_entityType)
         {
-
+            m_accessLevel = __ast_access::__ast_access_undefined;
         }
 
         std::vector<__ast_entity_argument> m_aArguments;
@@ -224,7 +233,7 @@ namespace Duckvil { namespace Parser {
         __ast_entity_function() :
             __ast_entity_callable(__ast_entity_type::__ast_entity_type_function)
         {
-            
+            m_flags = __ast_flags::__ast_flags_undefined;
         }
 
         std::string m_sName;

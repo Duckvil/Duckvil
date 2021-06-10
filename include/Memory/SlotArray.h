@@ -11,7 +11,6 @@
     { \
         DUCKVIL_DYNAMIC_ARRAY(uint32_t) m_indices = nullptr; \
         DUCKVIL_DYNAMIC_ARRAY(t) m_data = nullptr; \
-        t m_tmp; \
     }; \
     static inline __duckvil_slot_array_##t duckvil_slot_array_##t##_new(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator) \
     { \
@@ -96,9 +95,7 @@ _force_inline uint32_t duckvil_slot_array_insert_func(Duckvil::Memory::ftable* _
 template <typename A, typename B>
 static inline uint32_t duckvil_slot_array_insert(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, A& _slotArray, B _value)
 {
-    _slotArray.m_tmp = _value;
-
-    return duckvil_slot_array_insert_func(_pMemoryInterface, _pAllocator, (void**)&(_slotArray.m_indices), (void**)&(_slotArray.m_data), &_slotArray.m_tmp, sizeof(_slotArray.m_tmp), nullptr);
+    return duckvil_slot_array_insert_func(_pMemoryInterface, _pAllocator, (void**)&(_slotArray.m_indices), (void**)&(_slotArray.m_data), &_value, sizeof(B), nullptr);
 }
 
 template <typename A>

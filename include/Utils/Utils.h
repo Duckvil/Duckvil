@@ -88,7 +88,7 @@ namespace Duckvil { namespace Utils {
             return *this;
         }
 
-        string& operator=(string&& _string)
+        string& operator=(string&& _string) noexcept
         {
             if(&_string == this)
             {

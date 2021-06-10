@@ -70,7 +70,7 @@ namespace Duckvil { namespace Editor {
 
     void ConsoleWidget::OnEvent(const __logger_channel_log_info& _event)
     {
-        if(!(_event.m_pOwner->m_flags & __logger_flags_editor_console_output))
+        if(!(_event.m_pOwner->m_flags & __logger_channel_flags::__logger_flags_editor_console_output))
         {
             return;
         }

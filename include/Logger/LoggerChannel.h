@@ -23,7 +23,7 @@
 
 namespace Duckvil {
 
-    enum __logger_channel_verbosity : uint8_t
+    enum class __logger_channel_verbosity : uint8_t
     {
         __verbosity_info,
         __verbosity_warning,
@@ -31,17 +31,37 @@ namespace Duckvil {
         __verbosity_fatal
     };
 
-    enum __logger_channel_log_flags : uint8_t
+    enum class __logger_channel_log_flags : uint8_t
     {
         __flags_immediate_log = 1 << 0
     };
 
-    enum __logger_channel_flags : uint8_t
+    enum class __logger_channel_flags : uint8_t
     {
         __logger_flags_file_output = 1 << 0,
         __logger_flags_console_output = 1 << 1,
         __logger_flags_editor_console_output = 1 << 2
     };
+
+    inline bool operator&(const __logger_channel_log_flags& _left, const __logger_channel_log_flags& _right)
+    {
+        return static_cast<uint8_t>(_left) & static_cast<uint8_t>(_right);
+    }
+
+    inline bool operator&(const __logger_channel_flags& _left, const __logger_channel_flags& _right)
+    {
+        return static_cast<uint8_t>(_left) & static_cast<uint8_t>(_right);
+    }
+
+    inline __logger_channel_log_flags operator|(const __logger_channel_log_flags& _left, const __logger_channel_log_flags& _right)
+    {
+        return static_cast<__logger_channel_log_flags>(static_cast<uint8_t>(_left) | static_cast<uint8_t>(_right));
+    }
+
+    inline __logger_channel_flags operator|(const __logger_channel_flags& _left, const __logger_channel_flags& _right)
+    {
+        return static_cast<__logger_channel_flags>(static_cast<uint8_t>(_left) | static_cast<uint8_t>(_right));
+    }
 
     struct __logger_channel_data;
 
@@ -49,7 +69,10 @@ namespace Duckvil {
     {
         __logger_channel_log_info()
         {
-
+            m_uiLine = 0;
+            m_verbosity = __logger_channel_verbosity::__verbosity_info;
+            _flags = __logger_channel_log_flags::__flags_immediate_log;
+            m_pOwner = nullptr;
         }
 
         template <std::size_t Length, std::size_t Length2>
@@ -79,8 +102,8 @@ namespace Duckvil {
         }
 
         uint32_t m_uiLine;
-        char m_sFile[DUCKVIL_LOGGER_PATH_LENGTH_MAX];
-        char m_sMessage[DUCKVIL_LOGGER_MESSAGE_LENGTH_MAX];
+        char m_sFile[DUCKVIL_LOGGER_PATH_LENGTH_MAX] = { 0 };
+        char m_sMessage[DUCKVIL_LOGGER_MESSAGE_LENGTH_MAX] = { 0 };
         __logger_channel_verbosity m_verbosity;
         __logger_channel_log_flags _flags;
         std::time_t m_time;

@@ -97,7 +97,7 @@ namespace Duckvil {
             { 
                 _outLog.c_str(),
                 _outLog.length(),
-                (__logger_channel_flags)(__logger_flags_console_output | __logger_flags_file_output | __logger_flags_editor_console_output)
+                __logger_channel_flags::__logger_flags_console_output | __logger_channel_flags::__logger_flags_file_output | __logger_channel_flags::__logger_flags_editor_console_output
             },
             LoggerChannelID::Default
         );
