@@ -65,19 +65,19 @@ namespace Duckvil { namespace Memory {
         return _pMemory->m_fnFixedVectorCapacity_(_pAllocator);
     }
 
-    static void fixed_vector_erase(ftable* _pMemory, free_list_allocator* m_pParentAllocator, fixed_vector_allocator** _pAllocator, uint32_t _uiIndex)
+    static void fixed_vector_erase(ftable* _pMemory, fixed_vector_allocator* _pAllocator, uint32_t _uiIndex)
     {
-        _pMemory->m_fnFixedVectorErase_(_pMemory, m_pParentAllocator, _pAllocator, _uiIndex);
+        _pMemory->m_fnFixedVectorErase_(_pAllocator, _uiIndex);
     }
 
     template <typename Type>
-    static void fixed_vector_erase(ftable* _pMemory, free_list_allocator* m_pParentAllocator, fixed_vector_allocator** _pAllocator, uint32_t _uiIndex)
+    static void fixed_vector_erase(ftable* _pMemory, fixed_vector_allocator* _pAllocator, uint32_t _uiIndex)
     {
-        Type* _object = fixed_vector_at<Type>(_pMemory, *_pAllocator, _uiIndex);
+        Type* _object = fixed_vector_at<Type>(_pMemory, _pAllocator, _uiIndex);
 
         _object->~Type();
 
-        _pMemory->m_fnFixedVectorErase_(_pMemory, m_pParentAllocator, _pAllocator, _uiIndex);
+        _pMemory->m_fnFixedVectorErase_(_pAllocator, _uiIndex);
     }
 
     static void fixed_vector_clear(ftable* _pMemory, fixed_vector_allocator* _pAllocator)

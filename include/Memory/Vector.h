@@ -67,7 +67,7 @@ namespace Duckvil { namespace Memory {
             {
                 for(uint32_t i = 0; i < _size; ++i)
                 {
-                    fixed_vector_erase<Type>(_pMemoryInterface, (free_list_allocator*)_pAllocator, &_pThis->m_pContainer, i);
+                    fixed_vector_erase<Type>(_pMemoryInterface, _pThis->m_pContainer, i);
                 }
             }
 
@@ -83,9 +83,7 @@ namespace Duckvil { namespace Memory {
 
         static void free_list_erase(ftable* _pMemoryInterface, SContainer* _pThis, uint32_t _uiIndex)
         {
-            free_list_allocator* _allocator = (free_list_allocator*)_pThis->m_pAllocator;
-
-            fixed_vector_erase<Type>(_pMemoryInterface, _allocator, &_pThis->m_pContainer, _uiIndex);
+            fixed_vector_erase<Type>(_pMemoryInterface, _pThis->m_pContainer, _uiIndex);
         }
 
     public:

@@ -105,15 +105,15 @@ namespace Duckvil { namespace Memory {
         free_list_free(_pInterface, _pParentAllocator, _ptr);
     }
 
-    void impl_fixed_vector_erase(ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, uint32_t _uiIndex)
+    void impl_fixed_vector_erase(fixed_vector_allocator* _pAllocator, uint32_t _uiIndex)
     {
         memcpy(
-            (uint8_t*)*_pAllocator + sizeof(fixed_vector_allocator) + (_uiIndex * (*_pAllocator)->m_ullBlockSize),
-            (uint8_t*)*_pAllocator + sizeof(fixed_vector_allocator) + ((_uiIndex + 1) * (*_pAllocator)->m_ullBlockSize),
-            (*_pAllocator)->m_ullCapacity - ((_uiIndex + 1) * (*_pAllocator)->m_ullBlockSize)
+            (uint8_t*)_pAllocator + sizeof(fixed_vector_allocator) + (_uiIndex * _pAllocator->m_ullBlockSize),
+            (uint8_t*)_pAllocator + sizeof(fixed_vector_allocator) + ((_uiIndex + 1) * _pAllocator->m_ullBlockSize),
+            _pAllocator->m_ullCapacity - ((_uiIndex + 1) * _pAllocator->m_ullBlockSize)
         );
 
-        (*_pAllocator)->m_ullUsed -= (*_pAllocator)->m_ullBlockSize;
+        _pAllocator->m_ullUsed -= _pAllocator->m_ullBlockSize;
     }
 
     void impl_fixed_vector_clear(fixed_vector_allocator* _pAllocator)

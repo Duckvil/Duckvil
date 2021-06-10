@@ -129,7 +129,7 @@ namespace Duckvil { namespace Memory {
         typedef void (*_fixed_vector_resize_)(ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, std::size_t _ullNewSize);
         typedef std::size_t (*_fixed_vector_size_)(fixed_vector_allocator* _pAllocator);
         typedef std::size_t (*_fixed_vector_capacity_)(fixed_vector_allocator* _pAllocator);
-        typedef void (*_fixed_vector_erase_)(ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, uint32_t _uiIndex);
+        typedef void (*_fixed_vector_erase_)(fixed_vector_allocator* _pAllocator, uint32_t _uiIndex);
 
         typedef bool (*_byte_buffer_will_fit)(byte_buffer_allocator* _pAllocator, std::size_t _ullSize);
         typedef void (*_byte_buffer_clear)(byte_buffer_allocator* _pAllocator);
