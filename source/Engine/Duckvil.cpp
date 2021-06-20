@@ -137,7 +137,61 @@ namespace Duckvil {
 
         _pData->m_pRenderer = init();
 
+        _pData->m_pRendererData.m_ecs = &_pData->m_ecs;
+
         _pData->m_pRenderer->m_fnInit(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pWindow, &_pData->m_pRendererData);
+
+        glm::vec3 _vertices[] =
+        {
+            glm::vec3(-0.5, -0.5, 0),
+            glm::vec3(0, 0.5, 0),
+            glm::vec3(0.5, -0.5, 0)
+        };
+
+        glm::vec2 _texCoords[] =
+        {
+            glm::vec2(0, 0),
+            glm::vec2(0.5, 1),
+            glm::vec2(1, 0)
+        };
+
+        uint32_t _indices[] =
+        {
+            0, 1, 2
+        };
+
+        Graphics::Renderer::vertex_buffer_object_descriptor _desc[] =
+        {
+            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _vertices, 3),
+            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _texCoords, 2),
+            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ELEMENT_ARRAY_BUFFER, _indices)
+        };
+
+        ecs_os_set_api_defaults();
+
+        for(uint32_t i = 0; i < 200; ++i)
+        {
+            _pData->m_ecs.entity().set([_pData, &_desc, i](Graphics::MeshComponent& _mesh, Graphics::TransformComponent& _transform)
+            {
+                _mesh.m_uiID = _pData->m_pRenderer->m_fnCreateVAO(
+                    _pData->m_pMemory,
+                    _pData->m_pHeap,
+                    &_pData->m_pRendererData,
+                    Graphics::Renderer::vertex_array_object_descriptor
+                    {
+                        3,
+                        _desc,
+                        3
+                    }
+                );
+
+                _transform.m_position = glm::vec3(0, 0, i * 2);
+                _transform.m_rotation = glm::quat(0, 0, 0, 1);
+                _transform.m_scale = glm::vec3(1, 1, 1);
+            });
+        }
+
+        _pData->m_rendererQuery = _pData->m_ecs.query<Graphics::TransformComponent>();
 
         return true;
     }
@@ -155,6 +209,8 @@ namespace Duckvil {
         _pData->m_pEditor = init();
 
         _pData->m_pEditorData = (Editor::ImGuiEditorData*)_pData->m_pEditor->m_fnInit(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _pData->m_pWindow, _pData->m_pRenderer, &_pData->m_pRendererData);
+
+        _pData->m_pEditorData->m_pECS = &_pData->m_ecs;
 
         _pData->m_pEditor->m_fnSetWindowEventPool(_pData->m_pEditorData, &_pData->m_windowEventPool);
 
@@ -573,6 +629,11 @@ namespace Duckvil {
 
             _pData->m_dOneSecond = 0.0;
         }
+
+        _pData->m_rendererQuery.each([_delta](Graphics::TransformComponent& _transform)
+        {
+            _transform.m_rotation = _transform.m_rotation * glm::angleAxis((float)_delta, glm::vec3(1, 0, 0));
+        });
 
         _pData->m_pRenderer->m_fnUpdate(_pData->m_pMemory, &_pData->m_pRendererData);
 

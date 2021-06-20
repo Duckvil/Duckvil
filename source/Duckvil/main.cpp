@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
     Duckvil::Memory::free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(_mainMemoryAllocator, 500 * 1024);
 
     Duckvil::__ftable* _engine = duckvil_init();
-    Duckvil::__data _engineData = {};
+    Duckvil::__data _engineData = { .m_ecs = flecs::world() };
 
     _engine->init(&_engineData, _memoryInterface, _free_list);
 

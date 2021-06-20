@@ -51,6 +51,8 @@ namespace Duckvil { namespace Editor {
 
         bool m_bSkip = false;
 
+        flecs::world* m_pECS;
+
     public:
         ViewportWidget();
         ViewportWidget(const Memory::FreeList& _heap);
@@ -64,6 +66,7 @@ namespace Duckvil { namespace Editor {
 
         void SetRenderer(Graphics::Renderer::renderer_ftable* _pRenderer, Graphics::Renderer::renderer_data* _pRendererData);
         void SetEventPool(Event::Pool<Event::mode::buffered>* _pEventPool);
+        void SetECS(flecs::world* _pECS);
     };
 
 }}

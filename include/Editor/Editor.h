@@ -38,6 +38,8 @@ namespace Duckvil { namespace Editor {
 
         Event::Pool<Event::mode::buffered>* m_pWindowEventPool;
 
+        flecs::world* m_pECS;
+
         // Store viewports, and retrieve them
     };
 

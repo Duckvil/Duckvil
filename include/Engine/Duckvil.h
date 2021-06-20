@@ -48,6 +48,8 @@
 
 #include "Editor/Viewport.h"
 
+#include "flecs/flecs.h"
+
 namespace Duckvil {
 
     struct system
@@ -124,6 +126,10 @@ namespace Duckvil {
 
         Graphics::Renderer::renderer_ftable* m_pRenderer;
         Graphics::Renderer::renderer_data m_pRendererData;
+
+        flecs::world m_ecs;
+
+        flecs::query<Graphics::TransformComponent> m_rendererQuery;
     };
 
     struct __ftable

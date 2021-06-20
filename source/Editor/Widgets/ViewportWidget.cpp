@@ -120,7 +120,8 @@ namespace Duckvil { namespace Editor {
                 m_heap.GetMemoryInterface(),
                 m_heap.GetAllocator(),
                 m_pRenderer,
-                m_pRendererData
+                m_pRendererData,
+                m_pECS
             );
 
             m_bSkip = true;
@@ -165,6 +166,11 @@ namespace Duckvil { namespace Editor {
     void ViewportWidget::SetEventPool(Event::Pool<Event::mode::buffered>* _pEventPool)
     {
         m_pWindowEventPool = _pEventPool;
+    }
+
+    void ViewportWidget::SetECS(flecs::world* _pECS)
+    {
+        m_pECS = _pECS;
     }
 
 }}

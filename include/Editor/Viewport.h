@@ -9,21 +9,27 @@
 
 #include "stb/stb_image.h"
 
+#include "flecs/flecs.h"
+
+#include "Graphics/MeshComponent.h"
+#include "Graphics/TransformComponent.h"
+
 namespace Duckvil { namespace Editor {
 
     struct viewport
     {
         uint32_t m_shaderID;
-        uint32_t m_meshID;
         uint32_t m_fbo;
         uint32_t m_fboTextureObject;
         uint32_t m_textureID;
         uint32_t m_transformID;
-        glm::mat4 m_transform;
         glm::mat4 m_projection;
         glm::mat4 m_view;
         glm::quat m_rotation;
         glm::vec3 m_position;
+
+        flecs::world* m_ecs;
+        flecs::query<Graphics::MeshComponent, Graphics::TransformComponent> m_rendererQuery;
     };
 
     static void setup_viewport(
@@ -31,8 +37,13 @@ namespace Duckvil { namespace Editor {
         Memory::ftable* _pMemory,
         Memory::free_list_allocator* _pAllocator,
         Graphics::Renderer::renderer_ftable* _pRenderer,
-        Graphics::Renderer::renderer_data* _pRendererData)
+        Graphics::Renderer::renderer_data* _pRendererData,
+        flecs::world* _pECS)
     {
+        ecs_os_set_api_defaults();
+
+        _pViewport->m_ecs = _pECS;
+
         _pViewport->m_shaderID =
             _pRenderer->m_fnCreateShader(
                 _pMemory,
@@ -68,17 +79,7 @@ namespace Duckvil { namespace Editor {
             Graphics::Renderer::vertex_buffer_object_descriptor(GL_ELEMENT_ARRAY_BUFFER, _indices)
         };
 
-        _pViewport->m_meshID = _pRenderer->m_fnCreateVAO(
-            _pMemory,
-            _pAllocator,
-            _pRendererData,
-            Graphics::Renderer::vertex_array_object_descriptor
-            {
-                3,
-                _desc,
-                3
-            }
-        );
+        _pViewport->m_rendererQuery = _pECS->query<Graphics::MeshComponent, Graphics::TransformComponent>();
 
         GLfloat _filtes[1] = { GL_LINEAR };
         void* _data[1] = { 0 };
@@ -143,7 +144,6 @@ namespace Duckvil { namespace Editor {
                 "transform"
             );
 
-        _pViewport->m_transform = glm::translate(glm::vec3(0, 0, 0)) * glm::toMat4(glm::quat(0, 0, 0, 1)) * glm::scale(glm::vec3(1, 1, 1));
         _pViewport->m_projection = glm::perspective(70.f, 1920.f / 1080.f, 0.1f, 1000.f);
 
         _pViewport->m_position = glm::vec3(0, 0, -5);
@@ -160,11 +160,25 @@ namespace Duckvil { namespace Editor {
         Graphics::Renderer::bind_framebuffer(_pMemory, _pRendererData, _pViewport->m_fbo);
         Graphics::Renderer::viewport(_pMemory, _pRendererData, 1920, 1080);
         Graphics::Renderer::clear_color(_pMemory, _pRendererData, glm::vec4(0, 0, 0, 1));
-        Graphics::Renderer::clear(_pMemory, _pRendererData, GL_COLOR_BUFFER_BIT);
+        Graphics::Renderer::clear(_pMemory, _pRendererData, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         Graphics::Renderer::bind_shader(_pMemory, _pRendererData, _pViewport->m_shaderID);
-        Graphics::Renderer::set_uniform(_pMemory, _pRendererData, _pViewport->m_transformID, _pViewport->m_projection * glm::lookAt(_pViewport->m_position, _pViewport->m_position + (_pViewport->m_rotation * glm::vec3(0, 0, 1)), (_pViewport->m_rotation * glm::vec3(0, 1, 0))) * _pViewport->m_transform);
-        Graphics::Renderer::bind_texture(_pMemory, _pRendererData, _pViewport->m_textureID, 0);
-        Graphics::Renderer::draw(_pMemory, _pRendererData, _pViewport->m_meshID);
+
+        _pViewport->m_rendererQuery.each([_pViewport, _pMemory, _pRendererData](const Graphics::MeshComponent& _mesh, const Graphics::TransformComponent& _transform)
+        {
+            glm::mat4 _model = glm::translate(_transform.m_position) * glm::toMat4(_transform.m_rotation) * glm::scale(_transform.m_scale);
+
+            Graphics::Renderer::bind_texture(_pMemory, _pRendererData, _pViewport->m_textureID, 0);
+            Graphics::Renderer::set_uniform(
+                _pMemory,
+                _pRendererData,
+                _pViewport->m_transformID,
+                _pViewport->m_projection * glm::lookAt(
+                    _pViewport->m_position,
+                    _pViewport->m_position + (_pViewport->m_rotation * glm::vec3(0, 0, 1)),
+                    (_pViewport->m_rotation * glm::vec3(0, 1, 0))) * _model
+            );
+            Graphics::Renderer::draw(_pMemory, _pRendererData, _mesh.m_uiID);
+        });
     }
 
 }}

@@ -12,6 +12,8 @@
 
 #include "glm/glm.hpp"
 
+#include "flecs/flecs.h"
+
 #define DUCKVIL_RENDERER_PUSH_COMMAND(memory, allocator, cb, op_code, ...) \
     Duckvil::Graphics::Renderer::command_buffer_write(memory, allocator, cb, op_code); \
     __VA_ARGS__ \
@@ -148,6 +150,8 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
 
         command_buffer m_pCommandBuffer;
         Memory::free_list_allocator* m_pAllocator;
+
+        flecs::world* m_ecs;
     };
 
     struct renderer_ftable
