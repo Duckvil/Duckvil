@@ -94,6 +94,33 @@ namespace Duckvil { namespace RuntimeReflection {
         }
     }
 
+    void generate_destructor(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
+    {
+        const Parser::__ast_entity_destructor* _castedDestructor = (const Parser::__ast_entity_destructor*)_pEntity;
+        bool _skip = false;
+
+        if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_class && _castedDestructor->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
+        {
+            _skip = true;
+        }
+        else if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_struct && _castedDestructor->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
+        {
+            _skip = false;
+        }
+        else if(_castedDestructor->m_accessLevel != Parser::__ast_access::__ast_access_public)
+        {
+            _skip = true;
+        }
+
+        _file << "_destructor = record_destructor<" + _sNamespace + _pParentEntity->m_sName;
+        _file << ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);\n";
+
+        for(const Parser::__ast_meta& _meta : _castedDestructor->m_aMeta)
+        {
+            _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _destructor, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+        }
+    }
+
     void generate_variable(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
         const Parser::__ast_entity_variable* _castedVariable = (const Parser::__ast_entity_variable*)_pEntity;
@@ -370,6 +397,9 @@ namespace Duckvil { namespace RuntimeReflection {
             case Parser::__ast_entity_type::__ast_entity_type_constructor:
                 generate_constructor(_ast, _ent, _casted, _file, _additionalNamespace);
                 break;
+            case Parser::__ast_entity_type::__ast_entity_type_destructor:
+                generate_destructor(_ast, _ent, _casted, _file, _additionalNamespace);
+                break;
             case Parser::__ast_entity_type::__ast_entity_type_function:
                 generate_function(_ast, _ent, _casted, _file, _additionalNamespace);
                 break;
@@ -456,6 +486,7 @@ namespace Duckvil { namespace RuntimeReflection {
             _file << "DUCKVIL_RESOURCE(type_t) _type;\n";
             _file << "DUCKVIL_RESOURCE(property_t) _property;\n";
             _file << "DUCKVIL_RESOURCE(constructor_t) _constructor;\n";
+            _file << "DUCKVIL_RESOURCE(destructor_t) _destructor;\n";
             _file << "std::vector<" << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) << "> _recordedTypes;\n";
 
             recursive(_pData, _ast, &_ast.m_main, _file);
