@@ -144,6 +144,12 @@ namespace Duckvil { namespace Memory {
         }
 
         template <typename Type>
+        Type* Allocate(std::size_t _ullCount) const
+        {
+            return m_pMemory->m_fnFreeListAllocate_(m_pContainer, sizeof(Type) * _ullCount, 8);
+        }
+
+        template <typename Type>
         void Free(Vector<Type>& _container)
         {
             _container.~Vector<Type>();
@@ -152,6 +158,14 @@ namespace Duckvil { namespace Memory {
         void Free(void* _pData)
         {
             m_pMemory->m_fnFreeListFree_(m_pContainer, _pData);
+        }
+
+        template <typename Type>
+        void Free(Type* _pObject)
+        {
+            _pObject->~Type();
+
+            m_pMemory->m_fnFreeListFree_(m_pContainer, _pObject);
         }
 
         ftable* GetMemoryInterface() const
