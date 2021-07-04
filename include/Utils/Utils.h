@@ -57,6 +57,12 @@ namespace Duckvil { namespace Utils {
 
         }
 
+        string(const std::string& _sText, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
+            string(_sText.c_str(), _sText.size() + 1, _pMemory, _pAllocator)
+        {
+
+        }
+
         ~string()
         {
             if(m_ullLength == 0)
@@ -117,7 +123,31 @@ namespace Duckvil { namespace Utils {
 
             return *this;
         }
+
+        char& operator[](int _iAt)
+        {
+            return m_sText[_iAt];
+        }
+
+        char operator[](int _iAt) const
+        {
+            return m_sText[_iAt];
+        }
     };
+
+    static inline string operator+(const string& _sText, const string& _sText2)
+    {
+        string _res = { };
+
+        _res.m_ullLength = _sText.m_ullLength - 1 + _sText2.m_ullLength - 1 + 1;
+
+        allocate(&_res, _res.m_ullLength);
+
+        memcpy(_res.m_sText, _sText.m_sText, _sText.m_ullLength - 1);
+        memcpy((uint8_t*)_res.m_sText + _sText.m_ullLength - 1, _sText2.m_sText, _sText2.m_ullLength - 1);
+
+        return _res;
+    }
 
     static inline bool operator==(const string& _lhs, const string& _rhs);
 
