@@ -12,6 +12,7 @@ namespace Duckvil { namespace Parser {
     {
         __ast_entity_type_function,
         __ast_entity_type_constructor,
+        __ast_entity_type_destructor,
         __ast_entity_type_callback,
         __ast_entity_type_namespace,
         __ast_entity_type_structure,
@@ -226,6 +227,15 @@ namespace Duckvil { namespace Parser {
         }
 
         std::vector<__ast_template> m_aTemplates;
+    };
+
+    struct __ast_entity_destructor : public __ast_entity_callable
+    {
+        __ast_entity_destructor() :
+            __ast_entity_callable(__ast_entity_type::__ast_entity_type_destructor)
+        {
+
+        }
     };
 
     struct __ast_entity_function : public __ast_entity_callable

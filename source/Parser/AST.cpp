@@ -1595,6 +1595,24 @@ namespace Duckvil { namespace Parser {
             }
             else if(_token == "~")
             {
+                __ast_entity_destructor* _scope = nullptr;
+
+                if(_pAST->m_pPendingScope != nullptr)
+                {
+                    _scope = (__ast_entity_destructor*)_pAST->m_pPendingScope;
+                }
+                else
+                {
+                    _scope = new __ast_entity_destructor();
+                }
+
+                _scope->m_pParentScope = _pAST->m_pCurrentScope;
+                _scope->m_accessLevel = _pAST->m_currentAccess;
+
+                _pAST->m_pCurrentScope->m_aScopes.push_back(_scope);
+
+                // skip_body(_pLexer, &_lexerData, _token);
+
                 uint32_t _mustacheBrackets = 0;
                 bool _end = false;
 
