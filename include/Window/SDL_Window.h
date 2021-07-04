@@ -20,6 +20,8 @@ namespace Duckvil { namespace Window {
 
         Event::Pool<Event::mode::buffered>* m_pEvents;
 
+        void (*m_fnProcessEvents)(void* _pData);
+
     public:
         WindowSDL(Event::Pool<Event::mode::buffered>* _pEventsPool);
         ~WindowSDL();
@@ -31,6 +33,8 @@ namespace Duckvil { namespace Window {
         void* GetContext() const override;
 
         void SetMousePosition(int _iX, int _iY) override;
+
+        void SetProcessEventsCallback(void (*_fnProcessEvents)(void* _pData)) override;
     };
 
 }}

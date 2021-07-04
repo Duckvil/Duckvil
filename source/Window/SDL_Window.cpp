@@ -51,6 +51,8 @@ namespace Duckvil { namespace Window {
 
         while(SDL_PollEvent(&_event))
         {
+            m_fnProcessEvents(&_event);
+
             switch(_event.type)
             {
             case SDL_QUIT:
@@ -127,6 +129,11 @@ namespace Duckvil { namespace Window {
     void WindowSDL::SetMousePosition(int _iX, int _iY)
     {
         SDL_WarpMouseInWindow((SDL_Window*)m_pWindow, _iX, _iY);
+    }
+
+    void WindowSDL::SetProcessEventsCallback(void (*_fnProcessEvents)(void* _pData))
+    {
+        m_fnProcessEvents = _fnProcessEvents;
     }
 
 }}
