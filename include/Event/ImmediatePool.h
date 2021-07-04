@@ -310,6 +310,20 @@ namespace Duckvil { namespace Event {
         }
 
         template <typename Message>
+        void Broadcast(const Message& _message) const
+        {
+            for(const auto& _channel : m_aChannels)
+            {
+                if(_channel.m_ullMessageTypeID == typeid(Message).hash_code())
+                {
+                    Channel<Message, mode::immediate>* _right = (Channel<Message, mode::immediate>*)_channel.m_pChannel;
+
+                    _right->Broadcast(_message);
+                }
+            }
+        }
+
+        template <typename Message>
         Channel<Message, mode::immediate>& GetChannel() const
         {
             for(const auto& _channel : m_aChannels)
