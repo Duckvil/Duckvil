@@ -13,6 +13,8 @@
 // Index will be incremented each source file to avoid function name collision
 // Each plugin/__module will be created file which contains total count of recorders
 
+#undef max
+
 struct duckvil_recorderd_types
 {
     Duckvil::RuntimeReflection::__duckvil_resource_type_t* m_aTypes;
@@ -133,6 +135,14 @@ namespace Duckvil { namespace RuntimeReflection {
 
         return _object;
 #endif
+    }
+
+    template <typename Type>
+    void destroy_object(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __ftable* _pReflection, __data* _pData, bool _bTracked, void* _pObject)
+    {
+        ((Type*)_pObject)->~Type();
+
+        _pMemoryInterface->m_fnFreeListFree_(_pAllocator, _pObject);
     }
 
     struct __recorder_meta_info
@@ -274,6 +284,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         DUCKVIL_RESOURCE(type_t) (*m_fnRecordType)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, std::size_t _ullTypeID, const char* _sTypeName, std::size_t _ullLength);
         DUCKVIL_RESOURCE(constructor_t) (*m_fnRecordConstructor)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, uint8_t* _pConctructor, Memory::Queue<__argument_t>& _arguments);
+        DUCKVIL_RESOURCE(destructor_t) (*m_fnRecordDestructor)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, uint8_t* _pConctructor);
         DUCKVIL_RESOURCE(property_t) (*m_fnRecordProperty)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, const char* _sName, std::size_t _ullLength, uintptr_t _ullAddress);
         DUCKVIL_RESOURCE(namespace_t) (*m_fnRecordNamespace)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, const char* _sName, std::size_t _ullLength);
         DUCKVIL_RESOURCE(inheritance_t) (*m_fnRecordInheritance)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullInheritanceTypeID, __protection _protection);
@@ -305,7 +316,8 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename Type, typename... Args>
     static DUCKVIL_RESOURCE(constructor_t) record_constructor(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle)
     {
-        Memory::Queue<__argument_t> _arguments(_pMemoryInterface, _pAllocator, sizeof...(Args));
+        constexpr const std::size_t _size = sizeof...(Args);
+        Memory::Queue<__argument_t> _arguments(_pMemoryInterface, _pAllocator, _size ? _size : 1);
 
         int _[] = { 0, (get_argument_info<Args>(_arguments), 0)... };
         (void)_;
@@ -323,6 +335,14 @@ namespace Duckvil { namespace RuntimeReflection {
         // }
 
         return _constructorHandle;
+    }
+
+    template <typename Type>
+    static DUCKVIL_RESOURCE(destructor_t) record_destructor(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle)
+    {
+        DUCKVIL_RESOURCE(destructor_t) _destructorHandle = _pFunctions->m_fnRecordDestructor(_pMemoryInterface, _pAllocator, _pData, _typeHandle, (uint8_t*)&destroy_object<Type>);
+
+        return _destructorHandle;
     }
 
     template <typename A, typename B, std::size_t Length>

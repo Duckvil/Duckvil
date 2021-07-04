@@ -59,6 +59,7 @@ namespace Duckvil { namespace RuntimeReflection {
                 }
 
                 DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_constructors);
+                DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_destructors);
                 DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_properties);
                 DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_namespaces);
                 DUCKVIL_SLOT_ARRAY_CLEAR(_type.m_inheritances);
@@ -77,6 +78,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
         _type.m_ullTypeID =     _ullTypeID;
         _type.m_constructors =  DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __constructor_t);
+        _type.m_destructors =   DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __destructor_t);
         _type.m_properties =    DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __property_t);
         _type.m_namespaces =    DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __namespace_t);
         _type.m_inheritances =  DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __inheritance_t);
@@ -360,6 +362,22 @@ namespace Duckvil { namespace RuntimeReflection {
         return _handle;
     }
 
+    DUCKVIL_RESOURCE(destructor_t) record_destructor(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, uint8_t* _pDectructor)
+    {
+        __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aTypes, _owner.m_ID);
+        __destructor_t _destructor = {};
+
+        _destructor.m_owner = _owner;
+        _destructor.m_pData = _pDectructor;
+        _destructor.m_metas = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __meta_t);
+
+        DUCKVIL_RESOURCE(destructor_t) _handle = {};
+
+        _handle.m_ID = duckvil_slot_array_insert(_pMemoryInterface, _pAllocator, _type->m_destructors, _destructor);
+
+        return _handle;
+    }
+
     DUCKVIL_RESOURCE(property_t) record_property(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, const char* _sName, std::size_t _ullLength, uintptr_t _ullAddress)
     {
         __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aTypes, _owner.m_ID);
@@ -443,6 +461,7 @@ Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_record
 
     _functions.m_fnRecordType = &Duckvil::RuntimeReflection::record_type;
     _functions.m_fnRecordConstructor = &Duckvil::RuntimeReflection::record_constructor;
+    _functions.m_fnRecordDestructor = &Duckvil::RuntimeReflection::record_destructor;
     _functions.m_fnRecordProperty = &Duckvil::RuntimeReflection::record_property;
     _functions.m_fnRecordNamespace = &Duckvil::RuntimeReflection::record_namespace;
     _functions.m_fnRecordInheritance = &Duckvil::RuntimeReflection::record_inheritance;

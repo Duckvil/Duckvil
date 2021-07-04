@@ -55,6 +55,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
     DUCKVIL_RESOURCE_DECLARE(type_t);
     DUCKVIL_RESOURCE_DECLARE(constructor_t);
+    DUCKVIL_RESOURCE_DECLARE(destructor_t);
     DUCKVIL_RESOURCE_DECLARE(property_t);
     DUCKVIL_RESOURCE_DECLARE(namespace_t);
     DUCKVIL_RESOURCE_DECLARE(inheritance_t);
@@ -134,6 +135,13 @@ namespace Duckvil { namespace RuntimeReflection {
         DUCKVIL_RESOURCE(type_t) m_owner;
     });
 
+    slot(__destructor_t,
+    {
+        DUCKVIL_SLOT_ARRAY(__meta_t) m_metas;
+        uint8_t* m_pData;
+        DUCKVIL_RESOURCE(type_t) m_owner;
+    });
+
     slot(__property_t,
     {
         DUCKVIL_SLOT_ARRAY(__meta_t) m_metas;
@@ -168,6 +176,7 @@ namespace Duckvil { namespace RuntimeReflection {
     slot(__type_t,
     {
         DUCKVIL_SLOT_ARRAY(__constructor_t) m_constructors;
+        DUCKVIL_SLOT_ARRAY(__destructor_t) m_destructors;
         DUCKVIL_SLOT_ARRAY(__property_t) m_properties;
         DUCKVIL_SLOT_ARRAY(__namespace_t) m_namespaces;
         DUCKVIL_SLOT_ARRAY(__inheritance_t) m_inheritances;
@@ -235,6 +244,8 @@ namespace Duckvil { namespace RuntimeReflection {
 
         Memory::Vector<DUCKVIL_RESOURCE(constructor_t)> (*m_fnGetConstructors)(__data* _pData, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle);
         DUCKVIL_RESOURCE(constructor_t) (*m_fnGetConstructorHandleByTypeID)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, std::size_t _ullTypeID);
+
+        DUCKVIL_RESOURCE(destructor_t) (*m_fnGetDestructorHandle)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle);
 
         void* (*m_fnGetPropertyByHandle)(__data* _pData, DUCKVIL_RESOURCE(type_t) _type_handle, DUCKVIL_RESOURCE(property_t) _handle, const void* _pObject);
         void* (*m_fnGetPropertyByName)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength, const void* _pObject);
@@ -333,6 +344,21 @@ namespace Duckvil { namespace RuntimeReflection {
         }
 
         return nullptr;
+    }
+
+    static void destroy(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, bool _bTracked, void* _pObject)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+
+        for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_destructors.m_data); ++j)
+        {
+            const __destructor_t& _destructor = DUCKVIL_SLOT_ARRAY_GET(_type.m_destructors, j);
+            void (*_destructor_callback)(Memory::ftable*, Memory::free_list_allocator*, __ftable*, __data*, bool, void*) = (void (*)(Memory::ftable*, Memory::free_list_allocator*, __ftable*, __data*, bool, void*))_destructor.m_pData;
+
+            _destructor_callback(_pMemoryInterface, _pAllocator, _pReflection, _pData, _bTracked, _pObject);
+
+            return;
+        }
     }
 
     static inline DUCKVIL_RESOURCE(type_t) get_type(__ftable* _pFTable, __data* _pData, const std::size_t& _ullTypeID)
@@ -575,6 +601,27 @@ namespace Duckvil { namespace RuntimeReflection {
     static inline void* create(const Memory::FreeList& _memory, __ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, bool _bTracked, const Args&... _vArgs)
     {
         return create<Args...>(_memory.GetMemoryInterface(), _memory.GetAllocator(), _pReflection, _pData, _typeHandle, _bTracked, _vArgs...);
+    }
+
+    template <typename... Args>
+    static inline void* create(const Memory::FreeList& _memory, const char _sTypeName[DUCKVIL_RUNTIME_REFLECTION_TYPE_NAME_MAX], bool _bTracked, const Args&... _vArgs)
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        return create<Args...>(_memory.GetMemoryInterface(), _memory.GetAllocator(), _context.m_pReflection, _context.m_pReflectionData, _sTypeName, _bTracked, _vArgs...);
+    }
+
+    template <typename... Args>
+    static inline void* create(const Memory::FreeList& _memory, DUCKVIL_RESOURCE(type_t) _typeHandle, bool _bTracked, const Args&... _vArgs)
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        return create<Args...>(_memory.GetMemoryInterface(), _memory.GetAllocator(), _context.m_pReflection, _context.m_pReflectionData, _typeHandle, _bTracked, _vArgs...);
+    }
+
+    static inline void destroy(const Memory::FreeList& _memory, __ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, bool _bTracked, void* _pObject)
+    {
+        destroy(_memory.GetMemoryInterface(), _memory.GetAllocator(), _pReflection, _pData, _typeHandle, _bTracked, _pObject);
     }
 
 // With context
@@ -851,6 +898,13 @@ namespace Duckvil { namespace RuntimeReflection {
         duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
 
         return _context.m_pReflection->m_fnGetArgument(_context.m_pReflectionData, _typeHandle, _constructorHandle, _argumentHandle);
+    }
+
+    static inline void destroy(const Memory::FreeList& _memory, DUCKVIL_RESOURCE(type_t) _typeHandle, bool _bTracked, void* _pObject)
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        destroy(_memory.GetMemoryInterface(), _memory.GetAllocator(), _context.m_pReflection, _context.m_pReflectionData, _typeHandle, _bTracked, _pObject);
     }
 
 }}

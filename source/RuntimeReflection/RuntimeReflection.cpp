@@ -126,6 +126,18 @@ namespace Duckvil { namespace RuntimeReflection {
         return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
     }
 
+    DUCKVIL_RESOURCE(destructor_t) get_destructor_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_destructors.m_data); ++i)
+        {
+            return { i };
+        }
+
+        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    }
+
     Memory::Vector<DUCKVIL_RESOURCE(function_t)> get_functions(__data* _pData, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
