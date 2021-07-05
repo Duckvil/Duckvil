@@ -20,9 +20,28 @@ struct duckvil_recorderd_types
     Duckvil::RuntimeReflection::__duckvil_resource_type_t* m_aTypes;
     size_t m_ullCount;
     const char* m_sFile;
-    uint32_t m_uiRecorderID;
     Duckvil::PlugNPlay::__module_information* m_pModule;
+    uint32_t m_uiRecorderID;
 };
+
+static inline duckvil_recorderd_types duckvil_recorded_types_create(Duckvil::Memory::ftable *_pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, const std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t>& _aRecordedTypes, const char* _sFilename, uint32_t _uiRecorderID)
+{
+    duckvil_recorderd_types _res = {};
+
+    Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = (Duckvil::RuntimeReflection::__duckvil_resource_type_t*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _aRecordedTypes.size() * sizeof(Duckvil::RuntimeReflection::__duckvil_resource_type_t), 8);
+
+    for(size_t i = 0; i < _aRecordedTypes.size(); ++i)
+    {
+        _types[i] = _aRecordedTypes[i];
+    }
+
+    _res.m_aTypes = _types;
+    _res.m_ullCount = _aRecordedTypes.size();
+    _res.m_sFile = _sFilename;
+    _res.m_uiRecorderID = _uiRecorderID;
+
+    return _res;
+}
 
 #define DUCKVIL_META_CAT(...) __VA_ARGS__
 
@@ -149,14 +168,21 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         std::size_t m_ullKeyTypeID;
         std::size_t m_ullKeyTypeSize;
-        uint8_t m_ucKeyTypeAlignment;
-        property_traits m_keyTraits;
-        const void* m_pKeyData;
+
         std::size_t m_ullValueTypeID;
         std::size_t m_ullValueTypeSize;
-        uint8_t m_ucValueTypeAlignment;
-        property_traits m_valueTraits;
+
+        const void* m_pKeyData;
+
         const void* m_pValueData;
+
+        property_traits m_keyTraits;
+
+        property_traits m_valueTraits;
+
+        uint8_t m_ucKeyTypeAlignment;
+
+        uint8_t m_ucValueTypeAlignment;
     };
 
     template <typename Type>
