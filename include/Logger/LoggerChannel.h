@@ -112,14 +112,14 @@ namespace Duckvil {
 
     struct __logger_channel_data
     {
-        Memory::Queue<__logger_channel_log_info> m_logs;
-        int64_t m_llInitTime;
         char m_buffer[DUCKVIL_LOGGER_BUFFER_MAX];
         char m_sPathFile[DUCKVIL_LOGGER_OUT_FILE_PATH_LENGTH_MAX];
+        Memory::Queue<__logger_channel_log_info> m_logs;
+        Event::Pool<Event::mode::immediate>* m_pLogEventPool;
+        int64_t m_llInitTime;
         time_t m_lastTime;
         __logger_channel_flags m_flags;
         // Memory::Vector<custom_log_t> m_aCustomLogs;
-        Event::Pool<Event::mode::immediate>* m_pLogEventPool;
     };
 
     struct __logger_channel_ftable

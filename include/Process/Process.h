@@ -12,9 +12,9 @@ namespace Duckvil { namespace Process {
 
     struct data
     {
+        void* m_pImplementationData;
         bool m_bComplete;
         bool m_bRunning;
-        void* m_pImplementationData;
     };
 
     struct ftable

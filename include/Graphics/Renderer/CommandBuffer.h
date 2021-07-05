@@ -6,8 +6,8 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
 
     struct command_buffer
     {
-        uint32_t m_uiCommandCount;
         Memory::byte_buffer_allocator* m_pCommands;
+        uint32_t m_uiCommandCount;
     };
 
     inline static command_buffer command_buffer_new(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator)

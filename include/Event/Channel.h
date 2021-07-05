@@ -12,7 +12,7 @@
 
 namespace Duckvil { namespace Event {
 
-    enum class mode
+    enum class mode : uint8_t
     {
         immediate = 1 << 0, // Call function right after broadcast
         buffered = 1 << 1, // Buffer the message for later use
@@ -26,9 +26,9 @@ namespace Duckvil { namespace Event {
 
     struct event_lookup
     {
+        IChannel* m_pChannel;
         size_t m_ullMessageTypeID;
         mode m_mode;
-        IChannel* m_pChannel;
     };
 
     template <typename Message, mode Blocking>

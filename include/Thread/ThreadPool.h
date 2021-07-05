@@ -48,18 +48,16 @@ namespace Duckvil { namespace Thread {
 #else
     struct pool_data
     {
-        uint32_t m_uiThreadsCount;
         Memory::Vector<std::thread*> m_aWorkers;
+        Memory::Queue<task> m_aTasks;
         Memory::FreeList m_heap;
-        // std::mutex m_lock;
-        // std::mutex m_threadPoolLock;
+        uint32_t m_uiThreadsCount;
         TracyLockable(std::mutex, m_lock);
         TracyLockable(std::mutex, m_threadPoolLock);
         std::condition_variable_any m_condition;
-        Memory::Queue<task> m_aTasks;
+        std::atomic<uint32_t> m_uiTaskCount;
         bool m_bRunning;
         bool m_bTerminate;
-        std::atomic<uint32_t> m_uiTaskCount;
     };
 #endif
 

@@ -12,7 +12,7 @@ namespace Duckvil { namespace PlugNPlay {
     typedef void (*free_callback)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, void* _pointer);
     typedef void* (*instance_callback)();
 
-    enum __instantiation
+    enum __instantiation : uint8_t
     {
         SINGLE,
         MANY,
@@ -21,11 +21,11 @@ namespace Duckvil { namespace PlugNPlay {
 
     struct __plugin_details
     {
-        const char* m_sPluginName;
-        __instantiation     m_instantiation;
+        const char*         m_sPluginName;
         allocator_callback  m_pAllocator;
         instance_callback   m_pInstance;
         free_callback       m_pDeallocator;
+        __instantiation     m_instantiation;
     };
 
     void* instantiate_plugin(const __module& _module, const __module_information& _module_info);
