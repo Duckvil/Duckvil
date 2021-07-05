@@ -50,6 +50,8 @@
 
 #include "flecs/flecs.h"
 
+#include "ProjectManager/ProjectManager.h"
+
 namespace Duckvil {
 
     struct system
@@ -130,6 +132,9 @@ namespace Duckvil {
         flecs::world m_ecs;
 
         flecs::query<Graphics::TransformComponent> m_rendererQuery;
+
+        ProjectManager::ftable m_projectManager;
+        ProjectManager::data m_projectManagerData;
     };
 
     struct __ftable

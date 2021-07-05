@@ -219,6 +219,26 @@ namespace Duckvil {
         return true;
     }
 
+    bool init_project_manager(__data* _pData, PlugNPlay::__module* _pModule)
+    {
+        PlugNPlay::__module_information _projectManagerModule("ProjectManager");
+
+        _pModule->load(&_projectManagerModule);
+
+        void (*_initProjectManager)(ProjectManager::ftable*);
+
+        _pModule->get(_projectManagerModule, "duckvil_project_manager_init", reinterpret_cast<void**>(&_initProjectManager));
+
+        _initProjectManager(&_pData->m_projectManager);
+
+        if(!_pData->m_projectManager.m_fnInitProjectManager(&_pData->m_projectManagerData, _pData->m_heap))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     bool init(__data* _pData, Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator)
     {
         TracyMessageL("Initializing engine");
@@ -356,6 +376,7 @@ namespace Duckvil {
 
         init_renderer(_pData, &_module);
         init_editor(_pData, &_module);
+        init_project_manager(_pData, &_module);
 
         {
             auto _types = RuntimeReflection::get_types(_pData->m_heap);

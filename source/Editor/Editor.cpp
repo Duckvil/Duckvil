@@ -330,12 +330,12 @@ namespace Duckvil { namespace Editor {
                 {
                     if(ImGui::MenuItem("New"))
                     {
-                        // _data->m_pEditorEvents.Broadcast(SpwanWidgetEvent{ RuntimeReflection::get_type("NewProjectWidget", { "Duckvil", "Editor" }).m_ID });
+                        _data->m_pEditorEvents.Broadcast(SpwanWidgetEvent{ RuntimeReflection::get_type("NewProjectWidget", { "Duckvil", "Editor" }).m_ID });
                     }
 
                     if(ImGui::MenuItem("Load"))
                     {
-                        // _data->m_pEditorEvents.Broadcast(SpwanWidgetEvent{ RuntimeReflection::get_type("LoadProjectWidget", { "Duckvil", "Editor" }).m_ID });
+                        _data->m_pEditorEvents.Broadcast(SpwanWidgetEvent{ RuntimeReflection::get_type("LoadProjectWidget", { "Duckvil", "Editor" }).m_ID });
                     }
 
                     ImGui::EndMenu();
