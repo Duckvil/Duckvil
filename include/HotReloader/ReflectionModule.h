@@ -200,7 +200,7 @@ namespace Duckvil { namespace HotReloader {
                         }
                     }
 
-                    if(!_skip)
+                    if(!_skip && _var->m_sType.find("const") == std::string::npos)
                     {
                         _pData->m_aVars.push_back(_var->m_sName);
                     }
