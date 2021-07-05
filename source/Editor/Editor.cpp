@@ -20,9 +20,18 @@
 
 #include "Engine/ReflectionFlags.h"
 
+#include "Editor/ReflectionFlag.h"
+
+#include "Editor/Events/CloseWidgetEvent.h"
+
 #include "tracy/Tracy.hpp"
 
 namespace Duckvil { namespace Editor {
+
+    void process_sdl_events(void* _pData)
+    {
+        ImGui_ImplSDL2_ProcessEvent((SDL_Event*)_pData);
+    }
 
     void* init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Window::IWindow* _pWindow, Graphics::Renderer::renderer_ftable* _pRenderer, Graphics::Renderer::renderer_data* _pRendererData)
     {
@@ -67,6 +76,8 @@ namespace Duckvil { namespace Editor {
 
         _data->_ctx = _ctx;
 
+        _pWindow->SetProcessEventsCallback(&process_sdl_events);
+
         return _data;
     }
 
@@ -83,8 +94,9 @@ namespace Duckvil { namespace Editor {
         {
             RuntimeReflection::__duckvil_resource_type_t _typeHandle = _types[i];
             RuntimeReflection::ReflectedType<> _type(_heap, _typeHandle);
+            RuntimeReflection::__variant _spawnableVariant = RuntimeReflection::get_meta(_typeHandle, ReflectionFlag::Spwanable);
 
-            if(RuntimeReflection::inherits<Editor::Widget>(_typeHandle) && !RuntimeReflection::inherits<ISystem>(_typeHandle))
+            if(RuntimeReflection::inherits<Editor::Widget>(_typeHandle) && !RuntimeReflection::inherits<ISystem>(_typeHandle) && _spawnableVariant.m_ullTypeID == -1)
             {
 #ifdef DUCKVIL_HOT_RELOADING
                 void* _object = _type.CreateTracked<const Memory::FreeList&>(_heap);
@@ -174,6 +186,57 @@ namespace Duckvil { namespace Editor {
 
             (_pWidget->*_widget.m_fnInit)(_data->_ctx);
         }
+
+        _data->m_pEditorEvents.AddA<SpwanWidgetEvent>([_data](const SpwanWidgetEvent& _event)
+        {
+            RuntimeReflection::ReflectedType<> _type(_data->m_heap, _event._typeHandle);
+            RuntimeReflection::__variant _spawnableVariant = RuntimeReflection::get_meta(_event._typeHandle, ReflectionFlag::Spwanable);
+
+            if(_spawnableVariant.m_ullTypeID == -1 || (_spawnableVariant.m_ullTypeID == typeid(bool).hash_code() && !*(bool*)_spawnableVariant.m_pData))
+            {
+                return;
+            }
+
+            void* _object = _type.Create<const Memory::FreeList&>(_data->m_heap);
+
+            if(_data->m_aDraws.Full())
+            {
+                _data->m_aDraws.Resize(_data->m_aHotDraws.Size() * 2);
+            }
+
+            _data->m_aDraws.Allocate(
+                Editor::Draw
+                {
+                    _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction,
+                    _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction,
+                    _object, _event._typeHandle
+                }
+            );
+
+            RuntimeReflection::invoke_member<const Event::Pool<Event::mode::immediate>*>(
+                _event._typeHandle, RuntimeReflection::get_function_handle<const Event::Pool<Event::mode::immediate>*>(_event._typeHandle, "SetEditorEventPool"),
+                _object,
+                &_data->m_pEditorEvents
+            );
+        });
+
+        _data->m_pEditorEvents.AddA<CloseWidgetEvent>([_data](const CloseWidgetEvent& _event)
+        {
+            for(uint32_t i = 0; i < _data->m_aDraws.Size(); ++i)
+            {
+                Draw& _draw = _data->m_aDraws[i];
+
+                if(_draw.m_typeHandle.m_ID == _event._typeHandle.m_ID)
+                {
+                    _data->m_aDraws.Erase(i);
+
+                    // _data->m_heap.Free(_event.m_pObject);
+                    RuntimeReflection::destroy(_data->m_heap, _event._typeHandle, false, _event.m_pObject);
+
+                    break;
+                }
+            }
+        });
     }
 
     void hot_reload_init(ImGuiEditorData* _pData, const HotReloader::SwapEvent& _event)
@@ -267,7 +330,12 @@ namespace Duckvil { namespace Editor {
                 {
                     if(ImGui::MenuItem("New"))
                     {
+                        // _data->m_pEditorEvents.Broadcast(SpwanWidgetEvent{ RuntimeReflection::get_type("NewProjectWidget", { "Duckvil", "Editor" }).m_ID });
+                    }
 
+                    if(ImGui::MenuItem("Load"))
+                    {
+                        // _data->m_pEditorEvents.Broadcast(SpwanWidgetEvent{ RuntimeReflection::get_type("LoadProjectWidget", { "Duckvil", "Editor" }).m_ID });
                     }
 
                     ImGui::EndMenu();

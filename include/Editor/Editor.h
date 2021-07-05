@@ -19,6 +19,8 @@
 
 #include "Graphics/Renderer/Renderer.h"
 
+#include "Editor/Events/SpwanWidgetEvent.h"
+
 namespace Duckvil { namespace Editor {
 
     struct ImGuiEditorData
