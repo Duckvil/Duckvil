@@ -653,7 +653,7 @@ namespace Duckvil {
 
         _pData->m_rendererQuery.each([_delta](Graphics::TransformComponent& _transform)
         {
-            _transform.m_rotation = _transform.m_rotation * glm::angleAxis((float)_delta, glm::vec3(1, 0, 0));
+            _transform.m_rotation = _transform.m_rotation * glm::angleAxis((float)_delta, glm::vec3(0, 0, 1));
         });
 
         _pData->m_pRenderer->m_fnUpdate(_pData->m_pMemory, &_pData->m_pRendererData);

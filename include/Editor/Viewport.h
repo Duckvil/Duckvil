@@ -159,7 +159,7 @@ namespace Duckvil { namespace Editor {
     {
         Graphics::Renderer::bind_framebuffer(_pMemory, _pRendererData, _pViewport->m_fbo);
         Graphics::Renderer::viewport(_pMemory, _pRendererData, 1920, 1080);
-        Graphics::Renderer::clear_color(_pMemory, _pRendererData, glm::vec4(0, 0, 0, 1));
+        Graphics::Renderer::clear_color(_pMemory, _pRendererData, glm::vec4(0.1f, 0.1f, 0.1f, 1));
         Graphics::Renderer::clear(_pMemory, _pRendererData, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         Graphics::Renderer::bind_shader(_pMemory, _pRendererData, _pViewport->m_shaderID);
 
