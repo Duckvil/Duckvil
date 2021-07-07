@@ -17,7 +17,7 @@ namespace Duckvil { namespace ProjectManager {
 
     project load_project(data* _pData, const Utils::string& _sFilename, const Utils::string& _sPath)
     {
-        project _project = { 0 };
+        project _project = { };
 
         _pData->m_heap.Allocate(_project.m_aTypes, 1);
 
