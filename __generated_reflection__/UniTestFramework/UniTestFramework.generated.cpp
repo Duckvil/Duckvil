@@ -9,6 +9,7 @@ using namespace Duckvil;
 DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
+DUCKVIL_RESOURCE(destructor_t) _destructor;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
 using namespace Duckvil::UniTestFramework;
 _type = record_type<Duckvil::UniTestFramework::__tests_result>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__tests_result");
@@ -34,9 +35,7 @@ record_function<bool, const A&, const A&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_ST
 record_function<bool, const A*, const A&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::UniTestFramework::Assert::NotEqual, "NotEqual");
 record_function<bool, const A*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::UniTestFramework::Assert::IsNULL, "IsNULL");
 record_function<bool, const A*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::UniTestFramework::Assert::IsNotNULL, "IsNotNULL");
-Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
-for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
-return duckvil_recorderd_types { _types, _recordedTypes.size(), "UniTestFramework/UniTestFramework.h", 0 };
+return duckvil_recorded_types_create(_pMemoryInterface, _pAllocator, _recordedTypes, "UniTestFramework/UniTestFramework.h", 0);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()

@@ -9,6 +9,7 @@ using namespace Duckvil;
 DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
+DUCKVIL_RESOURCE(destructor_t) _destructor;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
 using namespace Duckvil::RuntimeReflection;
 _type = record_type<Duckvil::RuntimeReflection::__ftable>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__ftable");
@@ -55,6 +56,7 @@ _property = record_property<const __type_t&(*)(__data*, const DUCKVIL_RESOURCE(t
 _property = record_property<Memory::Vector<DUCKVIL_RESOURCE(type_t)>(*)(__data*, Memory::ftable*, Memory::free_list_allocator*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::RuntimeReflection::__ftable, m_fnGetTypes), "m_fnGetTypes");
 _property = record_property<Memory::Vector<DUCKVIL_RESOURCE(constructor_t)>(*)(__data*, Memory::ftable*, Memory::free_list_allocator*, DUCKVIL_RESOURCE(type_t))>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::RuntimeReflection::__ftable, m_fnGetConstructors), "m_fnGetConstructors");
 _property = record_property<DUCKVIL_RESOURCE(constructor_t)(*)(__data*, DUCKVIL_RESOURCE(type_t), std::size_t)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::RuntimeReflection::__ftable, m_fnGetConstructorHandleByTypeID), "m_fnGetConstructorHandleByTypeID");
+_property = record_property<DUCKVIL_RESOURCE(destructor_t)(*)(__data*, DUCKVIL_RESOURCE(type_t))>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::RuntimeReflection::__ftable, m_fnGetDestructorHandle), "m_fnGetDestructorHandle");
 _property = record_property<void*(*)(__data*, DUCKVIL_RESOURCE(type_t), DUCKVIL_RESOURCE(property_t), const void*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::RuntimeReflection::__ftable, m_fnGetPropertyByHandle), "m_fnGetPropertyByHandle");
 _property = record_property<void*(*)(__data*, DUCKVIL_RESOURCE(type_t), const char*, std::size_t, const void*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::RuntimeReflection::__ftable, m_fnGetPropertyByName), "m_fnGetPropertyByName");
 _property = record_property<DUCKVIL_RESOURCE(property_t)(*)(__data*, DUCKVIL_RESOURCE(type_t), const char*, std::size_t)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::RuntimeReflection::__ftable, m_fnGetPropertyHandleByName), "m_fnGetPropertyHandleByName");
@@ -81,9 +83,7 @@ _property = record_property<Memory::Vector<DUCKVIL_RESOURCE(meta_t)>(*)(const Me
 _property = record_property<DUCKVIL_RESOURCE(variant_t)(*)(__data*, DUCKVIL_RESOURCE(type_t), DUCKVIL_RESOURCE(constructor_t), const void*, const std::size_t&, const std::size_t&)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::RuntimeReflection::__ftable, m_fnGetConstructorMetaHandle), "m_fnGetConstructorMetaHandle");
 _property = record_property<void*(*)(__data*, DUCKVIL_RESOURCE(type_t), DUCKVIL_RESOURCE(constructor_t), const void*, const std::size_t&, const std::size_t&)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::RuntimeReflection::__ftable, m_fnGetConstructorMetaValue), "m_fnGetConstructorMetaValue");
 _property = record_property<const __variant&(*)(__data*, DUCKVIL_RESOURCE(type_t), DUCKVIL_RESOURCE(constructor_t), const void*, const std::size_t&, const std::size_t&)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::RuntimeReflection::__ftable, m_fnGetConstructorMetaVariant), "m_fnGetConstructorMetaVariant");
-Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
-for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
-return duckvil_recorderd_types { _types, _recordedTypes.size(), "RuntimeReflection/RuntimeReflection.h", 8 };
+return duckvil_recorded_types_create(_pMemoryInterface, _pAllocator, _recordedTypes, "RuntimeReflection/RuntimeReflection.h", 8);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()

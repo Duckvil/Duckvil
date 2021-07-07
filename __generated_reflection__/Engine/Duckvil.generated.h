@@ -25,7 +25,6 @@ _pSerializer->SerializeProperty("m_pRuntimeReflectionRecorder", m_pRuntimeReflec
 _pSerializer->SerializeProperty("m_pRuntimeReflectionData", m_pRuntimeReflectionData); \
 _pSerializer->SerializeProperty("m_aRecordedTypes", m_aRecordedTypes); \
 _pSerializer->SerializeProperty("m_aLoadedModules", m_aLoadedModules); \
-_pSerializer->SerializeProperty("m_uiLoadedModulesCount", m_uiLoadedModulesCount); \
 _pSerializer->SerializeProperty("m_pRuntimeCompiler", m_pRuntimeCompiler); \
 _pSerializer->SerializeProperty("m_fnRuntimeCompilerUpdate", m_fnRuntimeCompilerUpdate); \
 _pSerializer->SerializeProperty("m_fnRuntimeCompilerInit", m_fnRuntimeCompilerInit); \
@@ -42,4 +41,8 @@ _pSerializer->SerializeProperty("m_aEngineSystems", m_aEngineSystems); \
 _pSerializer->SerializeProperty("m_pWindow", m_pWindow); \
 _pSerializer->SerializeProperty("m_pEditor", m_pEditor); \
 _pSerializer->SerializeProperty("m_pEditorData", m_pEditorData); \
+_pSerializer->SerializeProperty("m_pRenderer", m_pRenderer); \
+_pSerializer->SerializeProperty("m_pRendererData", m_pRendererData); \
+_pSerializer->SerializeProperty("m_ecs", m_ecs); \
+_pSerializer->SerializeProperty("m_rendererQuery", m_rendererQuery); \
 }

@@ -27,6 +27,7 @@ _pSerializer->SerializeProperty("m_fnCalculatePaddingH_", m_fnCalculatePaddingH_
 _pSerializer->SerializeProperty("m_fnLinearAllocate", m_fnLinearAllocate); \
 _pSerializer->SerializeProperty("m_fnLinearClear", m_fnLinearClear); \
 _pSerializer->SerializeProperty("m_fnFixedStackAllocate_", m_fnFixedStackAllocate_); \
+_pSerializer->SerializeProperty("m_fnFixedStackAllocateSize_", m_fnFixedStackAllocateSize_); \
 _pSerializer->SerializeProperty("m_fnFixedStackTop_", m_fnFixedStackTop_); \
 _pSerializer->SerializeProperty("m_fnFixedStackPop_", m_fnFixedStackPop_); \
 _pSerializer->SerializeProperty("m_fnFixedStackEmpty_", m_fnFixedStackEmpty_); \
@@ -35,14 +36,17 @@ _pSerializer->SerializeProperty("m_fnFixedStackClear_", m_fnFixedStackClear_); \
 _pSerializer->SerializeProperty("m_fnFixedStackSize_", m_fnFixedStackSize_); \
 _pSerializer->SerializeProperty("m_fnFixedStackCapacity_", m_fnFixedStackCapacity_); \
 _pSerializer->SerializeProperty("m_fnFixedQueueAllocate_", m_fnFixedQueueAllocate_); \
+_pSerializer->SerializeProperty("m_fnFixedQueueAllocateSize_", m_fnFixedQueueAllocateSize_); \
 _pSerializer->SerializeProperty("m_fnFixedQueueBegin_", m_fnFixedQueueBegin_); \
 _pSerializer->SerializeProperty("m_fnFixedQueuePop_", m_fnFixedQueuePop_); \
 _pSerializer->SerializeProperty("m_fnFixedQueueEmpty_", m_fnFixedQueueEmpty_); \
 _pSerializer->SerializeProperty("m_fnFixedQueueFull_", m_fnFixedQueueFull_); \
 _pSerializer->SerializeProperty("m_fnFixedQueueClear_", m_fnFixedQueueClear_); \
+_pSerializer->SerializeProperty("m_fnFixedQueueResize_", m_fnFixedQueueResize_); \
 _pSerializer->SerializeProperty("m_fnFixedQueueSize_", m_fnFixedQueueSize_); \
 _pSerializer->SerializeProperty("m_fnFixedQueueCapacity_", m_fnFixedQueueCapacity_); \
 _pSerializer->SerializeProperty("m_fnFixedArrayAllocate_", m_fnFixedArrayAllocate_); \
+_pSerializer->SerializeProperty("m_fnFixedArrayAllocateSize_", m_fnFixedArrayAllocateSize_); \
 _pSerializer->SerializeProperty("m_fnFixedArrayBegin_", m_fnFixedArrayBegin_); \
 _pSerializer->SerializeProperty("m_fnFixedArrayBack_", m_fnFixedArrayBack_); \
 _pSerializer->SerializeProperty("m_fnFixedArrayAt_", m_fnFixedArrayAt_); \
@@ -56,6 +60,7 @@ _pSerializer->SerializeProperty("m_fnFreeListReallocate_", m_fnFreeListReallocat
 _pSerializer->SerializeProperty("m_fnFreeListFree_", m_fnFreeListFree_); \
 _pSerializer->SerializeProperty("m_fnFreeListClear_", m_fnFreeListClear_); \
 _pSerializer->SerializeProperty("m_fnFixedVectorAllocate_", m_fnFixedVectorAllocate_); \
+_pSerializer->SerializeProperty("m_fnFixedVectorAllocateSize_", m_fnFixedVectorAllocateSize_); \
 _pSerializer->SerializeProperty("m_fnFixedVectorBegin_", m_fnFixedVectorBegin_); \
 _pSerializer->SerializeProperty("m_fnFixedVectorBack_", m_fnFixedVectorBack_); \
 _pSerializer->SerializeProperty("m_fnFixedVectorEnd_", m_fnFixedVectorEnd_); \

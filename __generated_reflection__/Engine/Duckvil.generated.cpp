@@ -9,6 +9,7 @@ using namespace Duckvil;
 DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
+DUCKVIL_RESOURCE(destructor_t) _destructor;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
 using namespace Duckvil;
 _type = record_type<Duckvil::system>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "system");
@@ -40,8 +41,7 @@ _property = record_property<RuntimeReflection::__ftable*>(DUCKVIL_RUNTIME_REFLEC
 _property = record_property<RuntimeReflection::__recorder_ftable*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__data, m_pRuntimeReflectionRecorder), "m_pRuntimeReflectionRecorder");
 _property = record_property<RuntimeReflection::__data*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__data, m_pRuntimeReflectionData), "m_pRuntimeReflectionData");
 _property = record_property<Memory::Vector<duckvil_recorderd_types>>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__data, m_aRecordedTypes), "m_aRecordedTypes");
-_property = record_property<PlugNPlay::__module_information*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__data, m_aLoadedModules), "m_aLoadedModules");
-_property = record_property<uint32_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__data, m_uiLoadedModulesCount), "m_uiLoadedModulesCount");
+_property = record_property<Memory::Vector<PlugNPlay::__module_information>>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__data, m_aLoadedModules), "m_aLoadedModules");
 _property = record_property<HotReloader::RuntimeCompilerSystem*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__data, m_pRuntimeCompiler), "m_pRuntimeCompiler");
 _property = record_property<system::UpdateCallback>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__data, m_fnRuntimeCompilerUpdate), "m_fnRuntimeCompilerUpdate");
 _property = record_property<system::InitCallback>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__data, m_fnRuntimeCompilerInit), "m_fnRuntimeCompilerInit");
@@ -58,6 +58,10 @@ _property = record_property<Memory::Vector<Duckvil::system>>(DUCKVIL_RUNTIME_REF
 _property = record_property<Window::IWindow*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__data, m_pWindow), "m_pWindow");
 _property = record_property<Editor::EditorFTable*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__data, m_pEditor), "m_pEditor");
 _property = record_property<Editor::ImGuiEditorData*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__data, m_pEditorData), "m_pEditorData");
+_property = record_property<Graphics::Renderer::renderer_ftable*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__data, m_pRenderer), "m_pRenderer");
+_property = record_property<Graphics::Renderer::renderer_data>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__data, m_pRendererData), "m_pRendererData");
+_property = record_property<flecs::world>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__data, m_ecs), "m_ecs");
+_property = record_property<flecs::query<Graphics::TransformComponent>>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__data, m_rendererQuery), "m_rendererQuery");
 _type = record_type<Duckvil::__ftable>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__ftable");
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
@@ -66,9 +70,7 @@ _property = record_property<bool(*)(Duckvil::__data*, Memory::ftable*, Memory::f
 _property = record_property<bool(*)(Duckvil::__data*, Duckvil::__ftable*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__ftable, start), "start");
 _property = record_property<bool(*)(Duckvil::__data*, Duckvil::__ftable*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__ftable, stop), "stop");
 _property = record_property<void(*)(Duckvil::__data*, Duckvil::__ftable*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__ftable, update), "update");
-Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
-for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
-return duckvil_recorderd_types { _types, _recordedTypes.size(), "Engine/Duckvil.h", 0 };
+return duckvil_recorded_types_create(_pMemoryInterface, _pAllocator, _recordedTypes, "Engine/Duckvil.h", 0);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()

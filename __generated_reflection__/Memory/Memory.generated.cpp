@@ -9,6 +9,7 @@ using namespace Duckvil;
 DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
+DUCKVIL_RESOURCE(destructor_t) _destructor;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
 using namespace Duckvil::Memory;
 _type = record_type<Duckvil::Memory::allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "allocator");
@@ -98,6 +99,7 @@ _property = record_property<ftable::_calculate_padding_h_>(DUCKVIL_RUNTIME_REFLE
 _property = record_property<ftable::_linear_allocate>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnLinearAllocate), "m_fnLinearAllocate");
 _property = record_property<ftable::_linear_clear>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnLinearClear), "m_fnLinearClear");
 _property = record_property<ftable::_fixed_stack_allocate_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedStackAllocate_), "m_fnFixedStackAllocate_");
+_property = record_property<ftable::_fixed_stack_allocate_size_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedStackAllocateSize_), "m_fnFixedStackAllocateSize_");
 _property = record_property<ftable::_fixed_stack_top_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedStackTop_), "m_fnFixedStackTop_");
 _property = record_property<ftable::_fixed_stack_pop_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedStackPop_), "m_fnFixedStackPop_");
 _property = record_property<ftable::_fixed_stack_empty_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedStackEmpty_), "m_fnFixedStackEmpty_");
@@ -106,14 +108,17 @@ _property = record_property<ftable::_fixed_stack_clear_>(DUCKVIL_RUNTIME_REFLECT
 _property = record_property<ftable::_fixed_stack_size_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedStackSize_), "m_fnFixedStackSize_");
 _property = record_property<ftable::_fixed_stack_capacity_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedStackCapacity_), "m_fnFixedStackCapacity_");
 _property = record_property<ftable::_fixed_queue_allocate_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedQueueAllocate_), "m_fnFixedQueueAllocate_");
+_property = record_property<ftable::_fixed_queue_allocate_size_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedQueueAllocateSize_), "m_fnFixedQueueAllocateSize_");
 _property = record_property<ftable::_fixed_queue_begin_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedQueueBegin_), "m_fnFixedQueueBegin_");
 _property = record_property<ftable::_fixed_queue_pop_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedQueuePop_), "m_fnFixedQueuePop_");
 _property = record_property<ftable::_fixed_queue_empty_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedQueueEmpty_), "m_fnFixedQueueEmpty_");
 _property = record_property<ftable::_fixed_queue_full_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedQueueFull_), "m_fnFixedQueueFull_");
 _property = record_property<ftable::_fixed_queue_clear_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedQueueClear_), "m_fnFixedQueueClear_");
+_property = record_property<ftable::_fixed_queue_resize_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedQueueResize_), "m_fnFixedQueueResize_");
 _property = record_property<ftable::_fixed_queue_size_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedQueueSize_), "m_fnFixedQueueSize_");
 _property = record_property<ftable::_fixed_queue_capacity_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedQueueCapacity_), "m_fnFixedQueueCapacity_");
 _property = record_property<ftable::_fixed_array_allocate_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedArrayAllocate_), "m_fnFixedArrayAllocate_");
+_property = record_property<ftable::_fixed_array_allocate_size_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedArrayAllocateSize_), "m_fnFixedArrayAllocateSize_");
 _property = record_property<ftable::_fixed_array_begin_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedArrayBegin_), "m_fnFixedArrayBegin_");
 _property = record_property<ftable::_fixed_array_back_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedArrayBack_), "m_fnFixedArrayBack_");
 _property = record_property<ftable::_fixed_array_at_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedArrayAt_), "m_fnFixedArrayAt_");
@@ -127,6 +132,7 @@ _property = record_property<ftable::_free_list_reallocate_>(DUCKVIL_RUNTIME_REFL
 _property = record_property<ftable::_free_list_free_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFreeListFree_), "m_fnFreeListFree_");
 _property = record_property<ftable::_free_list_clear_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFreeListClear_), "m_fnFreeListClear_");
 _property = record_property<ftable::_fixed_vector_allocate_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedVectorAllocate_), "m_fnFixedVectorAllocate_");
+_property = record_property<ftable::_fixed_vector_allocate_size_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedVectorAllocateSize_), "m_fnFixedVectorAllocateSize_");
 _property = record_property<ftable::_fixed_vector_begin_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedVectorBegin_), "m_fnFixedVectorBegin_");
 _property = record_property<ftable::_fixed_vector_back_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedVectorBack_), "m_fnFixedVectorBack_");
 _property = record_property<ftable::_fixed_vector_end_>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedVectorEnd_), "m_fnFixedVectorEnd_");
@@ -158,9 +164,7 @@ _property = record_property<ftable::_free_list_allocate_fixed_vector_allocator>(
 _property = record_property<ftable::_free_list_allocate_fixed_stack_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFreeListAllocateFixedStackAllocator), "m_fnFreeListAllocateFixedStackAllocator");
 _property = record_property<ftable::_free_list_allocate_fixed_array_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFreeListAllocateFixedArrayAllocator), "m_fnFreeListAllocateFixedArrayAllocator");
 _property = record_property<ftable::_free_list_allocate_byte_buffer_allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Memory::ftable, m_fnFreeListAllocateByteBufferAllocator), "m_fnFreeListAllocateByteBufferAllocator");
-Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
-for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
-return duckvil_recorderd_types { _types, _recordedTypes.size(), "Memory/Memory.h", 20 };
+return duckvil_recorded_types_create(_pMemoryInterface, _pAllocator, _recordedTypes, "Memory/Memory.h", 20);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()

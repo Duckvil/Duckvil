@@ -9,6 +9,7 @@ using namespace Duckvil;
 DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
+DUCKVIL_RESOURCE(destructor_t) _destructor;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
 using namespace Duckvil::PlugNPlay;
 _type = record_type<Duckvil::PlugNPlay::__module_information>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__module_information");
@@ -29,9 +30,7 @@ record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::
 _property = record_property<bool(*)(__module_information*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::PlugNPlay::__module, load), "load");
 _property = record_property<bool(*)(const __module_information&, const char*, void**)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::PlugNPlay::__module, get), "get");
 _property = record_property<bool(*)(__module_information*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::PlugNPlay::__module, free), "free");
-Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
-for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
-return duckvil_recorderd_types { _types, _recordedTypes.size(), "PlugNPlay/Module.h", 1 };
+return duckvil_recorded_types_create(_pMemoryInterface, _pAllocator, _recordedTypes, "PlugNPlay/Module.h", 1);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()

@@ -6,8 +6,6 @@ static void* Cast(void* _pObject) { return static_cast<member_event*>(_pObject);
 public: \
 void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\
-_pSerializer->SerializeProperty("value", value); \
-_pSerializer->SerializeProperty("value", value); \
 _pSerializer->SerializeProperty("m_functionHandle", m_functionHandle); \
 _pSerializer->SerializeProperty("m_typeHandle", m_typeHandle); \
 _pSerializer->SerializeProperty("m_pObject", m_pObject); \

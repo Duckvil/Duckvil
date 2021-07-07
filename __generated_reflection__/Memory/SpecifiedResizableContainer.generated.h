@@ -7,5 +7,4 @@ public: \
 void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\
 _pSerializer->SerializeProperty("m_fnResize", m_fnResize); \
-_pSerializer->SerializeProperty("m_fnErase", m_fnErase); \
 }

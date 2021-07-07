@@ -9,6 +9,7 @@ using namespace Duckvil;
 DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
+DUCKVIL_RESOURCE(destructor_t) _destructor;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
 using namespace Duckvil::Memory;
 _type = record_type<Duckvil::Memory::allocator>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "allocator");
@@ -36,9 +37,7 @@ _property = record_property<char>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_S
 #ifdef DUCKVIL_MEMORY_DEBUGGER
 _property = record_property<std::vector<duckvil_memory_debug_info*>>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(duckvil_memory_debug_info, m_aOther), "m_aOther");
 #endif
-Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
-for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
-return duckvil_recorderd_types { _types, _recordedTypes.size(), "Memory/MemoryDebugger.h", 21 };
+return duckvil_recorded_types_create(_pMemoryInterface, _pAllocator, _recordedTypes, "Memory/MemoryDebugger.h", 21);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()

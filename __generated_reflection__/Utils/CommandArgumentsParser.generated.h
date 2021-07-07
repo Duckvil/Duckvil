@@ -10,7 +10,5 @@ _pSerializer->SerializeProperty("m_iArgc", m_iArgc); \
 _pSerializer->SerializeProperty("m_spArgv", m_spArgv); \
 _pSerializer->SerializeProperty("m_pDescriptors", m_pDescriptors); \
 _pSerializer->SerializeProperty("m_uiIndex", m_uiIndex); \
-_pSerializer->SerializeProperty("m_sOption", m_sOption); \
-_pSerializer->SerializeProperty("m_sResult", m_sResult); \
 _pSerializer->SerializeProperty("m_bIsSet", m_bIsSet); \
 }

@@ -19,6 +19,8 @@ _pSerializer->SerializeProperty("m_pAST_FTable", m_pAST_FTable); \
 _pSerializer->SerializeProperty("m_pLexerFTable", m_pLexerFTable); \
 _pSerializer->SerializeProperty("m_pThread", m_pThread); \
 _pSerializer->SerializeProperty("m_pThreadData", m_pThreadData); \
+_pSerializer->SerializeProperty("m_aLoadedModules", m_aLoadedModules); \
+_pSerializer->SerializeProperty("m_aReflectedTypes", m_aReflectedTypes); \
 _pSerializer->SerializeProperty("m_aRecordedTypes", m_aRecordedTypes); \
 _pSerializer->SerializeProperty("m_aHotObjects", m_aHotObjects); \
 _pSerializer->SerializeProperty("m_aModules", m_aModules); \

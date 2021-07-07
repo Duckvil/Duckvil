@@ -13,11 +13,11 @@ _pSerializer->SerializeProperty("m_verbosity", m_verbosity); \
 _pSerializer->SerializeProperty("_flags", _flags); \
 _pSerializer->SerializeProperty("m_time", m_time); \
 _pSerializer->SerializeProperty("m_pOwner", m_pOwner); \
-_pSerializer->SerializeProperty("m_logs", m_logs); \
-_pSerializer->SerializeProperty("m_llInitTime", m_llInitTime); \
 _pSerializer->SerializeProperty("m_buffer", m_buffer); \
 _pSerializer->SerializeProperty("m_sPathFile", m_sPathFile); \
+_pSerializer->SerializeProperty("m_logs", m_logs); \
+_pSerializer->SerializeProperty("m_pLogEventPool", m_pLogEventPool); \
+_pSerializer->SerializeProperty("m_llInitTime", m_llInitTime); \
 _pSerializer->SerializeProperty("m_lastTime", m_lastTime); \
 _pSerializer->SerializeProperty("m_flags", m_flags); \
-_pSerializer->SerializeProperty("m_pLogEventPool", m_pLogEventPool); \
 }

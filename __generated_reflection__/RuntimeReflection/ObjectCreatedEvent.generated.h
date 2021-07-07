@@ -6,6 +6,5 @@ static void* Cast(void* _pObject) { return static_cast<ObjectCreatedEvent*>(_pOb
 public: \
 void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\
-_pSerializer->SerializeProperty("m_pObject", m_pObject); \
 _pSerializer->SerializeProperty("m_ullTypeID", m_ullTypeID); \
 }

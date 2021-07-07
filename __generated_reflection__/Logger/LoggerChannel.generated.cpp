@@ -9,6 +9,7 @@ using namespace Duckvil;
 DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
+DUCKVIL_RESOURCE(destructor_t) _destructor;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
 using namespace Duckvil;
 _type = record_type<Duckvil::__logger_channel_data>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__logger_channel_data");
@@ -31,13 +32,13 @@ _type = record_type<Duckvil::__logger_channel_data>(DUCKVIL_RUNTIME_REFLECTION_R
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
-_property = record_property<Memory::Queue<__logger_channel_log_info>>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_data, m_logs), "m_logs");
-_property = record_property<int64_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_data, m_llInitTime), "m_llInitTime");
 _property = record_property<char>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_data, m_buffer), "m_buffer");
 _property = record_property<char>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_data, m_sPathFile), "m_sPathFile");
+_property = record_property<Memory::Queue<__logger_channel_log_info>>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_data, m_logs), "m_logs");
+_property = record_property<Event::Pool<Event::mode::immediate>*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_data, m_pLogEventPool), "m_pLogEventPool");
+_property = record_property<int64_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_data, m_llInitTime), "m_llInitTime");
 _property = record_property<time_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_data, m_lastTime), "m_lastTime");
 _property = record_property<__logger_channel_flags>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_data, m_flags), "m_flags");
-_property = record_property<Event::Pool<Event::mode::immediate>*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_data, m_pLogEventPool), "m_pLogEventPool");
 _type = record_type<Duckvil::__logger_channel_ftable>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__logger_channel_ftable");
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
@@ -46,9 +47,7 @@ _property = record_property<__logger_channel_data*(*)(const Memory::FreeList&)>(
 _property = record_property<void(*)(__logger_channel_ftable*, __logger_channel_data*, __logger_channel_log_info&)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_ftable, log), "log");
 _property = record_property<void(*)(__logger_channel_data*, const __logger_channel_log_info&, char*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_ftable, format), "format");
 _property = record_property<void(*)(__logger_channel_ftable*, __logger_channel_data*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::__logger_channel_ftable, dispatch_logs), "dispatch_logs");
-Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
-for(size_t i = 0; i < _recordedTypes.size(); ++i) { _types[i] = _recordedTypes[i]; }
-return duckvil_recorderd_types { _types, _recordedTypes.size(), "Logger/LoggerChannel.h", 1 };
+return duckvil_recorded_types_create(_pMemoryInterface, _pAllocator, _recordedTypes, "Logger/LoggerChannel.h", 1);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
