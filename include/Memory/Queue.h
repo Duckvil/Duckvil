@@ -194,6 +194,11 @@ namespace Duckvil { namespace Memory {
             return fixed_queue_allocate(this->m_pMemoryInterface, this->m_pContainer, _data);
         }
 
+        inline Type* Allocate(Type&& _data)
+        {
+            return fixed_queue_allocate(this->m_pMemoryInterface, this->m_pContainer, std::forward<Type>(_data));
+        }
+
         inline const Type& Begin() const
         {
             return *(Type*)fixed_queue_begin(this->m_pMemoryInterface, this->m_pContainer);

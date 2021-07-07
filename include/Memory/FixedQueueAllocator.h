@@ -10,6 +10,12 @@ namespace Duckvil { namespace Memory {
         return (Type*)_pMemory->m_fnFixedQueueAllocate_(_pAllocator, &_pData, sizeof(Type), alignof(Type));
     }
 
+    template <typename Type>
+    static Type* fixed_queue_allocate(ftable* _pMemory, fixed_queue_allocator* _pAllocator, Type&& _data)
+    {
+        return (Type*)new(_pMemory->m_fnFixedQueueAllocateSize_(_pAllocator, sizeof(Type), alignof(Type))) Type(std::forward<Type>(_data));
+    }
+
     inline void* fixed_queue_begin(ftable* _pMemory, fixed_queue_allocator* _pAllocator)
     {
         return _pMemory->m_fnFixedQueueBegin_(_pAllocator);

@@ -14,6 +14,12 @@ namespace Duckvil { namespace Memory {
         return (Type*)_pMemory->m_fnFixedVectorAllocate_(_pAllocator, &_data, sizeof(Type), alignof(Type));
     }
 
+    template <typename Type>
+    static Type* fixed_vector_allocate(ftable* _pMemory, fixed_vector_allocator* _pAllocator, Type&& _data)
+    {
+        return (Type*)new(_pMemory->m_fnFixedVectorAllocateSize_(_pAllocator, sizeof(Type), alignof(Type))) Type(std::forward<Type>(_data));
+    }
+
     static void* fixed_vector_begin(ftable* _pMemory, fixed_vector_allocator* _pAllocator)
     {
         return _pMemory->m_fnFixedVectorBegin_(_pAllocator);

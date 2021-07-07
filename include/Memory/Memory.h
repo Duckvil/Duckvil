@@ -85,6 +85,7 @@ namespace Duckvil { namespace Memory {
         typedef void (*_linear_clear)(linear_allocator* _pAllocator);
 
         typedef void* (*_fixed_stack_allocate_)(fixed_stack_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_fixed_stack_allocate_size_)(fixed_stack_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment);
         typedef void* (*_fixed_stack_top_)(fixed_stack_allocator* _pAllocator);
         typedef void (*_fixed_stack_pop_)(fixed_stack_allocator* _pAllocator);
         typedef bool (*_fixed_stack_empty_)(fixed_stack_allocator* _pAllocator);
@@ -94,6 +95,7 @@ namespace Duckvil { namespace Memory {
         typedef std::size_t (*_fixed_stack_capacity_)(fixed_stack_allocator* _pAllocator);
 
         typedef void* (*_fixed_queue_allocate_)(fixed_queue_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_fixed_queue_allocate_size_)(fixed_queue_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment);
         typedef void* (*_fixed_queue_begin_)(fixed_queue_allocator* _pAllocator);
         typedef void (*_fixed_queue_pop_)(fixed_queue_allocator* _pAllocator);
         typedef bool (*_fixed_queue_empty_)(fixed_queue_allocator* _pAllocator);
@@ -104,6 +106,7 @@ namespace Duckvil { namespace Memory {
         typedef std::size_t (*_fixed_queue_capacity_)(fixed_queue_allocator* _pAllocator);
 
         typedef void* (*_fixed_array_allocate_)(fixed_array_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_fixed_array_allocate_size_)(fixed_array_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment);
         typedef void* (*_fixed_array_at_)(fixed_array_allocator* _pAllocator, std::size_t _ullIndex);
         typedef void* (*_fixed_array_begin_)(fixed_array_allocator* _pAllocator);
         typedef void* (*_fixed_array_back_)(fixed_array_allocator* _pAllocator);
@@ -119,6 +122,7 @@ namespace Duckvil { namespace Memory {
         typedef void (*_free_list_clear_)(free_list_allocator* _pAllocator);
 
         typedef void* (*_fixed_vector_allocate_)(fixed_vector_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment);
+        typedef void* (*_fixed_vector_allocate_size_)(fixed_vector_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment);
         typedef void* (*_fixed_vector_at_)(fixed_vector_allocator* _pAllocator, std::size_t _ullIndex);
         typedef void* (*_fixed_vector_begin_)(fixed_vector_allocator* _pAllocator);
         typedef void* (*_fixed_vector_back_)(fixed_vector_allocator* _pAllocator);
@@ -168,6 +172,7 @@ namespace Duckvil { namespace Memory {
         _linear_clear               m_fnLinearClear;
 
         _fixed_stack_allocate_      m_fnFixedStackAllocate_;
+        _fixed_stack_allocate_size_ m_fnFixedStackAllocateSize_;
         _fixed_stack_top_           m_fnFixedStackTop_;
         _fixed_stack_pop_           m_fnFixedStackPop_;
         _fixed_stack_empty_         m_fnFixedStackEmpty_;
@@ -177,6 +182,7 @@ namespace Duckvil { namespace Memory {
         _fixed_stack_capacity_      m_fnFixedStackCapacity_;
 
         _fixed_queue_allocate_      m_fnFixedQueueAllocate_;
+        _fixed_queue_allocate_size_ m_fnFixedQueueAllocateSize_;
         _fixed_queue_begin_         m_fnFixedQueueBegin_;
         _fixed_queue_pop_           m_fnFixedQueuePop_;
         _fixed_queue_empty_         m_fnFixedQueueEmpty_;
@@ -187,6 +193,7 @@ namespace Duckvil { namespace Memory {
         _fixed_queue_capacity_      m_fnFixedQueueCapacity_;
 
         _fixed_array_allocate_      m_fnFixedArrayAllocate_;
+        _fixed_array_allocate_size_ m_fnFixedArrayAllocateSize_;
         _fixed_array_begin_         m_fnFixedArrayBegin_;
         _fixed_array_back_          m_fnFixedArrayBack_;
         _fixed_array_at_            m_fnFixedArrayAt_;
@@ -202,6 +209,7 @@ namespace Duckvil { namespace Memory {
         _free_list_clear_           m_fnFreeListClear_;
 
         _fixed_vector_allocate_         m_fnFixedVectorAllocate_;
+        _fixed_vector_allocate_size_    m_fnFixedVectorAllocateSize_;
         _fixed_vector_begin_            m_fnFixedVectorBegin_;
         _fixed_vector_back_             m_fnFixedVectorBack_;
         _fixed_vector_end_              m_fnFixedVectorEnd_;

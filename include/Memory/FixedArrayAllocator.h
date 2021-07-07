@@ -12,6 +12,12 @@ namespace Duckvil { namespace Memory {
         return (Type*)_pMemory->m_fnFixedArrayAllocate_(_pAllocator, &_pData, sizeof(Type), alignof(Type));
     }
 
+    template <typename Type>
+    static Type* fixed_array_allocate(ftable* _pMemory, fixed_array_allocator* _pAllocator, Type&& _data)
+    {
+        return (Type*)new(_pMemory->m_fnFixedArrayAllocateSize_(_pAllocator, sizeof(Type), alignof(Type))) Type(std::forward<Type>(_data));
+    }
+
     inline void* fixed_array_begin(ftable* _pMemory, fixed_array_allocator* _pAllocator)
     {
         return _pMemory->m_fnFixedArrayBegin_(_pAllocator);

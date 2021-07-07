@@ -10,6 +10,12 @@ namespace Duckvil { namespace Memory {
         return (Type*)_pMemory->m_fnFixedStackAllocate_(_pAllocator, &_pData, sizeof(Type), alignof(Type));
     }
 
+    template <typename Type>
+    static Type* fixed_stack_allocate(ftable* _pMemory, fixed_stack_allocator* _pAllocator, Type&& _data)
+    {
+        return (Type*)new(_pMemory->m_fnFixedStackAllocateSize_(_pAllocator, sizeof(Type), alignof(Type))) Type(std::forward<Type>(_data));
+    }
+
     inline void* fixed_stack_top(ftable* _pMemory, fixed_stack_allocator* _pAllocator)
     {
         return _pMemory->m_fnFixedStackTop_(_pAllocator);

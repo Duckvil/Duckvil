@@ -248,6 +248,67 @@ namespace Duckvil { namespace Memory {
             }
         }
 
+        void* Allocate(Type&& _value)
+        {
+            if constexpr(std::is_base_of<Container, Type>::value)
+            {
+                DUCKVIL_STATIC_ASSERT(false, "Currently not supported yet");
+
+                // if constexpr(std::is_base_of<SpecifiedResizableContainer<typename Type::container, typename Type::type>, Type>::value)
+                // {
+                //     typedef SpecifiedResizableContainer<typename Type::container, typename Type::type> ContainerType;
+
+                //     const ContainerType&& _container =
+                //         (const ContainerType&&)_value;
+
+                //     ContainerType _container2;
+
+                //     _container2.m_fnCopy = std::move(_container.m_fnCopy);
+                //     _container2.m_fnDestruct = std::move(_container.m_fnDestruct);
+                //     _container2.m_fnResize = std::move(_container.m_fnResize);
+                //     _container2.m_pAllocator = std::move(_container.m_pAllocator);
+                //     _container2.m_pMemoryInterface = std::move(_container.m_pMemoryInterface);
+                //     _container2.m_pContainer = std::move(_container.m_pContainer);
+
+                //     _container.m_fnCopy = nullptr;
+                //     _container.m_fnDestruct = nullptr;
+                //     _container.m_fnResize = nullptr;
+                //     _container.m_pAllocator = nullptr;
+                //     _container.m_pMemoryInterface = nullptr;
+                //     _container.m_pContainer = nullptr;
+
+                //     return fixed_vector_allocate(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _container2);
+                // }
+                // else
+                // {
+                //     const SpecifiedContainer<typename Type::container, typename Type::type>&& _container =
+                //         (const SpecifiedContainer<typename Type::container, typename Type::type>&&)_value;
+
+                //     SpecifiedContainer<typename Type::container, typename Type::type> _container2;
+
+                //     _container2.m_fnCopy = std::move(_container.m_fnCopy);
+                //     _container2.m_fnDestruct = std::move(_container.m_fnDestruct);
+                //     _container2.m_fnResize = std::move(_container.m_fnResize);
+                //     _container2.m_pAllocator = std::move(_container.m_pAllocator);
+                //     _container2.m_pMemoryInterface = std::move(_container.m_pMemoryInterface);
+                //     _container2.m_pContainer = std::move(_container.m_pContainer);
+
+                //     _container.m_fnCopy = nullptr;
+                //     _container.m_fnDestruct = nullptr;
+                //     _container.m_fnResize = nullptr;
+                //     _container.m_pAllocator = nullptr;
+                //     _container.m_pMemoryInterface = nullptr;
+                //     _container.m_pContainer = nullptr;
+
+                //     return fixed_vector_allocate(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _container2);
+                // }
+            }
+            else
+            {
+                return fixed_vector_allocate(SContainer::m_pMemoryInterface, SContainer::m_pContainer, std::forward<Type>(_value));
+            }
+        }
+
         const Type& At(std::size_t _ullIndex) const
         {
             return *(Type*)fixed_vector_at(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _ullIndex);

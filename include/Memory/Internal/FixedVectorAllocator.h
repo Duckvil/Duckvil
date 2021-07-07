@@ -5,6 +5,7 @@
 namespace Duckvil { namespace Memory {
 
     void* impl_fixed_vector_allocate(fixed_vector_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment = 8);
+    void* impl_fixed_vector_allocate_size(fixed_vector_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment = 8);
 
     void* impl_fixed_vector_at(fixed_vector_allocator* _pAllocator, std::size_t _ullIndex);
     void* impl_fixed_vector_begin(fixed_vector_allocator* _pAllocator);

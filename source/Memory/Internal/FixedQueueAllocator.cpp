@@ -31,6 +31,29 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
+    void* impl_fixed_queue_allocate_size(fixed_queue_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment)
+    {
+        void* _memory = nullptr;
+
+        if(_pAllocator->m_ullUsed >= _pAllocator->m_ullCapacity)
+        {
+            return _memory;
+        }
+        else if(_pAllocator->m_ullHead + _pAllocator->m_ullBlockSize >= _pAllocator->m_ullCapacity && _pAllocator->m_ullTail == _pAllocator->m_ullHead)
+        {
+            _pAllocator->m_ullTail = 0;
+            _pAllocator->m_ullHead = 0;
+        }
+
+        uint8_t _padding = 0;
+        _memory = calculate_aligned_pointer((uint8_t*)_pAllocator + sizeof(fixed_queue_allocator) + _pAllocator->m_ullHead, _ucAlignment, _padding);
+
+        _pAllocator->m_ullHead += _pAllocator->m_ullBlockSize + _padding;
+        _pAllocator->m_ullUsed += _pAllocator->m_ullBlockSize + _padding;
+
+        return _memory;
+    }
+
     void* impl_fixed_queue_begin(fixed_queue_allocator* _pAllocator)
     {
         void* _memory = (void*)((uint8_t*)_pAllocator + sizeof(fixed_queue_allocator) + _pAllocator->m_ullTail);

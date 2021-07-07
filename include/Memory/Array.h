@@ -184,6 +184,18 @@ namespace Duckvil { namespace Memory {
             }
         }
 
+        inline Type* Allocate(Type&& _data)
+        {
+            if constexpr(std::is_base_of<Container, Type>::value)
+            {
+                DUCKVIL_STATIC_ASSERT(false, "Currently not supported yet");
+            }
+            else
+            {
+                return fixed_array_allocate(SContainer::m_pMemoryInterface, SContainer::m_pContainer, std::forward<Type>(_data));
+            }
+        }
+
         const Type& At(std::size_t _ullIndex) const
         {
             return *(Type*)fixed_array_at(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _ullIndex);

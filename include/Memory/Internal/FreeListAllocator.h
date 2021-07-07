@@ -6,8 +6,8 @@ namespace Duckvil { namespace Memory {
 
     struct __free_list_header
     {
-        uint8_t m_ucPadding = 0; // How much add to reach node
         std::size_t m_ullSize = 0; // Total size = sizeof(__free_list_header) + padding + __free_list_node + data_size
+        uint8_t m_ucPadding = 0; // How much add to reach node
     };
 
     struct __free_list_node
