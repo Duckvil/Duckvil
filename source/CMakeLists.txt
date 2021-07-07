@@ -93,6 +93,7 @@ if(NOT DUCKVIL_CICD)
                 ${PROJECT_ID}
                 ${STATIC_LIBRARIES}
                 ${LIBS}
+                flecs_static
             )
 
             if(${DUCKVIL_TRACY_PROFILER})
