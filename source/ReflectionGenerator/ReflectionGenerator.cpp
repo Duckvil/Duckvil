@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 
     Duckvil::Memory::init_callback _fnMemoryInit;
 
-    _module.get(_memoryModule, "duckvil_memory_init", (void**)&_fnMemoryInit);
+    _module.get(_memoryModule, "duckvil_memory_init", reinterpret_cast<void**>(&_fnMemoryInit));
 
     Duckvil::Memory::ftable* _memoryInterface = _fnMemoryInit();
     Duckvil::Memory::linear_allocator* _mainMemoryAllocator;
@@ -78,21 +78,21 @@ int main(int argc, char* argv[])
     Duckvil::Parser::__lexer_ftable* (*_lexer_init)();
     Duckvil::Parser::__ast_ftable* (*_ast_init)();
 
-    _module.get(_parser, "duckvil_lexer_init", (void**)&_lexer_init);
-    _module.get(_parser, "duckvil_ast_init", (void**)&_ast_init);
+    _module.get(_parser, "duckvil_lexer_init", reinterpret_cast<void**>(&_lexer_init));
+    _module.get(_parser, "duckvil_ast_init", reinterpret_cast<void**>(&_ast_init));
 
     Duckvil::Parser::__ast_ftable* _ast = _ast_init();
     Duckvil::Parser::__lexer_ftable* _lexerFtable = _lexer_init();
 
     Duckvil::RuntimeReflection::__generator_ftable* (*_runtime_reflection_generator)();
 
-    _module.get(_reflectionModule, "duckvil_runtime_reflection_generator_init", (void**)&_runtime_reflection_generator);
+    _module.get(_reflectionModule, "duckvil_runtime_reflection_generator_init", reinterpret_cast<void**>(&_runtime_reflection_generator));
 
     duckvil_runtime_reflection_init_callback _runtimeReflectionInit;
     duckvil_runtime_reflection_recorder_init_callback _runtimeReflectionRecorderInit;
 
-    _module.get(_reflectionModule, "duckvil_runtime_reflection_init", (void**)&_runtimeReflectionInit);
-    _module.get(_reflectionModule, "duckvil_runtime_reflection_recorder_init", (void**)&_runtimeReflectionRecorderInit);
+    _module.get(_reflectionModule, "duckvil_runtime_reflection_init", reinterpret_cast<void**>(&_runtimeReflectionInit));
+    _module.get(_reflectionModule, "duckvil_runtime_reflection_recorder_init", reinterpret_cast<void**>(&_runtimeReflectionRecorderInit));
 
     _reflectionFTable = _runtimeReflectionInit();
     Duckvil::RuntimeReflection::__recorder_ftable* _reflectionRecorderFTable = _runtimeReflectionRecorderInit();
@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
         const Duckvil::PlugNPlay::__module_information& _loadedModule = _loadedModules[i];
         uint32_t (*get_recorder_count)();
 
-        _module.get(_loadedModule, "duckvil_get_runtime_reflection_recorder_count", (void**)&get_recorder_count);
+        _module.get(_loadedModule, "duckvil_get_runtime_reflection_recorder_count", reinterpret_cast<void**>(&get_recorder_count));
 
         if(get_recorder_count == nullptr)
         {
@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
         {
             duckvil_recorderd_types (*record)(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData);
 
-            _module.get(_loadedModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(j)).c_str(), (void**)&record);
+            _module.get(_loadedModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(j)).c_str(), reinterpret_cast<void**>(&record));
 
             if(record == nullptr)
             {

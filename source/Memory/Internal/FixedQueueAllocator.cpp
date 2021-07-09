@@ -21,7 +21,7 @@ namespace Duckvil { namespace Memory {
         }
 
         uint8_t _padding = 0;
-        _memory = calculate_aligned_pointer((uint8_t*)_pAllocator + sizeof(fixed_queue_allocator) + _pAllocator->m_ullHead, _ucAlignment, _padding);
+        _memory = calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_queue_allocator) + _pAllocator->m_ullHead, _ucAlignment, _padding);
 
         memcpy(_memory, _pData, _ullSize);
 
@@ -46,7 +46,7 @@ namespace Duckvil { namespace Memory {
         }
 
         uint8_t _padding = 0;
-        _memory = calculate_aligned_pointer((uint8_t*)_pAllocator + sizeof(fixed_queue_allocator) + _pAllocator->m_ullHead, _ucAlignment, _padding);
+        _memory = calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_queue_allocator) + _pAllocator->m_ullHead, _ucAlignment, _padding);
 
         _pAllocator->m_ullHead += _pAllocator->m_ullBlockSize + _padding;
         _pAllocator->m_ullUsed += _pAllocator->m_ullBlockSize + _padding;
@@ -56,7 +56,7 @@ namespace Duckvil { namespace Memory {
 
     void* impl_fixed_queue_begin(fixed_queue_allocator* _pAllocator)
     {
-        void* _memory = (void*)((uint8_t*)_pAllocator + sizeof(fixed_queue_allocator) + _pAllocator->m_ullTail);
+        void* _memory = static_cast<void*>(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_queue_allocator) + _pAllocator->m_ullTail);
 
         return _memory;
     }
@@ -71,7 +71,7 @@ namespace Duckvil { namespace Memory {
         }
 
     // Maybe some macro for clearing memory
-        memset((uint8_t*)_pAllocator + sizeof(fixed_queue_allocator) + _pAllocator->m_ullTail, 0, _pAllocator->m_ullBlockSize);
+        memset(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_queue_allocator) + _pAllocator->m_ullTail, 0, _pAllocator->m_ullBlockSize);
 
         _pAllocator->m_ullTail += _pAllocator->m_ullBlockSize;
 
@@ -90,7 +90,7 @@ namespace Duckvil { namespace Memory {
 
     void impl_fixed_queue_clear(fixed_queue_allocator* _pAllocator)
     {
-        memset((uint8_t*)_pAllocator + sizeof(fixed_queue_allocator), 0, _pAllocator->m_ullCapacity);
+        memset(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_queue_allocator), 0, _pAllocator->m_ullCapacity);
         _pAllocator->m_ullHead = 0;
         _pAllocator->m_ullUsed = 0;
         _pAllocator->m_ullTail = 0;
@@ -109,7 +109,7 @@ namespace Duckvil { namespace Memory {
         _allocator->m_ullTail = (*_pAllocator)->m_ullTail;
         _allocator->m_ullHead = (*_pAllocator)->m_ullHead;
 
-        memcpy((uint8_t*)_allocator + sizeof(fixed_queue_allocator), (uint8_t*)(*_pAllocator) + sizeof(fixed_queue_allocator), (*_pAllocator)->m_ullUsed);
+        memcpy(reinterpret_cast<uint8_t*>(_allocator) + sizeof(fixed_queue_allocator), reinterpret_cast<uint8_t*>(*_pAllocator) + sizeof(fixed_queue_allocator), (*_pAllocator)->m_ullUsed);
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         memcpy(_allocator->m_pDebugData->m_aLabel, (*_pAllocator)->m_pDebugData->m_aLabel, 128);

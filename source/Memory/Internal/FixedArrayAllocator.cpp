@@ -14,7 +14,7 @@ namespace Duckvil { namespace Memory {
         }
 
         uint8_t _padding = 0;
-        _memory = calculate_aligned_pointer((uint8_t*)_pAllocator + sizeof(fixed_array_allocator) + _pAllocator->m_ullUsed, _ucAlignment, _padding);
+        _memory = calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_array_allocator) + _pAllocator->m_ullUsed, _ucAlignment, _padding);
 
         memcpy(_memory, _pData, _ullSize);
 
@@ -33,7 +33,7 @@ namespace Duckvil { namespace Memory {
         }
 
         uint8_t _padding = 0;
-        _memory = calculate_aligned_pointer((uint8_t*)_pAllocator + sizeof(fixed_array_allocator) + _pAllocator->m_ullUsed, _ucAlignment, _padding);
+        _memory = calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_array_allocator) + _pAllocator->m_ullUsed, _ucAlignment, _padding);
 
         _pAllocator->m_ullUsed += _pAllocator->m_ullBlockSize + _padding;
 
@@ -42,17 +42,17 @@ namespace Duckvil { namespace Memory {
 
     void* impl_fixed_array_begin(fixed_array_allocator* _pAllocator)
     {
-        return (uint8_t*)_pAllocator + sizeof(fixed_array_allocator);
+        return reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_array_allocator);
     }
 
     void* impl_fixed_array_back(fixed_array_allocator* _pAllocator)
     {
-        return (uint8_t*)_pAllocator + sizeof(fixed_array_allocator) + _pAllocator->m_ullUsed - _pAllocator->m_ullBlockSize;
+        return reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_array_allocator) + _pAllocator->m_ullUsed - _pAllocator->m_ullBlockSize;
     }
 
     void* impl_fixed_array_at(fixed_array_allocator* _pAllocator, std::size_t _ullIndex)
     {
-        return (uint8_t*)_pAllocator + sizeof(fixed_array_allocator) + (_ullIndex * _pAllocator->m_ullBlockSize);
+        return reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_array_allocator) + (_ullIndex * _pAllocator->m_ullBlockSize);
     }
 
     std::size_t impl_fixed_array_size(fixed_array_allocator* _pAllocator)
@@ -72,7 +72,7 @@ namespace Duckvil { namespace Memory {
 
     void impl_fixed_array_clear(fixed_array_allocator* _pAllocator)
     {
-        memset((uint8_t*)_pAllocator + sizeof(fixed_array_allocator), 0, _pAllocator->m_ullCapacity);
+        memset(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_array_allocator), 0, _pAllocator->m_ullCapacity);
         _pAllocator->m_ullUsed = 0;
     }
 

@@ -36,7 +36,7 @@ namespace Duckvil { namespace Memory {
         _allocator->m_ullUsed = (*_pAllocator)->m_ullUsed;
         _allocator->m_ullPosition = (*_pAllocator)->m_ullPosition;
 
-        memcpy((uint8_t*)_allocator + sizeof(byte_buffer_allocator), (uint8_t*)(*_pAllocator) + sizeof(byte_buffer_allocator), (*_pAllocator)->m_ullUsed);
+        memcpy(reinterpret_cast<uint8_t*>(_allocator) + sizeof(byte_buffer_allocator), reinterpret_cast<uint8_t*>(*_pAllocator) + sizeof(byte_buffer_allocator), (*_pAllocator)->m_ullUsed);
 
 /*#ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pParentAllocator->m_fnOnAllocate;
@@ -76,7 +76,7 @@ namespace Duckvil { namespace Memory {
 
     void impl_byte_buffer_write(byte_buffer_allocator* _pAllocator, std::size_t _ullTypeSize, const void* _pValue)
     {
-        memcpy((uint8_t*)_pAllocator + sizeof(byte_buffer_allocator) + _pAllocator->m_ullPosition, _pValue, _ullTypeSize);
+        memcpy(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(byte_buffer_allocator) + _pAllocator->m_ullPosition, _pValue, _ullTypeSize);
 
         _pAllocator->m_ullUsed += _ullTypeSize;
         _pAllocator->m_ullPosition += _ullTypeSize;
@@ -84,7 +84,7 @@ namespace Duckvil { namespace Memory {
 
     void* impl_byte_buffer_read(byte_buffer_allocator* _pAllocator, std::size_t _ullTypeSize)
     {
-        void* _res = (void*)((uint8_t*)_pAllocator + sizeof(byte_buffer_allocator) + _pAllocator->m_ullPosition);
+        void* _res = static_cast<void*>(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(byte_buffer_allocator) + _pAllocator->m_ullPosition);
 
         _pAllocator->m_ullPosition += _ullTypeSize;
 

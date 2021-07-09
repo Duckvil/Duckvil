@@ -20,14 +20,14 @@ namespace Duckvil { namespace Parser {
         switch(_entity->m_scopeType)
         {
         case __ast_entity_type::__ast_entity_type_structure:
-            printf("Structure %s\n", ((__ast_entity_structure*)_entity)->m_sName.c_str());
+            printf("Structure %s\n", (static_cast<const __ast_entity_structure*>(_entity))->m_sName.c_str());
             break;
         case __ast_entity_type::__ast_entity_type_namespace:
-            printf("Namespace %s\n", ((__ast_entity_namespace*)_entity)->m_sName.c_str());
+            printf("Namespace %s\n", (static_cast<const __ast_entity_namespace*>(_entity))->m_sName.c_str());
             break;
         case __ast_entity_type::__ast_entity_type_enum:
-            printf("Enum %s\n", ((__ast_entity_enum*)_entity)->m_sName.c_str());
-            for(const std::string& _element : ((__ast_entity_enum*)_entity)->m_aElements)
+            printf("Enum %s\n", (static_cast<const __ast_entity_enum*>(_entity))->m_sName.c_str());
+            for(const std::string& _element : (static_cast<const __ast_entity_enum*>(_entity))->m_aElements)
             {
                 DUCKVIL_SPACES
                 printf(" Element %s\n", _element.c_str());
@@ -36,9 +36,9 @@ namespace Duckvil { namespace Parser {
         case __ast_entity_type::__ast_entity_type_variable:
             printf("Variable\n");
             DUCKVIL_SPACES
-            printf(" Name: %s\n", ((__ast_entity_variable*)_entity)->m_sName.c_str());
+            printf(" Name: %s\n", (static_cast<const __ast_entity_variable*>(_entity))->m_sName.c_str());
             DUCKVIL_SPACES
-            printf(" Type: %s\n", ((__ast_entity_variable*)_entity)->m_sType.c_str());
+            printf(" Type: %s\n", (static_cast<const __ast_entity_variable*>(_entity))->m_sType.c_str());
             break;
         case __ast_entity_type::__ast_entity_type_constructor:
             printf("Constructor\n");
@@ -49,9 +49,9 @@ namespace Duckvil { namespace Parser {
         case __ast_entity_type::__ast_entity_type_function:
             printf("Function\n");
             DUCKVIL_SPACES
-            printf(" Name: %s\n", ((__ast_entity_function*)_entity)->m_sName.c_str());
+            printf(" Name: %s\n", (static_cast<const __ast_entity_function*>(_entity))->m_sName.c_str());
             DUCKVIL_SPACES
-            printf(" Return: %s\n", ((__ast_entity_function*)_entity)->m_sReturnType.c_str());
+            printf(" Return: %s\n", (static_cast<const __ast_entity_function*>(_entity))->m_sReturnType.c_str());
             break;
         }
 
@@ -773,22 +773,22 @@ namespace Duckvil { namespace Parser {
             else if(_sToken == "inline")
             {
                 _skipped = true;
-                _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_inline);
+                _flags = static_cast<__ast_flags>(static_cast<uint8_t>(_flags) | static_cast<uint8_t>(__ast_flags::__ast_flags_inline));
             }
             else if(_sToken == "static")
             {
                 _skipped = true;
-                _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_static);
+                _flags = static_cast<__ast_flags>(static_cast<uint8_t>(_flags) | static_cast<uint8_t>(__ast_flags::__ast_flags_static));
             }
             else if(_sToken == "const")
             {
                 _skipped = true;
-                _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_const);
+                _flags = static_cast<__ast_flags>(static_cast<uint8_t>(_flags) | static_cast<uint8_t>(__ast_flags::__ast_flags_const));
             }
             else if(_sToken == "virtual")
             {
                 _skipped = true;
-                _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_virtual);
+                _flags = static_cast<__ast_flags>(static_cast<uint8_t>(_flags) | static_cast<uint8_t>(__ast_flags::__ast_flags_virtual));
             }
             else
             {
@@ -802,7 +802,7 @@ namespace Duckvil { namespace Parser {
 
             if(_pAST->m_pPendingScope != nullptr)
             {
-                _entity = (__ast_entity_function*)_pAST->m_pPendingScope;
+                _entity = static_cast<__ast_entity_function*>(_pAST->m_pPendingScope);
                 _pAST->m_pCurrentScope = _pAST->m_pPendingScope;
                 _pAST->m_pPendingScope = nullptr;
             }
@@ -854,7 +854,7 @@ namespace Duckvil { namespace Parser {
 
             if(_pAST->m_pPendingScope != nullptr)
             {
-                _entity = (__ast_entity_variable*)_pAST->m_pPendingScope;
+                _entity = static_cast<__ast_entity_variable*>(_pAST->m_pPendingScope);
                 _pAST->m_pCurrentScope = _pAST->m_pPendingScope;
                 _pAST->m_pPendingScope = nullptr;
             }
@@ -1045,21 +1045,21 @@ namespace Duckvil { namespace Parser {
             }
             else if(_sToken == "inline")
             {
-                _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_inline);
+                _flags = static_cast<__ast_flags>(static_cast<uint8_t>(_flags) | static_cast<uint8_t>(__ast_flags::__ast_flags_inline));
             }
             else if(_sToken == "static")
             {
-                _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_static);
+                _flags = static_cast<__ast_flags>(static_cast<uint8_t>(_flags) | static_cast<uint8_t>(__ast_flags::__ast_flags_static));
             }
             else if(_sToken == "const")
             {
                 _internalTmp += _sToken;
                 _wasKeyword = true;
-                _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_const);
+                _flags = static_cast<__ast_flags>(static_cast<uint8_t>(_flags) | static_cast<uint8_t>(__ast_flags::__ast_flags_const));
             }
             else if(_sToken == "virtual")
             {
-                _flags = static_cast<__ast_flags>((uint8_t)_flags | (uint8_t)__ast_flags::__ast_flags_virtual);
+                _flags = static_cast<__ast_flags>(static_cast<uint8_t>(_flags) | static_cast<uint8_t>(__ast_flags::__ast_flags_virtual));
             }
             else if(_sToken == "=")
             {
@@ -1081,7 +1081,7 @@ namespace Duckvil { namespace Parser {
 
                 if(_pAST->m_pPendingScope != nullptr)
                 {
-                    _entity = (__ast_entity_function*)_pAST->m_pPendingScope;
+                    _entity = static_cast<__ast_entity_function*>(_pAST->m_pPendingScope);
                 }
                 else
                 {
@@ -1120,7 +1120,7 @@ namespace Duckvil { namespace Parser {
 
                 if(_pAST->m_pPendingScope != nullptr)
                 {
-                    _entity = (__ast_entity_variable*)_pAST->m_pPendingScope;
+                    _entity = static_cast<__ast_entity_variable*>(_pAST->m_pPendingScope);
                 }
                 else
                 {
@@ -1151,7 +1151,7 @@ namespace Duckvil { namespace Parser {
 
             if(_pAST->m_pPendingScope != nullptr)
             {
-                _entity = (__ast_entity_callback*)_pAST->m_pPendingScope;
+                _entity = static_cast<__ast_entity_callback*>(_pAST->m_pPendingScope);
             }
             else
             {
@@ -1184,7 +1184,7 @@ namespace Duckvil { namespace Parser {
 
     void process_inheritance(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, __ast* _pAST, std::string& _sToken, bool& _bContinue)
     {
-        __ast_entity_structure* _structure = (__ast_entity_structure*)_pAST->m_pPendingScope;
+        __ast_entity_structure* _structure = static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope);
         __ast_access _access = __ast_access::__ast_access_not_specified;
         std::string _name;
 
@@ -1237,11 +1237,11 @@ namespace Duckvil { namespace Parser {
     {
         if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_namespace)
         {
-            ((__ast_entity_namespace*)_pAST->m_pPendingScope)->m_sName = _sToken;
+            (static_cast<__ast_entity_namespace*>(_pAST->m_pPendingScope))->m_sName = _sToken;
         }
         else if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure)
         {
-            ((__ast_entity_structure*)_pAST->m_pPendingScope)->m_sName = _sToken;
+            (static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_sName = _sToken;
             uint32_t _triBrackets = 0;
 
             while(_pLexer->next_token(_pLexerData, &_sToken))
@@ -1275,9 +1275,9 @@ namespace Duckvil { namespace Parser {
         }
         else if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_enum)
         {
-            ((__ast_entity_enum*)_pAST->m_pPendingScope)->m_sName = _sToken;
+            (static_cast<__ast_entity_enum*>(_pAST->m_pPendingScope))->m_sName = _sToken;
         }
-        else if(_pAST->m_pCurrentScope != nullptr && _pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure && ((__ast_entity_structure*)_pAST->m_pCurrentScope)->m_sName == _sToken)
+        else if(_pAST->m_pCurrentScope != nullptr && _pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure && (static_cast<__ast_entity_structure*>(_pAST->m_pCurrentScope))->m_sName == _sToken)
         {
             std::string _copy = _sToken;
 
@@ -1290,7 +1290,7 @@ namespace Duckvil { namespace Parser {
 
                 if(_pAST->m_pPendingScope != nullptr)
                 {
-                    _scope = (__ast_entity_constructor*)_pAST->m_pPendingScope;
+                    _scope = static_cast<__ast_entity_constructor*>(_pAST->m_pPendingScope);
                 }
                 else
                 {
@@ -1322,7 +1322,7 @@ namespace Duckvil { namespace Parser {
         }
         else if(_pAST->m_pCurrentScope != nullptr && _pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_enum)
         {
-            __ast_entity_enum* _enum = (__ast_entity_enum*)_pAST->m_pCurrentScope;
+            __ast_entity_enum* _enum = static_cast<__ast_entity_enum*>(_pAST->m_pCurrentScope);
 
             if(_sToken == ",")
             {
@@ -1449,7 +1449,7 @@ namespace Duckvil { namespace Parser {
                 {
                     _pAST->m_pPendingScope->m_pParentScope = _pAST->m_pCurrentScope;
 
-                    ((__ast_entity_structure*)_pAST->m_pPendingScope)->m_aTemplates.insert(((__ast_entity_structure*)_pAST->m_pPendingScope)->m_aTemplates.begin(), _templates.begin(), _templates.end());
+                    (static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_aTemplates.insert((static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_aTemplates.begin(), _templates.begin(), _templates.end());
 
                     _templates.clear();
 
@@ -1480,7 +1480,7 @@ namespace Duckvil { namespace Parser {
                 {
                     _pAST->m_pPendingScope->m_pParentScope = _pAST->m_pCurrentScope;
 
-                    ((__ast_entity_structure*)_pAST->m_pPendingScope)->m_aTemplates.insert(((__ast_entity_structure*)_pAST->m_pPendingScope)->m_aTemplates.begin(), _templates.begin(), _templates.end());
+                    (static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_aTemplates.insert((static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_aTemplates.begin(), _templates.begin(), _templates.end());
 
                     _templates.clear();
 
@@ -1599,7 +1599,7 @@ namespace Duckvil { namespace Parser {
 
                 if(_pAST->m_pPendingScope != nullptr)
                 {
-                    _scope = (__ast_entity_destructor*)_pAST->m_pPendingScope;
+                    _scope = static_cast<__ast_entity_destructor*>(_pAST->m_pPendingScope);
                 }
                 else
                 {

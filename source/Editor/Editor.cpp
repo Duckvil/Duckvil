@@ -35,7 +35,7 @@ namespace Duckvil { namespace Editor {
 
     void* init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Window::IWindow* _pWindow, Graphics::Renderer::renderer_ftable* _pRenderer, Graphics::Renderer::renderer_data* _pRendererData)
     {
-        ImGuiEditorData* _data = (ImGuiEditorData*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(ImGuiEditorData), alignof(ImGuiEditorData));
+        ImGuiEditorData* _data = static_cast<ImGuiEditorData*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(ImGuiEditorData), alignof(ImGuiEditorData)));
 
         _data->m_pRenderer = _pRenderer;
         _data->m_pRendererData = _pRendererData;
@@ -83,7 +83,7 @@ namespace Duckvil { namespace Editor {
 
     void post_init(const Memory::FreeList& _heap, void* _pData, EditorFTable* _pEditor, Event::Pool<Event::mode::immediate>* _pEventPool, HotReloader::RuntimeCompilerSystem* _pHotReloader)
     {
-        ImGuiEditorData* _data = (ImGuiEditorData*)_pData;
+        ImGuiEditorData* _data = static_cast<ImGuiEditorData*>(_pData);
 
         _data->m_heap = _heap;
         _data->m_pEditorEvents = Event::Pool<Event::mode::immediate>(_heap, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData);
@@ -171,7 +171,7 @@ namespace Duckvil { namespace Editor {
         for(uint32_t i = 0; i < _data->m_aDraws.Size(); ++i)
         {
             const Draw& _widget = _data->m_aDraws[i];
-            Widget* _pWidget = (Widget*)_widget.m_pObject;
+            Widget* _pWidget = static_cast<Widget*>(_widget.m_pObject);
 
             if(RuntimeReflection::get_type(_widget.m_typeHandle).m_ullTypeID == RuntimeReflection::get_type(RuntimeReflection::get_type("ViewportWidget", { "Duckvil", "Editor" })).m_ullTypeID)
             {
@@ -192,7 +192,7 @@ namespace Duckvil { namespace Editor {
             RuntimeReflection::ReflectedType<> _type(_data->m_heap, _event._typeHandle);
             RuntimeReflection::__variant _spawnableVariant = RuntimeReflection::get_meta(_event._typeHandle, ReflectionFlag::Spwanable);
 
-            if(_spawnableVariant.m_ullTypeID == -1 || (_spawnableVariant.m_ullTypeID == typeid(bool).hash_code() && !*(bool*)_spawnableVariant.m_pData))
+            if(_spawnableVariant.m_ullTypeID == -1 || (_spawnableVariant.m_ullTypeID == typeid(bool).hash_code() && !*static_cast<bool*>(_spawnableVariant.m_pData)))
             {
                 return;
             }
@@ -301,7 +301,7 @@ namespace Duckvil { namespace Editor {
     {
         ZoneScopedN("Editor");
 
-        ImGuiEditorData* _data = (ImGuiEditorData*)_pData;
+        ImGuiEditorData* _data = static_cast<ImGuiEditorData*>(_pData);
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame((SDL_Window*)_pWindow->GetWindow());
@@ -360,7 +360,7 @@ namespace Duckvil { namespace Editor {
         {
             const Draw& _widget = _data->m_aDraws[i];
 
-            ((Widget*)_widget.m_pObject->*_widget.m_fnDraw)();
+            (static_cast<Widget*>(_widget.m_pObject)->*_widget.m_fnDraw)();
         }
 
         ::ImGui::Render();
@@ -417,7 +417,7 @@ namespace Duckvil { namespace Editor {
 
     void add_draw(void* _pData, Draw _draw)
     {
-        ImGuiEditorData* _data = (ImGuiEditorData*)_pData;
+        ImGuiEditorData* _data = static_cast<ImGuiEditorData*>(_pData);
         uint32_t _found = -1;
 
         for(uint32_t i = 0; i < _data->m_aDraws.Size(); ++i)
@@ -469,7 +469,7 @@ namespace Duckvil { namespace Editor {
 
     void set_window_event_pool(void* _pData, Event::Pool<Event::mode::buffered>* _pWindowEventPool)
     {
-        ((ImGuiEditorData*)_pData)->m_pWindowEventPool = _pWindowEventPool;
+        (static_cast<ImGuiEditorData*>(_pData))->m_pWindowEventPool = _pWindowEventPool;
     }
 
 }}

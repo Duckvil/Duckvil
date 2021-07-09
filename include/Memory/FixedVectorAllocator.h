@@ -11,13 +11,13 @@ namespace Duckvil { namespace Memory {
     template <typename Type>
     static Type* fixed_vector_allocate(ftable* _pMemory, fixed_vector_allocator* _pAllocator, const Type& _data)
     {
-        return (Type*)_pMemory->m_fnFixedVectorAllocate_(_pAllocator, &_data, sizeof(Type), alignof(Type));
+        return static_cast<Type*>(_pMemory->m_fnFixedVectorAllocate_(_pAllocator, &_data, sizeof(Type), alignof(Type)));
     }
 
     template <typename Type>
     static Type* fixed_vector_allocate(ftable* _pMemory, fixed_vector_allocator* _pAllocator, Type&& _data)
     {
-        return (Type*)new(_pMemory->m_fnFixedVectorAllocateSize_(_pAllocator, sizeof(Type), alignof(Type))) Type(std::forward<Type>(_data));
+        return new(_pMemory->m_fnFixedVectorAllocateSize_(_pAllocator, sizeof(Type), alignof(Type))) Type(std::forward<Type>(_data));
     }
 
     static void* fixed_vector_begin(ftable* _pMemory, fixed_vector_allocator* _pAllocator)
@@ -43,7 +43,7 @@ namespace Duckvil { namespace Memory {
     template <typename Type>
     static Type* fixed_vector_at(ftable* _pMemory, fixed_vector_allocator* _pAllocator, std::size_t _ullIndex)
     {
-        return (Type*)fixed_vector_at(_pMemory, _pAllocator, _ullIndex);
+        return static_cast<Type*>(fixed_vector_at(_pMemory, _pAllocator, _ullIndex));
     }
 
     static bool fixed_vector_empty(ftable* _pMemory, fixed_vector_allocator* _pAllocator)

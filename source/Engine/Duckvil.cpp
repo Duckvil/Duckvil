@@ -44,8 +44,8 @@ namespace Duckvil {
         duckvil_runtime_reflection_init_callback _runtimeReflectionInit;
         duckvil_runtime_reflection_recorder_init_callback _runtimeReflectionRecorderInit;
 
-        _pModule->get(_runtimeReflectionModule, "duckvil_runtime_reflection_init", (void**)&_runtimeReflectionInit);
-        _pModule->get(_runtimeReflectionModule, "duckvil_runtime_reflection_recorder_init", (void**)&_runtimeReflectionRecorderInit);
+        _pModule->get(_runtimeReflectionModule, "duckvil_runtime_reflection_init", reinterpret_cast<void**>(&_runtimeReflectionInit));
+        _pModule->get(_runtimeReflectionModule, "duckvil_runtime_reflection_recorder_init", reinterpret_cast<void**>(&_runtimeReflectionRecorderInit));
 
         _pData->m_pRuntimeReflection = _runtimeReflectionInit();
         _pData->m_pRuntimeReflectionRecorder = _runtimeReflectionRecorderInit();
@@ -65,13 +65,13 @@ namespace Duckvil {
         PlugNPlay::__module_information _loggerModule("Logger");
 
         _pModule->load(&_loggerModule);
-        _pModule->get(_loggerModule, "duckvil_logger_init", (void**)&_duckvilLoggerInit);
+        _pModule->get(_loggerModule, "duckvil_logger_init", reinterpret_cast<void**>(&_duckvilLoggerInit));
 
         _pData->_loggerFTable = _duckvilLoggerInit();
         _pData->_loggerData = _pData->_loggerFTable.m_fnInitLogger(_pData->m_heap);
 
         {
-            PlugNPlay::__module _module;
+            PlugNPlay::__module _module = { };
 
             PlugNPlay::module_init(&_module);
 
@@ -81,7 +81,7 @@ namespace Duckvil {
 
             duckvil_logger_channel_init_callback _loggerInit;
 
-            _module.get(_loggerModule, "duckvil_logger_channel_init", (void**)&_loggerInit);
+            _module.get(_loggerModule, "duckvil_logger_channel_init", reinterpret_cast<void**>(&_loggerInit));
 
             _pData->m_pLoggerChannel = _loggerInit();
 
@@ -113,7 +113,7 @@ namespace Duckvil {
 
         Thread::pool_ftable* (*init)();
 
-        _pModule->get(_threadModule, "duckvil_thread_pool_init", (void**)&init);
+        _pModule->get(_threadModule, "duckvil_thread_pool_init", reinterpret_cast<void**>(&init));
 
         _pData->m_pThread = init();
         _pData->m_pThreadData = _pData->m_pThread->m_fnInit(_pData->m_heap);
@@ -133,7 +133,7 @@ namespace Duckvil {
 
         Graphics::Renderer::renderer_ftable* (*init)();
 
-        _pModule->get(_rendererModule, "duckvil_graphics_renderer_init", (void**)&init);
+        _pModule->get(_rendererModule, "duckvil_graphics_renderer_init", reinterpret_cast<void**>(&init));
 
         _pData->m_pRenderer = init();
 
@@ -204,11 +204,11 @@ namespace Duckvil {
 
         Editor::EditorFTable* (*init)();
 
-        _pModule->get(_editorModule, "duckvil_editor_init", (void**)&init);
+        _pModule->get(_editorModule, "duckvil_editor_init", reinterpret_cast<void**>(&init));
 
         _pData->m_pEditor = init();
 
-        _pData->m_pEditorData = (Editor::ImGuiEditorData*)_pData->m_pEditor->m_fnInit(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _pData->m_pWindow, _pData->m_pRenderer, &_pData->m_pRendererData);
+        _pData->m_pEditorData = static_cast<Editor::ImGuiEditorData*>(_pData->m_pEditor->m_fnInit(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _pData->m_pWindow, _pData->m_pRenderer, &_pData->m_pRendererData));
 
         _pData->m_pEditorData->m_pECS = &_pData->m_ecs;
 
@@ -299,8 +299,8 @@ namespace Duckvil {
 
             make_current_runtime_reflection_context = nullptr;
 
-            _module.get(_loadedModule, "duckvil_get_runtime_reflection_recorder_count", (void**)&get_recorder_count);
-            _module.get(_loadedModule, "duckvil_plugin_make_current_runtime_reflection_context", (void**)&make_current_runtime_reflection_context);
+            _module.get(_loadedModule, "duckvil_get_runtime_reflection_recorder_count", reinterpret_cast<void**>(&get_recorder_count));
+            _module.get(_loadedModule, "duckvil_plugin_make_current_runtime_reflection_context", reinterpret_cast<void**>(&make_current_runtime_reflection_context));
             // _module.get(_loadedModule, "duckvil_plugin_make_current_logger_context", (void**)&make_current_logger_context);
 
             if(get_recorder_count == nullptr)
@@ -358,7 +358,7 @@ namespace Duckvil {
 
             void (*make_current_logger_context)(const logger_context&);
 
-            _module.get(_loadedModule, "duckvil_plugin_make_current_logger_context", (void**)&make_current_logger_context);
+            _module.get(_loadedModule, "duckvil_plugin_make_current_logger_context", reinterpret_cast<void**>(&make_current_logger_context));
 
             if(make_current_logger_context != nullptr)
             {
@@ -394,7 +394,7 @@ namespace Duckvil {
                     &_pData->m_eventPool
                 );
 
-                ((Event::Pool<Event::mode::immediate>*)_pData->m_pRuntimeReflectionData->m_pEvents)->Add<RuntimeReflection::TrackedObjectCreatedEvent>(_pData->m_pRuntimeCompiler);
+                (static_cast<Event::Pool<Event::mode::immediate>*>(_pData->m_pRuntimeReflectionData->m_pEvents))->Add<RuntimeReflection::TrackedObjectCreatedEvent>(_pData->m_pRuntimeCompiler);
 
                 _pData->m_fnRuntimeCompilerUpdate = _type.GetFunctionCallback<ISystem, double>("Update")->m_fnFunction;
                 _pData->m_fnRuntimeCompilerInit = _type.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
@@ -618,7 +618,7 @@ namespace Duckvil {
         {
             system& _system = _pData->m_aEngineSystems[i];
 
-            ((ISystem*)DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pTrackKeeper)->*_system.m_fnUpdateCallback)(_delta);
+            (static_cast<ISystem*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pTrackKeeper))->*_system.m_fnUpdateCallback)(_delta);
         }
 
         if(_pData->m_ullLastTimeUsed != _pData->m_pHeap->m_ullUsed)

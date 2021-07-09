@@ -88,7 +88,7 @@ namespace Duckvil { namespace RuntimeReflection {
         _type.m_metas =         DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __meta_t);
 
         // _type.m_sTypeName = new char[_ullLength];
-        _type.m_sTypeName = (char*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8);
+        _type.m_sTypeName = static_cast<char*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8));
 
         memcpy(_type.m_sTypeName, _sTypeName, _ullLength);
 
@@ -389,7 +389,7 @@ namespace Duckvil { namespace RuntimeReflection {
         _property.m_metas = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __meta_t);
 
         // _property.m_sName = new char[_ullLength];
-        _property.m_sName = (char*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8);
+        _property.m_sName = static_cast<char*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8));
 
         memcpy(_property.m_sName, _sName, _ullLength);
 
@@ -406,7 +406,7 @@ namespace Duckvil { namespace RuntimeReflection {
         __namespace_t _namespace = {};
 
         // _namespace.m_sNamespaceName = new char[_ullLength];
-        _namespace.m_sNamespaceName = (char*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8);
+        _namespace.m_sNamespaceName = static_cast<char*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8));
 
         memcpy(_namespace.m_sNamespaceName, _sName, _ullLength);
 
@@ -442,7 +442,7 @@ namespace Duckvil { namespace RuntimeReflection {
         _function.m_ullArgumentsTypeID = _ullArgumentsTypeID;
 
         // _function.m_sFunctionName = new char[_ullLength];
-        _function.m_sFunctionName = (char*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8);
+        _function.m_sFunctionName = static_cast<char*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8));
 
         memcpy(_function.m_sFunctionName, _sName, _ullLength);
 

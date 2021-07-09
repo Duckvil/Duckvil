@@ -31,7 +31,7 @@ namespace Duckvil { namespace ProjectManager {
 
         uint32_t (*get_recorder_count)();
 
-        _module.get(_projectManager, "duckvil_get_runtime_reflection_recorder_count", (void**)&get_recorder_count);
+        _module.get(_projectManager, "duckvil_get_runtime_reflection_recorder_count", reinterpret_cast<void**>(&get_recorder_count));
 
         uint32_t _recordersCount = get_recorder_count();
 
@@ -39,7 +39,7 @@ namespace Duckvil { namespace ProjectManager {
         {
             duckvil_recorderd_types (*record)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);
 
-            _module.get(_projectManager, (std::string("duckvil_runtime_reflection_record_") + std::to_string(j)).c_str(), (void**)&record);
+            _module.get(_projectManager, (std::string("duckvil_runtime_reflection_record_") + std::to_string(j)).c_str(), reinterpret_cast<void**>(&record));
 
             if(record == nullptr)
             {
