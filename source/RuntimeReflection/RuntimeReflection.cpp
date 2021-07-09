@@ -8,7 +8,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
     __data* init(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __ftable* _pFunctions)
     {
-        __data* _data = (__data*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__data), alignof(__data));
+        __data* _data = static_cast<__data*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__data), alignof(__data)));
 
         _data->m_aTypes = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __type_t);
         // _data->m_aFrontend = Memory::Vector<IReflectedType*>(_pMemoryInterface, _pAllocator, 1);
@@ -19,7 +19,7 @@ namespace Duckvil { namespace RuntimeReflection {
     duckvil_frontend_reflection_context* create_context(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __ftable* _pFTable, __data* _pData)
     {
         duckvil_frontend_reflection_context* _ctx =
-            (duckvil_frontend_reflection_context*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(duckvil_frontend_reflection_context), alignof(duckvil_frontend_reflection_context));
+            static_cast<duckvil_frontend_reflection_context*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(duckvil_frontend_reflection_context), alignof(duckvil_frontend_reflection_context)));
 
         _ctx->m_pReflection = _pFTable;
         _ctx->m_pReflectionData = _pData;
@@ -206,7 +206,7 @@ namespace Duckvil { namespace RuntimeReflection {
         return DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, _functionHandle.m_ID);
     }
 
-    void* get_property(__data* _pData, const char* _sName, std::size_t _ullLength, std::size_t _ullTypeID, const void* _pObject)
+    const void* get_property(__data* _pData, const char* _sName, std::size_t _ullLength, std::size_t _ullTypeID, const void* _pObject)
     {
         const __data& _data = *_pData;
 
@@ -222,7 +222,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
                     if(strcmp(_property.m_sName, _sName) == 0)
                     {
-                        return (uint8_t*)_pObject + _property.m_ullAddress;
+                        return static_cast<const uint8_t*>(_pObject) + _property.m_ullAddress;
                     }
                 }
             }
@@ -268,15 +268,15 @@ namespace Duckvil { namespace RuntimeReflection {
         return DUCKVIL_SLOT_ARRAY_GET(_constructor.m_arguments, _handle.m_ID);
     }
 
-    void* get_property_by_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _type_handle, DUCKVIL_RESOURCE(property_t) _handle, const void* _pObject)
+    const void* get_property_by_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _type_handle, DUCKVIL_RESOURCE(property_t) _handle, const void* _pObject)
     {
         __type_t _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _type_handle.m_ID);
         __property_t _property = DUCKVIL_SLOT_ARRAY_GET(_type.m_properties, _handle.m_ID);
 
-        return (uint8_t*)_pObject + _property.m_ullAddress;
+        return static_cast<const uint8_t*>(_pObject) + _property.m_ullAddress;
     }
 
-    void* get_property_by_name(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength, const void* _pObject)
+    const void* get_property_by_name(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength, const void* _pObject)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
 
@@ -286,7 +286,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
             if(strcmp(_property.m_sName, _sName) == 0)
             {
-                return (uint8_t*)_pObject + _property.m_ullAddress;
+                return static_cast<const uint8_t*>(_pObject) + _property.m_ullAddress;
             }
         }
 

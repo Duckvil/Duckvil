@@ -247,8 +247,8 @@ namespace Duckvil { namespace RuntimeReflection {
 
         DUCKVIL_RESOURCE(destructor_t) (*m_fnGetDestructorHandle)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle);
 
-        void* (*m_fnGetPropertyByHandle)(__data* _pData, DUCKVIL_RESOURCE(type_t) _type_handle, DUCKVIL_RESOURCE(property_t) _handle, const void* _pObject);
-        void* (*m_fnGetPropertyByName)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength, const void* _pObject);
+        const void* (*m_fnGetPropertyByHandle)(__data* _pData, DUCKVIL_RESOURCE(type_t) _type_handle, DUCKVIL_RESOURCE(property_t) _handle, const void* _pObject);
+        const void* (*m_fnGetPropertyByName)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength, const void* _pObject);
         DUCKVIL_RESOURCE(property_t) (*m_fnGetPropertyHandleByName)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength);
 
         Memory::Vector<DUCKVIL_RESOURCE(function_t)> (*m_fnGetFunctions)(__data* _pData, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle);
@@ -257,7 +257,7 @@ namespace Duckvil { namespace RuntimeReflection {
         __ifunction* (*m_fnGetFunctionCallbackByHandle)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, std::size_t _ullTypeID);
         const __function_t& (*m_fnGetFunctionByHandle)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle);
 
-        void* (*m_fnGetProperty)(__data* _pData, const char* _sName, std::size_t _ullLength, std::size_t _ullTypeID, const void* _pObject);
+        const void* (*m_fnGetProperty)(__data* _pData, const char* _sName, std::size_t _ullLength, std::size_t _ullTypeID, const void* _pObject);
         Memory::Vector<DUCKVIL_RESOURCE(property_t)> (*m_fnGetProperties)(__data* _pData, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle);
 
         Memory::Vector<DUCKVIL_RESOURCE(argument_t)> (*m_fnGetArguments)(__data* _pData, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _handle);
@@ -504,7 +504,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename Type, std::size_t Length>
-    static inline void* get_property(__ftable* _pReflection, __data* _pData, const char (&_sName)[Length], const Type* _pObject)
+    static inline const void* get_property(__ftable* _pReflection, __data* _pData, const char (&_sName)[Length], const Type* _pObject)
     {
         return _pReflection->m_fnGetProperty(_pData, _sName, Length, typeid(Type).hash_code(), _pObject);
     }
