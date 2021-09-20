@@ -132,7 +132,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
 
     uint32_t impl_renderer_create_texture_object(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const texture_object_descriptor& _descriptor)
     {
-        GLuint* _texture = (GLuint*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(GLuint) * _descriptor.m_uiCount, 8);
+        GLuint* _texture = static_cast<GLuint*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(GLuint) * _descriptor.m_uiCount, 8));
 
         glGenTextures(_descriptor.m_uiCount, _texture);
 
@@ -161,7 +161,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         glGenFramebuffers(1, &_framebuffer);
         glBindFramebuffer(_descriptor.m_target, _framebuffer);
 
-        GLenum* _drawBuffers = (GLenum*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(GLenum) * _descriptor.m_uiCount, 8);
+        GLenum* _drawBuffers = static_cast<GLenum*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(GLenum) * _descriptor.m_uiCount, 8));
 
         for(uint32_t i = 0; i < _descriptor.m_uiCount; ++i)
         {
@@ -202,7 +202,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
     uint32_t impl_renderer_create_vao(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const vertex_array_object_descriptor& _descriptor)
     {
         GLuint _vao = -1;
-        GLuint* _vbo = (GLuint*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(GLuint) * _descriptor.m_uiVBO_Count, 8);
+        GLuint* _vbo = static_cast<GLuint*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(GLuint) * _descriptor.m_uiVBO_Count, 8));
 
         glGenVertexArrays(1, &_vao);
         glBindVertexArray(_vao);
@@ -276,7 +276,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         _pData->m_pCommandBuffer = command_buffer_new(_pMemoryInterface, _pAllocator);
         _pData->m_pAllocator = _pAllocator;
 
-        SDL_GL_MakeCurrent((SDL_Window*)_pWindow->GetWindow(), _pWindow->GetContext());
+        SDL_GL_MakeCurrent(static_cast<SDL_Window*>(_pWindow->GetWindow()), _pWindow->GetContext());
 
         glewExperimental = GL_TRUE;
         GLenum err = glewInit();
@@ -286,6 +286,10 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
             throw std::exception("Failed to init GLEW!");
             // printf("%s\n", glewGetErrorString(err));
         }
+
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
 
         return true;
     }

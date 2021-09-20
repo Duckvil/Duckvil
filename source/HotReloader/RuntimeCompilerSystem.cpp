@@ -21,7 +21,7 @@ namespace Duckvil { namespace HotReloader {
         _file << "#include \"Serializer/Runtime/ISerializer.h\"\n\n";
         _file << "#define DUCKVIL_GENERATED_BODY";
 
-        RuntimeCompilerSystem* _system = (RuntimeCompilerSystem*)_pUserData;
+        RuntimeCompilerSystem* _system = static_cast<RuntimeCompilerSystem*>(_pUserData);
 
         for(auto& _module : _system->m_aModules)
         {
@@ -48,7 +48,7 @@ namespace Duckvil { namespace HotReloader {
 
         RuntimeReflection::__duckvil_resource_type_t _runtimeCompilerHandle = RuntimeReflection::get_type<RuntimeCompiler::Compiler>();
 
-        m_pCompiler = (RuntimeCompiler::Compiler*)RuntimeReflection::create<const Memory::FreeList&>(_heap.GetMemoryInterface(), _heap.GetAllocator(), g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _runtimeCompilerHandle, false, _heap);
+        m_pCompiler = static_cast<RuntimeCompiler::Compiler*>(RuntimeReflection::create<const Memory::FreeList&>(_heap.GetMemoryInterface(), _heap.GetAllocator(), g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _runtimeCompilerHandle, false, _heap));
 
         PlugNPlay::__module _module;
 
@@ -60,7 +60,7 @@ namespace Duckvil { namespace HotReloader {
 
         Thread::pool_ftable* (*init)();
 
-        _module.get(_threadModule, "duckvil_thread_pool_init", (void**)&init);
+        _module.get(_threadModule, "duckvil_thread_pool_init", reinterpret_cast<void**>(&init));
 
         m_pThread = init();
     }
@@ -72,7 +72,12 @@ namespace Duckvil { namespace HotReloader {
 
     bool RuntimeCompilerSystem::Init()
     {
-        m_pThreadData = *(Thread::pool_data**)RuntimeReflection::get_meta_value_ptr(RuntimeReflection::get_type("__data", { "Duckvil" }), "Thread");
+        return Init(std::filesystem::path(DUCKVIL_CWD) / "source");
+    }
+
+    bool RuntimeCompilerSystem::Init(const std::filesystem::path& _sDirectoryToWatch)
+    {
+        m_pThreadData = *static_cast<Thread::pool_data**>(RuntimeReflection::get_meta_value_ptr(RuntimeReflection::get_type("__data", { "Duckvil" }), "Thread"));
 
         {
             auto _types = Duckvil::RuntimeReflection::get_types(m_heap);
@@ -170,7 +175,7 @@ namespace Duckvil { namespace HotReloader {
 #endif
 #endif
 
-        m_pFileWatcher->Watch(std::filesystem::path(DUCKVIL_CWD) / "source");
+        m_pFileWatcher->Watch(_sDirectoryToWatch);
 
         PlugNPlay::__module _module;
 
@@ -185,7 +190,7 @@ namespace Duckvil { namespace HotReloader {
         {
             RuntimeReflection::__generator_ftable* (*_runtime_reflection_generator)();
 
-            _module.get(_reflectionModule, "duckvil_runtime_reflection_generator_init", (void**)&_runtime_reflection_generator);
+            _module.get(_reflectionModule, "duckvil_runtime_reflection_generator_init", reinterpret_cast<void**>(&_runtime_reflection_generator));
 
             m_pReflectionGenerator = _runtime_reflection_generator();
         }
@@ -194,8 +199,8 @@ namespace Duckvil { namespace HotReloader {
             Parser::__lexer_ftable* (*_lexer_init)();
             Parser::__ast_ftable* (*_ast_init)();
 
-            _module.get(_parser, "duckvil_lexer_init", (void**)&_lexer_init);
-            _module.get(_parser, "duckvil_ast_init", (void**)&_ast_init);
+            _module.get(_parser, "duckvil_lexer_init", reinterpret_cast<void**>(&_lexer_init));
+            _module.get(_parser, "duckvil_ast_init", reinterpret_cast<void**>(&_ast_init));
 
             m_pAST_FTable = _ast_init();
             m_pLexerFTable = _lexer_init();
@@ -211,7 +216,7 @@ namespace Duckvil { namespace HotReloader {
 
     void RuntimeCompilerSystem::InitEditor(void* _pImguiContext)
     {
-        ImGui::SetCurrentContext((ImGuiContext*)_pImguiContext);
+        ImGui::SetCurrentContext(static_cast<ImGuiContext*>(_pImguiContext));
     }
 
     void RuntimeCompilerSystem::OnDraw()
@@ -410,10 +415,10 @@ namespace Duckvil { namespace HotReloader {
         void (*make_current_runtime_reflection_context)(const duckvil_frontend_reflection_context&);
         void (*make_current_logger_context)(const logger_context&);
 
-        _module.get(_testModule, "duckvil_get_recorder_index", (void**)&get_recorder_index);
-        _module.get(_testModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(get_recorder_index())).c_str(), (void**)&record);
-        _module.get(_testModule, "duckvil_plugin_make_current_runtime_reflection_context", (void**)&make_current_runtime_reflection_context);
-        _module.get(_testModule, "duckvil_plugin_make_current_logger_context", (void**)&make_current_logger_context);
+        _module.get(_testModule, "duckvil_get_recorder_index", reinterpret_cast<void**>(&get_recorder_index));
+        _module.get(_testModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(get_recorder_index())).c_str(), reinterpret_cast<void**>(&record));
+        _module.get(_testModule, "duckvil_plugin_make_current_runtime_reflection_context", reinterpret_cast<void**>(&make_current_runtime_reflection_context));
+        _module.get(_testModule, "duckvil_plugin_make_current_logger_context", reinterpret_cast<void**>(&make_current_logger_context));
 
         FrameMarkStart("SetupContexts");
 
@@ -510,7 +515,7 @@ namespace Duckvil { namespace HotReloader {
 
             void (*free_current_logger_context)();
 
-            _module.get(_testModule, "duckvil_plugin_free_current_logger_context", (void**)&free_current_logger_context);
+            _module.get(_testModule, "duckvil_plugin_free_current_logger_context", reinterpret_cast<void**>(&free_current_logger_context));
 
             // free_current_logger_context();
 

@@ -124,6 +124,7 @@ namespace Duckvil { namespace HotReloader {
         Memory::Vector<RuntimeCompilerSystem::reflection_module> m_aModules;
 
         bool Init();
+        bool Init(const std::filesystem::path& _sDirectoryToWatch);
         void Update(double _dDelta);
 
         void InitEditor(void* _pImguiContext);

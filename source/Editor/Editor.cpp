@@ -30,7 +30,7 @@ namespace Duckvil { namespace Editor {
 
     void process_sdl_events(void* _pData)
     {
-        ImGui_ImplSDL2_ProcessEvent((SDL_Event*)_pData);
+        ImGui_ImplSDL2_ProcessEvent(static_cast<SDL_Event*>(_pData));
     }
 
     void* init(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Window::IWindow* _pWindow, Graphics::Renderer::renderer_ftable* _pRenderer, Graphics::Renderer::renderer_data* _pRendererData)
@@ -48,7 +48,7 @@ namespace Duckvil { namespace Editor {
 
         _data->m_aTextures.Allocate(0);
 
-        SDL_GL_MakeCurrent((SDL_Window*)_pWindow->GetWindow(), _pWindow->GetContext());
+        SDL_GL_MakeCurrent(static_cast<SDL_Window*>(_pWindow->GetWindow()), _pWindow->GetContext());
 
         glewExperimental = GL_TRUE;
         GLenum err = glewInit();
@@ -69,7 +69,7 @@ namespace Duckvil { namespace Editor {
 
         ImGui::StyleColorsDark();
 
-        ImGui_ImplSDL2_InitForOpenGL((SDL_Window*)_pWindow->GetWindow(), _pWindow->GetContext());
+        ImGui_ImplSDL2_InitForOpenGL(static_cast<SDL_Window*>(_pWindow->GetWindow()), _pWindow->GetContext());
         ImGui_ImplOpenGL3_Init("#version 130");
 
         ImGui::SetCurrentContext(_ctx);
@@ -304,7 +304,7 @@ namespace Duckvil { namespace Editor {
         ImGuiEditorData* _data = static_cast<ImGuiEditorData*>(_pData);
 
         ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplSDL2_NewFrame((SDL_Window*)_pWindow->GetWindow());
+        ImGui_ImplSDL2_NewFrame(static_cast<SDL_Window*>(_pWindow->GetWindow()));
 
         ::ImGui::NewFrame();
 
