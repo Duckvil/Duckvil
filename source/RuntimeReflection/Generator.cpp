@@ -92,6 +92,18 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _constructor, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
         }
+
+        uint32_t _index = 0;
+
+        for(const Parser::__ast_entity_argument& _argument : _castedConstructor->m_aArguments)
+        {
+            for(const Parser::__ast_meta& _meta : _argument.m_aMeta)
+            {
+                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _constructor, " << _index << ", " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+            }
+
+            ++_index;
+        }
     }
 
     void generate_destructor(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)

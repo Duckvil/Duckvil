@@ -99,7 +99,14 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename Type, typename... Args>
     void* create_object(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __ftable* _pReflection, __data* _pData, bool _bTracked, Args... _vArgs)
     {
-        void* _object = new(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Type), alignof(Type))) Type(_vArgs...);
+        void* _address = _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Type), alignof(Type));
+
+        if(_address == nullptr)
+        {
+            printf("Address is null %i!\n", _pAllocator->m_ullUsed);
+        }
+
+        void* _object = new(_address) Type(_vArgs...);
 
         Event::Pool<Event::mode::immediate>* _events = (Event::Pool<Event::mode::immediate>*)_pData->m_pEvents;
 
@@ -318,6 +325,7 @@ namespace Duckvil { namespace RuntimeReflection {
         DUCKVIL_RESOURCE(meta_t) (*m_fnRecordTypeMeta)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, const __recorder_meta_info& _meta);
         DUCKVIL_RESOURCE(meta_t) (*m_fnRecordPropertyMeta)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(property_t) _owner, const __recorder_meta_info& _meta);
         DUCKVIL_RESOURCE(meta_t) (*m_fnRecordConstructorMeta)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _owner, const __recorder_meta_info& _meta);
+        DUCKVIL_RESOURCE(meta_t) (*m_fnRecordConstructorArgumentMeta)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _owner, uint32_t _uiArgumentIndex, const __recorder_meta_info& _meta);
     };
 
     template <typename Type, std::size_t Length>
@@ -393,6 +401,7 @@ namespace Duckvil { namespace RuntimeReflection {
     DUCKVIL_REFLECTION_META_UTIL(Type, DUCKVIL_META_CAT(DUCKVIL_RESOURCE(type_t) _handle), DUCKVIL_META_CAT(_handle))
     DUCKVIL_REFLECTION_META_UTIL(Property, DUCKVIL_META_CAT(DUCKVIL_RESOURCE(type_t) _handle, DUCKVIL_RESOURCE(property_t) _propertyHandle), DUCKVIL_META_CAT(_handle, _propertyHandle))
     DUCKVIL_REFLECTION_META_UTIL(Constructor, DUCKVIL_META_CAT(DUCKVIL_RESOURCE(type_t) _handle, DUCKVIL_RESOURCE(constructor_t) _constructorHandle), DUCKVIL_META_CAT(_handle, _constructorHandle))
+    DUCKVIL_REFLECTION_META_UTIL(ConstructorArgument, DUCKVIL_META_CAT(DUCKVIL_RESOURCE(type_t) _handle, DUCKVIL_RESOURCE(constructor_t) _constructorHandle, uint32_t _uiArgumentIndex), DUCKVIL_META_CAT(_handle, _constructorHandle, _uiArgumentIndex))
 
     template <typename B, std::size_t Length>
     static DUCKVIL_RESOURCE(property_t) record_property(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __recorder_ftable* _pFunctions, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, uintptr_t _ullOffset, const char (&_sName)[Length])

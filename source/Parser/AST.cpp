@@ -73,6 +73,79 @@ namespace Duckvil { namespace Parser {
         return 0;
     }
 
+    std::vector<__ast_meta> parse_meta(__lexer_ftable* _pLexer, __lexer_data& _lexerData)
+    {
+        std::vector<__ast_meta> _result;
+        std::string _token;
+        uint32_t _roundBrackets = 0;
+        std::string _tmp_expression;
+        std::string _key;
+        bool _wasEqual = false;
+
+        while(_pLexer->next_token(&_lexerData, &_token))
+        {
+            if(_token == "(")
+            {
+                _roundBrackets++;
+            }
+            else if(_token == ")")
+            {
+                _roundBrackets--;
+
+                if(_roundBrackets == 0)
+                {
+                    __ast_meta _meta = {};
+
+                    if(_wasEqual)
+                    {
+                        _meta.m_sKey = _key;
+                        _meta.m_sValue = _tmp_expression;
+                    }
+                    else
+                    {
+                        _meta.m_sKey = _tmp_expression;
+                    }
+
+                    _result.push_back(_meta);
+
+                    break;
+                }
+            }
+            else if(_token == ",")
+            {
+                __ast_meta _meta = {};
+
+                if(_wasEqual)
+                {
+                    _meta.m_sKey = _key;
+                    _meta.m_sValue = _tmp_expression;
+                }
+                else
+                {
+                    _meta.m_sKey = _tmp_expression;
+                }
+
+                _result.push_back(_meta);
+
+                _tmp_expression.clear();
+                _wasEqual = false;
+            }
+            else if(_token == "=")
+            {
+                _key = _tmp_expression;
+                _wasEqual = true;
+
+                _tmp_expression.clear();
+            }
+            else
+            {
+                _tmp_expression += _token;
+            }
+        }
+
+        return _result;
+    }
+
     std::vector<__ast_entity_argument> process_arguments(__lexer_ftable* _pLexer, __lexer_data& _lexerData, __ast* _pAST, const std::string& _sArgs)
     {
         std::vector<__ast_entity_argument> _res;
@@ -99,12 +172,20 @@ namespace Duckvil { namespace Parser {
         bool _keyword = false;
         bool _continue = false;
         bool _wasType = false;
+        std::vector<__ast_meta> _argumentMetas;
 
         while(_continue || _pLexer->next_token(&_exp, &_token))
         {
             _continue = false;
 
-            if(_token == "(")
+            if(_token == "DUCKVIL_VARIABLE")
+            {
+                _argumentMetas = parse_meta(_pLexer, _exp);
+
+                _pLexer->next_token(&_exp, &_token);
+                _pLexer->next_token(&_exp, &_token);
+            }
+            else if(_token == "(")
             {
                 _roundBrackets++;
 
@@ -152,6 +233,10 @@ namespace Duckvil { namespace Parser {
                     }
 
                     __ast_entity_argument _arg = {};
+
+                    _arg.m_aMeta = _argumentMetas;
+
+                    _argumentMetas.clear();
 
                     if(_type == "")
                     {
@@ -247,6 +332,10 @@ namespace Duckvil { namespace Parser {
                 }
 
                 __ast_entity_argument _arg = {};
+
+                _arg.m_aMeta = _argumentMetas;
+
+                _argumentMetas.clear();
 
                 if(_type == "")
                 {
@@ -358,79 +447,6 @@ namespace Duckvil { namespace Parser {
         }
 
         return _res;
-    }
-
-    std::vector<__ast_meta> parse_meta(__lexer_ftable* _pLexer, __lexer_data& _lexerData)
-    {
-        std::vector<__ast_meta> _result;
-        std::string _token;
-        uint32_t _roundBrackets = 0;
-        std::string _tmp_expression;
-        std::string _key;
-        bool _wasEqual = false;
-
-        while(_pLexer->next_token(&_lexerData, &_token))
-        {
-            if(_token == "(")
-            {
-                _roundBrackets++;
-            }
-            else if(_token == ")")
-            {
-                _roundBrackets--;
-
-                if(_roundBrackets == 0)
-                {
-                    __ast_meta _meta = {};
-
-                    if(_wasEqual)
-                    {
-                        _meta.m_sKey = _key;
-                        _meta.m_sValue = _tmp_expression;
-                    }
-                    else
-                    {
-                        _meta.m_sKey = _tmp_expression;
-                    }
-
-                    _result.push_back(_meta);
-
-                    break;
-                }
-            }
-            else if(_token == ",")
-            {
-                __ast_meta _meta = {};
-
-                if(_wasEqual)
-                {
-                    _meta.m_sKey = _key;
-                    _meta.m_sValue = _tmp_expression;
-                }
-                else
-                {
-                    _meta.m_sKey = _tmp_expression;
-                }
-
-                _result.push_back(_meta);
-
-                _tmp_expression.clear();
-                _wasEqual = false;
-            }
-            else if(_token == "=")
-            {
-                _key = _tmp_expression;
-                _wasEqual = true;
-
-                _tmp_expression.clear();
-            }
-            else
-            {
-                _tmp_expression += _token;
-            }
-        }
-
-        return _result;
     }
 
     bool check_define(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data* _pLexerData, std::string& _sToken, std::string* _spCurrent)
@@ -1285,7 +1301,6 @@ namespace Duckvil { namespace Parser {
 
             if(_sToken == "(")
             {
-                std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _pAST, _pLexerData->m_sCurrentLine.substr(_pLexerData->m_uiCurrentCharacterIndex - 1));
                 __ast_entity_constructor* _scope = nullptr;
 
                 if(_pAST->m_pPendingScope != nullptr)
@@ -1305,6 +1320,8 @@ namespace Duckvil { namespace Parser {
                 _scope->m_accessLevel = _pAST->m_currentAccess;
 
                 _pAST->m_pCurrentScope->m_aScopes.push_back(_scope);
+
+                std::vector<__ast_entity_argument> _args = process_arguments(_pLexer, *_pLexerData, _pAST, _pLexerData->m_sCurrentLine.substr(_pLexerData->m_uiCurrentCharacterIndex - 1));
 
                 _scope->m_aArguments.insert(_scope->m_aArguments.begin(), _args.begin(), _args.end());
 
