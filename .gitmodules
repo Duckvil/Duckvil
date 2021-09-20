@@ -20,3 +20,6 @@
 [submodule "external/flecs"]
 	path = external/flecs
 	url = https://github.com/SanderMertens/flecs.git
+[submodule "external/xbyak"]
+	path = external/xbyak
+	url = https://github.com/herumi/xbyak

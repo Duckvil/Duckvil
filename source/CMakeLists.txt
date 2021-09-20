@@ -10,6 +10,7 @@ list(APPEND INCLUDES
     "${CMAKE_SOURCE_DIR}/external"
     ${CMAKE_SOURCE_DIR}/external/glm
     ${CMAKE_SOURCE_DIR}/external/tracy
+    "${CMAKE_SOURCE_DIR}/external/xbyak"
 )
 
 list(APPEND STATIC_LIBRARIES "")

@@ -22,6 +22,7 @@ if(NOT DUCKVIL_CICD)
     add_subdirectory(SDL2)
     add_subdirectory(glew/build/cmake)
     add_subdirectory(flecs)
+    add_subdirectory(xbyak)
 
     set_target_properties(SDL2 PROPERTIES
         CXX_STANDARD 20
