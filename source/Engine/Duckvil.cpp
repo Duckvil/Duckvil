@@ -33,6 +33,8 @@
 
 #include "tracy/Tracy.hpp"
 
+#include "Utils/FunctionArgumentsPusher.h"
+
 namespace Duckvil {
 
     bool init_runtime_reflection(__data* _pData, PlugNPlay::__module* _pModule)
@@ -318,7 +320,7 @@ namespace Duckvil {
             {
                 duckvil_recorderd_types (*record)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);
 
-                _module.get(_loadedModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(j)).c_str(), (void**)&record);
+                _module.get(_loadedModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(j)).c_str(), reinterpret_cast<void**>(&record));
 
                 if(record == nullptr)
                 {
@@ -422,7 +424,7 @@ namespace Duckvil {
                 const RuntimeReflection::__variant& _variant = RuntimeReflection::get_meta(_typeHandle, ReflectionFlags::ReflectionFlags_UserSystem);
 
                 if(_variant.m_ullTypeID != std::numeric_limits<std::size_t>::max() &&
-                    (uint8_t)_variant.m_traits & (uint8_t)RuntimeReflection::property_traits::is_bool)
+                    static_cast<uint8_t>(_variant.m_traits) & static_cast<uint8_t>(RuntimeReflection::property_traits::is_bool))
                 {
                     if(_pData->m_aEngineSystems.Full())
                     {
@@ -431,11 +433,48 @@ namespace Duckvil {
 
                     RuntimeReflection::ReflectedType<> _type(_pData->m_heap, _typeHandle);
 
-                    void* _testSystem = _type.CreateTracked<
-                        const Memory::FreeList&
-                    >(
-                        _pData->m_heap
-                    );
+                    auto _constructors = RuntimeReflection::get_constructors(_pData->m_heap, _typeHandle);
+                    void* _testSystem = nullptr;
+
+                    for(const auto& _constructorHandle : _constructors)
+                    {
+                        const auto& _constructor = RuntimeReflection::get_constructor(_typeHandle, _constructorHandle);
+                        uint32_t _constructorArgumentsCount = DUCKVIL_SLOT_ARRAY_SIZE(_constructor.m_arguments);
+
+                        if(_constructorArgumentsCount > 0)
+                        {
+                            FunctionArgumentsPusher c(5 + _constructorArgumentsCount);
+
+                            c.Push(_pData->m_pMemory);
+                            c.Push(_pData->m_pHeap);
+                            c.Push(_pData->m_pRuntimeReflection);
+                            c.Push(_pData->m_pRuntimeReflectionData);
+                            c.Push(true);
+
+                            for(uint32_t i = 0; i < _constructorArgumentsCount; ++i)
+                            {
+                                const RuntimeReflection::__argument_t& _argument = DUCKVIL_SLOT_ARRAY_GET(_constructor.m_arguments, i);
+
+                                if(typeid(Memory::FreeList).hash_code() == _argument.m_ullTypeID)
+                                {
+                                    c.Push(_pData->m_heap);
+                                }
+                            }
+
+                            const auto& _h = RuntimeReflection::get_constructor_handle<const Memory::FreeList&>(_type.GetTypeHandle());
+                            const auto& _hc = RuntimeReflection::get_constructor(_type.GetTypeHandle(), _h);
+
+                            c.Call(_hc.m_pData);
+
+                            _testSystem = c.getCode<void*(*)()>()();
+                        }
+                    }
+
+                    // void* _testSystem = _type.CreateTracked<
+                    //     const Memory::FreeList&
+                    // >(
+                    //     _pData->m_heap
+                    // );
 
                     system _system = {};
 
@@ -500,7 +539,7 @@ namespace Duckvil {
                         }
                     });
 
-                    if(!((ISystem*)DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pTrackKeeper)->*_system.m_fnInitCallback)())
+                    if(!(static_cast<ISystem*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pTrackKeeper))->*_system.m_fnInitCallback)())
                     {
                         return false;
                     }
