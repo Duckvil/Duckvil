@@ -119,4 +119,29 @@ namespace Duckvil { namespace RuntimeCompiler {
         m_compilerOptions.m_aLibraries.push_back(_sLibrary);
     }
 
+    const std::vector<std::string>& WindowsCompiler::GetDefines()
+    {
+        return m_compilerOptions.m_aDefines;
+    }
+
+    const std::vector<std::string>& WindowsCompiler::GetFlags()
+    {
+        return m_compilerOptions.m_aDefines;
+    }
+
+    const std::vector<std::string>& WindowsCompiler::GetIncludes()
+    {
+        return m_compilerOptions.m_aIncludes;
+    }
+
+    const std::vector<std::string>& WindowsCompiler::GetLibrariesPaths()
+    {
+        return m_compilerOptions.m_aLibrariesPaths;
+    }
+
+    const std::vector<std::string>& WindowsCompiler::GetLibraries()
+    {
+        return m_compilerOptions.m_aLibraries;
+    }
+
 }}

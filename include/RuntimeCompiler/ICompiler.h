@@ -32,6 +32,12 @@ namespace Duckvil { namespace RuntimeCompiler {
         virtual void AddInclude(const std::string& _sInclude) = 0;
         virtual void AddLibraryPath(const std::string& _sLibraryPath) = 0;
         virtual void AddLibrary(const std::string& _sLibrary) = 0;
+
+        virtual const std::vector<std::string>& GetDefines() = 0;
+        virtual const std::vector<std::string>& GetFlags() = 0;
+        virtual const std::vector<std::string>& GetIncludes() = 0;
+        virtual const std::vector<std::string>& GetLibrariesPaths() = 0;
+        virtual const std::vector<std::string>& GetLibraries() = 0;
     };
 
 }}

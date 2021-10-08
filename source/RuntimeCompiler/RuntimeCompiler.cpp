@@ -86,4 +86,29 @@ namespace Duckvil { namespace RuntimeCompiler {
         m_pCompiler->AddLibrary(_sLibrary);
     }
 
+    const std::vector<std::string>& Compiler::GetDefines()
+    {
+        return m_pCompiler->GetDefines();
+    }
+
+    const std::vector<std::string>& Compiler::GetFlags()
+    {
+        return m_pCompiler->GetFlags();
+    }
+
+    const std::vector<std::string>& Compiler::GetIncludes()
+    {
+        return m_pCompiler->GetIncludes();
+    }
+
+    const std::vector<std::string>& Compiler::GetLibrariesPaths()
+    {
+        return m_pCompiler->GetLibrariesPaths();
+    }
+
+    const std::vector<std::string>& Compiler::GetLibraries()
+    {
+        return m_pCompiler->GetLibraries();
+    }
+
 }}
