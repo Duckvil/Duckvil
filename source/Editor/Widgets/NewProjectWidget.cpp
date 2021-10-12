@@ -5,7 +5,11 @@
 #include "Editor/Events/CloseWidgetEvent.h"
 
 #include <fstream>
+
+#ifdef DUCKVIL_PLATFORM_WINDOWS
 #include <windows.h>
+#endif
+#include <map>
 
 #include "ProjectManager/ProjectManager.h"
 
@@ -47,36 +51,85 @@ namespace Duckvil { namespace Editor {
     {
         const Memory::Vector<reflection_module>& m_aModules;
 
-        user_data(const Memory::Vector<reflection_module>& _aModules) :
+        explicit user_data(const Memory::Vector<reflection_module>& _aModules) :
             m_aModules(_aModules)
         {
 
         }
     };
 
+    std::string replace_all(std::string str, const std::string& from, const std::string& to)
+    {
+        size_t start_pos = 0;
+
+        while((start_pos = str.find(from, start_pos)) != std::string::npos)
+        {
+            str.replace(start_pos, from.length(), to);
+            start_pos += to.length();
+        }
+
+        return str;
+    }
+
+    void generate_from_template(const std::string& _sTemplatePath, const std::string& _sOutputPath, const std::map<std::string, std::string>& _aParameters)
+    {
+        std::ifstream _tplFile(_sTemplatePath);
+        std::ofstream _oFile(_sOutputPath);
+        std::string _line;
+
+        while(getline(_tplFile, _line))
+        {
+            for(const auto& _parameter : _aParameters)
+            {
+                _line = replace_all(_line, "{$" + _parameter.first + "}", _parameter.second);
+            }
+
+            _oFile << _line << "\n";
+        }
+
+        _oFile.close();
+        _tplFile.close();
+    }
+
+    void generate_from_template(const std::map<std::string, std::string>& _aPaths, const std::map<std::string, std::string>& _aParameters)
+    {
+        for(const auto& _path : _aPaths)
+        {
+            generate_from_template(_path.first, _path.second, _aParameters);
+        }
+    }
+
+#ifdef DUCKVIL_PLATFORM_WINDOWS
     bool RunMsBuild(const char* _sProgram, const char* _sCurrentDirectory, const char* args)
     {
         STARTUPINFOA startupInfo;
         PROCESS_INFORMATION procInfo;
-        memset( &startupInfo, 0, sizeof( startupInfo ) );
-        memset( &procInfo, 0, sizeof( procInfo ) );
+
+        memset(&startupInfo, 0, sizeof(startupInfo));
+        memset(&procInfo, 0, sizeof(procInfo));
 
         std::string cmdLine(_sProgram);
+
         cmdLine.append(" ") += args;
 
         if(!CreateProcessA(0, const_cast<char*>(cmdLine.c_str()), 0, 0, FALSE, 0, 0, _sCurrentDirectory, &startupInfo, &procInfo))
+        {
             return false;
-        WaitForSingleObject( procInfo.hProcess, INFINITE );
+        }
+
+        WaitForSingleObject(procInfo.hProcess, INFINITE);
         DWORD dwExitCode;
-        GetExitCodeProcess( procInfo.hProcess, &dwExitCode );
-        CloseHandle( procInfo.hProcess );
-        CloseHandle( procInfo.hThread );
+        GetExitCodeProcess(procInfo.hProcess, &dwExitCode);
+        CloseHandle(procInfo.hProcess);
+        CloseHandle(procInfo.hThread);
+
         return dwExitCode == 0;
     }
+#endif
 
     void generate(std::ofstream& _file, void* _pUserData)
     {
-        user_data* _userData = (user_data*)_pUserData;
+        user_data* _userData = static_cast<user_data*>(_pUserData);
 
         _file << "#include \"Serializer/Runtime/ISerializer.h\"\n\n";
         _file << "#define DUCKVIL_GENERATED_BODY";
@@ -108,9 +161,9 @@ namespace Duckvil { namespace Editor {
         RuntimeReflection::__generator_ftable* (*_runtime_reflection_generator)();
         Parser::__ast_ftable* (*_ast_init)();
 
-        _module.get(_parser, "duckvil_lexer_init", (void**)&_lexer_init);
-        _module.get(_parser, "duckvil_ast_init", (void**)&_ast_init);
-        _module.get(_reflectionModule, "duckvil_runtime_reflection_generator_init", (void**)&_runtime_reflection_generator);
+        _module.get(_parser, "duckvil_lexer_init", reinterpret_cast<void**>(&_lexer_init));
+        _module.get(_parser, "duckvil_ast_init", reinterpret_cast<void**>(&_ast_init));
+        _module.get(_reflectionModule, "duckvil_runtime_reflection_generator_init", reinterpret_cast<void**>(&_runtime_reflection_generator));
 
         Parser::__ast_ftable* _ast = _ast_init();
         Parser::__lexer_ftable* _lexerFtable = _lexer_init();
@@ -250,7 +303,16 @@ namespace Duckvil { namespace Editor {
         }
 
         _file << "#include \"RuntimeReflection/Recorder.h\"\n";
-        _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(" << _index << ")";
+        _file << "#include \"Logger/Logger.h\"\n";
+        _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(" << _index << ")\n\n";
+        _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_runtime_reflection_context(const duckvil_frontend_reflection_context& _runtimeReflectionContext)\n";
+        _file << "{\n";
+        _file << "Duckvil::RuntimeReflection::make_current(_runtimeReflectionContext);\n";
+        _file << "}\n\n";
+        _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_logger_context(const Duckvil::logger_context& _loggerContext)\n";
+        _file << "{\n";
+        _file << "Duckvil::logger_make_current(_loggerContext);\n";
+        _file << "}";
 
         _file.close();
     }
@@ -275,7 +337,7 @@ namespace Duckvil { namespace Editor {
 
     void NewProjectWidget::InitEditor(void* _pImguiContext)
     {
-        ImGui::SetCurrentContext((ImGuiContext*)_pImguiContext);
+        ImGui::SetCurrentContext(static_cast<ImGuiContext*>(_pImguiContext));
     }
 
     void NewProjectWidget::OnDraw()
@@ -320,7 +382,7 @@ namespace Duckvil { namespace Editor {
                 _file << "cmake_minimum_required(VERSION 3.16)\n";
                 _file << "FILE(GLOB GENERATED_SRC_FILES ${CMAKE_SOURCE_DIR}/__generated_reflection__/*.cpp)\n";
                 _file << "add_library(" << m_sProjectName << " SHARED Project.cpp ${GENERATED_SRC_FILES})\n";
-                _file << "target_include_directories(" << m_sProjectName << " PRIVATE ${CMAKE_SOURCE_DIR}/include F:/Projects/C++/Duckvil/include F:/Projects/C++/Duckvil/external)\n";
+                _file << "target_include_directories(" << m_sProjectName << " PRIVATE ${CMAKE_SOURCE_DIR}/include F:/Projects/C++/Duckvil/include F:/Projects/C++/Duckvil/__generated_reflection__ F:/Projects/C++/Duckvil/external)\n";
                 _file << "target_link_libraries(" << m_sProjectName << " F:/Projects/C++/Duckvil/bin/Window.lib)\n";
                 _file << "set_target_properties(" << m_sProjectName << " PROPERTIES\n"
                 "CXX_STANDARD 20\n"
@@ -339,53 +401,15 @@ namespace Duckvil { namespace Editor {
                 _file.close();
             }
 
-            {
-                std::ofstream _file(_projectPath + "/include/Project.h");
-
-                _file << "#pragma once\n\n";
-
-                _file << "#include \"RuntimeReflection/Markers.h\"\n";
-                _file << "#include \"ProjectManager/ProjectManager.h\"\n\n";
-
-                _file << "namespace " << m_sProjectName << " {\n\n";
-
-                _file << "DUCKVIL_CLASS(Duckvil::ProjectManager::project_type::" << (m_iSelectedType == 0 ? "standalone" : m_iSelectedType == 1 ? "plugin" : m_iSelectedType == 2 ? "mod" : "undefined") << ")\n";
-                _file << "class Project\n";
-                _file << "{\n";
-                _file << "private:\n\n";
-                _file << "public:\n";
-                _file << "    Project();\n";
-                _file << "    ~Project();\n";
-                _file << "};\n\n";
-
-                _file << "}\n";
-
-                _file.close();
-            }
-
-            {
-                std::ofstream _file(_projectPath + "/source/Project.cpp");
-
-                _file << "#include \"Project.h\"\n\n";
-
-                _file << "namespace " << m_sProjectName << " {\n\n";
-
-                _file << "\tProject::Project()\n";
-                _file << "\t{\n";
-                _file << "\t}\n\n";
-
-                _file << "\tProject::~Project()\n";
-                _file << "\t{\n";
-                _file << "\t}\n\n";
-
-                _file << "}";
-                _file.close();
-            }
-
-            // create directory
-            // create config files
-            // create default source files
-            // create cmake?
+            generate_from_template(
+                {
+                    { "F:/Projects/C++/Duckvil/resource/template/new-project.tpl.h", _projectPath + "/include/Project.h" },
+                    { "F:/Projects/C++/Duckvil/resource/template/new-project.tpl.cpp", _projectPath + "/source/Project.cpp" }
+                },
+                {
+                    { "projectName", m_sProjectName }
+                }
+            );
 
             PlugNPlay::__module _module;
 
@@ -393,6 +417,7 @@ namespace Duckvil { namespace Editor {
 
             generate_reflection(m_heap, _module, _projectPath);
 
+#ifdef DUCKVIL_PLATFORM_WINDOWS
             RunMsBuild(
                 "CMake",
                 (_projectPath + "/build").c_str(),
@@ -404,6 +429,7 @@ namespace Duckvil { namespace Editor {
                 (_projectPath + "/build").c_str(),
                 (_projectPath + "/build/" + m_sProjectName + ".sln /t:Build").c_str()
             );
+#endif
 
             PlugNPlay::__module_information _projectManagerModule("ProjectManager");
             ProjectManager::ftable _projectManager;
@@ -411,7 +437,7 @@ namespace Duckvil { namespace Editor {
             void (*_initProjectManager)(ProjectManager::ftable*);
 
             _module.load(&_projectManagerModule);
-            _module.get(_projectManagerModule, "duckvil_project_manager_init", (void**)&_initProjectManager);
+            _module.get(_projectManagerModule, "duckvil_project_manager_init", reinterpret_cast<void**>(&_initProjectManager));
 
             _initProjectManager(&_projectManager);
 
@@ -419,17 +445,27 @@ namespace Duckvil { namespace Editor {
 
             ProjectManager::project _loadedProject = _projectManager.m_fnLoadProject(&_projectManagerData, Utils::string(m_sProjectName, strlen(m_sProjectName) + 1), _projectPath + "/bin");
 
-            m_pEditorEventPool->Broadcast(CloseWidgetEvent{ RuntimeReflection::get_type<NewProjectWidget>().m_ID, this });
+            m_pEditorEventPool->Broadcast(CloseWidgetEvent(this));
         }
 
         ImGui::SameLine();
 
         if(ImGui::Button("Close"))
         {
-            m_pEditorEventPool->Broadcast(CloseWidgetEvent{ RuntimeReflection::get_type<NewProjectWidget>().m_ID, this });
+            m_pEditorEventPool->Broadcast(CloseWidgetEvent(this));
         }
 
         ImGui::End();
+    }
+
+    bool NewProjectWidget::Init()
+    {
+        return true;
+    }
+
+    void NewProjectWidget::Update(double _dDelta)
+    {
+        printf("aaaa");
     }
 
     void NewProjectWidget::SetEditorEventPool(const Event::Pool<Event::mode::immediate>* _pEventPool)

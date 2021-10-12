@@ -52,6 +52,8 @@
 
 #include "ProjectManager/ProjectManager.h"
 
+#include "Engine/Events/RequestSystemEvent.h"
+
 namespace Duckvil {
 
     struct system

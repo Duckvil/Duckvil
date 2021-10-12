@@ -17,12 +17,14 @@
 
 #include "Event/ImmediatePool.h"
 
+#include "Engine/ISystem.h"
+
 #include "Editor/Widgets/NewProjectWidget.generated.h"
 
 namespace Duckvil { namespace Editor {
 
     DUCKVIL_CLASS(ReflectionFlag::Spwanable)
-    class NewProjectWidget : public Widget
+    class NewProjectWidget : public Widget, public ISystem
     {
         DUCKVIL_GENERATED_BODY
     private:
@@ -44,6 +46,9 @@ namespace Duckvil { namespace Editor {
 
         void InitEditor(void* _pImguiContext);
         void OnDraw();
+
+        bool Init();
+        void Update(double _dDelta);
 
         void SetEditorEventPool(const Event::Pool<Event::mode::immediate>* _pEventPool);
     };

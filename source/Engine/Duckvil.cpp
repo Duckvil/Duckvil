@@ -35,6 +35,10 @@
 
 #include "Utils/FunctionArgumentsPusher.h"
 
+#include "TestSystem/TestSystem.h"
+
+#include "Graphics/ModelLoader.h"
+
 namespace Duckvil {
 
     bool init_runtime_reflection(__data* _pData, PlugNPlay::__module* _pModule)
@@ -143,54 +147,62 @@ namespace Duckvil {
 
         _pData->m_pRenderer->m_fnInit(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pWindow, &_pData->m_pRendererData);
 
-        glm::vec3 _vertices[] =
-        {
-            glm::vec3(-0.5, -0.5, 0),
-            glm::vec3(0, 0.5, 0),
-            glm::vec3(0.5, -0.5, 0)
-        };
+        const auto& _modelLoaderHandle = RuntimeReflection::get_type("ModelLoader", { "Duckvil", "Graphics" });
+        void* _modelLoader = RuntimeReflection::create<const char*>(_pData->m_heap, _modelLoaderHandle, false, "F:/Projects/C++/Duckvil/resource/object/test.obj");
 
-        glm::vec2 _texCoords[] =
-        {
-            glm::vec2(0, 0),
-            glm::vec2(0.5, 1),
-            glm::vec2(1, 0)
-        };
+        const auto& _modelLoaderGetRawHandle = RuntimeReflection::get_function_handle(_modelLoaderHandle, "GetRaw");
+        const Graphics::ModelLoader::Raw& _raw = RuntimeReflection::invoke_member_result<const Graphics::ModelLoader::Raw&>(_modelLoaderHandle, _modelLoaderGetRawHandle, _modelLoader);
 
-        uint32_t _indices[] =
-        {
-            0, 1, 2
-        };
+        // glm::vec3 _vertices[] =
+        // {
+        //     glm::vec3(-0.5, -0.5, 0),
+        //     glm::vec3(0, 0.5, 0),
+        //     glm::vec3(0.5, -0.5, 0)
+        // };
+
+        // glm::vec2 _texCoords[] =
+        // {
+        //     glm::vec2(0, 0),
+        //     glm::vec2(0.5, 1),
+        //     glm::vec2(1, 0)
+        // };
+
+        // uint32_t _indices[] =
+        // {
+        //     0, 1, 2
+        // };
 
         Graphics::Renderer::vertex_buffer_object_descriptor _desc[] =
         {
-            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _vertices, 3),
-            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _texCoords, 2),
-            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ELEMENT_ARRAY_BUFFER, _indices)
+            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aVertices, _raw.m_aVertices.size(), 3), // size of vertices should be specified here
+            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aTexCoords, _raw.m_aTexCoords.size(), 2),
+            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ELEMENT_ARRAY_BUFFER, _raw.m_aIndices, _raw.m_aIndices.size(), 1)
         };
 
         ecs_os_set_api_defaults();
 
-        for(uint32_t i = 0; i < 200; ++i)
+        for(uint32_t i = 0; i < 1; ++i)
         {
-            _pData->m_ecs.entity().set([_pData, &_desc, i](Graphics::MeshComponent& _mesh, Graphics::TransformComponent& _transform)
+            for(uint32_t j = 0; j < 1; ++j)
             {
-                _mesh.m_uiID = _pData->m_pRenderer->m_fnCreateVAO(
-                    _pData->m_pMemory,
-                    _pData->m_pHeap,
-                    &_pData->m_pRendererData,
-                    Graphics::Renderer::vertex_array_object_descriptor
-                    {
-                        3,
-                        _desc,
-                        3
-                    }
-                );
+                _pData->m_ecs.entity().set([_pData, &_desc, i, j, _raw](Graphics::MeshComponent& _mesh, Graphics::TransformComponent& _transform)
+                {
+                    _mesh.m_uiID = _pData->m_pRenderer->m_fnCreateVAO(
+                        _pData->m_pMemory,
+                        _pData->m_pHeap,
+                        &_pData->m_pRendererData,
+                        Graphics::Renderer::vertex_array_object_descriptor
+                        {
+                            sizeof(_desc) / sizeof(_desc[0]),
+                            _desc
+                        }
+                    );
 
-                _transform.m_position = glm::vec3(0, 0, i * 2);
-                _transform.m_rotation = glm::quat(0, 0, 0, 1);
-                _transform.m_scale = glm::vec3(1, 1, 1);
-            });
+                    _transform.m_position = glm::vec3(0, j * 2, i * 2);
+                    _transform.m_rotation = glm::quat(0, 0, 0, 1);
+                    _transform.m_scale = glm::vec3(1, 1, 1);
+                });
+            }
         }
 
         _pData->m_rendererQuery = _pData->m_ecs.query<Graphics::TransformComponent>();
@@ -380,6 +392,14 @@ namespace Duckvil {
         init_editor(_pData, &_module);
         init_project_manager(_pData, &_module);
 
+        _pData->m_eventPool.AddA<RequestSystemEvent>([_pData](RequestSystemEvent& _event)
+        {
+            if(_event.m_typeHandle.m_ID == RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>().m_ID)
+            {
+                _event.m_pRequestedSystem = _pData->m_pRuntimeCompiler;
+            }
+        });
+
         {
             auto _types = RuntimeReflection::get_types(_pData->m_heap);
 
@@ -400,8 +420,6 @@ namespace Duckvil {
 
                 _pData->m_fnRuntimeCompilerUpdate = _type.GetFunctionCallback<ISystem, double>("Update")->m_fnFunction;
                 _pData->m_fnRuntimeCompilerInit = _type.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
-
-                _pData->m_pRuntimeCompiler->m_aRecordedTypes = _pData->m_aRecordedTypes;
 
                 _pData->m_pEditor->m_fnAddDraw(_pData->m_pEditorData,
                     Editor::Draw
@@ -458,6 +476,11 @@ namespace Duckvil {
                                 if(typeid(Memory::FreeList).hash_code() == _argument.m_ullTypeID)
                                 {
                                     c.Push(_pData->m_heap);
+                                }
+
+                                if(typeid(HotReloader::RuntimeCompilerSystem*).hash_code() == _argument.m_ullTypeID)
+                                {
+                                    c.Push(_pData->m_pRuntimeCompiler);
                                 }
                             }
 

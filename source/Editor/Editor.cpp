@@ -1,3 +1,4 @@
+#define STB_IMAGE_IMPLEMENTATION
 #include "Editor/Editor.h"
 
 #include "imgui/imgui.h"
@@ -25,6 +26,12 @@
 #include "Editor/Events/CloseWidgetEvent.h"
 
 #include "tracy/Tracy.hpp"
+
+#include "Utils/FunctionArgumentsPusher.h"
+
+#include "Engine/Events/RequestSystemEvent.h"
+
+#undef GetObject
 
 namespace Duckvil { namespace Editor {
 
@@ -55,7 +62,8 @@ namespace Duckvil { namespace Editor {
 
         if(err != GLEW_OK)
         {
-            throw std::exception("Failed to init GLEW!");
+            // throw std::runtime_error("Failed to init GLEW!");
+            throw std::runtime_error((const char*)glewGetErrorString(err));
             // printf("%s\n", glewGetErrorString(err));
         }
 
@@ -187,17 +195,64 @@ namespace Duckvil { namespace Editor {
             (_pWidget->*_widget.m_fnInit)(_data->_ctx);
         }
 
-        _data->m_pEditorEvents.AddA<SpwanWidgetEvent>([_data](const SpwanWidgetEvent& _event)
+        _data->m_pEditorEvents.AddA<SpwanWidgetEvent>([_data, _heap, _pEventPool](const SpwanWidgetEvent& _event)
         {
-            RuntimeReflection::ReflectedType<> _type(_data->m_heap, _event._typeHandle);
-            RuntimeReflection::__variant _spawnableVariant = RuntimeReflection::get_meta(_event._typeHandle, ReflectionFlag::Spwanable);
+            RuntimeReflection::ReflectedType<> _type(_data->m_heap, _event.m_typeHandle);
+            RuntimeReflection::__variant _spawnableVariant = RuntimeReflection::get_meta(_event.m_typeHandle, ReflectionFlag::Spwanable);
 
             if(_spawnableVariant.m_ullTypeID == -1 || (_spawnableVariant.m_ullTypeID == typeid(bool).hash_code() && !*static_cast<bool*>(_spawnableVariant.m_pData)))
             {
                 return;
             }
 
-            void* _object = _type.Create<const Memory::FreeList&>(_data->m_heap);
+            // void* _object = _type.Create<const Memory::FreeList&>(_data->m_heap);
+            void* _object = nullptr;
+            auto _constructors = RuntimeReflection::get_constructors(_heap, _event.m_typeHandle);
+
+            for(const auto& _constructorHandle : _constructors)
+            {
+                const auto& _constructor = RuntimeReflection::get_constructor(_event.m_typeHandle, _constructorHandle);
+                uint32_t _constructorArgumentsCount = DUCKVIL_SLOT_ARRAY_SIZE(_constructor.m_arguments);
+
+                if(_constructorArgumentsCount > 0)
+                {
+                    FunctionArgumentsPusher c(5 + _constructorArgumentsCount);
+
+                    c.Push(_heap.GetMemoryInterface());
+                    c.Push(_heap.GetAllocator());
+                    c.Push(RuntimeReflection::get_current().m_pReflection);
+                    c.Push(RuntimeReflection::get_current().m_pReflectionData);
+                    c.Push(false);
+
+                    for(uint32_t i = 0; i < _constructorArgumentsCount; ++i)
+                    {
+                        const RuntimeReflection::__argument_t& _argument = DUCKVIL_SLOT_ARRAY_GET(_constructor.m_arguments, i);
+
+                        if(typeid(Memory::FreeList).hash_code() == _argument.m_ullTypeID)
+                        {
+                            c.Push(_heap);
+                        }
+
+                        if(typeid(HotReloader::RuntimeCompilerSystem*).hash_code() == _argument.m_ullTypeID)
+                        {
+                            RequestSystemEvent _rEvent;
+
+                            _rEvent.m_typeHandle = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>();
+
+                            _pEventPool->Broadcast(_rEvent);
+
+                            c.Push(_rEvent.m_pRequestedSystem);
+                        }
+                    }
+
+                    const auto& _h = RuntimeReflection::get_constructor_handle<const Memory::FreeList&>(_type.GetTypeHandle());
+                    const auto& _hc = RuntimeReflection::get_constructor(_type.GetTypeHandle(), _h);
+
+                    c.Call(_hc.m_pData);
+
+                    _object = c.getCode<void*(*)()>()();
+                }
+            }
 
             if(_data->m_aDraws.Full())
             {
@@ -209,12 +264,12 @@ namespace Duckvil { namespace Editor {
                 {
                     _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction,
                     _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction,
-                    _object, _event._typeHandle
+                    _object, _event.m_typeHandle
                 }
             );
 
             RuntimeReflection::invoke_member<const Event::Pool<Event::mode::immediate>*>(
-                _event._typeHandle, RuntimeReflection::get_function_handle<const Event::Pool<Event::mode::immediate>*>(_event._typeHandle, "SetEditorEventPool"),
+                _event.m_typeHandle, RuntimeReflection::get_function_handle<const Event::Pool<Event::mode::immediate>*>(_event.m_typeHandle, "SetEditorEventPool"),
                 _object,
                 &_data->m_pEditorEvents
             );
@@ -226,12 +281,12 @@ namespace Duckvil { namespace Editor {
             {
                 Draw& _draw = _data->m_aDraws[i];
 
-                if(_draw.m_typeHandle.m_ID == _event._typeHandle.m_ID)
+                if(_draw.m_typeHandle.m_ID == _event.m_typeHandle.m_ID)
                 {
                     _data->m_aDraws.Erase(i);
 
                     // _data->m_heap.Free(_event.m_pObject);
-                    RuntimeReflection::destroy(_data->m_heap, _event._typeHandle, false, _event.m_pObject);
+                    RuntimeReflection::destroy(_data->m_heap, _event.m_typeHandle, false, _event.m_pObject);
 
                     break;
                 }
