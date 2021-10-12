@@ -14,6 +14,8 @@
 
 #include "tracy/Tracy.hpp"
 
+#undef GetObject
+
 namespace Duckvil { namespace HotReloader {
 
     void generate(std::ofstream& _file, void* _pUserData)
@@ -108,70 +110,74 @@ namespace Duckvil { namespace HotReloader {
 
         m_compilerTypeHandle = RuntimeReflection::get_type<RuntimeCompiler::Compiler>();
 
-        RuntimeReflection::__function<bool(RuntimeCompiler::Compiler::*)()>* _setup =
-            RuntimeReflection::get_function_callback<bool, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "Setup");
-        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addFlag =
-            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddFlag");
-        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(RuntimeCompiler::Flag)>* _addFlag2 =
-            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, RuntimeCompiler::Flag>(m_compilerTypeHandle, "AddFlag");
-        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addDefine =
-            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddDefine");
-        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addInclude =
-            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddInclude");
-        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addLibraryPath =
-            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddLibraryPath");
-        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>* _addLibrary =
-            RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddLibrary");
+        m_fnInternalCompilerSetup = RuntimeReflection::get_function_callback<bool, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "Setup");
+        m_fnInternalCompilerAddFlag = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddFlag");
+        m_fnInternalCompilerAddFlag2 = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, RuntimeCompiler::Flag>(m_compilerTypeHandle, "AddFlag");
+        m_fnInternalCompilerAddDefine = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddDefine");
+        m_fnInternalCompilerAddInclude = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddInclude");
+        m_fnInternalCompilerAddLibraryPath = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddLibraryPath");
+        m_fnInternalCompilerAddLibrary = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddLibrary");
 
-        (m_pCompiler->*_setup->m_fnFunction)();
+        m_fnInternalCompilerGetFlags =
+            RuntimeReflection::get_function_callback<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetFlags");
+        m_fnInternalCompilerGetDefines =
+            RuntimeReflection::get_function_callback<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetDefines");
+        m_fnInternalCompilerGetIncludes =
+            RuntimeReflection::get_function_callback<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetIncludes");
+        m_fnInternalCompilerGetLibrariesPaths =
+            RuntimeReflection::get_function_callback<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetLibrariesPaths");
+        m_fnInternalCompilerGetLibraries =
+            RuntimeReflection::get_function_callback<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetLibraries");
 
-        (m_pCompiler->*_addFlag2->m_fnFunction)(RuntimeCompiler::Flag::Flag_SharedLibrary);
-        (m_pCompiler->*_addFlag2->m_fnFunction)(RuntimeCompiler::Flag::Flag_DebugInfo);
+        (m_pCompiler->*m_fnInternalCompilerSetup->m_fnFunction)();
 
-        (m_pCompiler->*_addFlag->m_fnFunction)("/std:c++latest");
+        (m_pCompiler->*m_fnInternalCompilerAddFlag2->m_fnFunction)(RuntimeCompiler::Flag::Flag_SharedLibrary);
+        (m_pCompiler->*m_fnInternalCompilerAddFlag2->m_fnFunction)(RuntimeCompiler::Flag::Flag_DebugInfo);
+
+        (m_pCompiler->*m_fnInternalCompilerAddFlag->m_fnFunction)("/std:c++latest");
 
 #ifdef DUCKVIL_PLATFORM_WINDOWS
         // (m_pCompiler->*_addFlag->m_fnFunction)("/Zi");
-        (m_pCompiler->*_addFlag->m_fnFunction)("/MDd");
+        (m_pCompiler->*m_fnInternalCompilerAddFlag->m_fnFunction)("/MDd");
         // (m_pCompiler->*_addFlag->m_fnFunction)("/LD");
-        (m_pCompiler->*_addFlag->m_fnFunction)("/FC");
+        (m_pCompiler->*m_fnInternalCompilerAddFlag->m_fnFunction)("/FC");
 #else
 #ifdef DUCKVIL_PLATFORM_LINUX
         // (m_pCompiler->*_addFlag->m_fnFunction)("-g");
         // (m_pCompiler->*_addFlag->m_fnFunction)("-shared");
-        (m_pCompiler->*_addFlag->m_fnFunction)("-fPIC");
+        (m_pCompiler->*m_fnInternalCompilerAddFlag->m_fnFunction)("-fPIC");
 #endif
 #endif
         std::filesystem::path _includePath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include";
         std::filesystem::path _externalPath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "external";
         std::filesystem::path _generatedIncludePath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__";
 
-        (m_pCompiler->*_addInclude->m_fnFunction)(_includePath.string());
-        (m_pCompiler->*_addInclude->m_fnFunction)(_externalPath.string());
-        (m_pCompiler->*_addInclude->m_fnFunction)(_generatedIncludePath.string());
-        (m_pCompiler->*_addInclude->m_fnFunction)((_externalPath / "glm").string());
+        (m_pCompiler->*m_fnInternalCompilerAddInclude->m_fnFunction)(_includePath.string());
+        (m_pCompiler->*m_fnInternalCompilerAddInclude->m_fnFunction)(_externalPath.string());
+        (m_pCompiler->*m_fnInternalCompilerAddInclude->m_fnFunction)(_generatedIncludePath.string());
+        (m_pCompiler->*m_fnInternalCompilerAddInclude->m_fnFunction)((_externalPath / "glm").string());
 
 #ifdef DUCKVIL_PLATFORM_WINDOWS
-        (m_pCompiler->*_addDefine->m_fnFunction)("DUCKVIL_PLATFORM_WINDOWS");
+        (m_pCompiler->*m_fnInternalCompilerAddDefine->m_fnFunction)("DUCKVIL_PLATFORM_WINDOWS");
 #else
 #ifdef DUCKVIL_PLATFORM_LINUX
-        (m_pCompiler->*_addDefine->m_fnFunction)("DUCKVIL_PLATFORM_LINUX");
+        (m_pCompiler->*m_fnInternalCompilerAddDefine->m_fnFunction)("DUCKVIL_PLATFORM_LINUX");
 #endif
 #endif
-        (m_pCompiler->*_addDefine->m_fnFunction)("DUCKVIL_RUNTIME_COMPILE");
-        (m_pCompiler->*_addDefine->m_fnFunction)(std::string("DUCKVIL_OUTPUT=\"") + DUCKVIL_OUTPUT + "\"");
+        (m_pCompiler->*m_fnInternalCompilerAddDefine->m_fnFunction)("DUCKVIL_RUNTIME_COMPILE");
+        (m_pCompiler->*m_fnInternalCompilerAddDefine->m_fnFunction)(std::string("DUCKVIL_OUTPUT=\"") + DUCKVIL_OUTPUT + "\"");
 
-        (m_pCompiler->*_addLibraryPath->m_fnFunction)(DUCKVIL_OUTPUT);
+        (m_pCompiler->*m_fnInternalCompilerAddLibraryPath->m_fnFunction)(DUCKVIL_OUTPUT);
 
 #ifdef DUCKVIL_PLATFORM_WINDOWS
-        (m_pCompiler->*_addLibrary->m_fnFunction)("Utils.lib");
-        (m_pCompiler->*_addLibrary->m_fnFunction)("UniTestFramework.lib");
-        (m_pCompiler->*_addLibrary->m_fnFunction)("PlugNPlay.lib");
+        (m_pCompiler->*m_fnInternalCompilerAddLibrary->m_fnFunction)("Utils.lib");
+        (m_pCompiler->*m_fnInternalCompilerAddLibrary->m_fnFunction)("UniTestFramework.lib");
+        (m_pCompiler->*m_fnInternalCompilerAddLibrary->m_fnFunction)("PlugNPlay.lib");
 #else
 #ifdef DUCKVIL_PLATFORM_LINUX
-        (m_pCompiler->*_addLibrary->m_fnFunction)("Utils.a");
-        (m_pCompiler->*_addLibrary->m_fnFunction)("UniTestFramework.a");
-        (m_pCompiler->*_addLibrary->m_fnFunction)("PlugNPlay.a");
+        (m_pCompiler->*m_fnInternalCompilerAddLibrary->m_fnFunction)("Utils.a");
+        (m_pCompiler->*m_fnInternalCompilerAddLibrary->m_fnFunction)("UniTestFramework.a");
+        (m_pCompiler->*m_fnInternalCompilerAddLibrary->m_fnFunction)("PlugNPlay.a");
 #endif
 #endif
 
@@ -227,7 +233,7 @@ namespace Duckvil { namespace HotReloader {
 
         for(uint32_t i = 0; i < m_aHotObjects.Size(); ++i)
         {
-            auto _type = RuntimeReflection::get_type(m_aHotObjects[i]->GetTypeHandle());
+            auto _type = RuntimeReflection::get_type(m_aHotObjects[i].m_pObject->GetTypeHandle());
 
             ImGui::Text("  %s", _type.m_sTypeName);
         }
@@ -262,9 +268,9 @@ namespace Duckvil { namespace HotReloader {
 
             std::replace(_toCmp.begin(), _toCmp.end(), '\\', '/');
 
-            for(size_t i = 0; i < m_aRecordedTypes.Size(); ++i)
+            for(size_t i = 0; i < m_aReflectedTypes->Size(); ++i)
             {
-                const duckvil_recorderd_types& _types = m_aRecordedTypes[i];
+                const duckvil_recorderd_types& _types = m_aReflectedTypes->At(i);
 
                 if(strcmp(_types.m_sFile, _toCmp.c_str()) == 0)
                 {
@@ -440,34 +446,30 @@ namespace Duckvil { namespace HotReloader {
 
         for(uint32_t i = 0; i < m_aHotObjects.Size(); ++i)
         {
-            ITrackKeeper* _trackKeeper = m_aHotObjects[i];
+            hot_object& _hot = m_aHotObjects[i];
 
             for(size_t j = 0; j < _types.m_ullCount; ++j)
             {
                 const Duckvil::RuntimeReflection::__duckvil_resource_type_t& _type = _types.m_aTypes[j];
 
-                if(/*RuntimeReflection::get_meta(_type, ReflectionFlags_Hot).m_ullTypeID != -1 && */_trackKeeper->GetTypeHandle().m_ID == _type.m_ID)
+                if(/*RuntimeReflection::get_meta(_type, ReflectionFlags_Hot).m_ullTypeID != -1 && */_hot.m_pObject->GetTypeHandle().m_ID == _type.m_ID)
                 {
                     RuntimeSerializer::Serializer _serializer;
 
-                    RuntimeReflection::__duckvil_resource_function_t _serializeFunctionHandle = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_type, "Serialize");
-                    RuntimeReflection::__function<void(HotObject::*)(RuntimeSerializer::ISerializer*)>* _func =
-                        RuntimeReflection::get_function_callback<HotObject, RuntimeSerializer::ISerializer*>(g_duckvilFrontendReflectionContext.m_pReflectionData, _type, _serializeFunctionHandle);
-
-                    void* _oldObject = DUCKVIL_TRACK_KEEPER_GET_OBJECT(_trackKeeper);
+                    void* _oldObject = DUCKVIL_TRACK_KEEPER_GET_OBJECT(_hot.m_pObject);
 
                     _serializer.SetLoading(false);
-                    _serializer.Serialize(_oldObject, _func);
+                    _serializer.Serialize(_oldObject, _hot.m_pSerializeFunction);
 
                     void* _newObject = RuntimeReflection::create(m_objectsHeap, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _type, false);
 
+                    RuntimeReflection::__duckvil_resource_function_t _serializeFunctionHandle = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_type, "Serialize");
+                    RuntimeReflection::__function_t _func = RuntimeReflection::get_function(_type, _serializeFunctionHandle);
+
                     _serializer.SetLoading(true);
-                    _serializer.Serialize(_newObject, _func);
+                    _serializer.Serialize(_newObject, _func.m_pRawFunction);
 
-                    SwapEvent _swapEvent;
-
-                    _swapEvent.m_pOldObject = _oldObject;
-                    _swapEvent.m_pTrackKeeper = _trackKeeper;
+                    _hot.m_pSerializeFunction = _func.m_pRawFunction;
 
                     // HotReloadedEvent _swapEvent = {};
 
@@ -477,9 +479,9 @@ namespace Duckvil { namespace HotReloader {
                     // _swapEvent.m_pTrackKeeper = _trackKeeper;
                     // _swapEvent.m_pOldObject = _oldObject;
 
-                    _trackKeeper->SetObject(_newObject);
+                    _hot.m_pObject->SetObject(_newObject);
 
-                    m_pEventPool->Broadcast(_swapEvent);
+                    m_pEventPool->Broadcast(SwapEvent{ _oldObject, _hot.m_pObject });
 
                     m_objectsHeap.Free(_oldObject);
 
@@ -495,6 +497,7 @@ namespace Duckvil { namespace HotReloader {
                             _moduleToRelease = _types2.m_pModule;
 
                             m_aReflectedTypes->Erase(k);
+                            const duckvil_recorderd_types& aa = m_aReflectedTypes->At(k);
                             m_aReflectedTypes->Allocate(_types);
 
                             break;
@@ -527,14 +530,14 @@ namespace Duckvil { namespace HotReloader {
         FrameMarkEnd("Compile");
     }
 
-    void RuntimeCompilerSystem::AddHotObject(ITrackKeeper* _pTrackKeeper)
+    void RuntimeCompilerSystem::AddHotObject(const hot_object& _hotObject)
     {
         if(m_aHotObjects.Full())
         {
             m_aHotObjects.Resize(m_aHotObjects.Size() * 2);
         }
 
-        m_aHotObjects.Allocate(_pTrackKeeper);
+        m_aHotObjects.Allocate(_hotObject);
     }
 
     void RuntimeCompilerSystem::SetObjectsHeap(const Memory::FreeList& _heap)
@@ -554,7 +557,10 @@ namespace Duckvil { namespace HotReloader {
 
     void RuntimeCompilerSystem::OnEvent(const RuntimeReflection::TrackedObjectCreatedEvent& _event)
     {
-        AddHotObject(_event.m_pTrackKeeper);
+        RuntimeReflection::__duckvil_resource_function_t _a = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_event.m_pTrackKeeper->GetTypeHandle(), "Serialize");
+        RuntimeReflection::__function_t _func = RuntimeReflection::get_function(_event.m_pTrackKeeper->GetTypeHandle(), _a);
+
+        AddHotObject(hot_object(_event.m_pTrackKeeper, _func.m_pRawFunction));
     }
 
 }}

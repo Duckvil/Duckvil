@@ -8,12 +8,22 @@
 
 #include "RuntimeReflection/RuntimeReflection.h"
 
+#include "Utils/FunctionArgumentsPusher.h"
+
 namespace Duckvil { namespace RuntimeSerializer {
 
     class Serializer : public ISerializer
     {
     public:
-        typedef std::map<const char*, const ISerializedValue*> ValueGroup;
+        struct cmp_str
+        {
+            bool operator()(char const* a, char const* b) const
+            {
+                return std::strcmp(a, b) < 0;
+            }
+        };
+
+        typedef std::map<const char*, const ISerializedValue*, cmp_str> ValueGroup;
 
     private:
         ValueGroup m_serializationMap;
@@ -47,6 +57,29 @@ namespace Duckvil { namespace RuntimeSerializer {
         void Serialize(void* _pHotObject, RuntimeReflection::__function<void(HotReloader::HotObject::*)(RuntimeSerializer::ISerializer*)>* _fnSerialize)
         {
             _fnSerialize->Invoke(_pHotObject, this);
+        }
+
+        void Serialize(void* _pHotObject, void* _pSerializeFunction)
+        {
+            FunctionArgumentsPusher _c(2);
+
+            _c.Push(_pHotObject);
+            _c.Push(this);
+            _c.Call(_pSerializeFunction);
+
+            _c.getCode<void(*)()>()();
+        }
+
+        template <typename Type>
+        void Serialize(Type* _pHotObject, void (Type::*_fnSerialize)(RuntimeSerializer::ISerializer*))
+        {
+            Serialize(_pHotObject, (void*&)_fnSerialize);
+        }
+
+        template <typename Type>
+        void Serialize(void* _pHotObject, void (Type::*_fnSerialize)(RuntimeSerializer::ISerializer*))
+        {
+            Serialize(_pHotObject, (void*&)_fnSerialize);
         }
 
         void Clear()

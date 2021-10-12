@@ -59,6 +59,27 @@ namespace Duckvil { namespace HotReloader {
             RuntimeReflection::__duckvil_resource_function_t m_clearFunctionHandle;
         };
 
+        struct hot_object
+        {
+            ITrackKeeper* m_pObject;
+            void* m_pSerializeFunction;
+
+            template <typename A>
+            hot_object(ITrackKeeper* _pObject, void (A::*_fnSerialize)(RuntimeSerializer::ISerializer*)) :
+                m_pObject(_pObject),
+                m_pSerializeFunction((void*&)_fnSerialize)
+            {
+
+            }
+
+            hot_object(ITrackKeeper* _pObject, void* _pSerializeFunction) :
+                m_pObject(_pObject),
+                m_pSerializeFunction(_pSerializeFunction)
+            {
+
+            }
+        };
+
     private:
         FileWatcher* m_pFileWatcher;
         user_data m_userData;
@@ -85,6 +106,20 @@ namespace Duckvil { namespace HotReloader {
 
         Memory::Vector<PlugNPlay::__module_information>* m_aLoadedModules;
         Memory::Vector<duckvil_recorderd_types>* m_aReflectedTypes;
+
+        RuntimeReflection::__function<bool(RuntimeCompiler::Compiler::*)()>*                        m_fnInternalCompilerSetup;
+        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>*      m_fnInternalCompilerAddFlag;
+        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(RuntimeCompiler::Flag)>*   m_fnInternalCompilerAddFlag2;
+        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>*      m_fnInternalCompilerAddDefine;
+        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>*      m_fnInternalCompilerAddInclude;
+        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>*      m_fnInternalCompilerAddLibraryPath;
+        RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>*      m_fnInternalCompilerAddLibrary;
+
+        RuntimeReflection::__function<const std::vector<std::string>&(RuntimeCompiler::Compiler::*)()>* m_fnInternalCompilerGetFlags;
+        RuntimeReflection::__function<const std::vector<std::string>&(RuntimeCompiler::Compiler::*)()>* m_fnInternalCompilerGetDefines;
+        RuntimeReflection::__function<const std::vector<std::string>&(RuntimeCompiler::Compiler::*)()>* m_fnInternalCompilerGetIncludes;
+        RuntimeReflection::__function<const std::vector<std::string>&(RuntimeCompiler::Compiler::*)()>* m_fnInternalCompilerGetLibrariesPaths;
+        RuntimeReflection::__function<const std::vector<std::string>&(RuntimeCompiler::Compiler::*)()>* m_fnInternalCompilerGetLibraries;
 
         static void Action(const std::filesystem::path& _file, FileWatcher::FileStatus _status, void* _pUserData)
         {
@@ -115,11 +150,8 @@ namespace Duckvil { namespace HotReloader {
         RuntimeCompilerSystem(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEventPool);
         ~RuntimeCompilerSystem();
 
-        // duckvil_recorderd_types* m_aRecordedTypes;
-        // size_t m_ullRecordedTypesCount;
-        Memory::Vector<duckvil_recorderd_types> m_aRecordedTypes;
-
-        Memory::Vector<ITrackKeeper*> m_aHotObjects;
+        // Memory::Vector<ITrackKeeper*> m_aHotObjects;
+        Memory::Vector<RuntimeCompilerSystem::hot_object> m_aHotObjects;
 
         Memory::Vector<RuntimeCompilerSystem::reflection_module> m_aModules;
 
@@ -132,7 +164,7 @@ namespace Duckvil { namespace HotReloader {
 
         void Compile(const std::string& _sFile);
 
-        void AddHotObject(ITrackKeeper* _pTrackKeeper);
+        void AddHotObject(const RuntimeCompilerSystem::hot_object& _hotObject);
 
         void SetObjectsHeap(const Memory::FreeList& _heap);
         void SetModules(Memory::Vector<PlugNPlay::__module_information>* _aLoaded);
