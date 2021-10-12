@@ -21,7 +21,21 @@ target_include_directories(
 )
 target_link_libraries(
     Graphics
-    OpenGL32
     glew
     SDL2
+    assimp
 )
+
+if(WIN32)
+    target_link_libraries(
+        Graphics
+        OpenGL32
+    )
+else()
+    if(UNIX)
+        target_link_libraries(
+            Graphics
+            GL
+        )
+    endif()
+endif()
