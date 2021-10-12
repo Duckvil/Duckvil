@@ -80,25 +80,43 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
     struct vertex_buffer_object_descriptor
     {
         uint32_t m_uiTypeSize; // Size of single vertex
-        void* m_pData; // Pointer to data
+        const void* m_pData; // Pointer to data
         uint16_t m_usNumber; // Count of single vertex type
         GLenum m_target;
+        uint32_t m_uiCount;
 
-        vertex_buffer_object_descriptor(GLenum _target, uint32_t _uiTypeSize, void* _pData, uint16_t _usNumber = 0) :
+        vertex_buffer_object_descriptor(GLenum _target, uint32_t _uiTypeSize, const void* _pData, uint32_t _uiCount, uint16_t _usNumber = 1) :
             m_target(_target),
             m_uiTypeSize(_uiTypeSize),
             m_pData(_pData),
-            m_usNumber(_usNumber)
+            m_usNumber(_usNumber),
+            m_uiCount(_uiCount)
         {
 
         }
 
         template <typename Type>
-        vertex_buffer_object_descriptor(GLenum _target, Type* _pData, uint16_t _usNumber = 0) :
-            m_target(_target),
-            m_uiTypeSize(sizeof(Type)),
-            m_pData(_pData),
-            m_usNumber(_usNumber)
+        vertex_buffer_object_descriptor(GLenum _target, Type* _pData, uint32_t _uiCount, uint16_t _usNumber = 1) :
+            vertex_buffer_object_descriptor(
+                _target,
+                static_cast<uint32_t>(sizeof(Type) / _usNumber),
+                static_cast<void*>(_pData),
+                _uiCount,
+                _usNumber
+            )
+        {
+
+        }
+
+        template <typename Type>
+        vertex_buffer_object_descriptor(GLenum _target, const std::vector<Type>& _pData, uint32_t _uiCount, uint16_t _usNumber = 1) :
+            vertex_buffer_object_descriptor(
+                _target,
+                static_cast<uint32_t>(sizeof(Type) / _usNumber),
+                static_cast<const void*>(&_pData[0]),
+                _uiCount,
+                _usNumber
+            )
         {
 
         }
@@ -108,7 +126,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
     {
         uint32_t m_uiVBO_Count; // Number of vertex buffer objects
         vertex_buffer_object_descriptor* m_aVBO; // Array of vertex buffer objects
-        uint32_t m_uiCount; // Count of vertices
+        // uint32_t m_uiCount; // Count of vertices
     };
 
     typedef uint32_t shader;

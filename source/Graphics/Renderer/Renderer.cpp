@@ -157,17 +157,21 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
     uint32_t impl_renderer_create_framebuffer(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const framebuffer_descriptor& _descriptor)
     {
         GLuint _framebuffer = -1;
+        GLuint _renderbuffer = -1;
 
         glGenFramebuffers(1, &_framebuffer);
         glBindFramebuffer(_descriptor.m_target, _framebuffer);
 
         GLenum* _drawBuffers = static_cast<GLenum*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(GLenum) * _descriptor.m_uiCount, 8));
 
+        bool _hasDepth = false;
+
         for(uint32_t i = 0; i < _descriptor.m_uiCount; ++i)
         {
             if(_descriptor.m_aAttachments[i] == GL_DEPTH_ATTACHMENT)
             {
                 _drawBuffers[i] = GL_NONE;
+                _hasDepth = true;
             }
             else
             {
@@ -180,6 +184,14 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
             }
 
             glFramebufferTexture2D(_descriptor.m_target, _descriptor.m_aAttachments[i], _descriptor.m_textureTarget, _descriptor.m_aTextures[i], 0);
+        }
+
+        if(!_hasDepth)
+        {
+            glGenRenderbuffers(1, &_renderbuffer);
+            glBindRenderbuffer(GL_RENDERBUFFER, _renderbuffer);
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1920, 1080);
+            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _renderbuffer);
         }
 
         glDrawBuffers(_descriptor.m_uiCount, _drawBuffers);
@@ -202,6 +214,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
     uint32_t impl_renderer_create_vao(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const vertex_array_object_descriptor& _descriptor)
     {
         GLuint _vao = -1;
+        uint32_t _drawCount = 0;
         GLuint* _vbo = static_cast<GLuint*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(GLuint) * _descriptor.m_uiVBO_Count, 8));
 
         glGenVertexArrays(1, &_vao);
@@ -216,14 +229,16 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
             if(_vboDesc.m_target == GL_ARRAY_BUFFER)
             {
                 glBindBuffer(_vboDesc.m_target, _vbo[i]);
-                glBufferData(_vboDesc.m_target, _vboDesc.m_uiTypeSize * _vboDesc.m_usNumber * _descriptor.m_uiCount, _vboDesc.m_pData, GL_STATIC_DRAW);
+                glBufferData(_vboDesc.m_target, _vboDesc.m_uiTypeSize * _vboDesc.m_usNumber * _vboDesc.m_uiCount, _vboDesc.m_pData, GL_STATIC_DRAW);
                 glEnableVertexAttribArray(i);
                 glVertexAttribPointer(i, _vboDesc.m_usNumber, GL_FLOAT, GL_FALSE, 0, 0);
             }
             else if(_vboDesc.m_target == GL_ELEMENT_ARRAY_BUFFER)
             {
                 glBindBuffer(_vboDesc.m_target, _vbo[i]);
-                glBufferData(_vboDesc.m_target, _vboDesc.m_uiTypeSize * _descriptor.m_uiCount, _vboDesc.m_pData, GL_STATIC_DRAW);
+                glBufferData(_vboDesc.m_target, _vboDesc.m_uiTypeSize * _vboDesc.m_uiCount, _vboDesc.m_pData, GL_STATIC_DRAW);
+
+                _drawCount = _vboDesc.m_uiCount;
             }
         }
 
@@ -233,7 +248,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
             _pMemoryInterface,
             _pAllocator,
             _pData->m_vao,
-            vertex_array_object{ _vao, _descriptor.m_uiCount }
+            vertex_array_object{ _vao, _drawCount }
         );
     }
 
@@ -283,11 +298,12 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
 
         if(err != GLEW_OK)
         {
-            throw std::exception("Failed to init GLEW!");
+            throw std::runtime_error((const char*)glewGetErrorString(err));
             // printf("%s\n", glewGetErrorString(err));
         }
 
         glEnable(GL_DEPTH_TEST);
+
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
 
