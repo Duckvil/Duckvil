@@ -188,7 +188,30 @@ namespace Duckvil { namespace Memory {
         {
             if constexpr(std::is_base_of<Container, Type>::value)
             {
-                DUCKVIL_STATIC_ASSERT(false, "Currently not supported yet");
+                const SpecifiedContainer<typename Type::container, typename Type::type>& _container = (const SpecifiedContainer<typename Type::container, typename Type::type>&)_data;
+
+                SpecifiedContainer<typename Type::container, typename Type::type> _container2;
+
+                _container2.m_fnCopy = _container.m_fnCopy;
+                _container2.m_fnDestruct = _container.m_fnDestruct;
+                _container2.m_pAllocator = _container.m_pAllocator;
+                _container2.m_pMemoryInterface = _container.m_pMemoryInterface;
+
+                _container2.m_pContainer = (typename Type::type*)free_list_allocate(
+                    _container.m_pMemoryInterface,
+                    (free_list_allocator*)_container.m_pAllocator,
+                    sizeof(typename Type::type) + _container.m_pContainer->m_ullCapacity,
+                    alignof(typename Type::type)
+                );
+
+                memcpy(_container2.m_pContainer, _container.m_pContainer, sizeof(typename Type::type));
+                memcpy(
+                    _container2.GetWorkingMemory(),
+                    _container.GetWorkingMemory(),
+                    _container.m_pContainer->m_ullCapacity
+                );
+
+                return fixed_array_allocate(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _container2);
             }
             else
             {

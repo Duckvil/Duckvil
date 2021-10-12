@@ -252,56 +252,65 @@ namespace Duckvil { namespace Memory {
         {
             if constexpr(std::is_base_of<Container, Type>::value)
             {
-                DUCKVIL_STATIC_ASSERT(false, "Currently not supported yet");
+                if constexpr(std::is_base_of<SpecifiedResizableContainer<typename Type::container, typename Type::type>, Type>::value)
+                {
+                    typedef SpecifiedResizableContainer<typename Type::container, typename Type::type> ContainerType;
 
-                // if constexpr(std::is_base_of<SpecifiedResizableContainer<typename Type::container, typename Type::type>, Type>::value)
-                // {
-                //     typedef SpecifiedResizableContainer<typename Type::container, typename Type::type> ContainerType;
+                    const ContainerType& _container =
+                        (const ContainerType&)_value;
 
-                //     const ContainerType&& _container =
-                //         (const ContainerType&&)_value;
+                    ContainerType _container2;
 
-                //     ContainerType _container2;
+                    _container2.m_fnCopy = _container.m_fnCopy;
+                    _container2.m_fnDestruct = _container.m_fnDestruct;
+                    _container2.m_fnResize = _container.m_fnResize;
+                    _container2.m_pAllocator = _container.m_pAllocator;
+                    _container2.m_pMemoryInterface = _container.m_pMemoryInterface;
 
-                //     _container2.m_fnCopy = std::move(_container.m_fnCopy);
-                //     _container2.m_fnDestruct = std::move(_container.m_fnDestruct);
-                //     _container2.m_fnResize = std::move(_container.m_fnResize);
-                //     _container2.m_pAllocator = std::move(_container.m_pAllocator);
-                //     _container2.m_pMemoryInterface = std::move(_container.m_pMemoryInterface);
-                //     _container2.m_pContainer = std::move(_container.m_pContainer);
+                    _container2.m_pContainer = (typename Type::type*)free_list_allocate(
+                        _container.m_pMemoryInterface,
+                        (free_list_allocator*)_container.m_pAllocator,
+                        sizeof(typename Type::type) + _container.m_pContainer->m_ullCapacity,
+                        alignof(typename Type::type)
+                    );
 
-                //     _container.m_fnCopy = nullptr;
-                //     _container.m_fnDestruct = nullptr;
-                //     _container.m_fnResize = nullptr;
-                //     _container.m_pAllocator = nullptr;
-                //     _container.m_pMemoryInterface = nullptr;
-                //     _container.m_pContainer = nullptr;
+                    memcpy(_container2.m_pContainer, _container.m_pContainer, sizeof(typename Type::type));
+                    memcpy(
+                        _container2.GetWorkingMemory(),
+                        _container.GetWorkingMemory(),
+                        _container.m_pContainer->m_ullCapacity
+                    );
 
-                //     return fixed_vector_allocate(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _container2);
-                // }
-                // else
-                // {
-                //     const SpecifiedContainer<typename Type::container, typename Type::type>&& _container =
-                //         (const SpecifiedContainer<typename Type::container, typename Type::type>&&)_value;
+                    return fixed_vector_allocate(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _container2);
+                }
+                else
+                {
+                    const SpecifiedContainer<typename Type::container, typename Type::type>& _container =
+                        (const SpecifiedContainer<typename Type::container, typename Type::type>&)_value;
 
-                //     SpecifiedContainer<typename Type::container, typename Type::type> _container2;
+                    SpecifiedContainer<typename Type::container, typename Type::type> _container2;
 
-                //     _container2.m_fnCopy = std::move(_container.m_fnCopy);
-                //     _container2.m_fnDestruct = std::move(_container.m_fnDestruct);
-                //     _container2.m_fnResize = std::move(_container.m_fnResize);
-                //     _container2.m_pAllocator = std::move(_container.m_pAllocator);
-                //     _container2.m_pMemoryInterface = std::move(_container.m_pMemoryInterface);
-                //     _container2.m_pContainer = std::move(_container.m_pContainer);
+                    _container2.m_fnCopy = _container.m_fnCopy;
+                    _container2.m_fnDestruct = _container.m_fnDestruct;
+                    _container2.m_pAllocator = _container.m_pAllocator;
+                    _container2.m_pMemoryInterface = _container.m_pMemoryInterface;
 
-                //     _container.m_fnCopy = nullptr;
-                //     _container.m_fnDestruct = nullptr;
-                //     _container.m_fnResize = nullptr;
-                //     _container.m_pAllocator = nullptr;
-                //     _container.m_pMemoryInterface = nullptr;
-                //     _container.m_pContainer = nullptr;
+                    _container2.m_pContainer = (typename Type::type*)free_list_allocate(
+                        _container.m_pMemoryInterface,
+                        (free_list_allocator*)_container.m_pAllocator,
+                        sizeof(typename Type::type) + _container.m_pContainer->m_ullCapacity,
+                        alignof(typename Type::type)
+                    );
 
-                //     return fixed_vector_allocate(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _container2);
-                // }
+                    memcpy(_container2.m_pContainer, _container.m_pContainer, sizeof(typename Type::type));
+                    memcpy(
+                        _container2.GetWorkingMemory(),
+                        _container.GetWorkingMemory(),
+                        _container.m_pContainer->m_ullCapacity
+                    );
+
+                    return fixed_vector_allocate(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _container2);
+                }
             }
             else
             {
