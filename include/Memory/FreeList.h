@@ -144,9 +144,9 @@ namespace Duckvil { namespace Memory {
         }
 
         template <typename Type>
-        Type* Allocate(std::size_t _ullCount) const
+        Type* AllocateArray(std::size_t _ullCount) const
         {
-            return m_pMemory->m_fnFreeListAllocate_(m_pContainer, sizeof(Type) * _ullCount, 8);
+            return static_cast<Type*>(m_pMemory->m_fnFreeListAllocate_(m_pContainer, sizeof(Type) * _ullCount, 8));
         }
 
         template <typename Type>
