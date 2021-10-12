@@ -101,11 +101,6 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         void* _address = _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Type), alignof(Type));
 
-        if(_address == nullptr)
-        {
-            printf("Address is null %i!\n", _pAllocator->m_ullUsed);
-        }
-
         void* _object = new(_address) Type(_vArgs...);
 
         Event::Pool<Event::mode::immediate>* _events = (Event::Pool<Event::mode::immediate>*)_pData->m_pEvents;
@@ -113,20 +108,16 @@ namespace Duckvil { namespace RuntimeReflection {
 #ifdef DUCKVIL_HOT_RELOADING
         if(_bTracked)
         {
-            RuntimeReflection::__duckvil_resource_type_t _typHandle = RuntimeReflection::get_type<Type>(_pReflection, _pData);
+            RuntimeReflection::__duckvil_resource_type_t _typeHandle = RuntimeReflection::get_type<Type>(_pReflection, _pData);
             RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type(_pData, "TrackKeeper", { "Duckvil", "HotReloader" });
-            HotReloader::ITrackKeeper* _trackKeeper = (HotReloader::ITrackKeeper*)RuntimeReflection::create(_pMemoryInterface, _pAllocator, _pReflection, _pData, _trackKeeperHandle, false, _object, _typHandle);
+            HotReloader::ITrackKeeper* _trackKeeper = (HotReloader::ITrackKeeper*)RuntimeReflection::create(_pMemoryInterface, _pAllocator, _pReflection, _pData, _trackKeeperHandle, false, _object, _typeHandle);
 
             if(_events == nullptr)
             {
                 return _trackKeeper;
             }
 
-            TrackedObjectCreatedEvent _event;
-
-            _event.m_pTrackKeeper = _trackKeeper;
-
-            _events->Broadcast(_event);
+            _events->Broadcast(TrackedObjectCreatedEvent{ _trackKeeper });
 
             return _trackKeeper;
         }
@@ -137,12 +128,7 @@ namespace Duckvil { namespace RuntimeReflection {
                 return _object;
             }
 
-            ObjectCreatedEvent _event;
-
-            _event.m_pObject = _object;
-            _event.m_ullTypeID = typeid(Type).hash_code();
-
-            _events->Broadcast(_event);
+            _events->Broadcast(ObjectCreatedEvent{ _object, typeid(Type).hash_code() });
 
             return _object;
         }
@@ -152,12 +138,7 @@ namespace Duckvil { namespace RuntimeReflection {
             return _object;
         }
 
-        ObjectCreatedEvent _event;
-
-        _event.m_pObject = _object;
-        _event.m_ullTypeID = typeid(Type).hash_code();
-
-        _events->Broadcast(_event);
+        _events->Broadcast(ObjectCreatedEvent{ _object, typeid(Type).hash_code() });
 
         return _object;
 #endif
