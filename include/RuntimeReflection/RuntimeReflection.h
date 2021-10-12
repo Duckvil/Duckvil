@@ -173,6 +173,7 @@ namespace Duckvil { namespace RuntimeReflection {
         std::size_t m_ullReturnTypeID;
         std::size_t m_ullArgumentsTypeID;
         DUCKVIL_RESOURCE(function_t) m_uiTypeSlotIndex; // TODO: Check if set
+        void* m_pRawFunction;
     });
 
     slot(__type_t,

@@ -519,6 +519,7 @@ namespace Duckvil { namespace RuntimeReflection {
         _function.m_pFunction = _pFunction;
         _function.m_ullReturnTypeID = _ullReturnTypeID;
         _function.m_ullArgumentsTypeID = _ullArgumentsTypeID;
+        _function.m_pRawFunction = _pFunction->GetRawPointer();
 
         // _function.m_sFunctionName = new char[_ullLength];
         _function.m_sFunctionName = static_cast<char*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8));

@@ -7,6 +7,8 @@ namespace Duckvil { namespace RuntimeReflection {
     struct __ifunction
     {
         virtual ~__ifunction() { }
+
+        virtual void* GetRawPointer() const = 0;
     };
 
     template <typename ReturnType, typename... Args>
@@ -15,6 +17,8 @@ namespace Duckvil { namespace RuntimeReflection {
         virtual ~__proxy_static_function() { }
 
         virtual ReturnType Invoke(const Args&... _vArgs) = 0;
+
+        virtual void* GetRawPointer() const override = 0;
     };
 
     template <typename ReturnType, typename... Args>
@@ -23,6 +27,8 @@ namespace Duckvil { namespace RuntimeReflection {
         virtual ~__proxy_member_function() { }
 
         virtual ReturnType Invoke(void* _pObject, const Args&... _vArgs) = 0;
+
+        virtual void* GetRawPointer() const override = 0;
     };
 
     template <typename T>
@@ -50,6 +56,11 @@ namespace Duckvil { namespace RuntimeReflection {
 
             (_object->*(m_fnFunction))(_vArgs...);
         }
+
+        inline void* GetRawPointer() const final override
+        {
+            return (void*&)m_fnFunction;
+        }
     };
 
 // Member function with specific arguments which returns specific type
@@ -74,6 +85,11 @@ namespace Duckvil { namespace RuntimeReflection {
 
             return (_object->*(m_fnFunction))(_vArgs...);
         }
+
+        inline void* GetRawPointer() const final override
+        {
+            return (void*&)m_fnFunction;
+        }
     };
 
 // Static function with specific arguments which returns void
@@ -96,6 +112,11 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             m_fnFunction(_vArgs...);
         }
+
+        inline void* GetRawPointer() const final override
+        {
+            return (void*&)m_fnFunction;
+        }
     };
 
 // Static function with specific arguments which returns specific type
@@ -117,6 +138,11 @@ namespace Duckvil { namespace RuntimeReflection {
         inline ReturnType Invoke(const Args&... _vArgs) final override
         {
             return m_fnFunction(_vArgs...);
+        }
+
+        inline void* GetRawPointer() const final override
+        {
+            return (void*&)m_fnFunction;
         }
     };
 
@@ -142,6 +168,11 @@ namespace Duckvil { namespace RuntimeReflection {
 
             (_object->*(m_fnFunction))(_vArgs...);
         }
+
+        inline void* GetRawPointer() const final override
+        {
+            return (void*&)m_fnFunction;
+        }
     };
 
 // Member function with specific arguments which returns specific type
@@ -165,6 +196,11 @@ namespace Duckvil { namespace RuntimeReflection {
             Type* _object = (Type*)_pObject;
 
             return (_object->*(m_fnFunction))(_vArgs...);
+        }
+
+        inline void* GetRawPointer() const final override
+        {
+            return (void*&)m_fnFunction;
         }
     };
 
