@@ -5,13 +5,12 @@ namespace Duckvil {
     FunctionArgumentsPusher::FunctionArgumentsPusher(uint32_t _uiCount) :
         m_uiCount(_uiCount)
     {
-        // push(rbp);
-        // mov(rbp, rsp);
-
         if(_uiCount > 4)
         {
             sub(rsp, 24 + (8 * (_uiCount - 4)));
         }
+
+        push(r10);
     }
 
     FunctionArgumentsPusher::~FunctionArgumentsPusher()
@@ -252,8 +251,7 @@ namespace Duckvil {
             add(rsp, 24 + (8 * (m_uiCount - 4)));
         }
 
-        // mov(rsp, rbp);
-        // pop(rbp);
+        pop(r10);
 
         ret();
     }
