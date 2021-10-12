@@ -53,32 +53,6 @@ namespace Duckvil { namespace Editor {
                 "F:/Projects/C++/Duckvil/resource/shader/test.fs"
             );
 
-        glm::vec3 _vertices[] =
-        {
-            glm::vec3(-0.5, -0.5, 0),
-            glm::vec3(0, 0.5, 0),
-            glm::vec3(0.5, -0.5, 0)
-        };
-
-        glm::vec2 _texCoords[] =
-        {
-            glm::vec2(0, 0),
-            glm::vec2(0.5, 1),
-            glm::vec2(1, 0)
-        };
-
-        uint32_t _indices[] =
-        {
-            0, 1, 2
-        };
-
-        Graphics::Renderer::vertex_buffer_object_descriptor _desc[] =
-        {
-            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _vertices, 3),
-            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _texCoords, 2),
-            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ELEMENT_ARRAY_BUFFER, _indices)
-        };
-
         _pViewport->m_rendererQuery = _pECS->query<Graphics::MeshComponent, Graphics::TransformComponent>();
 
         GLfloat _filtes[1] = { GL_LINEAR };
@@ -98,7 +72,7 @@ namespace Duckvil { namespace Editor {
                 1
             });
 
-        GLenum _attachments[1] = { GL_COLOR_ATTACHMENT0 };
+        GLenum _attachments[] = { GL_COLOR_ATTACHMENT0 };
 
         _pViewport->m_fbo =
             _pRenderer->m_fnCreateFramebuffer(
