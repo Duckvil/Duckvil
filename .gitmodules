@@ -23,3 +23,6 @@
 [submodule "external/xbyak"]
 	path = external/xbyak
 	url = https://github.com/herumi/xbyak
+[submodule "external/assimp"]
+	path = external/assimp
+	url = https://github.com/assimp/assimp

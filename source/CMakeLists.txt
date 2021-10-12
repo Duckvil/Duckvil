@@ -11,6 +11,7 @@ list(APPEND INCLUDES
     ${CMAKE_SOURCE_DIR}/external/glm
     ${CMAKE_SOURCE_DIR}/external/tracy
     "${CMAKE_SOURCE_DIR}/external/xbyak"
+    "${CMAKE_SOURCE_DIR}/external/assimp/include"
 )
 
 list(APPEND STATIC_LIBRARIES "")
@@ -114,7 +115,9 @@ if(NOT DUCKVIL_CICD)
                 target_link_options(${PROJECT_ID} PRIVATE
                     $<$<CXX_COMPILER_ID:MSVC>:/DEBUG:FULL>
                 )
-                target_link_libraries(${PROJECT_ID} dbghelp)
+                if(WIN32)
+                    target_link_libraries(${PROJECT_ID} dbghelp)
+                endif()
                 target_compile_options(${PROJECT_ID} PRIVATE
                     $<$<CXX_COMPILER_ID:MSVC>:/GF>
                 )
