@@ -48,19 +48,46 @@ namespace Duckvil { namespace Event {
     class Channel<Message, mode::immediate> : public IChannel
     {
     public:
-        typedef void (*Callback)(const Message& _message);
+        typedef void (*ConstCallback)(const Message& _message);
+        typedef void (*Callback)(Message& _message);
+
+        struct imember_const_event
+        {
+            virtual void Invoke(const Message& _message) = 0;
+        };
 
         struct imember_event
         {
-            virtual void Invoke(const Message& _message) = 0;
+            virtual void Invoke(Message& _message) = 0;
         };
 
         template <typename Type>
         struct member_event : public imember_event
         {
-            typedef void (Type::*Callback)(const Message&);
+            typedef void (Type::*Callback)(Message&);
 
             member_event(Type* _pObject, const Callback& _fn) :
+                m_pObject(_pObject),
+                m_fn(_fn)
+            {
+
+            }
+
+            Type* m_pObject;
+            Callback m_fn;
+
+            void Invoke(Message& _message) override
+            {
+                (m_pObject->*(m_fn))(_message);
+            }
+        };
+
+        template <typename Type>
+        struct member_const_event : public imember_const_event
+        {
+            typedef void (Type::*Callback)(const Message&);
+
+            member_const_event(Type* _pObject, const Callback& _fn) :
                 m_pObject(_pObject),
                 m_fn(_fn)
             {
@@ -79,8 +106,10 @@ namespace Duckvil { namespace Event {
     private:
         Memory::Vector<reflected_event> m_aRefelctedEvents;
         Memory::Vector<tracked_event> m_aTrackedEvents;
+        Memory::Vector<ConstCallback> m_aConstCallbackEvents;
         Memory::Vector<Callback> m_aCallbackEvents;
         Memory::Vector<imember_event*> m_aMemberEvents;
+        Memory::Vector<imember_const_event*> m_aMemberConstEvents;
 
         RuntimeReflection::__data* m_pReflectionData;
         RuntimeReflection::__ftable* m_pReflection;
@@ -97,8 +126,10 @@ namespace Duckvil { namespace Event {
         {
             _heap.Allocate(m_aRefelctedEvents, 1);
             _heap.Allocate(m_aTrackedEvents, 1);
+            _heap.Allocate(m_aConstCallbackEvents, 1);
             _heap.Allocate(m_aCallbackEvents, 1);
             _heap.Allocate(m_aMemberEvents, 1);
+            _heap.Allocate(m_aMemberConstEvents, 1);
             DUCKVIL_DEBUG_MEMORY(m_aRefelctedEvents.GetAllocator(), "m_aRefelctedEvents");
         }
 
@@ -147,6 +178,16 @@ namespace Duckvil { namespace Event {
             Add(_pHandler, _typeHandle);
         }
 
+        void Add(const ConstCallback& _fn)
+        {
+            if(m_aConstCallbackEvents.Full())
+            {
+                m_aConstCallbackEvents.Resize(m_aConstCallbackEvents.Size() * 2);
+            }
+
+            m_aConstCallbackEvents.Allocate(_fn);
+        }
+
         void Add(const Callback& _fn)
         {
             if(m_aCallbackEvents.Full())
@@ -158,7 +199,7 @@ namespace Duckvil { namespace Event {
         }
 
         template <typename Handler>
-        void Add(Handler* _pHandler, void (Handler::*_fn)(const Message&))
+        void Add(Handler* _pHandler, void (Handler::*_fn)(Message&))
         {
             if(m_aMemberEvents.Full())
             {
@@ -166,6 +207,17 @@ namespace Duckvil { namespace Event {
             }
 
             m_aMemberEvents.Allocate(new member_event<Handler>(_pHandler, _fn));
+        }
+
+        template <typename Handler>
+        void Add(Handler* _pHandler, void (Handler::*_fn)(const Message&))
+        {
+            if(m_aMemberConstEvents.Full())
+            {
+                m_aMemberConstEvents.Resize(m_aMemberConstEvents.Size() * 2);
+            }
+
+            m_aMemberConstEvents.Allocate(new member_const_event<Handler>(_pHandler, _fn));
         }
 
         template <typename Handler>
@@ -182,15 +234,15 @@ namespace Duckvil { namespace Event {
             }
         }
 
-        void Remove(const Callback& _fn)
+        void Remove(const ConstCallback& _fn)
         {
-            for(uint32_t i = 0; i < m_aCallbackEvents.Size(); ++i)
+            for(uint32_t i = 0; i < m_aConstCallbackEvents.Size(); ++i)
             {
-                void (*_fnI)(const Message&) = m_aCallbackEvents[i];
+                void (*_fnI)(const Message&) = m_aConstCallbackEvents[i];
 
                 if(_fnI == _fn)
                 {
-                    m_aCallbackEvents.Erase(i);
+                    m_aConstCallbackEvents.Erase(i);
                 }
             }
         }
@@ -207,6 +259,19 @@ namespace Duckvil { namespace Event {
                 RuntimeReflection::invoke_member<const Message&>(m_pReflection, m_pReflectionData, _event.m_typeHandle, _event.m_functionHandle, _event.m_pObject->GetObject(), _message);
             }
 
+            for(ConstCallback _fn : m_aConstCallbackEvents)
+            {
+                _fn(_message);
+            }
+
+            for(imember_const_event* _event : m_aMemberConstEvents)
+            {
+                _event->Invoke(_message);
+            }
+        }
+
+        void Broadcast(Message& _message)
+        {
             for(Callback _fn : m_aCallbackEvents)
             {
                 _fn(_message);
@@ -218,7 +283,7 @@ namespace Duckvil { namespace Event {
             }
         }
 
-        Channel& operator+=(const Callback& _fn)
+        Channel& operator+=(const ConstCallback& _fn)
         {
             Add(_fn);
 
@@ -233,7 +298,7 @@ namespace Duckvil { namespace Event {
             return *this;
         }
 
-        Channel& operator-=(const Callback& _fn)
+        Channel& operator-=(const ConstCallback& _fn)
         {
             Remove(_fn);
 
@@ -252,6 +317,14 @@ namespace Duckvil { namespace Event {
         {
             Broadcast(_message);
         }
+
+        void operator()(Message& _message)
+        {
+            Broadcast(_message);
+        }
     };
+
+    template <typename Message>
+    using ImmediateChannel = Channel<Message, mode::immediate>;
 
 }}
