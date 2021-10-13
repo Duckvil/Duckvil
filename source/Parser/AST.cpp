@@ -721,6 +721,7 @@ namespace Duckvil { namespace Parser {
         std::string _internalTmp;
         std::size_t _roundBracketIndex = std::string::npos;
         std::size_t _quadBrackets = 0;
+        std::size_t _roundBrackets = 0;
         bool _variable = false;
         bool _skipped = false;
         __ast_flags _flags = {};
@@ -736,7 +737,7 @@ namespace Duckvil { namespace Parser {
 
                     _internalTmp.clear();
                 }
-                else if(_exp.m_bSpace && _triBrackets == 0 && _wasType)
+                else if(_exp.m_bSpace && _triBrackets == 0 && _wasType && !_wasName)
                 {
                     _name = _internalTmp;
                     _wasName = true;
@@ -746,6 +747,11 @@ namespace Duckvil { namespace Parser {
                 else if(_skipped)
                 {
                     _skipped = false;
+
+                    if(_internalTmp != "" && _internalTmp[_internalTmp.size() - 1] != ' ')
+                    {
+                        _internalTmp += " ";
+                    }
                 }
             }
             else if(_sToken == "<")
@@ -776,8 +782,20 @@ namespace Duckvil { namespace Parser {
             else if(_sToken == "(" && _triBrackets == 0)
             {
                 _roundBracketIndex = _exp.m_uiCurrentCharacterIndex - 1;
-                _name = _internalTmp;
+                // _name = _internalTmp;
 
+                _roundBrackets++;
+            }
+            else if(_sToken == ")" && _triBrackets == 0)
+            {
+                _roundBrackets--;
+            }
+            else if (_roundBrackets != 0)
+            {
+                continue;
+            }
+            else if(_sToken == "{" && _roundBrackets == 0)
+            {
                 break;
             }
             else if(_sToken == "=" && _wasType && _wasName)
@@ -798,13 +816,26 @@ namespace Duckvil { namespace Parser {
             }
             else if(_sToken == "const")
             {
-                _skipped = true;
-                _flags = static_cast<__ast_flags>(static_cast<uint8_t>(_flags) | static_cast<uint8_t>(__ast_flags::__ast_flags_const));
+                if(_wasType && _wasName && !_variable)
+                {
+                    _skipped = true;
+                    _flags = static_cast<__ast_flags>(static_cast<uint8_t>(_flags) | static_cast<uint8_t>(__ast_flags::__ast_flags_const));
+                }
+                else
+                {
+                    _internalTmp += _sToken;
+                    _skipped = true;
+                }
             }
             else if(_sToken == "virtual")
             {
                 _skipped = true;
                 _flags = static_cast<__ast_flags>(static_cast<uint8_t>(_flags) | static_cast<uint8_t>(__ast_flags::__ast_flags_virtual));
+            }
+            else if (_sToken == "override")
+            {
+                _skipped = true;
+                _flags = static_cast<__ast_flags>(static_cast<uint8_t>(_flags) | static_cast<uint8_t>(__ast_flags::__ast_flags_override));
             }
             else
             {

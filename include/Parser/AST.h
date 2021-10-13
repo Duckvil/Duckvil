@@ -48,7 +48,8 @@ namespace Duckvil { namespace Parser {
         __ast_flags_static = 1 << 0,
         __ast_flags_const = 1 << 1,
         __ast_flags_inline = 1 << 2,
-        __ast_flags_virtual = 1 << 3
+        __ast_flags_virtual = 1 << 3,
+        __ast_flags_override = 1 << 4
     };
 
     inline bool operator&(const __ast_flags& _left, const __ast_flags& _right)
