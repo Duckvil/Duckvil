@@ -37,6 +37,19 @@ namespace Duckvil { namespace Utils {
         allocate(_pString, _string.m_pMemory, _string.m_pAllocator, _string.m_ullLength);
     }
 
+    std::string replace_all(std::string str, const std::string& from, const std::string& to)
+    {
+        size_t start_pos = 0;
+
+        while((start_pos = str.find(from, start_pos)) != std::string::npos)
+        {
+            str.replace(start_pos, from.length(), to);
+            start_pos += to.length();
+        }
+
+        return str;
+    }
+
     static inline bool operator==(const string& _lhs, const string& _rhs)
     {
         if(_lhs.m_ullLength == -1 || _rhs.m_ullLength == -1)

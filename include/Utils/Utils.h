@@ -16,6 +16,8 @@ namespace Duckvil { namespace Utils {
     void allocate(string* _pString, std::size_t _ullLength);
     void allocate(string* _pString, const string& _string);
 
+    std::string replace_all(std::string str, const std::string& from, const std::string& to);
+
     struct string
     {
         string()
