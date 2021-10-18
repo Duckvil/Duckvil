@@ -563,6 +563,22 @@ namespace Duckvil { namespace RuntimeReflection {
         return _func->Invoke(_pObject, _vArgs...);
     }
 
+    template <typename... Args>
+    static inline void invoke_member(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, const void* _pObject, const Args&... _vArgs)
+    {
+        __proxy_member_const_function<void, Args...>* _func = (__proxy_member_const_function<void, Args...>*)_pReflection->m_fnGetFunctionCallbackByHandle(_pData, _typeHandle, _functionHandle, DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(Args...));
+
+        _func->Invoke(_pObject, _vArgs...);
+    }
+
+    template <typename ReturnType, typename... Args>
+    static inline ReturnType invoke_member_result(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, const void* _pObject, const Args&... _vArgs)
+    {
+        __proxy_member_const_function<ReturnType, Args...>* _func = (__proxy_member_const_function<ReturnType, Args...>*)_pReflection->m_fnGetFunctionCallbackByHandle(_pData, _typeHandle, _functionHandle, DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(Args...));
+
+        return _func->Invoke(_pObject, _vArgs...);
+    }
+
 // Invoke static function
     template <typename Type, typename... Args, std::size_t Length>
     static inline void invoke(__ftable* _pReflection, __data* _pData, const char (&_sName)[Length], const Args&... _vArgs)

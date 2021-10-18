@@ -31,6 +31,16 @@ namespace Duckvil { namespace RuntimeReflection {
         virtual void* GetRawPointer() const override = 0;
     };
 
+    template <typename ReturnType, typename... Args>
+    struct __proxy_member_const_function : public __ifunction
+    {
+        virtual ~__proxy_member_const_function() { }
+
+        virtual ReturnType Invoke(const void* _pObject, const Args&... _vArgs) = 0;
+
+        virtual void* GetRawPointer() const override = 0;
+    };
+
     template <typename T>
     struct __function;
 
@@ -148,7 +158,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
 // Member const function with specific arguments which returns void
     template <typename Type, typename... Args>
-    struct __function<void(Type::*)(Args...) const> : public __proxy_member_function<void, Args...>
+    struct __function<void(Type::*)(Args...) const> : public __proxy_member_const_function<void, Args...>
     {
         typedef void (Type::*FunctionCallback)(Args...) const;
 
@@ -162,7 +172,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
         ~__function() { }
 
-        inline void Invoke(void* _pObject, const Args&... _vArgs) final override
+        inline void Invoke(const void* _pObject, const Args&... _vArgs) final override
         {
             Type* _object = (Type*)_pObject;
 
@@ -175,9 +185,9 @@ namespace Duckvil { namespace RuntimeReflection {
         }
     };
 
-// Member function with specific arguments which returns specific type
+// Member const function with specific arguments which returns specific type
     template <typename Type, typename ReturnType, typename... Args>
-    struct __function<ReturnType(Type::*)(Args...) const> : public __proxy_member_function<ReturnType, Args...>
+    struct __function<ReturnType(Type::*)(Args...) const> : public __proxy_member_const_function<ReturnType, Args...>
     {
         typedef ReturnType (Type::*FunctionCallback)(Args...) const;
 
@@ -191,7 +201,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
         ~__function() { }
 
-        inline ReturnType Invoke(void* _pObject, const Args&... _vArgs) final override
+        inline ReturnType Invoke(const void* _pObject, const Args&... _vArgs) final override
         {
             Type* _object = (Type*)_pObject;
 
