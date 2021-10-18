@@ -17,6 +17,7 @@
 #include "Parser/AST.h"
 
 #include "Utils/AST.h"
+#include "Utils/Utils.h"
 
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/Generator.h"
@@ -58,19 +59,6 @@ namespace Duckvil { namespace Editor {
         }
     };
 
-    std::string replace_all(std::string str, const std::string& from, const std::string& to)
-    {
-        size_t start_pos = 0;
-
-        while((start_pos = str.find(from, start_pos)) != std::string::npos)
-        {
-            str.replace(start_pos, from.length(), to);
-            start_pos += to.length();
-        }
-
-        return str;
-    }
-
     void generate_from_template(const std::string& _sTemplatePath, const std::string& _sOutputPath, const std::map<std::string, std::string>& _aParameters)
     {
         std::ifstream _tplFile(_sTemplatePath);
@@ -81,7 +69,7 @@ namespace Duckvil { namespace Editor {
         {
             for(const auto& _parameter : _aParameters)
             {
-                _line = replace_all(_line, "{$" + _parameter.first + "}", _parameter.second);
+                _line = Utils::replace_all(_line, "{$" + _parameter.first + "}", _parameter.second);
             }
 
             _oFile << _line << "\n";
