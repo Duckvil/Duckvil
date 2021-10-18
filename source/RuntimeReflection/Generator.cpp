@@ -267,6 +267,10 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             _skip = true;
         }
+        else if(_castedFunction->m_flags & Parser::__ast_flags::__ast_flags_operator)
+        {
+            _skip = true;
+        }
 
         if(_skip || !_castedFunction->m_aTemplates.empty())
         {

@@ -14,6 +14,7 @@
 #include "Engine/ReflectionFlags.h"
 
 #include "Utils/AST.h"
+#include "Utils/Utils.h"
 
 #include <fstream>
 #include <cassert>
@@ -32,10 +33,24 @@ Duckvil::Memory::Vector<reflection_module> _aModules;
 Duckvil::RuntimeReflection::__data* _runtimeReflectionData;
 Duckvil::RuntimeReflection::__ftable* _reflectionFTable;
 
+struct user_data
+{
+    std::filesystem::path m_path;
+};
+
 void generate(std::ofstream& _file, void* _pUserData)
 {
+    user_data* _userData = static_cast<user_data*>(_pUserData);
+
+    std::string _fileID = _userData->m_path.string();
+
+    _fileID = Duckvil::Utils::replace_all(_fileID, "\\", "_");
+    _fileID = Duckvil::Utils::replace_all(_fileID, ".", "_");
+
     _file << "#include \"Serializer/Runtime/ISerializer.h\"\n\n";
-    _file << "#define DUCKVIL_GENERATED_BODY";
+    _file << "#include \"RuntimeReflection/Markers.h\"\n\n";
+
+    std::vector<std::pair<uint32_t, std::vector<std::string>>> _generated;
 
     for(auto& _module : _aModules)
     {
@@ -44,8 +59,35 @@ void generate(std::ofstream& _file, void* _pUserData)
             continue;
         }
 
-        Duckvil::RuntimeReflection::invoke_member<std::ofstream&>(_reflectionFTable, _runtimeReflectionData, _module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _file);
+        Duckvil::RuntimeReflection::invoke_member<std::ofstream&, std::vector<std::pair<uint32_t, std::vector<std::string>>>&>(_reflectionFTable, _runtimeReflectionData, _module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _file, _generated);
     }
+
+    for(const auto& _generated2 : _generated)
+    {
+        _file << "#define " << _fileID << "_" << _generated2.first << "_GENERATED_BODY";
+
+        if(_generated2.second.size())
+        {
+            _file << " \\\n";
+        }
+
+        for(uint32_t i = 0; i < _generated2.second.size(); ++i)
+        {
+            _file << _fileID << "_" << _generated2.first << "_REFLECTION_MODULE_" << _generated2.second[i];
+
+            if(i < _generated2.second.size() - 1)
+            {
+                _file << " \\\n";
+            }
+            else
+            {
+                _file << "\n\n";
+            }
+        }
+    }
+
+    _file << "#undef DUCKVIL_CURRENT_FILE_ID\n";
+    _file << "#define DUCKVIL_CURRENT_FILE_ID " << _fileID << "\n";
 }
 
 int main(int argc, char* argv[])
@@ -157,7 +199,7 @@ int main(int argc, char* argv[])
 
                 _module.m_pObject = Duckvil::RuntimeReflection::create<const Duckvil::Memory::FreeList&, Duckvil::RuntimeReflection::__ftable*, Duckvil::RuntimeReflection::__data*>(_memoryInterface, _free_list, _reflectionFTable, _runtimeReflectionData, _typeHandle, false, _heap, _reflectionFTable, _runtimeReflectionData);
                 _module.m_typeHandle = _typeHandle;
-                _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&>(_reflectionFTable, _runtimeReflectionData, _typeHandle, "GenerateCustom");
+                _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&, std::vector<std::pair<uint32_t, std::vector<std::string>>>&>(_reflectionFTable, _runtimeReflectionData, _typeHandle, "GenerateCustom");
                 _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(_reflectionFTable, _runtimeReflectionData, _typeHandle, "Clear");
                 _module.m_processAST_FunctionHandle = Duckvil::RuntimeReflection::get_function_handle<Duckvil::Parser::__ast*>(_reflectionFTable, _runtimeReflectionData, _typeHandle, "ProcessAST");
 
@@ -197,6 +239,10 @@ int main(int argc, char* argv[])
         _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_HOT_RELOADING", &Duckvil::Utils::user_define_behavior });
 #endif
 
+        _relativePath = std::filesystem::relative(_path.path(), std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include");
+
+        _astData.m_sFile = _relativePath;
+
         _ast->ast_generate(&_astData, _lexerFtable, _data);
         // _ast->ast_print(_astData);
 
@@ -211,8 +257,6 @@ int main(int argc, char* argv[])
         }
 
         Duckvil::RuntimeReflection::__generator_data _generatorData;
-
-        _relativePath = std::filesystem::relative(_path.path(), std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include");
 
         std::filesystem::path _pluginDirectory = _relativePath;
 
@@ -275,7 +319,11 @@ int main(int argc, char* argv[])
 
         // strcpy(_generatorData.m_sGeneratedHeader, std::filesystem::relative(_header, std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__").string().c_str());
 
-        _generatorFtable->generate(&_generatorData, _source.string().c_str(), _header.string().c_str(), _astData, &generate, 0);
+        user_data _userData;
+
+        _userData.m_path = _relativePath;
+
+        _generatorFtable->generate(&_generatorData, _source.string().c_str(), _header.string().c_str(), _astData, &generate, &_userData);
 
         for(auto& _module : _aModules)
         {

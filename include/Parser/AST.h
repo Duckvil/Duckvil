@@ -6,6 +6,8 @@
 
 #include "Parser/Lexer.h"
 
+#include <filesystem>
+
 namespace Duckvil { namespace Parser {
 
     enum class __ast_entity_type : uint8_t
@@ -49,7 +51,8 @@ namespace Duckvil { namespace Parser {
         __ast_flags_const = 1 << 1,
         __ast_flags_inline = 1 << 2,
         __ast_flags_virtual = 1 << 3,
-        __ast_flags_override = 1 << 4
+        __ast_flags_override = 1 << 4,
+        __ast_flags_operator = 1 << 5
     };
 
     inline bool operator&(const __ast_flags& _left, const __ast_flags& _right)
@@ -135,13 +138,14 @@ namespace Duckvil { namespace Parser {
             __ast_entity(__ast_entity_type::__ast_entity_type_structure),
             m_structureType(_structureType)
         {
-
+            m_uiGeneratedBodyMacroLine = -1;
         }
 
         std::string m_sName;
         __ast_structure_type m_structureType;
         std::vector<__ast_inheritance> m_aInheritance;
         std::vector<__ast_template> m_aTemplates;
+        uint32_t m_uiGeneratedBodyMacroLine;
     };
 
     struct __ast_entity_enum : public __ast_entity
@@ -270,6 +274,8 @@ namespace Duckvil { namespace Parser {
         std::string m_sCurrentDefineNeeded;
         std::vector<user_define> m_aUserDefines;
         bool m_bPendingIfdef = false;
+        std::filesystem::path m_sFile;
+        std::vector<__ast_template> m_aTemplates;
     };
 
     struct __ast_ftable

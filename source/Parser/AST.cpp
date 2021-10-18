@@ -324,7 +324,7 @@ namespace Duckvil { namespace Parser {
 
                 _wasType = false;
             }
-            else if(_token == ",")
+            else if(_triBrackets == 0 && _token == ",")
             {
                 if(_type.size() <= 0 && _tmp.size() <= 0)
                 {
@@ -538,7 +538,7 @@ namespace Duckvil { namespace Parser {
         }
     }
 
-    void parse_template(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, __ast* _pAST, std::string& _sToken, std::vector<__ast_template>& _templates)
+    void parse_template(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, __ast* _pAST, std::string& _sToken)
     {
         uint32_t _triBrackets = 0;
         std::string _type;
@@ -568,7 +568,7 @@ namespace Duckvil { namespace Parser {
 
                     _template.m_aElements.insert(_template.m_aElements.begin(), _elements.begin(), _elements.end());
 
-                    _templates.push_back(_template);
+                    _pAST->m_aTemplates.push_back(_template);
 
                     break;
                 }
@@ -832,13 +832,18 @@ namespace Duckvil { namespace Parser {
                 _skipped = true;
                 _flags = static_cast<__ast_flags>(static_cast<uint8_t>(_flags) | static_cast<uint8_t>(__ast_flags::__ast_flags_virtual));
             }
-            else if (_sToken == "override")
+            else if(_sToken == "override")
             {
                 _skipped = true;
                 _flags = static_cast<__ast_flags>(static_cast<uint8_t>(_flags) | static_cast<uint8_t>(__ast_flags::__ast_flags_override));
             }
             else
             {
+                if(_sToken.find("operator") != std::string::npos)
+                {
+                    _flags = static_cast<__ast_flags>(static_cast<uint8_t>(_flags) | static_cast<uint8_t>(__ast_flags::__ast_flags_operator));
+                }
+
                 _internalTmp += _sToken;
             }
         }
@@ -862,6 +867,9 @@ namespace Duckvil { namespace Parser {
             _entity->m_sReturnType = _type;
             _entity->m_sName = _name;
             _entity->m_flags = _flags;
+            _entity->m_aTemplates.insert(_entity->m_aTemplates.begin(), _pAST->m_aTemplates.begin(), _pAST->m_aTemplates.end());
+
+            _pAST->m_aTemplates.clear();
 
             _pAST->m_pCurrentScope->m_aScopes.push_back(_entity);
 
@@ -960,7 +968,7 @@ namespace Duckvil { namespace Parser {
         }
     }
 
-    void process_semicolon(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, __ast* _pAST, std::string& _sToken, std::string& _sTmpExpression, std::vector<__ast_template>& _templates)
+    void process_semicolon(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, __ast* _pAST, std::string& _sToken, std::string& _sTmpExpression)
     {
         if(_sTmpExpression.size() <= 0)
         {
@@ -1135,9 +1143,9 @@ namespace Duckvil { namespace Parser {
                     _entity = new __ast_entity_function();
                 }
 
-                _entity->m_aTemplates.insert(_entity->m_aTemplates.begin(), _templates.begin(), _templates.end());
+                _entity->m_aTemplates.insert(_entity->m_aTemplates.begin(), _pAST->m_aTemplates.begin(), _pAST->m_aTemplates.end());
 
-                _templates.clear();
+                _pAST->m_aTemplates.clear();
 
                 _entity->m_accessLevel = _pAST->m_currentAccess;
                 _entity->m_sReturnType = _type;
@@ -1280,7 +1288,7 @@ namespace Duckvil { namespace Parser {
         }
     }
 
-    void process_pending(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, __ast* _pAST, std::string& _sToken, std::string& _sTmpExpression, bool& _bContinue, std::vector<__ast_template>& _aTemplates)
+    void process_pending(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, __ast* _pAST, std::string& _sToken, std::string& _sTmpExpression, bool& _bContinue)
     {
         if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_namespace)
         {
@@ -1343,9 +1351,9 @@ namespace Duckvil { namespace Parser {
                     _scope = new __ast_entity_constructor();
                 }
 
-                _scope->m_aTemplates.insert(_scope->m_aTemplates.begin(), _aTemplates.begin(), _aTemplates.end());
+                _scope->m_aTemplates.insert(_scope->m_aTemplates.begin(), _pAST->m_aTemplates.begin(), _pAST->m_aTemplates.end());
 
-                _aTemplates.clear();
+                _pAST->m_aTemplates.clear();
 
                 _scope->m_pParentScope = _pAST->m_pCurrentScope;
                 _scope->m_accessLevel = _pAST->m_currentAccess;
@@ -1400,13 +1408,20 @@ namespace Duckvil { namespace Parser {
         bool _oneSlash = false;
         bool _continue = false;
 
-        std::vector<__ast_template> _templates;
-
         while(_continue || _pLexer->next_token(&_lexerData, &_token))
         {
             _continue = false;
 
-            if(_token == "DUCKVIL_STRUCT")
+            if(_token == "DUCKVIL_GENERATED_BODY")
+            {
+                if(_pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure)
+                {
+                    __ast_entity_structure* _scope = static_cast<__ast_entity_structure*>(_pAST->m_pCurrentScope);
+
+                    _scope->m_uiGeneratedBodyMacroLine = _lexerData.m_uiCurrentLine;
+                }
+            }
+            else if(_token == "DUCKVIL_STRUCT")
             {
                 __ast_entity_structure* _scope = new __ast_entity_structure(__ast_structure_type::__ast_structure_type_struct);
 
@@ -1497,9 +1512,9 @@ namespace Duckvil { namespace Parser {
                 {
                     _pAST->m_pPendingScope->m_pParentScope = _pAST->m_pCurrentScope;
 
-                    (static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_aTemplates.insert((static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_aTemplates.begin(), _templates.begin(), _templates.end());
+                    (static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_aTemplates.insert((static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_aTemplates.begin(), _pAST->m_aTemplates.begin(), _pAST->m_aTemplates.end());
 
-                    _templates.clear();
+                    _pAST->m_aTemplates.clear();
 
                     _pAST->m_pCurrentScope->m_aScopes.push_back(_pAST->m_pPendingScope);
                 }
@@ -1511,9 +1526,9 @@ namespace Duckvil { namespace Parser {
                 {
                     __ast_entity_structure* _scope = new __ast_entity_structure(__ast_structure_type::__ast_structure_type_class);
 
-                    _scope->m_aTemplates.insert(_scope->m_aTemplates.begin(), _templates.begin(), _templates.end());
+                    _scope->m_aTemplates.insert(_scope->m_aTemplates.begin(), _pAST->m_aTemplates.begin(), _pAST->m_aTemplates.end());
 
-                    _templates.clear();
+                    _pAST->m_aTemplates.clear();
 
                     _scope->m_pParentScope = _pAST->m_pCurrentScope;
 
@@ -1528,9 +1543,9 @@ namespace Duckvil { namespace Parser {
                 {
                     _pAST->m_pPendingScope->m_pParentScope = _pAST->m_pCurrentScope;
 
-                    (static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_aTemplates.insert((static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_aTemplates.begin(), _templates.begin(), _templates.end());
+                    (static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_aTemplates.insert((static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_aTemplates.begin(), _pAST->m_aTemplates.begin(), _pAST->m_aTemplates.end());
 
-                    _templates.clear();
+                    _pAST->m_aTemplates.clear();
 
                     _pAST->m_pCurrentScope->m_aScopes.push_back(_pAST->m_pPendingScope);
                 }
@@ -1538,9 +1553,9 @@ namespace Duckvil { namespace Parser {
                 {
                     __ast_entity_structure* _scope = new __ast_entity_structure(__ast_structure_type::__ast_structure_type_struct);
 
-                    _scope->m_aTemplates.insert(_scope->m_aTemplates.begin(), _templates.begin(), _templates.end());
+                    _scope->m_aTemplates.insert(_scope->m_aTemplates.begin(), _pAST->m_aTemplates.begin(), _pAST->m_aTemplates.end());
 
-                    _templates.clear();
+                    _pAST->m_aTemplates.clear();
 
                     _scope->m_pParentScope = _pAST->m_pCurrentScope;
 
@@ -1597,7 +1612,7 @@ namespace Duckvil { namespace Parser {
             }
             else if(_token == "template")
             {
-                parse_template(_pLexer, &_lexerData, _pAST, _token, _templates);
+                parse_template(_pLexer, &_lexerData, _pAST, _token);
             }
             else if(_token == "typedef")
             {
@@ -1678,6 +1693,8 @@ namespace Duckvil { namespace Parser {
                         {
                             if(_mustacheBrackets == 0)
                             {
+                                _end = true;
+
                                 break;
                             }
                             else if(_token == "{")
@@ -1919,7 +1936,7 @@ namespace Duckvil { namespace Parser {
             }
             else if(_token == ";")
             {
-                process_semicolon(_pLexer, &_lexerData, _pAST, _token, _tmpExpression, _templates);
+                process_semicolon(_pLexer, &_lexerData, _pAST, _token, _tmpExpression);
             }
             else
             {
@@ -1940,7 +1957,7 @@ namespace Duckvil { namespace Parser {
                 }
                 else
                 {
-                    process_pending(_pLexer, &_lexerData, _pAST, _token, _tmpExpression, _continue, _templates);
+                    process_pending(_pLexer, &_lexerData, _pAST, _token, _tmpExpression, _continue);
                 }
             }
         }
