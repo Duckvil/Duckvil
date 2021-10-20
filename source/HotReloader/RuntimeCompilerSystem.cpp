@@ -5,6 +5,7 @@
 #include "Utils/AST.h"
 
 #include <cassert>
+#include <filesystem>
 
 #include "RuntimeReflection/Meta.h"
 
@@ -20,15 +21,48 @@ namespace Duckvil { namespace HotReloader {
 
     void generate(std::ofstream& _file, void* _pUserData)
     {
-        _file << "#include \"Serializer/Runtime/ISerializer.h\"\n\n";
-        _file << "#define DUCKVIL_GENERATED_BODY";
-
         RuntimeCompilerSystem* _system = static_cast<RuntimeCompilerSystem*>(_pUserData);
+        std::string _fileID = _system->m_path.string();
+
+        _fileID = Duckvil::Utils::replace_all(_fileID, "\\", "_");
+        _fileID = Duckvil::Utils::replace_all(_fileID, ".", "_");
+
+        _file << "#include \"Serializer/Runtime/ISerializer.h\"\n\n";
+        _file << "#include \"RuntimeReflection/Markers.h\"\n\n";
+
+        std::vector<std::pair<uint32_t, std::vector<std::string>>> _generated;
 
         for(auto& _module : _system->m_aModules)
         {
-            Duckvil::RuntimeReflection::invoke_member<std::ofstream&>(_module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _file);
+            Duckvil::RuntimeReflection::invoke_member<std::ofstream&, std::vector<std::pair<uint32_t, std::vector<std::string>>>&>(_module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _file, _generated);
         }
+
+        for(const auto& _generated2 : _generated)
+        {
+            _file << "#define " << _fileID << "_" << _generated2.first << "_GENERATED_BODY";
+
+            if(_generated2.second.size())
+            {
+                _file << " \\\n";
+            }
+
+            for(uint32_t i = 0; i < _generated2.second.size(); ++i)
+            {
+                _file << _fileID << "_" << _generated2.first << "_REFLECTION_MODULE_" << _generated2.second[i];
+
+                if(i < _generated2.second.size() - 1)
+                {
+                    _file << " \\\n";
+                }
+                else
+                {
+                    _file << "\n\n";
+                }
+            }
+        }
+
+        _file << "#undef DUCKVIL_CURRENT_FILE_ID\n";
+        _file << "#define DUCKVIL_CURRENT_FILE_ID " << _fileID << "\n";
     }
 
     RuntimeCompilerSystem::RuntimeCompilerSystem(
@@ -94,7 +128,7 @@ namespace Duckvil { namespace HotReloader {
 
                     _module.m_pObject = Duckvil::RuntimeReflection::create<const Duckvil::Memory::FreeList&, Duckvil::RuntimeReflection::__ftable*, Duckvil::RuntimeReflection::__data*>(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _typeHandle, false, m_heap, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData);
                     _module.m_typeHandle = _typeHandle;
-                    _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&>(_typeHandle, "GenerateCustom");
+                    _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&, std::vector<std::pair<uint32_t, std::vector<std::string>>>&>(_typeHandle, "GenerateCustom");
                     _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(_typeHandle, "Clear");
                     _module.m_processAST_FunctionHandle = Duckvil::RuntimeReflection::get_function_handle<Duckvil::Parser::__ast*>(_typeHandle, "ProcessAST");
 
@@ -289,13 +323,17 @@ namespace Duckvil { namespace HotReloader {
                 assert(false && "Path is too long!");
             }
 
+            Parser::__ast _astData;
+            Parser::__lexer_data _data;
+
+            m_path = _path;
+
+            _astData.m_sFile = _path;
+
             _source.replace_extension(".generated.cpp");
             _header.replace_extension(".generated.h");
 
             _path = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include" / _path;
-
-            Parser::__ast _astData;
-            Parser::__lexer_data _data;
 
             m_pLexerFTable->load_file(&_data, _path.string().c_str());
 
