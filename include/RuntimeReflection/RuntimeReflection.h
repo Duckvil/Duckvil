@@ -90,6 +90,7 @@ namespace Duckvil { namespace RuntimeReflection {
         __variant_owner_property,
         __variant_owner_constructor,
         __variant_owner_constructor_argument,
+        __variant_owner_function
     };
 
     struct __variant
@@ -168,6 +169,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
     slot(__function_t,
     {
+        DUCKVIL_SLOT_ARRAY(__meta_t) m_metas;
         __ifunction* m_pFunction;
         char* m_sFunctionName;
         std::size_t m_ullReturnTypeID;
@@ -288,6 +290,11 @@ namespace Duckvil { namespace RuntimeReflection {
         DUCKVIL_RESOURCE(variant_t) (*m_fnGetConstructorArgumentMetaHandle)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _constructorHandle, uint32_t _uiArgumentIndex, const void* _pKey, const std::size_t& _ullSize, const std::size_t& _ullTypeID);
         void* (*m_fnGetConstructorArgumentMetaValue)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _constructorHandle, uint32_t _uiArgumentIndex, const void* _pKey, const std::size_t& _ullSize, const std::size_t& _ullTypeID);
         const __variant& (*m_fnGetConstructorArgumentMetaVariant)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _constructorHandle, uint32_t _uiArgumentIndex, const void* _pKey, const std::size_t& _ullSize, const std::size_t& _ullTypeID);
+
+        DUCKVIL_RESOURCE(variant_t) (*m_fnGetFunctionMetaHandle)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, const void* _pKey, const std::size_t& _ullSize, const std::size_t& _ullTypeID);
+        void* (*m_fnGetFunctionMetaValue)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, const void* _pKey, const std::size_t& _ullSize, const std::size_t& _ullTypeID);
+        const __variant& (*m_fnGetFunctionMetaVariant)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, const void* _pKey, const std::size_t& _ullSize, const std::size_t& _ullTypeID);
+        Memory::Vector<DUCKVIL_RESOURCE(meta_t)> (*m_fnGetFunctionMetas)(const Memory::FreeList& _heap, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle);
     };
 
     static inline void make_current(const duckvil_frontend_reflection_context& _context)
@@ -966,6 +973,22 @@ namespace Duckvil { namespace RuntimeReflection {
         duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
 
         return _context.m_pReflection->m_fnGetConstructorArgumentMetaVariant(_context.m_pReflectionData, _typeHandle, _constructorHandle, _uiArgumentIndex, _key, Length, typeid(const char*).hash_code());
+    }
+
+    template <size_t Length>
+    static inline __variant get_function_meta_variant(DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, const char (&_key)[Length])
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        return _context.m_pReflection->m_fnGetFunctionMetaVariant(_context.m_pReflectionData, _typeHandle, _functionHandle, _key, Length, typeid(const char*).hash_code());
+    }
+
+    template <typename Key>
+    static inline __variant get_function_meta_variant(DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, const Key& _key)
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        return _context.m_pReflection->m_fnGetFunctionMetaVariant(_context.m_pReflectionData, _typeHandle, _functionHandle, &_key, sizeof(Key), typeid(Key).hash_code());
     }
 
     static inline void destroy(const Memory::FreeList& _memory, DUCKVIL_RESOURCE(type_t) _typeHandle, bool _bTracked, void* _pObject)

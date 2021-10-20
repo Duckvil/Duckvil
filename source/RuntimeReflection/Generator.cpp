@@ -282,7 +282,7 @@ namespace Duckvil { namespace RuntimeReflection {
             _file << "#ifdef " << _define << "\n";
         }
 
-        _file << "record_function<";
+        _file << "_function = record_function<";
 
         if(_castedFunction->m_flags & Parser::__ast_flags::__ast_flags_static)
         {
@@ -310,6 +310,11 @@ namespace Duckvil { namespace RuntimeReflection {
         }
 
         _file << ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &" << _sNamespace + _pParentEntity->m_sName + "::" + _castedFunction->m_sName << ", \"" << _castedFunction->m_sName << "\");\n";
+
+        for(const Parser::__ast_meta& _meta : _castedFunction->m_aMeta)
+        {
+            _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _function, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+        }
 
         for(const auto& _define : _castedFunction->m_aNeededDefines)
         {
@@ -503,6 +508,7 @@ namespace Duckvil { namespace RuntimeReflection {
             _file << "DUCKVIL_RESOURCE(property_t) _property;\n";
             _file << "DUCKVIL_RESOURCE(constructor_t) _constructor;\n";
             _file << "DUCKVIL_RESOURCE(destructor_t) _destructor;\n";
+            _file << "DUCKVIL_RESOURCE(function_t) _function;\n";
             _file << "std::vector<" << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) << "> _recordedTypes;\n";
 
             recursive(_pData, _ast, &_ast.m_main, _file);

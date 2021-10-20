@@ -102,9 +102,9 @@
 
 namespace Duckvil { namespace RuntimeReflection {
 
-
     DUCKVIL_META_UTIL(Type, DUCKVIL_RESOURCE(type_t) _typeHandle, _typeHandle);
     DUCKVIL_META_UTIL(Property, DUCKVIL_META_CAT(DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(property_t) _propertyHandle), DUCKVIL_META_CAT(_typeHandle, _propertyHandle));
     DUCKVIL_META_UTIL(Constructor, DUCKVIL_META_CAT(DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _constructorHandle), DUCKVIL_META_CAT(_typeHandle, _constructorHandle));
+    DUCKVIL_META_UTIL(Function, DUCKVIL_META_CAT(DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle), DUCKVIL_META_CAT(_typeHandle, _functionHandle));
 
 }}
