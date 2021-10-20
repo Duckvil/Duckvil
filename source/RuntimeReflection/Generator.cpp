@@ -48,7 +48,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
     void generate_constructor(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
-        const Parser::__ast_entity_constructor* _castedConstructor = (const Parser::__ast_entity_constructor*)_pEntity;
+        const Parser::__ast_entity_constructor* _castedConstructor = static_cast<const Parser::__ast_entity_constructor*>(_pEntity);
         bool _skip = false;
 
         if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_class && _castedConstructor->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
@@ -108,7 +108,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
     void generate_destructor(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
-        const Parser::__ast_entity_destructor* _castedDestructor = (const Parser::__ast_entity_destructor*)_pEntity;
+        const Parser::__ast_entity_destructor* _castedDestructor = static_cast<const Parser::__ast_entity_destructor*>(_pEntity);
         bool _skip = false;
 
         if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_class && _castedDestructor->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
@@ -135,7 +135,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
     void generate_variable(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
-        const Parser::__ast_entity_variable* _castedVariable = (const Parser::__ast_entity_variable*)_pEntity;
+        const Parser::__ast_entity_variable* _castedVariable = static_cast<const Parser::__ast_entity_variable*>(_pEntity);
         bool _skip = false;
 
         if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_class && _castedVariable->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
@@ -162,7 +162,7 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             if(_typedefEntity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_callback_typedef)
             {
-                Parser::__ast_entity_callback_typedef* _castedTypedefEntity = (Parser::__ast_entity_callback_typedef*)_typedefEntity;
+                Parser::__ast_entity_callback_typedef* _castedTypedefEntity = static_cast<Parser::__ast_entity_callback_typedef*>(_typedefEntity);
 
                 if(_castedTypedefEntity->m_sName == _castedVariable->m_sType)
                 {
@@ -173,7 +173,7 @@ namespace Duckvil { namespace RuntimeReflection {
             }
             else if(_typedefEntity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_typedef)
             {
-                Parser::__ast_entity_typedef* _castedTypedefEntity = (Parser::__ast_entity_typedef*)_typedefEntity;
+                Parser::__ast_entity_typedef* _castedTypedefEntity = static_cast<Parser::__ast_entity_typedef*>(_typedefEntity);
 
                 if(_castedTypedefEntity->m_sName == _castedVariable->m_sType)
                 {
@@ -204,7 +204,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
     void generate_callback(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
-        const Parser::__ast_entity_callback* _castedCallback = (const Parser::__ast_entity_callback*)_pEntity;
+        const Parser::__ast_entity_callback* _castedCallback = static_cast<const Parser::__ast_entity_callback*>(_pEntity);
         bool _skip = false;
 
         if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_class && _castedCallback->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
@@ -252,7 +252,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
     void generate_function(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
-        const Parser::__ast_entity_function* _castedFunction = (const Parser::__ast_entity_function*)_pEntity;
+        const Parser::__ast_entity_function* _castedFunction = static_cast<const Parser::__ast_entity_function*>(_pEntity);
         bool _skip = false;
 
         if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_class && _castedFunction->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
@@ -324,7 +324,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
     void generate_structure(__generator_data* _pData, const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, std::ofstream& _file)
     {
-        const Parser::__ast_entity_structure* _casted = (const Parser::__ast_entity_structure*)_pEntity;
+        const Parser::__ast_entity_structure* _casted = static_cast<const Parser::__ast_entity_structure*>(_pEntity);
         const Parser::__ast_entity_structure* _parent = _casted;
         std::string _additionalNamespace;
 
@@ -349,9 +349,9 @@ namespace Duckvil { namespace RuntimeReflection {
 
         while(_parent->m_pParentScope->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_structure)
         {
-            _additionalNamespace += ((Parser::__ast_entity_structure*)_parent->m_pParentScope)->m_sName + "::";
+            _additionalNamespace += (static_cast<Parser::__ast_entity_structure*>(_parent->m_pParentScope))->m_sName + "::";
 
-            _parent = (Parser::__ast_entity_structure*)_parent->m_pParentScope;
+            _parent = static_cast<Parser::__ast_entity_structure*>(_parent->m_pParentScope);
         }
 
         for(const auto& _define : _casted->m_aNeededDefines)
@@ -369,7 +369,7 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             if(_namespace->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_namespace)
             {
-                _namespaces.push((Parser::__ast_entity_namespace*)_namespace);
+                _namespaces.push(static_cast<Parser::__ast_entity_namespace*>(_namespace));
             }
 
             _namespace = _namespace->m_pParentScope;
@@ -437,7 +437,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         if(_entity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_namespace)
         {
-            const Parser::__ast_entity_namespace* _casted = (const Parser::__ast_entity_namespace*)_entity;
+            const Parser::__ast_entity_namespace* _casted = static_cast<const Parser::__ast_entity_namespace*>(_entity);
             __generator_namespace _namespace = {};
 
             strcpy(_namespace.m_sName, _casted->m_sName.c_str());
@@ -469,7 +469,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
     __generator_data* init(Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator)
     {
-        __generator_data* _data = (__generator_data*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(__generator_data), alignof(__generator_data));
+        __generator_data* _data = static_cast<__generator_data*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(__generator_data), alignof(__generator_data)));
 
         // _data->m_aNamespaces = Memory::Vector<const char*>(_pMemory, _pAllocator, 3);
 
