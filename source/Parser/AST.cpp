@@ -178,7 +178,7 @@ namespace Duckvil { namespace Parser {
         {
             _continue = false;
 
-            if(_token == "DUCKVIL_VARIABLE")
+            if(_token == "DUCKVIL_ARGUMENT")
             {
                 _argumentMetas = parse_meta(_pLexer, _exp);
 
