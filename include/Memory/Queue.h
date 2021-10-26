@@ -204,6 +204,11 @@ namespace Duckvil { namespace Memory {
             return *(Type*)fixed_queue_begin(this->m_pMemoryInterface, this->m_pContainer);
         }
 
+        inline Type& Begin()
+        {
+            return *(Type*)fixed_queue_begin(this->m_pMemoryInterface, this->m_pContainer);
+        }
+
         inline bool Empty() const
         {
             return fixed_queue_empty(this->m_pMemoryInterface, this->m_pContainer);
