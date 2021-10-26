@@ -152,7 +152,8 @@ namespace Duckvil { namespace RuntimeReflection {
         __variant_owner_property,
         __variant_owner_constructor,
         __variant_owner_constructor_argument,
-        __variant_owner_function
+        __variant_owner_function,
+        __variant_owner_function_argument
     };
 
     struct __variant
@@ -232,11 +233,12 @@ namespace Duckvil { namespace RuntimeReflection {
     slot(__function_t,
     {
         DUCKVIL_SLOT_ARRAY(__meta_t) m_metas;
+        DUCKVIL_SLOT_ARRAY(__argument_t) m_arguments;
         __ifunction* m_pFunction;
         char* m_sFunctionName;
         std::size_t m_ullReturnTypeID;
         std::size_t m_ullArgumentsTypeID;
-        DUCKVIL_RESOURCE(function_t) m_uiTypeSlotIndex; // TODO: Check if set
+        // DUCKVIL_RESOURCE(function_t) m_uiTypeSlotIndex; // TODO: Check if set
         void* m_pRawFunction;
     });
 
@@ -328,8 +330,11 @@ namespace Duckvil { namespace RuntimeReflection {
         const void* (*m_fnGetProperty)(__data* _pData, const char* _sName, std::size_t _ullLength, std::size_t _ullTypeID, const void* _pObject);
         Memory::Vector<DUCKVIL_RESOURCE(property_t)> (*m_fnGetProperties)(__data* _pData, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle);
 
-        Memory::Vector<DUCKVIL_RESOURCE(argument_t)> (*m_fnGetArguments)(__data* _pData, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _handle);
-        const __argument_t& (*m_fnGetArgument)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _constructorHandle, DUCKVIL_RESOURCE(argument_t) _handle);
+        Memory::Vector<DUCKVIL_RESOURCE(argument_t)> (*m_fnGetConstructorArguments)(__data* _pData, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _handle);
+        const __argument_t& (*m_fnGetConstructorArgument)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _constructorHandle, DUCKVIL_RESOURCE(argument_t) _handle);
+
+        Memory::Vector<DUCKVIL_RESOURCE(argument_t)> (*m_fnGetFunctionArguments)(__data* _pData, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _handle);
+        const __argument_t& (*m_fnGetFunctionArgument)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, DUCKVIL_RESOURCE(argument_t) _handle);
 
         Memory::Vector<DUCKVIL_RESOURCE(inheritance_t)> (*m_fnGetInheritances)(__data* _pData, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, DUCKVIL_RESOURCE(type_t) _typeHandle);
         const __inheritance_t& (*m_fnGetInheritance)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(inheritance_t) _inheritanceHandle);
@@ -987,14 +992,28 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
 
-        return _context.m_pReflection->m_fnGetArguments(_context.m_pReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle, _constructorHandle);
+        return _context.m_pReflection->m_fnGetConstructorArguments(_context.m_pReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle, _constructorHandle);
     }
 
-    static inline __argument_t get_argument(const Memory::FreeList& _heap, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _constructorHandle, DUCKVIL_RESOURCE(argument_t) _argumentHandle)
+    static inline __argument_t get_argument(DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _constructorHandle, DUCKVIL_RESOURCE(argument_t) _argumentHandle)
     {
         duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
 
-        return _context.m_pReflection->m_fnGetArgument(_context.m_pReflectionData, _typeHandle, _constructorHandle, _argumentHandle);
+        return _context.m_pReflection->m_fnGetConstructorArgument(_context.m_pReflectionData, _typeHandle, _constructorHandle, _argumentHandle);
+    }
+
+    static inline Memory::Vector<DUCKVIL_RESOURCE(argument_t)> get_arguments(const Memory::FreeList& _heap, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle)
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        return _context.m_pReflection->m_fnGetFunctionArguments(_context.m_pReflectionData, _heap.GetMemoryInterface(), _heap.GetAllocator(), _typeHandle, _functionHandle);
+    }
+
+    static inline __argument_t get_argument(DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, DUCKVIL_RESOURCE(argument_t) _argumentHandle)
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        return _context.m_pReflection->m_fnGetFunctionArgument(_context.m_pReflectionData, _typeHandle, _functionHandle, _argumentHandle);
     }
 
     template <size_t Length>

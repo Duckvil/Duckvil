@@ -316,6 +316,18 @@ namespace Duckvil { namespace RuntimeReflection {
             _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _function, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
         }
 
+        uint32_t _index = 0;
+
+        for(const Parser::__ast_entity_argument& _argument : _castedFunction->m_aArguments)
+        {
+            for(const Parser::__ast_meta& _meta : _argument.m_aMeta)
+            {
+                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _function, " << _index << ", " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+            }
+
+            ++_index;
+        }
+
         for(const auto& _define : _castedFunction->m_aNeededDefines)
         {
             _file << "#endif\n";
