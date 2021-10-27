@@ -177,7 +177,41 @@ namespace Duckvil { namespace Memory {
         {
             return m_pContainer;
         }
-
     };
+
+    struct free_list_context
+    {
+        FreeList m_heap;
+        bool m_bInitialized;
+
+        free_list_context()
+        {
+            m_bInitialized = false;
+        }
+
+        free_list_context(const FreeList& _heap) :
+            m_heap(_heap)
+        {
+            m_bInitialized = false;
+        }
+    };
+
+    inline free_list_context g_heapContext;
+
+    static void heap_make_current(const free_list_context& _context)
+    {
+        if(g_heapContext.m_bInitialized)
+        {
+            return;
+        }
+
+        g_heapContext.m_heap = _context.m_heap;
+        g_heapContext.m_bInitialized = true;
+    }
+
+    static const free_list_context& heap_get_current()
+    {
+        return g_heapContext;
+    }
 
 }}

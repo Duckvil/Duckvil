@@ -137,6 +137,8 @@ namespace Duckvil {
 
         ProjectManager::ftable m_projectManager;
         ProjectManager::data m_projectManagerData;
+
+        Memory::FreeList m_globalHeap;
     };
 
     struct __ftable

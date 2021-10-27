@@ -265,6 +265,10 @@ namespace Duckvil {
         _pData->m_time = time_init();
         _pData->m_heap = Memory::FreeList(_pData->m_pMemory, _pData->m_pHeap);
 
+        _pData->m_heap.Allocate(_pData->m_globalHeap, 1024 * 4);
+
+        Memory::heap_make_current(Memory::free_list_context(_pData->m_globalHeap));
+
         FrameMarkStart("Initializing memory");
 
         _pData->m_heap.Allocate(_pData->m_objectsHeap, 1024);
@@ -309,13 +313,14 @@ namespace Duckvil {
             PlugNPlay::__module_information& _loadedModule = _pData->m_aLoadedModules[i];
             uint32_t (*get_recorder_count)();
             void (*make_current_runtime_reflection_context)(const duckvil_frontend_reflection_context&);
-            // void (*make_current_logger_context)(const logger_channel_context&);
+            void (*make_current_heap_context)(const Memory::free_list_context&);
 
             make_current_runtime_reflection_context = nullptr;
+            make_current_heap_context = nullptr;
 
             _module.get(_loadedModule, "duckvil_get_runtime_reflection_recorder_count", reinterpret_cast<void**>(&get_recorder_count));
             _module.get(_loadedModule, "duckvil_plugin_make_current_runtime_reflection_context", reinterpret_cast<void**>(&make_current_runtime_reflection_context));
-            // _module.get(_loadedModule, "duckvil_plugin_make_current_logger_context", (void**)&make_current_logger_context);
+            _module.get(_loadedModule, "duckvil_plugin_make_current_heap_context", reinterpret_cast<void**>(&make_current_heap_context));
 
             if(get_recorder_count == nullptr)
             {
@@ -356,6 +361,11 @@ namespace Duckvil {
             if(make_current_runtime_reflection_context != nullptr)
             {
                 make_current_runtime_reflection_context(RuntimeReflection::get_current());
+            }
+
+            if(make_current_heap_context != nullptr)
+            {
+                make_current_heap_context(Memory::heap_get_current());
             }
         }
 

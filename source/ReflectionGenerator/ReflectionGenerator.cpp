@@ -285,7 +285,11 @@ int main(int argc, char* argv[])
             _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_logger_context(const Duckvil::logger_context& _loggerContext)\n";
             _file << "{\n";
             _file << "Duckvil::logger_make_current(_loggerContext);\n";
-            _file << "}";
+            _file << "}\n\n";
+            _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_heap_context(const Duckvil::Memory::free_list_context& _heapContext)";
+            _file << "{\n";
+            _file << "Duckvil::Memory::heap_make_current(_heapContext);\n";
+            _file << "}\n";
 
             _file.close();
 
