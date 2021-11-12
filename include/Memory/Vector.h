@@ -56,18 +56,18 @@ namespace Duckvil { namespace Memory {
 
             if(std::is_base_of<SContainer, Type>::value)
             {
-                for(uint32_t i = 0; i < _size; ++i)
+                for(uint32_t i = _size; i > 0; --i)
                 {
-                    SContainer* _container = (SContainer*)fixed_vector_at(_pMemoryInterface, _pThis->m_pContainer, i);
+                    SContainer* _container = (SContainer*)fixed_vector_at(_pMemoryInterface, _pThis->m_pContainer, i - 1);
 
                     _container->m_fnDestruct(_pMemoryInterface, _pAllocator, _container);
                 }
             }
             else
             {
-                for(uint32_t i = 0; i < _size; ++i)
+                for(uint32_t i = _size; i > 0; --i)
                 {
-                    fixed_vector_erase<Type>(_pMemoryInterface, _pThis->m_pContainer, i);
+                    fixed_vector_erase<Type>(_pMemoryInterface, _pThis->m_pContainer, i - 1);
                 }
             }
 
