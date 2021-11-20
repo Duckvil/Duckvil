@@ -90,7 +90,14 @@ namespace Duckvil { namespace RuntimeReflection {
 
         for(const Parser::__ast_meta& _meta : _castedConstructor->m_aMeta)
         {
-            _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _constructor, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+            if(!_meta.m_sValue.empty())
+            {
+                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _constructor, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+            }
+            else
+            {
+                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _constructor, " + _meta.m_sKey + ", true);\n";
+            }
         }
 
         uint32_t _index = 0;
@@ -99,7 +106,14 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             for(const Parser::__ast_meta& _meta : _argument.m_aMeta)
             {
-                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _constructor, " << _index << ", " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+                if(!_meta.m_sValue.empty())
+                {
+                    _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _constructor, " << _index << ", " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+                }
+                else
+                {
+                    _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _constructor, " << _index << ", " + _meta.m_sKey + ", true);\n";
+                }
             }
 
             ++_index;
@@ -492,6 +506,11 @@ namespace Duckvil { namespace RuntimeReflection {
 
     void generate(__generator_data* _pData, const char _sSourcePath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const char _sHeaderPath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const Parser::__ast& _ast, void (*_fnGenerate)(std::ofstream& _file, void* _pUserData), void* _pUserData)
     {
+        if(!std::filesystem::exists(std::filesystem::path(_sHeaderPath).parent_path()))
+        {
+            std::filesystem::create_directories(std::filesystem::path(_sHeaderPath).parent_path());
+        }
+
         {
             std::ofstream _file(_sHeaderPath);
 
