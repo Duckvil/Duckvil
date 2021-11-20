@@ -54,21 +54,6 @@ namespace Duckvil { namespace Utils {
             {
                 argv++;
 
-                std::size_t _index = Utils::find(argv, ' ', _len - 1);
-                const char* _optionRes = 0;
-
-                if(_index != std::numeric_limits<std::size_t>::max())
-                {
-                    _optionRes = new char[_len - _index];
-                    char* _argv = new char[_index + 1];
-
-                    _argv[_index] = 0;
-
-                    _optionRes = argv + _index + 1;
-                    memcpy(_argv, argv, _index);
-                    argv = _argv;
-                }
-
                 for(uint32_t j = 0; j < _ullDescriptorsCount; ++j)
                 {
                     Descriptor& desc = _pDescriptors[j];
@@ -77,11 +62,23 @@ namespace Duckvil { namespace Utils {
                     {
                         desc.m_bIsSet = true;
 
-                        if(_index != std::numeric_limits<std::size_t>::max())
+                        if(i < m_iArgc - 1)
                         {
-                            desc.m_sResult = _optionRes;
+                            argv = m_spArgv[i + 1];
 
-                            delete[] argv;
+                            if(argv[0] != '-')
+                            {
+                                i++;
+                                _len = std::strlen(argv);
+                                char* _optionRes = new char[_len + 1];
+
+                                memset(_optionRes, 0, _len + 1);
+                                memcpy(_optionRes, argv, _len);
+
+                                desc.m_sResult = _optionRes;
+
+                                break;
+                            }
                         }
                     }
                 }
