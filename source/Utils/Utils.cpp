@@ -50,7 +50,7 @@ namespace Duckvil { namespace Utils {
         return str;
     }
 
-    static inline bool operator==(const string& _lhs, const string& _rhs)
+    bool operator==(const string& _lhs, const string& _rhs)
     {
         if(_lhs.m_ullLength == -1 || _rhs.m_ullLength == -1)
         {
@@ -58,6 +58,11 @@ namespace Duckvil { namespace Utils {
         }
 
         return strcmp(_lhs.m_sText, _rhs.m_sText) == 0;
+    }
+
+    bool operator!=(const string& _lhs, const string& _rhs)
+    {
+        return !(_lhs == _rhs);
     }
 
     void split(const std::string& s, char delim, std::back_insert_iterator<std::vector<std::string>> result)
@@ -98,9 +103,9 @@ namespace Duckvil { namespace Utils {
 
     void join_string(string& _sBuffer, const string& _sText, std::size_t& _ullLength)
     {
-        std::size_t _len = _sText.m_ullLength;
+        std::size_t _len = _sText.m_ullLength - 1;
         memcpy(_sBuffer.m_sText + _ullLength, _sText.m_sText, _len);
-        _ullLength += _len - 1;
+        _ullLength += _len;
     }
 
     void calculate_string_length(const string& _sText, std::size_t& _ullLength)

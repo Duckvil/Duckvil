@@ -76,9 +76,11 @@ namespace Duckvil { namespace Utils {
             {
                 m_pMemory->m_fnFreeListFree_(m_pAllocator, m_sText);
             }
-            else
+            else if(m_sText)
             {
                 delete[] m_sText;
+
+                m_sText = nullptr;
             }
         }
 
@@ -151,7 +153,8 @@ namespace Duckvil { namespace Utils {
         return _res;
     }
 
-    static inline bool operator==(const string& _lhs, const string& _rhs);
+    bool operator==(const string& _lhs, const string& _rhs);
+    bool operator!=(const string& _lhs, const string& _rhs);
 
     template <size_t Length>
     static inline bool operator==(const string& _lhs, const char (&_rhs)[Length])
@@ -182,7 +185,7 @@ namespace Duckvil { namespace Utils {
     template <std::size_t Length>
     void join_string(string& _sBuffer, const char (&_sText)[Length], std::size_t& _ullLength)
     {
-        memcpy(_sBuffer.m_sText + _ullLength, _sText, Length);
+        memcpy(_sBuffer.m_sText + _ullLength, _sText, Length - 1);
         _ullLength += Length - 1;
     }
 
