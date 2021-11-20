@@ -1404,12 +1404,15 @@ namespace Duckvil { namespace Parser {
         std::string _token;
         std::string _tmpExpression;
         uint32_t _ifdefCount = 0;
+        uint32_t _roundBrackets = 0;
 
         bool _oneSlash = false;
         bool _continue = false;
+        bool _wasContinue = false;
 
         while(_continue || _pLexer->next_token(&_lexerData, &_token))
         {
+            _wasContinue = _continue;
             _continue = false;
 
             if(_token == "DUCKVIL_GENERATED_BODY")
@@ -1628,11 +1631,23 @@ namespace Duckvil { namespace Parser {
                     }
                 }
             }
-            else if(_token == "{")
+            else if(!_wasContinue && _token == "(")
+            {
+                _roundBrackets++;
+
+                _continue = true;
+            }
+            else if(!_wasContinue && _token == ")")
+            {
+                _roundBrackets--;
+
+                _continue = true;
+            }
+            else if(_roundBrackets == 0 && _token == "{")
             {
                 process_open_mustache_bracket(_pLexer, &_lexerData, _pAST, _token, _tmpExpression, _continue);
             }
-            else if(_token == "}")
+            else if(_roundBrackets == 0 && _token == "}")
             {
                 if(_pAST->m_pCurrentScope->m_scopeType == __ast_entity_type::__ast_entity_type_structure)
                 {
@@ -1960,6 +1975,8 @@ namespace Duckvil { namespace Parser {
                     process_pending(_pLexer, &_lexerData, _pAST, _token, _tmpExpression, _continue);
                 }
             }
+
+            _wasContinue = false;
         }
     }
 
