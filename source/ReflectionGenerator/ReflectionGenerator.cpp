@@ -15,6 +15,7 @@
 
 #include "Utils/AST.h"
 #include "Utils/Utils.h"
+#include "Utils/CommandArgumentsParser.h"
 
 #include <fstream>
 #include <cassert>
@@ -90,8 +91,27 @@ void generate(std::ofstream& _file, void* _pUserData)
     _file << "#define DUCKVIL_CURRENT_FILE_ID " << _fileID << "\n";
 }
 
+enum class Options
+{
+    CWD
+};
+
+Duckvil::Utils::CommandArgumentsParser::Descriptor g_pDescriptors[] =
+{
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::CWD, "CWD")
+};
+
 int main(int argc, char* argv[])
 {
+    Duckvil::Utils::CommandArgumentsParser _argumentsParser(argc, argv);
+
+    if(!_argumentsParser.Parse(g_pDescriptors, DUCKVIL_ARRAY_SIZE(g_pDescriptors)))
+    {
+        return 1;
+    }
+
+    printf("CWD: %s\n", _argumentsParser[Options::CWD].m_sResult);
+
     Duckvil::PlugNPlay::__module _module;
     Duckvil::PlugNPlay::__module_information _reflectionModule("RuntimeReflection");
     Duckvil::PlugNPlay::__module_information _memoryModule("Memory");
@@ -146,6 +166,8 @@ int main(int argc, char* argv[])
     uint32_t _index = 0;
     Duckvil::PlugNPlay::__module_information* _loadedModules;
     uint32_t _loadedModulesCount;
+
+    _runtimeReflectionData->m_pEvents = static_cast<Duckvil::Event::Pool<Duckvil::Event::mode::immediate>*>(_heap.Allocate<Duckvil::Event::Pool<Duckvil::Event::mode::immediate>>(_heap));
 
     Duckvil::PlugNPlay::AutoLoader _autoLoader(DUCKVIL_OUTPUT);
 
@@ -215,7 +237,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    for(auto& _path : std::filesystem::recursive_directory_iterator(std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include"))
+    for(auto& _path : std::filesystem::recursive_directory_iterator(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "include"))
     {
         if(_path.path().extension() != ".h")
         {
@@ -239,7 +261,7 @@ int main(int argc, char* argv[])
         _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_HOT_RELOADING", &Duckvil::Utils::user_define_behavior });
 #endif
 
-        _relativePath = std::filesystem::relative(_path.path(), std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include");
+        _relativePath = std::filesystem::relative(_path.path(), std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "include");
 
         _astData.m_sFile = _relativePath;
 
@@ -271,9 +293,18 @@ int main(int argc, char* argv[])
             _lastPath = _pluginDirectory;
         }
 
+        if(!_lastPath.has_extension())
+        {
+            _lastPath = _lastPath;
+        }
+        else
+        {
+            _lastPath = ".";
+        }
+
         if(_lastPath != _pluginDirectory)
         {
-            std::ofstream _file(std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _lastPath / "plugin_info.cpp");
+            std::ofstream _file(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / _lastPath / "plugin_info.cpp");
 
             _file << "#include \"RuntimeReflection/Recorder.h\"\n";
             _file << "#include \"Logger/Logger.h\"\n";
@@ -308,7 +339,7 @@ int main(int argc, char* argv[])
 
         _generatorData.m_uiRecorderIndex = _index++;
 
-        std::filesystem::path _generatePath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _relativePath;
+        std::filesystem::path _generatePath = std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / _relativePath;
 
         if(!std::filesystem::exists(_generatePath.parent_path()))
         {
@@ -340,10 +371,32 @@ int main(int argc, char* argv[])
         }
     }
 
-    std::ofstream _file(std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _lastPath / "plugin_info.cpp");
+    if(!_lastPath.has_extension())
+    {
+        _lastPath = _lastPath;
+    }
+    else
+    {
+        _lastPath = ".";
+    }
+
+    std::ofstream _file(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / _lastPath / "plugin_info.cpp");
 
     _file << "#include \"RuntimeReflection/Recorder.h\"\n";
+    _file << "#include \"Logger/Logger.h\"\n";
     _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(" << _index << ")";
+    _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_runtime_reflection_context(const duckvil_frontend_reflection_context& _runtimeReflectionContext)\n";
+    _file << "{\n";
+    _file << "Duckvil::RuntimeReflection::make_current(_runtimeReflectionContext);\n";
+    _file << "}\n\n";
+    _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_logger_context(const Duckvil::logger_context& _loggerContext)\n";
+    _file << "{\n";
+    _file << "Duckvil::logger_make_current(_loggerContext);\n";
+    _file << "}\n\n";
+    _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_heap_context(const Duckvil::Memory::free_list_context& _heapContext)";
+    _file << "{\n";
+    _file << "Duckvil::Memory::heap_make_current(_heapContext);\n";
+    _file << "}\n";
 
     _file.close();
 
