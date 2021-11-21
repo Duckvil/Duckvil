@@ -2,6 +2,8 @@
 
 #include "RuntimeReflection/RuntimeReflection.h"
 
+#include "Memory/FreeList.h"
+
 #ifdef DUCKVIL_PLATFORM_WINDOWS
 #undef max
 #endif
@@ -34,6 +36,12 @@
     } \
  \
     template <std::size_t Length> \
+    static inline DUCKVIL_RESOURCE(variant_t) get_meta_value_handle(__ftable* _pReflection, __data* _pData, type, const char (&_key)[Length]) \
+    { \
+        return _pReflection->m_fnGet ## name ## MetaHandle(_pData, type2, _key, Length, CONST_CHAR_POINTER_ID); \
+    } \
+ \
+    template <std::size_t Length> \
     static inline const __variant& get_meta(__ftable* _pReflection, __data* _pData, type, const char (&_key)[Length]) \
     { \
         return _pReflection->m_fnGet ## name ## MetaVariant(_pData, type2, _key, Length, CONST_CHAR_POINTER_ID); \
@@ -49,6 +57,18 @@
     static inline void* get_meta_value_ptr(__ftable* _pReflection, __data* _pData, type, const char (&_key)[Length]) \
     { \
         return _pReflection->m_fnGet ## name ## MetaValue(_pData, type2, _key, Length, CONST_CHAR_POINTER_ID); \
+    } \
+ \
+    static inline Memory::Vector<DUCKVIL_RESOURCE(meta_t)> get_metas(const Memory::FreeList& _heap, __ftable* _pReflection, __data* _pData, type) \
+    { \
+        return _pReflection->m_fnGet ## name ## Metas(_heap, _pData, type2); \
+    } \
+ \
+    static inline Memory::Vector<DUCKVIL_RESOURCE(meta_t)> get_metas(__ftable* _pReflection, __data* _pData, type) \
+    { \
+        const Memory::free_list_context& _heapContext = Memory::heap_get_current(); \
+ \
+        return get_metas(_heapContext.m_heap, _pReflection, _pData, type2); \
     } \
  \
     template <typename KeyType> \
@@ -83,6 +103,7 @@
     static inline const __variant& get_meta(type, const char (&_key)[Length]) \
     { \
         const duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext; \
+ \
         return get_meta(_context.m_pReflection, _context.m_pReflectionData, type2, _key); \
     } \
  \
@@ -98,6 +119,19 @@
     { \
         const duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext; \
         return get_meta_value_ptr(_context.m_pReflection, _context.m_pReflectionData, type2, _key); \
+    } \
+ \
+    static inline Memory::Vector<DUCKVIL_RESOURCE(meta_t)> get_metas(const Memory::FreeList& _heap, type) \
+    { \
+        const duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext; \
+        return get_metas(_heap, _context.m_pReflection, _context.m_pReflectionData, type2); \
+    } \
+ \
+    static inline Memory::Vector<DUCKVIL_RESOURCE(meta_t)> get_metas(type) \
+    { \
+        const duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext; \
+ \
+        return get_metas(_context.m_pReflection, _context.m_pReflectionData, type2); \
     }
 
 namespace Duckvil { namespace RuntimeReflection {

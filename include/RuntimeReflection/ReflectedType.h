@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RuntimeReflection/RuntimeReflection.h"
+#include "RuntimeReflection/Meta.h"
 
 #include "HotReloader/ITrackKeeper.h"
 
@@ -231,6 +232,34 @@ namespace Duckvil { namespace RuntimeReflection {
         ReturnType InvokeStatic(const char (&_sName)[Length], Args... _vArgs)
         {
             return InvokeStatic<ReturnType, Args...>(GetFunctionHandle<Args...>(_sName), _vArgs...);
+        }
+
+        const __function_t& GetFunction(const __duckvil_resource_function_t& _functionHandle) const
+        {
+            return get_function(m_pReflection, m_pReflectionData, m_typeHandle, _functionHandle);
+        }
+
+        Memory::Vector<DUCKVIL_RESOURCE(function_t)> GetFunctions() const
+        {
+            return get_functions(m_pReflection, m_pReflectionData, m_typeHandle);
+        }
+
+        template <typename KeyType>
+        const __duckvil_resource_variant_t& GetMetaHandle(const KeyType& _key) const
+        {
+            return get_meta_value_handle(m_pReflection, m_pReflectionData, m_typeHandle, _key);
+        }
+
+        template <typename KeyType>
+        const __variant& GetMetaVariant(const KeyType& _key) const
+        {
+            return get_meta(m_pReflection, m_pReflectionData, m_typeHandle, _key);
+        }
+
+        template <typename Type>
+        bool Inherits() const
+        {
+            return inherits<Type>(m_pReflection, m_pReflectionData, m_typeHandle);
         }
 
         const DUCKVIL_RESOURCE(type_t)& GetTypeHandle() const

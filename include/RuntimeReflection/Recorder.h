@@ -3,6 +3,7 @@
 #include "RuntimeReflection/RuntimeReflection.h"
 #include "RuntimeReflection/ObjectCreatedEvent.h"
 #include "RuntimeReflection/TrackedObjectCreatedEvent.h"
+#include "RuntimeReflection/PrepareObjectEvent.h"
 
 #include "Memory/Queue.h"
 
@@ -52,7 +53,6 @@ static inline duckvil_recorderd_types duckvil_recorded_types_create(Duckvil::Mem
     DUCKVIL_EXPORT uint32_t duckvil_get_runtime_reflection_recorder_count() { return count; }
 
 #define DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF _pMemoryInterface, _pAllocator, _pRecorder, _pData
-#define DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(type, trait) (std::trait<type>::value ? static_cast<property_traits>((uint8_t)_traits | (uint8_t)property_traits::trait) : _traits)
 
 #define DUCKVIL_REFLECTION_META_UTIL(name, types, types2) \
     template <typename KeyType, typename ValueType> \
@@ -87,13 +87,6 @@ static inline duckvil_recorderd_types duckvil_recorded_types_create(Duckvil::Mem
         return _pFunctions->m_fnRecord ## name ## Meta(_pMemoryInterface, _pAllocator, _pData, types2, _meta); \
     }
 
-namespace std {
-
-    template <typename Type>
-    struct is_bool : std::is_same<bool, typename std::remove_cv<Type>::type> {};
-
-}
-
 namespace Duckvil { namespace RuntimeReflection {
 
     template <typename Type, typename... Args>
@@ -101,16 +94,22 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         void* _address = _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Type), alignof(Type));
 
-        void* _object = new(_address) Type(_vArgs...);
+        memset(_address, 0, sizeof(Type));
+
+        Type* _object = new(_address) Type(_vArgs...);
+
+        RuntimeReflection::add_object_meta(_pReflection, _pData, _pMemoryInterface, _pAllocator, _object, "Tracked", _bTracked);
 
         Event::Pool<Event::mode::immediate>* _events = (Event::Pool<Event::mode::immediate>*)_pData->m_pEvents;
+
+        _events->Broadcast(PrepareObjectEvent{ _object });
 
 #ifdef DUCKVIL_HOT_RELOADING
         if(_bTracked)
         {
             RuntimeReflection::__duckvil_resource_type_t _typeHandle = RuntimeReflection::get_type<Type>(_pReflection, _pData);
             RuntimeReflection::__duckvil_resource_type_t _trackKeeperHandle = RuntimeReflection::get_type(_pData, "TrackKeeper", { "Duckvil", "HotReloader" });
-            HotReloader::ITrackKeeper* _trackKeeper = (HotReloader::ITrackKeeper*)RuntimeReflection::create(_pMemoryInterface, _pAllocator, _pReflection, _pData, _trackKeeperHandle, false, _object, _typeHandle);
+            HotReloader::ITrackKeeper* _trackKeeper = (HotReloader::ITrackKeeper*)RuntimeReflection::create(_pMemoryInterface, _pAllocator, _pReflection, _pData, _trackKeeperHandle, false, static_cast<void*>(_object), _typeHandle);
 
             if(_events == nullptr)
             {
@@ -172,30 +171,6 @@ namespace Duckvil { namespace RuntimeReflection {
 
         uint8_t m_ucValueTypeAlignment;
     };
-
-    template <typename Type>
-    static inline property_traits recorder_generate_traits()
-    {
-        property_traits _traits = {};
-
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_pointer);
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_reference);
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_array);
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_void);
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_integral);
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_floating_point);
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_enum);
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_bool);
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_const);
-
-        return _traits;
-    }
-
-    template <typename Type>
-    static inline property_traits recorder_generate_traits(const Type& _type)
-    {
-        return recorder_generate_traits<Type>();
-    }
 
     template <typename KeyType, typename ValueType>
     __recorder_meta_info recorder_generate_meta_info(const KeyType& _key, size_t _ullKeySize, const ValueType& _value, size_t _ullValueSize)

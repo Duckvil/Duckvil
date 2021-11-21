@@ -6,7 +6,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
     struct TrackedObjectCreatedEvent
     {
-        HotReloader::ITrackKeeper* m_pTrackKeeper;
+        HotReloader::ITrackKeeper* m_pTrackKeeper = nullptr;
     };
 
 }}
