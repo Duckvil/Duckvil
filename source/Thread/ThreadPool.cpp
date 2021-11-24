@@ -120,8 +120,6 @@ namespace Duckvil { namespace Thread {
 
         _pData->m_bRunning = true;
 
-        const char* _names[] = { "a", "vb", "c" };
-
         for(uint32_t i = 0; i < _pData->m_uiThreadsCount; ++i)
         {
 #ifdef DUCKVIL_PLATFORM_LINUX
@@ -129,7 +127,11 @@ namespace Duckvil { namespace Thread {
 
             pthread_create(&_thread, nullptr, pool_worker, _pData);
 #else
-            std::thread* _thread = _pData->m_heap.Allocate<std::thread>(&pool_worker, _pData, _names[i]);
+            std::string _threadName = ("t" + std::to_string(i));
+            char* _s = _pData->m_heap.AllocateArray<char>(_threadName.size() + 1);
+            memset(_s, 0, _threadName.size() + 1);
+            memcpy(_s, _threadName.c_str(), _threadName.size());
+            std::thread* _thread = _pData->m_heap.Allocate<std::thread>(&pool_worker, _pData, _s);
 #endif
 
             _pData->m_aWorkers.Allocate(_thread);
