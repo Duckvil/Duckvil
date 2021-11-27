@@ -85,22 +85,22 @@ namespace Duckvil { namespace Editor {
 
         if(m_aKeys[Window::key_a])
         {
-            m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(1, 0, 0)) * (float)_dDelta;
+            m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(1, 0, 0)) * (float)_dDelta * 2.f;
         }
 
         if(m_aKeys[Window::key_d])
         {
-            m_viewport.m_position -= glm::normalize(m_viewport.m_rotation * glm::vec3(1, 0, 0)) * (float)_dDelta;
+            m_viewport.m_position -= glm::normalize(m_viewport.m_rotation * glm::vec3(1, 0, 0)) * (float)_dDelta * 2.f;
         }
 
         if(m_aKeys[Window::key_w])
         {
-            m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(0, 0, 1)) * (float)_dDelta;
+            m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(0, 0, 1)) * (float)_dDelta * 2.f;
         }
 
         if(m_aKeys[Window::key_s])
         {
-            m_viewport.m_position -= glm::normalize(m_viewport.m_rotation * glm::vec3(0, 0, 1)) * (float)_dDelta;
+            m_viewport.m_position -= glm::normalize(m_viewport.m_rotation * glm::vec3(0, 0, 1)) * (float)_dDelta * 2.f;
         }
 
         if(m_aKeys[Window::key_k])
