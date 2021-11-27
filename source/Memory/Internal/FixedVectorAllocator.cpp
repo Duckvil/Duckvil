@@ -2,6 +2,8 @@
 
 #include <cstring>
 
+#include "tracy/Tracy.hpp"
+
 #include "Memory/FreeListAllocator.h"
 
 namespace Duckvil { namespace Memory {
@@ -22,6 +24,8 @@ namespace Duckvil { namespace Memory {
 
         _pAllocator->m_ullUsed += _pAllocator->m_ullBlockSize + _padding;
 
+        TracyAllocN(_memory, _ullSize, "Vector");
+
         return _memory;
     }
 
@@ -38,6 +42,8 @@ namespace Duckvil { namespace Memory {
         _memory = calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_vector_allocator) + _pAllocator->m_ullUsed, _ucAlignment, _padding);
 
         _pAllocator->m_ullUsed += _pAllocator->m_ullBlockSize + _padding;
+
+        TracyAllocN(_memory, _ullSize, "Vector");
 
         return _memory;
     }
@@ -89,6 +95,8 @@ namespace Duckvil { namespace Memory {
             return;
         }
 
+        TracyMessageL("Vector resize");
+
         // fixed_vector_allocator* _allocator = (fixed_vector_allocator*)free_list_allocate(_pInterface, _pParentAllocator, sizeof(fixed_vector_allocator) + (_ullNewSize * (*_pAllocator)->m_ullBlockSize), alignof(fixed_vector_allocator));
 
         // _allocator->m_pMemory = (uint8_t*)_allocator + sizeof(fixed_vector_allocator);
@@ -117,13 +125,25 @@ namespace Duckvil { namespace Memory {
 
         fixed_vector_allocator* _ptr = *_pAllocator;
 
+        for(uint32_t i = 0; i < (*_pAllocator)->m_ullUsed / (*_pAllocator)->m_ullBlockSize; ++i)
+        {
+            TracyFreeN(reinterpret_cast<uint8_t*>((*_pAllocator)) + sizeof(fixed_vector_allocator) + (i * (*_pAllocator)->m_ullBlockSize), "Vector");
+        }
+
         *_pAllocator = _allocator;
+
+        for(uint32_t i = 0; i < (*_pAllocator)->m_ullUsed / (*_pAllocator)->m_ullBlockSize; ++i)
+        {
+            TracyAllocN(reinterpret_cast<uint8_t*>((*_pAllocator)) + sizeof(fixed_vector_allocator) + (i * (*_pAllocator)->m_ullBlockSize), (*_pAllocator)->m_ullBlockSize, "Vector");
+        }
 
         free_list_free(_pInterface, _pParentAllocator, _ptr);
     }
 
     void impl_fixed_vector_erase(fixed_vector_allocator* _pAllocator, uint32_t _uiIndex)
     {
+        TracyFreeN(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_vector_allocator) + (_uiIndex * _pAllocator->m_ullBlockSize), "Vector");
+
         memcpy(
             reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_vector_allocator) + (_uiIndex * _pAllocator->m_ullBlockSize),
             reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_vector_allocator) + ((_uiIndex + 1) * _pAllocator->m_ullBlockSize),
@@ -135,6 +155,13 @@ namespace Duckvil { namespace Memory {
 
     void impl_fixed_vector_clear(fixed_vector_allocator* _pAllocator)
     {
+        TracyMessageL("Vector clear");
+
+        for(uint32_t i = 0; i < _pAllocator->m_ullUsed / _pAllocator->m_ullBlockSize; ++i)
+        {
+            TracyFreeN(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_vector_allocator) + (i * _pAllocator->m_ullBlockSize), "Vector");
+        }
+
         memset(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_vector_allocator), 0, _pAllocator->m_ullCapacity);
         _pAllocator->m_ullUsed = 0;
     }
