@@ -126,7 +126,7 @@ void duckvil_slot_array_erase(A& _slotArray, uint32_t _uiHandle)
             }
         }
 
-        _slotArray.m_data[_index] = DUCKVIL_DYNAMIC_ARRAY_BACK(_slotArray.m_data);
+        _slotArray.m_data[_index] = *DUCKVIL_DYNAMIC_ARRAY_BACK(_slotArray.m_data);
 
         DUCKVIL_DYNAMIC_ARRAY_POP(_slotArray.m_data);
 
