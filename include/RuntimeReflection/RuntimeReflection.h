@@ -349,6 +349,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __variant_t& (*m_fnGetObjectMeta)(__data* _pData, void* _pObject, std::size_t _ullKeyTypeID, std::size_t _ullKeySize, const void* _pKeyData);
         void (*m_fnSetObjectMeta)(__data* _pData, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, void* _pObject, std::size_t _ullKeyTypeID, std::size_t _ullKeySize, const void* _pKeyData, std::size_t _ullValueTypeID, std::size_t _ullValueSize, uint8_t _ucValueAlignment, property_traits _valueTraits, const void* _pValueData);
         void (*m_fnRemoveObjectMeta)(__data* _pData, void* _pObject, std::size_t _ullKeyTypeID, std::size_t _ullKeySize, const void* _pKeyData);
+        void (*m_fnClearObjectMetas)(__data* _pData, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, void* _pObject);
 
         DUCKVIL_META_DECLARE_UTIL(Property, property)
         DUCKVIL_META_DECLARE_UTIL(Function, function)
@@ -1295,6 +1296,36 @@ namespace Duckvil { namespace RuntimeReflection {
             alignof(ValueType),
             recorder_generate_traits(_value),
             &_value
+        );
+    }
+
+    template <size_t Length>
+    static inline void remove_object_meta(void* _pObject, const char (&_sKey)[Length])
+    {
+        const Memory::free_list_context& _heapContext = Memory::heap_get_current();
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        _context.m_pReflection->m_fnRemoveObjectMeta(
+            _context.m_pReflectionData,
+            _heapContext.m_heap.GetMemoryInterface(),
+            _heapContext.m_heap.GetAllocator(),
+            _pObject,
+            typeid(const char*).hash_code(),
+            Length,
+            &_sKey
+        );
+    }
+
+    static inline void clear_object_metas(void* _pObject)
+    {
+        const Memory::free_list_context& _heapContext = Memory::heap_get_current();
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        _context.m_pReflection->m_fnClearObjectMetas(
+            _context.m_pReflectionData,
+            _heapContext.m_heap.GetMemoryInterface(),
+            _heapContext.m_heap.GetAllocator(),
+            _pObject
         );
     }
 

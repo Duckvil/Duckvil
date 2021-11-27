@@ -907,9 +907,32 @@ namespace Duckvil { namespace RuntimeReflection {
 
                     if(_keyVariant.m_variant.m_ullTypeID == _ullKeyTypeID && _keyVariant.m_variant.m_ullSize == _ullKeySize && memcmp(_keyVariant.m_variant.m_pData, _pKeyData, _ullKeySize) == 0)
                     {
-                        
+                        duckvil_slot_array_erase(_object.m_variantKeys, j);
+                        duckvil_slot_array_erase(_object.m_variantValues, j);
+                        duckvil_slot_array_erase(_object.m_metas, j);
                     }
                 }
+            }
+        }
+    }
+
+    void clear_object_metas(__data* _pData, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, void* _pObject)
+    {
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aObjects.m_data); ++i)
+        {
+            __object_t& _object = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aObjects, i);
+
+            if(_object.m_pObject == _pObject)
+            {
+                DUCKVIL_SLOT_ARRAY_CLEAR(_object.m_variantKeys);
+                DUCKVIL_SLOT_ARRAY_CLEAR(_object.m_variantValues);
+                DUCKVIL_SLOT_ARRAY_CLEAR(_object.m_metas);
+
+                DUCKVIL_SLOT_ARRAY_FREE(_pMemory, _pAllocator, _object.m_variantKeys);
+                DUCKVIL_SLOT_ARRAY_FREE(_pMemory, _pAllocator, _object.m_variantValues);
+                DUCKVIL_SLOT_ARRAY_FREE(_pMemory, _pAllocator, _object.m_metas);
+
+                duckvil_slot_array_erase(_pData->m_aObjects, i);
             }
         }
     }
@@ -990,6 +1013,7 @@ Duckvil::RuntimeReflection::__ftable* duckvil_runtime_reflection_init()
     _functions.m_fnGetObjectMeta = &Duckvil::RuntimeReflection::get_object_meta;
     _functions.m_fnSetObjectMeta = &Duckvil::RuntimeReflection::set_object_meta;
     _functions.m_fnRemoveObjectMeta = &Duckvil::RuntimeReflection::remove_object_meta;
+    _functions.m_fnClearObjectMetas = &Duckvil::RuntimeReflection::clear_object_metas;
 
     return &_functions;
 }
