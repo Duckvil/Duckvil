@@ -113,7 +113,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
             vertex_buffer_object_descriptor(
                 _target,
                 static_cast<uint32_t>(sizeof(Type) / _usNumber),
-                static_cast<const void*>(&_pData[0]),
+                &_pData[0],
                 _uiCount,
                 _usNumber
             )

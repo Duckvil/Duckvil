@@ -487,17 +487,23 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
             }
         }
 
-        Memory::byte_buffer_seek_to_begin(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands);
+        //Memory::byte_buffer_seek_to_begin(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands);
         _pData->m_pCommandBuffer.m_uiCommandCount = 0;
     }
 
     void impl_renderer_update(Memory::ftable* _pMemoryInterface, renderer_data* _pData)
     {
-        ZoneScopedN("Submit renderer command buffer");
+        {
+            ZoneScopedN("Submit renderer command buffer");
 
-        impl_renderer_submit_command_buffer(_pMemoryInterface, _pData);
+            impl_renderer_submit_command_buffer(_pMemoryInterface, _pData);
+        }
 
-        command_buffer_clear(_pMemoryInterface, &_pData->m_pCommandBuffer);
+        {
+            ZoneScopedN("Renderer command buffer clear");
+
+            command_buffer_clear(_pMemoryInterface, &_pData->m_pCommandBuffer);
+        }
     }
 
 }}}
