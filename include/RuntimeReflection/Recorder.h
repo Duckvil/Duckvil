@@ -148,6 +148,17 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         ((Type*)_pObject)->~Type();
 
+        const auto& _isHot = RuntimeReflection::get_object_meta(_pObject, "IsHot").m_variant;
+
+        if(_isHot.m_ullTypeID == typeid(bool).hash_code() && *static_cast<bool*>(_isHot.m_pData))
+        {
+            RuntimeReflection::clear_object_metas(static_cast<HotReloader::ITrackKeeper*>(_pObject)->GetObject());
+        }
+        else
+        {
+            RuntimeReflection::clear_object_metas(_pObject);
+        }
+
         _pMemoryInterface->m_fnFreeListFree_(_pAllocator, _pObject);
     }
 

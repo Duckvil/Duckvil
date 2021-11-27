@@ -15,6 +15,8 @@
 
 #include "tracy/Tracy.hpp"
 
+#include "RuntimeReflection/PrepareObjectEvent.h"
+
 #undef GetObject
 
 namespace Duckvil { namespace HotReloader {
@@ -67,10 +69,12 @@ namespace Duckvil { namespace HotReloader {
 
     RuntimeCompilerSystem::RuntimeCompilerSystem(
         const Memory::FreeList& _heap,
-        Event::Pool<Event::mode::immediate>* _pEventPool
+        Event::Pool<Event::mode::immediate>* _pEventPool,
+        Event::Pool<Event::mode::immediate>* _pRuntimeReflectionEventPool
     ) :
         m_heap(_heap),
-        m_pEventPool(_pEventPool)
+        m_pEventPool(_pEventPool),
+        m_pRuntimeReflectionEventPool(_pRuntimeReflectionEventPool)
     {
         _heap.Allocate(m_aHotObjects, 1);
         _heap.Allocate(m_aModules, 1);
@@ -199,6 +203,7 @@ namespace Duckvil { namespace HotReloader {
 #endif
 #endif
         (m_pCompiler->*m_fnInternalCompilerAddDefine->m_fnFunction)("DUCKVIL_RUNTIME_COMPILE");
+        (m_pCompiler->*m_fnInternalCompilerAddDefine->m_fnFunction)("DUCKVIL_COMPILE_REFLECTION_SOURCE");
         (m_pCompiler->*m_fnInternalCompilerAddDefine->m_fnFunction)(std::string("DUCKVIL_OUTPUT=\"") + DUCKVIL_OUTPUT + "\"");
 
         (m_pCompiler->*m_fnInternalCompilerAddLibraryPath->m_fnFunction)(DUCKVIL_OUTPUT);
@@ -275,18 +280,18 @@ namespace Duckvil { namespace HotReloader {
         ImGui::End();
     }
 
-    void RuntimeCompilerSystem::Compile(const std::string& _sFile)
+    void RuntimeCompilerSystem::Compile(const std::filesystem::path& _CWD, const std::string& _sFile, void (*_fnSwap)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), const RuntimeCompiler::Options& _compileOptions)
     {
         FrameMarkStart("Compile");
 
         DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Hot reload started");
 
-        {
+        /*{
             FrameMarkStart("Reflection");
             DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Generating reflection");
 
-            std::filesystem::path _path = std::filesystem::relative(_sFile, std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "source");
-            std::filesystem::path _generatePath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__" / _path;
+            std::filesystem::path _path = std::filesystem::relative(_sFile, _CWD / "source");
+            std::filesystem::path _generatePath = _CWD / "__generated_reflection__" / _path;
             std::filesystem::path _source = _generatePath;
             std::filesystem::path _header = _generatePath;
 
@@ -333,7 +338,7 @@ namespace Duckvil { namespace HotReloader {
             _source.replace_extension(".generated.cpp");
             _header.replace_extension(".generated.h");
 
-            _path = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "include" / _path;
+            _path = _CWD / "include" / _path;
 
             m_pLexerFTable->load_file(&_data, _path.string().c_str());
 
@@ -359,6 +364,36 @@ namespace Duckvil { namespace HotReloader {
 
             DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Generating reflection finished");
             FrameMarkEnd("Reflection");
+        }*/
+
+        {
+            FrameMarkStart("Reflection");
+            DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Generating reflection");
+
+            PlugNPlay::__module _module;
+            Process::ftable _process;
+            Process::data _processData;
+
+            PlugNPlay::module_init(&_module);
+
+            PlugNPlay::__module_information _processModuleInfo("Process");
+
+            _module.load(&_processModuleInfo);
+
+            void (*_duckvilProcessInit)(Process::ftable* _pFTable);
+
+            _module.get(_processModuleInfo, "duckvil_process_init", reinterpret_cast<void**>(&_duckvilProcessInit));
+
+            _duckvilProcessInit(&_process);
+
+            _process.m_fnInit(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), &_processData);
+            _process.m_fnSetup(&_processData);
+
+            _process.m_fnWrite(&_processData, std::string((std::filesystem::path(DUCKVIL_OUTPUT) / "ReflectionGenerator.exe -CWD ").string() + _CWD.string() + "\n_COMPLETION_TOKEN_\n").c_str());
+            _process.m_fnWait(&_processData);
+
+            DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Generating reflection finished");
+            FrameMarkEnd("Reflection");
         }
 
         std::filesystem::path _path = std::tmpnam(nullptr);
@@ -369,10 +404,10 @@ namespace Duckvil { namespace HotReloader {
             DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Compilation");
             FrameMarkStart("Compilation");
 
-            std::filesystem::path _working = std::filesystem::path(DUCKVIL_OUTPUT).parent_path();
+            // std::filesystem::path _working = std::filesystem::path(DUCKVIL_OUTPUT).parent_path();
             std::filesystem::path _file = _sFile;
             std::string _filename = _file.filename().string();
-            std::filesystem::path _relativePath = std::filesystem::relative(_file.parent_path(), _working / "source");
+            std::filesystem::path _relativePath = std::filesystem::relative(_file.parent_path(), _CWD / "source");
             std::size_t _dotPosition = _filename.find_first_of('.');
 
             if(_dotPosition != std::string::npos)
@@ -381,9 +416,9 @@ namespace Duckvil { namespace HotReloader {
             }
 
             std::string _generatedFilename = _filename + ".generated.cpp";
-            std::filesystem::path _generatedFile = _working / "__generated_reflection__" / _relativePath / _generatedFilename;
-            std::filesystem::path _pluginFile = _working / "__generated_reflection__" / *_relativePath.begin() / "plugin_info.cpp";
-            std::filesystem::path _externalPath = _working / "external";
+            std::filesystem::path _generatedFile = _CWD / "__generated_reflection__" / _relativePath / _generatedFilename;
+            std::filesystem::path _pluginFile = _CWD / "__generated_reflection__" / *_relativePath.begin() / "plugin_info.cpp";
+            std::filesystem::path _externalPath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "external";
 
             RuntimeCompiler::Options _options = {};
 
@@ -395,6 +430,35 @@ namespace Duckvil { namespace HotReloader {
             _options.m_aFlags.push_back("-o" + std::string(DUCKVIL_SWAP_OUTPUT) + "/" + m_sModuleName + ".so");
 #endif
 #endif
+
+#ifdef DUCKVIL_HOT_RELOADING
+            _options.m_aDefines.push_back("DUCKVIL_HOT_RELOADING");
+#endif
+
+            for(const std::string& _option : _compileOptions.m_aDefines)
+            {
+                _options.m_aDefines.push_back(_option);
+            }
+
+            for(const std::string& _option : _compileOptions.m_aFlags)
+            {
+                _options.m_aFlags.push_back(_option);
+            }
+
+            for(const std::string& _option : _compileOptions.m_aIncludes)
+            {
+                _options.m_aIncludes.push_back(_option);
+            }
+
+            for(const std::string& _option : _compileOptions.m_aLibrariesPaths)
+            {
+                _options.m_aLibrariesPaths.push_back(_option);
+            }
+
+            for(const std::string& _option : _compileOptions.m_aLibraries)
+            {
+                _options.m_aLibraries.push_back(_option);
+            }
 
             RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::vector<std::string>&, const RuntimeCompiler::Options&)>* _compile = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::vector<std::string>&, const RuntimeCompiler::Options&>(m_compilerTypeHandle, "Compile");
 
@@ -480,92 +544,197 @@ namespace Duckvil { namespace HotReloader {
         DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Swapping objects");
         FrameMarkStart("Swapping");
 
-        PlugNPlay::__module_information* _moduleToRelease = nullptr;
+        // PlugNPlay::__module_information* _moduleToRelease = nullptr;
 
-        for(uint32_t i = 0; i < m_aHotObjects.Size(); ++i)
-        {
-            hot_object& _hot = m_aHotObjects[i];
+        // for(uint32_t i = 0; i < m_aHotObjects.Size(); ++i)
+        // {
+        //     hot_object& _hot = m_aHotObjects[i];
 
-            for(size_t j = 0; j < _types.m_ullCount; ++j)
-            {
-                const Duckvil::RuntimeReflection::__duckvil_resource_type_t& _type = _types.m_aTypes[j];
+        //     for(size_t j = 0; j < _types.m_ullCount; ++j)
+        //     {
+        //         const Duckvil::RuntimeReflection::__duckvil_resource_type_t& _type = _types.m_aTypes[j];
 
-                if(/*RuntimeReflection::get_meta(_type, ReflectionFlags_Hot).m_ullTypeID != -1 && */_hot.m_pObject->GetTypeHandle().m_ID == _type.m_ID)
-                {
-                    RuntimeSerializer::Serializer _serializer;
+        //         if(/*RuntimeReflection::get_meta(_type, ReflectionFlags_Hot).m_ullTypeID != -1 && */_hot.m_pObject->GetTypeHandle().m_ID == _type.m_ID)
+        //         {
+        //             RuntimeSerializer::Serializer _serializer;
 
-                    void* _oldObject = DUCKVIL_TRACK_KEEPER_GET_OBJECT(_hot.m_pObject);
+        //             void* _oldObject = DUCKVIL_TRACK_KEEPER_GET_OBJECT(_hot.m_pObject);
 
-                    _serializer.SetLoading(false);
-                    _serializer.Serialize(_oldObject, _hot.m_pSerializeFunction);
+        //             _serializer.SetLoading(false);
+        //             _serializer.Serialize(_oldObject, _hot.m_pSerializeFunction);
 
-                    void* _newObject = RuntimeReflection::create(m_objectsHeap, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _type, false);
+        //             void* _newObject = RuntimeReflection::create(m_objectsHeap, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _type, false);
 
-                    RuntimeReflection::__duckvil_resource_function_t _serializeFunctionHandle = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_type, "Serialize");
-                    RuntimeReflection::__function_t _func = RuntimeReflection::get_function(_type, _serializeFunctionHandle);
+        //             RuntimeReflection::__duckvil_resource_function_t _serializeFunctionHandle = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_type, "Serialize");
+        //             RuntimeReflection::__function_t _func = RuntimeReflection::get_function(_type, _serializeFunctionHandle);
 
-                    _serializer.SetLoading(true);
-                    _serializer.Serialize(_newObject, _func.m_pRawFunction);
+        //             _serializer.SetLoading(true);
+        //             _serializer.Serialize(_newObject, _func.m_pRawFunction);
 
-                    _hot.m_pSerializeFunction = _func.m_pRawFunction;
+        //             _hot.m_pSerializeFunction = _func.m_pRawFunction;
 
-                    // HotReloadedEvent _swapEvent = {};
+        //             // HotReloadedEvent _swapEvent = {};
 
-                    // _swapEvent.m_stage = HotReloadedEvent::stage_after_swap;
-                    // _swapEvent.m_pObject = _newObject;
-                    // // _swapEvent._typeHandle = _trackKeeper->GetTypeHandle();
-                    // _swapEvent.m_pTrackKeeper = _trackKeeper;
-                    // _swapEvent.m_pOldObject = _oldObject;
+        //             // _swapEvent.m_stage = HotReloadedEvent::stage_after_swap;
+        //             // _swapEvent.m_pObject = _newObject;
+        //             // // _swapEvent._typeHandle = _trackKeeper->GetTypeHandle();
+        //             // _swapEvent.m_pTrackKeeper = _trackKeeper;
+        //             // _swapEvent.m_pOldObject = _oldObject;
 
-                    _hot.m_pObject->SetObject(_newObject);
+        //             _hot.m_pObject->SetObject(_newObject);
 
-                    m_pEventPool->Broadcast(SwapEvent{ _oldObject, _hot.m_pObject });
+        //             m_pEventPool->Broadcast(SwapEvent{ _oldObject, _hot.m_pObject });
 
-                    m_objectsHeap.Free(_oldObject);
+        //             m_objectsHeap.Free(_oldObject);
 
-                    for(size_t k = 0; k < m_aReflectedTypes->Size(); ++k)
-                    {
-                        const duckvil_recorderd_types& _types2 = m_aReflectedTypes->At(k);
+        //             for(size_t k = 0; k < m_aReflectedTypes->Size(); ++k)
+        //             {
+        //                 const duckvil_recorderd_types& _types2 = m_aReflectedTypes->At(k);
 
-                        if(strcmp(_types2.m_sFile, _types.m_sFile) == 0)
-                        {
-                            m_heap.Free(_types2.m_aTypes);
+        //                 if(strcmp(_types2.m_sFile, _types.m_sFile) == 0)
+        //                 {
+        //                     m_heap.Free(_types2.m_aTypes);
 
-                            // printf("AAAA\n");
-                            _moduleToRelease = _types2.m_pModule;
+        //                     _moduleToRelease = _types2.m_pModule;
 
-                            m_aReflectedTypes->Erase(k);
-                            const duckvil_recorderd_types& aa = m_aReflectedTypes->At(k);
-                            m_aReflectedTypes->Allocate(_types);
+        //                     m_aReflectedTypes->Erase(k);
+        //                     const duckvil_recorderd_types& aa = m_aReflectedTypes->At(k);
+        //                     m_aReflectedTypes->Allocate(_types);
 
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+        //                     break;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+        _fnSwap(&m_aHotObjects, _types);
 
         FrameMarkEnd("Swapping");
         DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Swapping objects finished");
 
         FrameMarkStart("Releasing module");
 
-        if(_moduleToRelease != nullptr)
-        {
-            // TODO: Here we should release global contexts
+        // if(_moduleToRelease != nullptr)
+        // {
+        //     // TODO: Here we should release global contexts
 
-            void (*free_current_logger_context)();
+        //     void (*free_current_logger_context)();
 
-            _module.get(_testModule, "duckvil_plugin_free_current_logger_context", reinterpret_cast<void**>(&free_current_logger_context));
+        //     _module.get(_testModule, "duckvil_plugin_free_current_logger_context", reinterpret_cast<void**>(&free_current_logger_context));
 
-            // free_current_logger_context();
+        //     // free_current_logger_context();
 
-            _module.free(_moduleToRelease);
-        }
+        //     _module.free(_moduleToRelease);
+        // }
 
         FrameMarkEnd("Releasing module");
 
         FrameMarkEnd("Compile");
+    }
+
+    void RuntimeCompilerSystem::Compile(const std::string& _sFile, const RuntimeCompiler::Options& _compileOptions)
+    {
+        Compile(std::filesystem::path(DUCKVIL_OUTPUT).parent_path(), _sFile, Utils::lambda([&](Memory::Vector<RuntimeCompilerSystem::hot_object>* _pHotObjects, duckvil_recorderd_types& _newTypes)
+        {
+            for(uint32_t i = 0; i < _pHotObjects->Size(); ++i)
+            {
+                RuntimeCompilerSystem::hot_object& _hot = _pHotObjects->At(i);
+
+                for(size_t j = 0; j < _newTypes.m_ullCount; ++j)
+                {
+                    const Duckvil::RuntimeReflection::__duckvil_resource_type_t& _type = _newTypes.m_aTypes[j];
+
+                    if(/*RuntimeReflection::get_meta(_type, ReflectionFlags_Hot).m_ullTypeID != -1 && */_hot.m_pObject->GetTypeHandle().m_ID == _type.m_ID)
+                    {
+                        // RuntimeSerializer::Serializer _serializer;
+
+                        // void* _oldObject = DUCKVIL_TRACK_KEEPER_GET_OBJECT(_hot.m_pObject);
+
+                        // _serializer.SetLoading(false);
+                        // _serializer.Serialize(_oldObject, _hot.m_pSerializeFunction);
+
+                        // void* _newObject = RuntimeReflection::create(m_objectsHeap, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _type, false);
+
+                        // RuntimeReflection::__duckvil_resource_function_t _serializeFunctionHandle = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_type, "Serialize");
+                        // RuntimeReflection::__function_t _func = RuntimeReflection::get_function(_type, _serializeFunctionHandle);
+
+                        // _serializer.SetLoading(true);
+                        // _serializer.Serialize(_newObject, _func.m_pRawFunction);
+
+                        // _hot.m_pSerializeFunction = _func.m_pRawFunction;
+
+                        // // HotReloadedEvent _swapEvent = {};
+
+                        // // _swapEvent.m_stage = HotReloadedEvent::stage_after_swap;
+                        // // _swapEvent.m_pObject = _newObject;
+                        // // // _swapEvent._typeHandle = _trackKeeper->GetTypeHandle();
+                        // // _swapEvent.m_pTrackKeeper = _trackKeeper;
+                        // // _swapEvent.m_pOldObject = _oldObject;
+
+                        // _hot.m_pObject->SetObject(_newObject);
+
+                        // m_pEventPool->Broadcast(SwapEvent{ _oldObject, _hot.m_pObject });
+
+                        // m_objectsHeap.Free(_oldObject);
+
+                        Swap(&_hot, _type);
+
+                        for(size_t k = 0; k < m_aReflectedTypes->Size(); ++k)
+                        {
+                            const duckvil_recorderd_types& _types2 = m_aReflectedTypes->At(k);
+
+                            if(strcmp(_types2.m_sFile, _newTypes.m_sFile) == 0)
+                            {
+                                m_heap.Free(_types2.m_aTypes);
+
+                                // _moduleToRelease = _types2.m_pModule;
+
+                                m_aReflectedTypes->Erase(k);
+                                const duckvil_recorderd_types& aa = m_aReflectedTypes->At(k);
+                                m_aReflectedTypes->Allocate(_newTypes);
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }), _compileOptions);
+    }
+
+    void RuntimeCompilerSystem::Swap(hot_object* _pHotObject, const RuntimeReflection::__duckvil_resource_type_t& _typeHandle)
+    {
+        RuntimeSerializer::Serializer _serializer;
+
+        void* _oldObject = DUCKVIL_TRACK_KEEPER_GET_OBJECT(_pHotObject->m_pObject);
+
+        _serializer.SetLoading(false);
+        _serializer.Serialize(_oldObject, _pHotObject->m_pSerializeFunction);
+
+        m_pRuntimeReflectionEventPool->AddA<RuntimeReflection::PrepareObjectEvent>([](const RuntimeReflection::PrepareObjectEvent& _event)
+        {
+            // printf("AAAA\n");
+            RuntimeReflection::add_object_meta(_event.m_pObject, "IsHot", true);
+        });
+
+        void* _newObject = RuntimeReflection::create(m_objectsHeap, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _typeHandle, false);
+
+        m_pRuntimeReflectionEventPool->Remove<RuntimeReflection::PrepareObjectEvent>();
+
+        RuntimeReflection::__duckvil_resource_function_t _serializeFunctionHandle = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_typeHandle, "Serialize");
+        RuntimeReflection::__function_t _func = RuntimeReflection::get_function(_typeHandle, _serializeFunctionHandle);
+
+        _serializer.SetLoading(true);
+        _serializer.Serialize(_newObject, _func.m_pRawFunction);
+
+        _pHotObject->m_pSerializeFunction = _func.m_pRawFunction;
+
+        _pHotObject->m_pObject->SetObject(_newObject);
+
+        m_pEventPool->Broadcast(SwapEvent{ _oldObject, _pHotObject->m_pObject });
+
+        m_objectsHeap.Free(_oldObject);
     }
 
     void RuntimeCompilerSystem::AddHotObject(const hot_object& _hotObject)

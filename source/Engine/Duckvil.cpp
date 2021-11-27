@@ -59,7 +59,7 @@ namespace Duckvil {
 
         RuntimeReflection::make_current({ _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _pData->m_pRuntimeReflectionRecorder });
 
-        _pData->m_pRuntimeReflectionData->m_pEvents = _pData->m_heap.Allocate<Event::Pool<Event::mode::immediate>>(_pData->m_heap);
+        _pData->m_pRuntimeReflectionData->m_pEvents = static_cast<Event::Pool<Event::mode::immediate>*>(_pData->m_heap.Allocate<Event::Pool<Event::mode::immediate>>(_pData->m_heap));
 
         return true;
     }
@@ -174,16 +174,16 @@ namespace Duckvil {
 
         Graphics::Renderer::vertex_buffer_object_descriptor _desc[] =
         {
-            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aVertices, _raw.m_aVertices.size(), 3), // size of vertices should be specified here
+            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aVertices, _raw.m_aVertices.size(), 4), // size of vertices should be specified here
             Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aTexCoords, _raw.m_aTexCoords.size(), 2),
             Graphics::Renderer::vertex_buffer_object_descriptor(GL_ELEMENT_ARRAY_BUFFER, _raw.m_aIndices, _raw.m_aIndices.size(), 1)
         };
 
         ecs_os_set_api_defaults();
 
-        for(uint32_t i = 0; i < 1; ++i)
+        for(uint32_t i = 0; i < 100; ++i)
         {
-            for(uint32_t j = 0; j < 1; ++j)
+            for(uint32_t j = 0; j < 100; ++j)
             {
                 _pData->m_ecs.entity().set([_pData, &_desc, i, j, _raw](Graphics::MeshComponent& _mesh, Graphics::TransformComponent& _transform)
                 {
@@ -222,7 +222,7 @@ namespace Duckvil {
 
         _pData->m_pEditor = init();
 
-        _pData->m_pEditorData = static_cast<Editor::ImGuiEditorData*>(_pData->m_pEditor->m_fnInit(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _pData->m_pWindow, _pData->m_pRenderer, &_pData->m_pRendererData));
+        _pData->m_pEditorData = static_cast<Editor::ImGuiEditorData*>(_pData->m_pEditor->m_fnInit(_pData->m_pEditor, _pData->m_heap, _pData->m_pWindow, _pData->m_pRenderer, &_pData->m_pRendererData, static_cast<Event::Pool<Event::mode::immediate>*>(_pData->m_pRuntimeReflectionData->m_pEvents), &_pData->m_eventPool));
 
         _pData->m_pEditorData->m_pECS = &_pData->m_ecs;
 
@@ -265,7 +265,7 @@ namespace Duckvil {
         _pData->m_time = time_init();
         _pData->m_heap = Memory::FreeList(_pData->m_pMemory, _pData->m_pHeap);
 
-        _pData->m_heap.Allocate(_pData->m_globalHeap, 1024 * 4);
+        _pData->m_heap.Allocate(_pData->m_globalHeap, 1024 * 16);
 
         Memory::heap_make_current(Memory::free_list_context(_pData->m_globalHeap));
 
@@ -410,6 +410,62 @@ namespace Duckvil {
             }
         });
 
+        (static_cast<Event::Pool<Event::mode::immediate>*>(_pData->m_pRuntimeReflectionData->m_pEvents))->AddA<RuntimeReflection::TrackedObjectCreatedEvent>([_pData](const RuntimeReflection::TrackedObjectCreatedEvent& _event)
+        {
+            RuntimeReflection::ReflectedType<> _type(_pData->m_heap, _event.m_pTrackKeeper->GetTypeHandle());
+
+            if(!_type.Inherits<ISystem>())
+            {
+                return;
+            }
+
+            system _system = {};
+
+            _system.m_type = _event.m_pTrackKeeper->GetTypeHandle();
+            _system.m_pTrackKeeper = _event.m_pTrackKeeper;
+
+            const auto& _update = _type.GetFunctionCallback<ISystem, double>("Update");
+            const auto& _init = _type.GetFunctionCallback<bool, ISystem>("Init");
+
+            if(_update && _init)
+            {
+                _system.m_fnUpdateCallback = _update->m_fnFunction;
+                _system.m_fnInitCallback = _init->m_fnFunction;
+
+                if(_pData->m_aEngineSystems.Full())
+                {
+                    _pData->m_aEngineSystems.Resize(_pData->m_aEngineSystems.Size() * 2);
+                }
+
+                _pData->m_aEngineSystems.Allocate(_system);
+            }
+
+            if(_type.GetMetaHandle(ReflectionFlags_AutoEventsAdding).m_ID != -1)
+            {
+                const auto& _functions = _type.GetFunctions();
+
+                for(const auto& _functionHandle : _functions)
+                {
+                    const auto& _func = _type.GetFunction(_functionHandle);
+
+                    if(_func.m_ullArgumentsTypeID == DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(const HotReloader::SwapEvent&) && strcmp(_func.m_sFunctionName, "OnEvent") == 0)
+                    {
+                        _pData->m_eventPool.Add<HotReloader::SwapEvent>(_event.m_pTrackKeeper, _type.GetTypeHandle());
+                    }
+                }
+            }
+
+            RuntimeReflection::add_object_meta(_event.m_pTrackKeeper->GetObject(), 1, 2);
+            RuntimeReflection::add_object_meta(_event.m_pTrackKeeper->GetObject(), 2, 3);
+
+            const auto& _r = RuntimeReflection::get_object_meta(_event.m_pTrackKeeper->GetObject(), 1);
+            const auto& _r2 = RuntimeReflection::get_object_meta(_event.m_pTrackKeeper->GetObject(), 2);
+
+            RuntimeReflection::set_object_meta(_event.m_pTrackKeeper->GetObject(), 1, 4);
+
+            const auto& _r3 = RuntimeReflection::get_object_meta(_event.m_pTrackKeeper->GetObject(), 1);
+        });
+
         {
             auto _types = RuntimeReflection::get_types(_pData->m_heap);
 
@@ -420,26 +476,30 @@ namespace Duckvil {
 
                 _pData->m_pRuntimeCompiler = (HotReloader::RuntimeCompilerSystem*)_type.Create<
                     const Memory::FreeList&,
+                    Event::Pool<Event::mode::immediate>*,
                     Event::Pool<Event::mode::immediate>*
                 >(
                     (const Memory::FreeList&)_pData->m_heap,
-                    &_pData->m_eventPool
+                    &_pData->m_eventPool,
+                    static_cast<Event::Pool<Event::mode::immediate>*>(_pData->m_pRuntimeReflectionData->m_pEvents)
                 );
+
+                _pData->m_projectManager.m_fnSetRuntimeCompiler(&_pData->m_projectManagerData, _pData->m_pRuntimeCompiler);
 
                 (static_cast<Event::Pool<Event::mode::immediate>*>(_pData->m_pRuntimeReflectionData->m_pEvents))->Add<RuntimeReflection::TrackedObjectCreatedEvent>(_pData->m_pRuntimeCompiler);
 
                 _pData->m_fnRuntimeCompilerUpdate = _type.GetFunctionCallback<ISystem, double>("Update")->m_fnFunction;
                 _pData->m_fnRuntimeCompilerInit = _type.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
 
-                _pData->m_pEditor->m_fnAddDraw(_pData->m_pEditorData,
-                    Editor::Draw
-                    {
-                        _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction,
-                        _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction,
-                        _pData->m_pRuntimeCompiler,
-                        _runtimeCompilerType
-                    }
-                );
+                // _pData->m_pEditor->m_fnAddDraw(_pData->m_pEditorData,
+                //     Editor::Draw
+                //     {
+                //         _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction,
+                //         _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction,
+                //         _pData->m_pRuntimeCompiler,
+                //         _runtimeCompilerType
+                //     }
+                // );
 
                 _type.Invoke<const Memory::FreeList&>("SetObjectsHeap", _pData->m_pRuntimeCompiler, _pData->m_objectsHeap);
                 _type.Invoke<Memory::Vector<PlugNPlay::__module_information>*>("SetModules", _pData->m_pRuntimeCompiler, &_pData->m_aLoadedModules);
@@ -449,20 +509,18 @@ namespace Duckvil {
             for(uint32_t i = 0; i < _types.Size(); ++i)
             {
                 const RuntimeReflection::__duckvil_resource_type_t& _typeHandle = _types[i];
-                const RuntimeReflection::__variant& _variant = RuntimeReflection::get_meta(_typeHandle, ReflectionFlags::ReflectionFlags_UserSystem);
+                const RuntimeReflection::ReflectedType<> _type(_pData->m_heap, _typeHandle);
+                const auto a = RuntimeReflection::get_type(_typeHandle).m_sTypeName;
 
-                if(_variant.m_ullTypeID != std::numeric_limits<std::size_t>::max() &&
-                    static_cast<uint8_t>(_variant.m_traits) & static_cast<uint8_t>(RuntimeReflection::property_traits::is_bool))
+                if((_type.Inherits<Editor::Widget>() || _type.Inherits<ISystem>()) && _type.GetTypeHandle().m_ID != RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>().m_ID)
                 {
                     if(_pData->m_aEngineSystems.Full())
                     {
                         _pData->m_aEngineSystems.Resize(_pData->m_aEngineSystems.Size() * 2);
                     }
 
-                    RuntimeReflection::ReflectedType<> _type(_pData->m_heap, _typeHandle);
-
                     auto _constructors = RuntimeReflection::get_constructors(_pData->m_heap, _typeHandle);
-                    void* _testSystem = nullptr;
+                    void* _system = nullptr;
 
                     for(const auto& _constructorHandle : _constructors)
                     {
@@ -492,96 +550,178 @@ namespace Duckvil {
                                 {
                                     c.Push(_pData->m_pRuntimeCompiler);
                                 }
+
+                                const auto& _engine = RuntimeReflection::get_argument_meta_variant(_typeHandle, _constructorHandle, i, "Engine");
+
+                                if(_engine.m_ullTypeID == typeid(bool).hash_code() && _engine.m_pData && *(bool*)_engine.m_pData)
+                                {
+                                    c.Push(&_pData->m_eventPool);
+                                }
+
+                                const auto& _editor = RuntimeReflection::get_argument_meta_variant(_typeHandle, _constructorHandle, i, "Editor");
+
+                                if(_editor.m_ullTypeID == typeid(bool).hash_code() && _editor.m_pData && *(bool*)_editor.m_pData)
+                                {
+                                    c.Push(&_pData->m_pEditorData->m_pEditorEvents);
+                                }
                             }
 
-                            const auto& _h = RuntimeReflection::get_constructor_handle<const Memory::FreeList&>(_type.GetTypeHandle());
-                            const auto& _hc = RuntimeReflection::get_constructor(_type.GetTypeHandle(), _h);
+                            // const auto& _h = RuntimeReflection::get_constructor_handle<const Memory::FreeList&>(_type.GetTypeHandle());
+                            const auto& _hc = RuntimeReflection::get_constructor(_type.GetTypeHandle(), _constructorHandle);
 
                             c.Call(_hc.m_pData);
 
-                            _testSystem = c.getCode<void*(*)()>()();
+                            _system = c.getCode<void*(*)()>()();
                         }
-                    }
-
-                    // void* _testSystem = _type.CreateTracked<
-                    //     const Memory::FreeList&
-                    // >(
-                    //     _pData->m_heap
-                    // );
-
-                    system _system = {};
-
-                    _system.m_type = _typeHandle;
-                    _system.m_pTrackKeeper = DUCKVIL_TRACK_KEEPER_CAST(ISystem, _testSystem);
-                    _system.m_fnUpdateCallback = _type.GetFunctionCallback<ISystem, double>("Update")->m_fnFunction;
-                    _system.m_fnInitCallback = _type.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
-
-                    if(RuntimeReflection::get_meta(_typeHandle, ReflectionFlags_AutoEventsAdding).m_ullTypeID != -1)
-                    {
-                        const auto& _functions = RuntimeReflection::get_functions(_pData->m_heap, _typeHandle);
-
-                        for(const auto& _functionHandle : _functions)
-                        {
-                            const auto& _func = RuntimeReflection::get_function(_typeHandle, _functionHandle);
-
-                            if(_func.m_ullArgumentsTypeID == DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(const HotReloader::SwapEvent&) && strcmp(_func.m_sFunctionName, "OnEvent") == 0)
-                            {
-                                _pData->m_eventPool.Add<HotReloader::SwapEvent>(DUCKVIL_TRACK_KEEPER_CAST(void, _testSystem), _typeHandle);
-                            }
-                        }
-                    }
-
-                    _pData->m_aEngineSystems.Allocate(_system);
-
-                    if(RuntimeReflection::inherits<Editor::Widget>(_typeHandle))
-                    {
-#ifdef DUCKVIL_HOT_RELOADING
-                        _pData->m_pEditor->m_fnAddHotDraw(_pData->m_pEditorData,
-                            Editor::HotDraw
-                            {
-                                _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction,
-                                _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction,
-                                DUCKVIL_TRACK_KEEPER_CAST(Editor::Widget, _testSystem), _typeHandle
-                            }
-                        );
-#else
-                        _pData->m_pEditor->m_fnAddDraw(_pData->m_pEditorData,
-                            Editor::Draw
-                            {
-                                _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction,
-                                _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction,
-                                _testSystem, _typeHandle
-                            }
-                        );
-#endif
-                    }
-
-                    _pData->m_eventPool.AddA<HotReloader::SwapEvent>([_pData, _typeHandle](const HotReloader::SwapEvent& _event)
-                    {
-                        for(uint32_t j = 0; j < _pData->m_aEngineSystems.Size(); ++j)
-                        {
-                            system& _system = _pData->m_aEngineSystems[j];
-
-                            if(_system.m_type.m_ID == _event.m_pTrackKeeper->GetTypeHandle().m_ID)
-                            {
-                                RuntimeReflection::ReflectedType<> _systemType(_pData->m_heap, _system.m_type);
-
-                                _system.m_fnUpdateCallback = _systemType.GetFunctionCallback<ISystem, double>("Update")->m_fnFunction;
-                                _system.m_fnInitCallback = _systemType.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
-                            }
-                        }
-                    });
-
-                    if(!(static_cast<ISystem*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pTrackKeeper))->*_system.m_fnInitCallback)())
-                    {
-                        return false;
                     }
                 }
+
+//                 const RuntimeReflection::__variant& _variant = RuntimeReflection::get_meta(_typeHandle, ReflectionFlags::ReflectionFlags_UserSystem);
+
+//                 if(_variant.m_ullTypeID != std::numeric_limits<std::size_t>::max() &&
+//                     static_cast<uint8_t>(_variant.m_traits) & static_cast<uint8_t>(RuntimeReflection::property_traits::is_bool))
+//                 {
+//                     if(_pData->m_aEngineSystems.Full())
+//                     {
+//                         _pData->m_aEngineSystems.Resize(_pData->m_aEngineSystems.Size() * 2);
+//                     }
+
+//                     RuntimeReflection::ReflectedType<> _type(_pData->m_heap, _typeHandle);
+
+//                     auto _constructors = RuntimeReflection::get_constructors(_pData->m_heap, _typeHandle);
+//                     void* _testSystem = nullptr;
+
+//                     for(const auto& _constructorHandle : _constructors)
+//                     {
+//                         const auto& _constructor = RuntimeReflection::get_constructor(_typeHandle, _constructorHandle);
+//                         uint32_t _constructorArgumentsCount = DUCKVIL_SLOT_ARRAY_SIZE(_constructor.m_arguments);
+
+//                         if(_constructorArgumentsCount > 0)
+//                         {
+//                             FunctionArgumentsPusher c(5 + _constructorArgumentsCount);
+
+//                             c.Push(_pData->m_pMemory);
+//                             c.Push(_pData->m_pHeap);
+//                             c.Push(_pData->m_pRuntimeReflection);
+//                             c.Push(_pData->m_pRuntimeReflectionData);
+//                             c.Push(true);
+
+//                             for(uint32_t i = 0; i < _constructorArgumentsCount; ++i)
+//                             {
+//                                 const RuntimeReflection::__argument_t& _argument = DUCKVIL_SLOT_ARRAY_GET(_constructor.m_arguments, i);
+
+//                                 if(typeid(Memory::FreeList).hash_code() == _argument.m_ullTypeID)
+//                                 {
+//                                     c.Push(_pData->m_heap);
+//                                 }
+
+//                                 if(typeid(HotReloader::RuntimeCompilerSystem*).hash_code() == _argument.m_ullTypeID)
+//                                 {
+//                                     c.Push(_pData->m_pRuntimeCompiler);
+//                                 }
+//                             }
+
+//                             const auto& _h = RuntimeReflection::get_constructor_handle<const Memory::FreeList&>(_type.GetTypeHandle());
+//                             const auto& _hc = RuntimeReflection::get_constructor(_type.GetTypeHandle(), _h);
+
+//                             c.Call(_hc.m_pData);
+
+//                             _testSystem = c.getCode<void*(*)()>()();
+//                         }
+//                     }
+
+//                     // void* _testSystem = _type.CreateTracked<
+//                     //     const Memory::FreeList&
+//                     // >(
+//                     //     _pData->m_heap
+//                     // );
+
+//                     // system _system = {};
+
+//                     // _system.m_type = _typeHandle;
+//                     // _system.m_pTrackKeeper = DUCKVIL_TRACK_KEEPER_CAST(ISystem, _testSystem);
+//                     // _system.m_fnUpdateCallback = _type.GetFunctionCallback<ISystem, double>("Update")->m_fnFunction;
+//                     // _system.m_fnInitCallback = _type.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
+
+//                     // if(RuntimeReflection::get_meta(_typeHandle, ReflectionFlags_AutoEventsAdding).m_ullTypeID != -1)
+//                     // {
+//                     //     const auto& _functions = RuntimeReflection::get_functions(_pData->m_heap, _typeHandle);
+
+//                     //     for(const auto& _functionHandle : _functions)
+//                     //     {
+//                     //         const auto& _func = RuntimeReflection::get_function(_typeHandle, _functionHandle);
+
+//                     //         if(_func.m_ullArgumentsTypeID == DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(const HotReloader::SwapEvent&) && strcmp(_func.m_sFunctionName, "OnEvent") == 0)
+//                     //         {
+//                     //             _pData->m_eventPool.Add<HotReloader::SwapEvent>(DUCKVIL_TRACK_KEEPER_CAST(void, _testSystem), _typeHandle);
+//                     //         }
+//                     //     }
+//                     // }
+
+//                     // _pData->m_aEngineSystems.Allocate(_system);
+
+//                     if(RuntimeReflection::inherits<Editor::Widget>(_typeHandle))
+//                     {
+// #ifdef DUCKVIL_HOT_RELOADING
+//                         _pData->m_pEditor->m_fnAddHotDraw(_pData->m_pEditorData,
+//                             Editor::HotDraw
+//                             {
+//                                 _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction,
+//                                 _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction,
+//                                 DUCKVIL_TRACK_KEEPER_CAST(Editor::Widget, _testSystem), _typeHandle
+//                             }
+//                         );
+// #else
+//                         _pData->m_pEditor->m_fnAddDraw(_pData->m_pEditorData,
+//                             Editor::Draw
+//                             {
+//                                 _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction,
+//                                 _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction,
+//                                 _testSystem, _typeHandle
+//                             }
+//                         );
+// #endif
+//                     }
+
+//                     // if(!(static_cast<ISystem*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pTrackKeeper))->*_system.m_fnInitCallback)())
+//                     // {
+//                     //     return false;
+//                     // }
+//                 }
             }
 
-            _pData->m_pEditor->m_fnPostInit(_pData->m_heap, _pData->m_pEditorData, _pData->m_pEditor, &_pData->m_eventPool, _pData->m_pRuntimeCompiler);
+            _pData->m_eventPool.AddA<HotReloader::SwapEvent>([_pData](const HotReloader::SwapEvent& _event)
+            {
+                for(uint32_t j = 0; j < _pData->m_aEngineSystems.Size(); ++j)
+                {
+                    system& _system = _pData->m_aEngineSystems[j];
+
+                    if(_system.m_type.m_ID == _event.m_pTrackKeeper->GetTypeHandle().m_ID)
+                    {
+                        RuntimeReflection::ReflectedType<> _systemType(_pData->m_heap, _system.m_type);
+
+                        _system.m_fnUpdateCallback = _systemType.GetFunctionCallback<ISystem, double>("Update")->m_fnFunction;
+                        _system.m_fnInitCallback = _systemType.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
+                    }
+                }
+            });
+
+            _pData->m_pEditor->m_fnPostInit(_pData->m_pEditorData, _pData->m_pEditor, &_pData->m_eventPool, _pData->m_pRuntimeCompiler);
 
             if(!(_pData->m_pRuntimeCompiler->*_pData->m_fnRuntimeCompilerInit)())
+            {
+                return false;
+            }
+        }
+
+        _pData->m_eventPool.AddA<ProjectManager::LoadProjectEvent>([_pData](const ProjectManager::LoadProjectEvent& _event)
+        {
+            _pData->m_projectManager.m_fnLoadProject(&_pData->m_projectManagerData, _event.m_sProjectName, "F:/Projects/Duckvil/" + _event.m_sProjectName + "/bin");
+        });
+
+        for(const system& _system : _pData->m_aEngineSystems)
+        {
+            if(!(static_cast<ISystem*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pTrackKeeper))->*_system.m_fnInitCallback)())
             {
                 return false;
             }
@@ -686,12 +826,18 @@ namespace Duckvil {
 
         _pData->m_dOneSecond += _delta;
 
-        for(uint32_t i = 0; i < _pData->m_aEngineSystems.Size(); ++i)
         {
-            system& _system = _pData->m_aEngineSystems[i];
+            ZoneScopedN("Update engine systems");
 
-            (static_cast<ISystem*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pTrackKeeper))->*_system.m_fnUpdateCallback)(_delta);
+            for(uint32_t i = 0; i < _pData->m_aEngineSystems.Size(); ++i)
+            {
+                system& _system = _pData->m_aEngineSystems[i];
+
+                (static_cast<ISystem*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pTrackKeeper))->*_system.m_fnUpdateCallback)(_delta);
+            }
         }
+
+        _pData->m_projectManager.m_fnUpdate(&_pData->m_projectManagerData);
 
         if(_pData->m_ullLastTimeUsed != _pData->m_pHeap->m_ullUsed)
         {
@@ -723,42 +869,54 @@ namespace Duckvil {
             _pData->m_dOneSecond = 0.0;
         }
 
-        _pData->m_rendererQuery.each([_delta](Graphics::TransformComponent& _transform)
         {
-            _transform.m_rotation = _transform.m_rotation * glm::angleAxis((float)_delta, glm::vec3(0, 0, 1));
-        });
+            ZoneScopedN("Update ECS transforms");
+
+            _pData->m_rendererQuery.each([_delta](Graphics::TransformComponent& _transform)
+            {
+                _transform.m_rotation = _transform.m_rotation * glm::angleAxis((float)_delta, glm::vec3(0, 0, 1));
+            });
+        }
+
+        {
+            ZoneScopedN("Editor");
+
+            _pData->m_pEditor->m_fnRender(_pData->m_pEditorData, _pData->m_pWindow);
+        }
 
         _pData->m_pRenderer->m_fnUpdate(_pData->m_pMemory, &_pData->m_pRendererData);
 
         _pData->m_pRenderer->m_fnBindAsRenderTarget();
 
-        _pData->m_pEditor->m_fnRender(_pData->m_pEditorData, _pData->m_pWindow);
-
-        _pData->m_windowEventPool.Reset();
-
-        while(_pData->m_windowEventPool.AnyEvents())
         {
-            Window::CloseEvent _closeEvent;
-            Window::ResizeEvent _resizeEvent;
-            Window::SetMousePositionEvent _setMousePositionEvent;
+            ZoneScopedN("ProcessWindowEventPool");
 
-            if(_pData->m_windowEventPool.GetMessage(&_closeEvent))
+            _pData->m_windowEventPool.Reset();
+
+            while(_pData->m_windowEventPool.AnyEvents())
             {
-                _pData->m_bRunning = false;
+                Window::CloseEvent _closeEvent;
+                Window::ResizeEvent _resizeEvent;
+                Window::SetMousePositionEvent _setMousePositionEvent;
 
-                _pData->m_windowEventPool.EventHandled<Window::CloseEvent>();
-            }
-            else if(_pData->m_windowEventPool.GetMessage(&_resizeEvent))
-            {
-                printf("RESIZE ME!!!!\n");
+                if(_pData->m_windowEventPool.GetMessage(&_closeEvent))
+                {
+                    _pData->m_bRunning = false;
 
-                _pData->m_windowEventPool.EventHandled<Window::ResizeEvent>();
-            }
-            else if(_pData->m_windowEventPool.GetMessage(&_setMousePositionEvent))
-            {
-                _pData->m_pWindow->SetMousePosition(_setMousePositionEvent.m_iX, _setMousePositionEvent.m_iY);
+                    _pData->m_windowEventPool.EventHandled<Window::CloseEvent>();
+                }
+                else if(_pData->m_windowEventPool.GetMessage(&_resizeEvent))
+                {
+                    printf("RESIZE ME!!!!\n");
 
-                _pData->m_windowEventPool.EventHandled<Window::SetMousePositionEvent>();
+                    _pData->m_windowEventPool.EventHandled<Window::ResizeEvent>();
+                }
+                else if(_pData->m_windowEventPool.GetMessage(&_setMousePositionEvent))
+                {
+                    _pData->m_pWindow->SetMousePosition(_setMousePositionEvent.m_iX, _setMousePositionEvent.m_iY);
+
+                    _pData->m_windowEventPool.EventHandled<Window::SetMousePositionEvent>();
+                }
             }
         }
 

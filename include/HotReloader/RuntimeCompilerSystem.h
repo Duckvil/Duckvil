@@ -94,6 +94,7 @@ namespace Duckvil { namespace HotReloader {
         RuntimeCompiler::Compiler* m_pCompiler;
 
         Event::Pool<Event::mode::immediate>* m_pEventPool;
+        Event::Pool<Event::mode::immediate>* m_pRuntimeReflectionEventPool;
 
     // RuntimeReflection generator
         RuntimeReflection::__generator_ftable* m_pReflectionGenerator;
@@ -146,7 +147,7 @@ namespace Duckvil { namespace HotReloader {
         }
 
     public:
-        RuntimeCompilerSystem(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEventPool);
+        RuntimeCompilerSystem(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEventPool, Event::Pool<Event::mode::immediate>* _pRuntimeReflectionEventPool);
         ~RuntimeCompilerSystem();
 
         // Memory::Vector<ITrackKeeper*> m_aHotObjects;
@@ -163,7 +164,10 @@ namespace Duckvil { namespace HotReloader {
         void InitEditor(void* _pImguiContext);
         void OnDraw();
 
-        void Compile(const std::string& _sFile);
+        void Compile(const std::filesystem::path& _CWD, const std::string& _sFile, void (*_fnSwap)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), const RuntimeCompiler::Options& _compileOptions = { });
+        void Compile(const std::string& _sFile, const RuntimeCompiler::Options& _compileOptions = { });
+
+        void Swap(RuntimeCompilerSystem::hot_object* _pHotObject, const RuntimeReflection::__duckvil_resource_type_t& _typeHandle);
 
         void AddHotObject(const RuntimeCompilerSystem::hot_object& _hotObject);
 
