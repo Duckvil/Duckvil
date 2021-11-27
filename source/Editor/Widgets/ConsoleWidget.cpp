@@ -60,7 +60,7 @@ namespace Duckvil { namespace Editor {
 
         if(m_bScrollBottom)
         {
-            ImGui::SetScrollHere(1.f);
+            ImGui::SetScrollHereY(1.f);
 
             m_bScrollBottom = false;
         }
