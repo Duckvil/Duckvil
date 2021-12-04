@@ -8,25 +8,9 @@ namespace Duckvil { namespace Memory {
 
     void* impl_fixed_queue_allocate(fixed_queue_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
     {
-        void* _memory = nullptr;
-
-        if(_pAllocator->m_ullUsed >= _pAllocator->m_ullCapacity)
-        {
-            return _memory;
-        }
-        else if(_pAllocator->m_ullHead + _pAllocator->m_ullBlockSize >= _pAllocator->m_ullCapacity && _pAllocator->m_ullTail == _pAllocator->m_ullHead)
-        {
-            _pAllocator->m_ullTail = 0;
-            _pAllocator->m_ullHead = 0;
-        }
-
-        uint8_t _padding = 0;
-        _memory = calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_queue_allocator) + _pAllocator->m_ullHead, _ucAlignment, _padding);
+        void* _memory = impl_fixed_queue_allocate_size(_pAllocator, _ullSize, _ucAlignment);
 
         memcpy(_memory, _pData, _ullSize);
-
-        _pAllocator->m_ullHead += _pAllocator->m_ullBlockSize + _padding;
-        _pAllocator->m_ullUsed += _pAllocator->m_ullBlockSize + _padding;
 
         return _memory;
     }
@@ -39,9 +23,8 @@ namespace Duckvil { namespace Memory {
         {
             return _memory;
         }
-        else if(_pAllocator->m_ullHead + _pAllocator->m_ullBlockSize >= _pAllocator->m_ullCapacity && _pAllocator->m_ullTail == _pAllocator->m_ullHead)
+        else if(_pAllocator->m_ullHead >= _pAllocator->m_ullCapacity)
         {
-            _pAllocator->m_ullTail = 0;
             _pAllocator->m_ullHead = 0;
         }
 
@@ -74,6 +57,11 @@ namespace Duckvil { namespace Memory {
         memset(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_queue_allocator) + _pAllocator->m_ullTail, 0, _pAllocator->m_ullBlockSize);
 
         _pAllocator->m_ullTail += _pAllocator->m_ullBlockSize;
+
+        if(_pAllocator->m_ullTail >= _pAllocator->m_ullCapacity)
+        {
+            _pAllocator->m_ullTail = 0;
+        }
 
         _pAllocator->m_ullUsed -= _pAllocator->m_ullBlockSize;
     }
