@@ -10,4 +10,10 @@ add_executable(
 target_include_directories(
     ReflectionGenerator
     PRIVATE
+    "${CMAKE_SOURCE_DIR}/external/json/include"
+)
+
+target_link_libraries(
+    ReflectionGenerator
+    nlohmann_json
 )

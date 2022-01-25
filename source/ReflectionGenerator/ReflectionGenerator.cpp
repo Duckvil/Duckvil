@@ -20,6 +20,8 @@
 #include <fstream>
 #include <cassert>
 
+#include "nlohmann/json.hpp"
+
 struct reflection_module
 {
     void* m_pObject;
@@ -91,14 +93,182 @@ void generate(std::ofstream& _file, void* _pUserData)
     _file << "#define DUCKVIL_CURRENT_FILE_ID " << _fileID << "\n";
 }
 
+nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil::Parser::__lexer_ftable* _pLexerFTable, Duckvil::RuntimeReflection::__generator_ftable* _pGeneratorFTable, const std::filesystem::path& _cwd, const std::filesystem::path& _path, std::filesystem::path& _lastPath, uint32_t& _index, const std::function<void(nlohmann::json&)> _fnProcessJson, bool _bOneFile = false)
+{
+    if(_path.extension() != ".h")
+    {
+        return nlohmann::json();
+    }
+
+    nlohmann::json _jFile;
+
+    Duckvil::Parser::__lexer_data _data;
+
+    _pLexerFTable->load_file(&_data, _path.string().c_str());
+
+    Duckvil::Parser::__ast _astData;
+
+    _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_EXPORT", &Duckvil::Utils::user_define_behavior });
+    _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "slot", &Duckvil::Utils::user_define_behavior });
+    _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_RESOURCE_DECLARE", &Duckvil::Utils::user_define_behavior });
+    _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_GENERATED_BODY", &Duckvil::Utils::user_define_behavior });
+    _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_RESOURCE", &Duckvil::Utils::user_define_resource_behavior });
+    _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "TracyLockable", &Duckvil::Utils::user_define_behavior });
+
+#ifdef DUCKVIL_HOT_RELOADING
+    _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_HOT_RELOADING", &Duckvil::Utils::user_define_behavior });
+#endif
+
+    _relativePath = std::filesystem::relative(_path, _cwd / "include");
+
+    _astData.m_sFile = _relativePath;
+
+    _pAST_FTable->ast_generate(&_astData, _pLexerFTable, _data);
+    // _ast->ast_print(_astData);
+
+    for(auto& _reflectionModule : _aModules)
+    {
+        if(_reflectionModule.m_pObject == nullptr)
+        {
+            continue;
+        }
+
+        Duckvil::RuntimeReflection::invoke_member<Duckvil::Parser::__ast*>(_reflectionFTable, _runtimeReflectionData, _reflectionModule.m_typeHandle, _reflectionModule.m_processAST_FunctionHandle, _reflectionModule.m_pObject, &_astData);
+    }
+
+    Duckvil::RuntimeReflection::__generator_data _generatorData;
+
+    std::filesystem::path _pluginDirectory = _relativePath;
+
+// At least it is working...
+    while(_pluginDirectory.has_parent_path())
+    {
+        _pluginDirectory = _pluginDirectory.parent_path();
+    }
+
+    if(_lastPath == "")
+    {
+        _lastPath = _pluginDirectory;
+    }
+
+    if(!_lastPath.has_extension())
+    {
+        _lastPath = _lastPath;
+    }
+    else
+    {
+        _lastPath = ".";
+    }
+
+    _jFile["name"] = _pluginDirectory;
+
+    std::filesystem::path _jSource = _relativePath;
+    std::filesystem::path _jHeader = _relativePath;
+
+    _jSource.replace_extension(".generated.cpp");
+    _jHeader.replace_extension(".generated.h");
+
+    _jFile["source"] = _relativePath;
+    _jFile["generated_h"] = _jHeader;
+    _jFile["generated_cpp"] = _jSource;
+
+    if(_fnProcessJson)
+    {
+        _fnProcessJson(_jFile);
+
+        _index = _jFile["index"].get<uint32_t>() + 1;
+    }
+
+    _jFile["index"] = _index;
+
+    if(_bOneFile || _lastPath != _pluginDirectory)
+    {
+        std::ofstream _file(_cwd / "__generated_reflection__" / _lastPath / "plugin_info.cpp");
+
+        _file << "#include \"RuntimeReflection/Recorder.h\"\n";
+        _file << "#include \"Logger/Logger.h\"\n";
+        _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(" << _index << ")\n\n";
+        _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_runtime_reflection_context(const duckvil_frontend_reflection_context& _runtimeReflectionContext)\n";
+        _file << "{\n";
+        _file << "Duckvil::RuntimeReflection::make_current(_runtimeReflectionContext);\n";
+        _file << "}\n\n";
+        _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_logger_context(const Duckvil::logger_context& _loggerContext)\n";
+        _file << "{\n";
+        _file << "Duckvil::logger_make_current(_loggerContext);\n";
+        _file << "}\n\n";
+        _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_heap_context(const Duckvil::Memory::free_list_context& _heapContext)";
+        _file << "{\n";
+        _file << "Duckvil::Memory::heap_make_current(_heapContext);\n";
+        _file << "}\n";
+
+        _file.close();
+
+        if(!_bOneFile)
+        {
+            _index = 0;
+        }
+        _lastPath = _pluginDirectory;
+    }
+
+    if(_relativePath.string().size() < DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX)
+    {
+        strcpy(_generatorData.m_sInclude, _relativePath.string().c_str());
+    }
+    else
+    {
+        assert(false && "Path is too long!");
+    }
+
+    _generatorData.m_uiRecorderIndex = _index++;
+
+    std::filesystem::path _generatePath = _cwd / "__generated_reflection__" / _relativePath;
+
+    if(!std::filesystem::exists(_generatePath.parent_path()))
+    {
+        std::filesystem::create_directories(_generatePath.parent_path());
+    }
+
+    std::filesystem::path _source = _generatePath;
+    std::filesystem::path _header = _generatePath;
+
+    _source.replace_extension(".generated.cpp");
+    _header.replace_extension(".generated.h");
+
+    // strcpy(_generatorData.m_sGeneratedHeader, std::filesystem::relative(_header, std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__").string().c_str());
+
+    user_data _userData;
+
+    _userData.m_path = _relativePath;
+
+    _pGeneratorFTable->generate(&_generatorData, _source.string().c_str(), _header.string().c_str(), _astData, &generate, &_userData);
+
+    for(auto& _module : _aModules)
+    {
+        if(_module.m_pObject == nullptr)
+        {
+            continue;
+        }
+
+        Duckvil::RuntimeReflection::invoke_member(_reflectionFTable, _runtimeReflectionData, _module.m_typeHandle, _module.m_clearFunctionHandle, _module.m_pObject);
+    }
+
+    // _j["files"].push_back(_jFile);
+
+    return _jFile;
+}
+
 enum class Options
 {
-    CWD
+    CWD,
+    FILE,
+    IS_RELATIVE
 };
 
 Duckvil::Utils::CommandArgumentsParser::Descriptor g_pDescriptors[] =
 {
-    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::CWD, "CWD")
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::CWD, "CWD"),
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::FILE, "file"),
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::IS_RELATIVE, "is_relative")
 };
 
 int main(int argc, char* argv[])
@@ -237,60 +407,68 @@ int main(int argc, char* argv[])
         }
     }
 
-    for(auto& _path : std::filesystem::recursive_directory_iterator(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "include"))
+    if(_argumentsParser[Options::FILE].m_bIsSet)
     {
-        if(_path.path().extension() != ".h")
+        std::filesystem::path _file = _argumentsParser[Options::FILE].m_sResult;
+
+        if(_argumentsParser[Options::IS_RELATIVE].m_bIsSet)
         {
-            continue;
+            _file = std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / _file;
         }
 
-        Duckvil::Parser::__lexer_data _data;
+        nlohmann::json _j;
+        std::ifstream _iJson(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / "reflection_db.json");
 
-        _lexerFtable->load_file(&_data, _path.path().string().c_str());
+        _iJson >> _j;
 
-        Duckvil::Parser::__ast _astData;
+        _iJson.close();
 
-        _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_EXPORT", &Duckvil::Utils::user_define_behavior });
-        _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "slot", &Duckvil::Utils::user_define_behavior });
-        _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_RESOURCE_DECLARE", &Duckvil::Utils::user_define_behavior });
-        _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_GENERATED_BODY", &Duckvil::Utils::user_define_behavior });
-        _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_RESOURCE", &Duckvil::Utils::user_define_resource_behavior });
-        _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "TracyLockable", &Duckvil::Utils::user_define_behavior });
+        nlohmann::json _last;
+        nlohmann::json _exists;
+        nlohmann::json::iterator _lastIt;
 
-#ifdef DUCKVIL_HOT_RELOADING
-        _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_HOT_RELOADING", &Duckvil::Utils::user_define_behavior });
-#endif
-
-        _relativePath = std::filesystem::relative(_path.path(), std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "include");
-
-        _astData.m_sFile = _relativePath;
-
-        _ast->ast_generate(&_astData, _lexerFtable, _data);
-        // _ast->ast_print(_astData);
-
-        for(auto& _reflectionModule : _aModules)
+        const nlohmann::json& _jFile = process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _file, _lastPath, _index, [&](nlohmann::json& _json)
         {
-            if(_reflectionModule.m_pObject == nullptr)
+            for(nlohmann::json::iterator _it = _j["files"].begin(); _it != _j["files"].end(); ++_it)
             {
-                continue;
+                if((*_it)["name"].get<std::string>() == _json["name"].get<std::string>())
+                {
+                    if(_last.empty() || _last["index"].get<uint32_t>() < (*_it)["index"])
+                    {
+                        _last = *_it;
+                        _lastIt = _it;
+
+                        _json["index"] = _last["index"].get<uint32_t>();
+                    }
+
+                    if(_last["source"].get<std::string>() == _relativePath.string())
+                    {
+                        _exists = *_it;
+                    }
+                }
             }
+        }, true);
 
-            Duckvil::RuntimeReflection::invoke_member<Duckvil::Parser::__ast*>(_reflectionFTable, _runtimeReflectionData, _reflectionModule.m_typeHandle, _reflectionModule.m_processAST_FunctionHandle, _reflectionModule.m_pObject, &_astData);
+        if(_exists.empty())
+        {
+            _j["files"].insert(_lastIt + 1, _jFile);
         }
 
-        Duckvil::RuntimeReflection::__generator_data _generatorData;
+        std::ofstream _oJson(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / "reflection_db.json");
 
-        std::filesystem::path _pluginDirectory = _relativePath;
+        _oJson << std::setw(4) << _j << std::endl;
 
-    // At least it is working...
-        while(_pluginDirectory.has_parent_path())
+        _oJson.close();
+    }
+    else
+    {
+        nlohmann::json _j;
+
+        _j["files"] = nlohmann::json::array();
+
+        for(auto& _path : std::filesystem::recursive_directory_iterator(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "include"))
         {
-            _pluginDirectory = _pluginDirectory.parent_path();
-        }
-
-        if(_lastPath == "")
-        {
-            _lastPath = _pluginDirectory;
+            _j["files"].push_back(process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _path, _lastPath, _index, 0));
         }
 
         if(!_lastPath.has_extension())
@@ -302,103 +480,32 @@ int main(int argc, char* argv[])
             _lastPath = ".";
         }
 
-        if(_lastPath != _pluginDirectory)
-        {
-            std::ofstream _file(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / _lastPath / "plugin_info.cpp");
+        std::ofstream _file(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / _lastPath / "plugin_info.cpp");
 
-            _file << "#include \"RuntimeReflection/Recorder.h\"\n";
-            _file << "#include \"Logger/Logger.h\"\n";
-            _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(" << _index << ")\n\n";
-            _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_runtime_reflection_context(const duckvil_frontend_reflection_context& _runtimeReflectionContext)\n";
-            _file << "{\n";
-            _file << "Duckvil::RuntimeReflection::make_current(_runtimeReflectionContext);\n";
-            _file << "}\n\n";
-            _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_logger_context(const Duckvil::logger_context& _loggerContext)\n";
-            _file << "{\n";
-            _file << "Duckvil::logger_make_current(_loggerContext);\n";
-            _file << "}\n\n";
-            _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_heap_context(const Duckvil::Memory::free_list_context& _heapContext)";
-            _file << "{\n";
-            _file << "Duckvil::Memory::heap_make_current(_heapContext);\n";
-            _file << "}\n";
+        _file << "#include \"RuntimeReflection/Recorder.h\"\n";
+        _file << "#include \"Logger/Logger.h\"\n";
+        _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(" << _index << ")";
+        _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_runtime_reflection_context(const duckvil_frontend_reflection_context& _runtimeReflectionContext)\n";
+        _file << "{\n";
+        _file << "Duckvil::RuntimeReflection::make_current(_runtimeReflectionContext);\n";
+        _file << "}\n\n";
+        _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_logger_context(const Duckvil::logger_context& _loggerContext)\n";
+        _file << "{\n";
+        _file << "Duckvil::logger_make_current(_loggerContext);\n";
+        _file << "}\n\n";
+        _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_heap_context(const Duckvil::Memory::free_list_context& _heapContext)";
+        _file << "{\n";
+        _file << "Duckvil::Memory::heap_make_current(_heapContext);\n";
+        _file << "}\n";
 
-            _file.close();
+        _file.close();
 
-            _index = 0;
-            _lastPath = _pluginDirectory;
-        }
+        std::ofstream _oJson(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / "reflection_db.json");
 
-        if(_relativePath.string().size() < DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX)
-        {
-            strcpy(_generatorData.m_sInclude, _relativePath.string().c_str());
-        }
-        else
-        {
-            assert(false && "Path is too long!");
-        }
+        _oJson << std::setw(4) << _j << std::endl;
 
-        _generatorData.m_uiRecorderIndex = _index++;
-
-        std::filesystem::path _generatePath = std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / _relativePath;
-
-        if(!std::filesystem::exists(_generatePath.parent_path()))
-        {
-            std::filesystem::create_directories(_generatePath.parent_path());
-        }
-
-        std::filesystem::path _source = _generatePath;
-        std::filesystem::path _header = _generatePath;
-
-        _source.replace_extension(".generated.cpp");
-        _header.replace_extension(".generated.h");
-
-        // strcpy(_generatorData.m_sGeneratedHeader, std::filesystem::relative(_header, std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "__generated_reflection__").string().c_str());
-
-        user_data _userData;
-
-        _userData.m_path = _relativePath;
-
-        _generatorFtable->generate(&_generatorData, _source.string().c_str(), _header.string().c_str(), _astData, &generate, &_userData);
-
-        for(auto& _module : _aModules)
-        {
-            if(_module.m_pObject == nullptr)
-            {
-                continue;
-            }
-
-            Duckvil::RuntimeReflection::invoke_member(_reflectionFTable, _runtimeReflectionData, _module.m_typeHandle, _module.m_clearFunctionHandle, _module.m_pObject);
-        }
+        _oJson.close();
     }
-
-    if(!_lastPath.has_extension())
-    {
-        _lastPath = _lastPath;
-    }
-    else
-    {
-        _lastPath = ".";
-    }
-
-    std::ofstream _file(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / _lastPath / "plugin_info.cpp");
-
-    _file << "#include \"RuntimeReflection/Recorder.h\"\n";
-    _file << "#include \"Logger/Logger.h\"\n";
-    _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(" << _index << ")";
-    _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_runtime_reflection_context(const duckvil_frontend_reflection_context& _runtimeReflectionContext)\n";
-    _file << "{\n";
-    _file << "Duckvil::RuntimeReflection::make_current(_runtimeReflectionContext);\n";
-    _file << "}\n\n";
-    _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_logger_context(const Duckvil::logger_context& _loggerContext)\n";
-    _file << "{\n";
-    _file << "Duckvil::logger_make_current(_loggerContext);\n";
-    _file << "}\n\n";
-    _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_heap_context(const Duckvil::Memory::free_list_context& _heapContext)";
-    _file << "{\n";
-    _file << "Duckvil::Memory::heap_make_current(_heapContext);\n";
-    _file << "}\n";
-
-    _file.close();
 
     return 0;
 }
