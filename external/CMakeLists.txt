@@ -24,6 +24,7 @@ if(NOT DUCKVIL_CICD)
     add_subdirectory(flecs)
     add_subdirectory(xbyak)
     add_subdirectory(assimp)
+    add_subdirectory(json)
 
     set_target_properties(SDL2 PROPERTIES
         CXX_STANDARD 20
@@ -136,4 +137,19 @@ if(NOT DUCKVIL_CICD)
     )
 
     set_target_properties(visualinfo glewinfo PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+
+    set_target_properties(nlohmann_json PROPERTIES
+        CXX_STANDARD 20
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+        LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/bin"
+        ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/bin"
+        RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/bin"
+        LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin"
+        ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin"
+        RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin"
+        DEBUG_POSTFIX ""
+        PREFIX ""
+    )
 endif()
