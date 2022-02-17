@@ -22,9 +22,9 @@ namespace Duckvil { namespace Editor {
 
     void EngineInfoWidget::InitEditor(void* _pImguiContext)
     {
-        ImGui::SetCurrentContext((ImGuiContext*)_pImguiContext);
+        ImGui::SetCurrentContext(static_cast<ImGuiContext*>(_pImguiContext));
 
-        m_pTime = *(__time_data**)RuntimeReflection::get_meta_value_ptr(RuntimeReflection::get_type("__data", { "Duckvil" }), "Time");
+        m_pTime = *static_cast<__time_data**>(RuntimeReflection::get_meta_value_ptr(RuntimeReflection::get_type("__data", { "Duckvil" }), "Time"));
     }
 
     void EngineInfoWidget::OnDraw()
