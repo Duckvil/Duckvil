@@ -5,7 +5,7 @@
 namespace Duckvil { namespace Memory {
 
     void* impl_fixed_queue_allocate(fixed_queue_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment = 8);
-    void* impl_fixed_queue_allocate_size(fixed_queue_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment = 8);
+    void* impl_fixed_queue_allocate(fixed_queue_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment = 8);
 
     void* impl_fixed_queue_begin(fixed_queue_allocator* _pAllocator);
     void impl_fixed_queue_pop(fixed_queue_allocator* _pAllocator);
