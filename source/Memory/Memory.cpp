@@ -13,10 +13,22 @@
 
 namespace Duckvil { namespace Memory {
 
-    uintptr_t calculate_aligned_pointer(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset)
+    uintptr_t calculate_aligned_pointer(const uintptr_t& _ullAddress, uint8_t _ucAlignment)
     {
+        if(_ucAlignment == 0 || (_ucAlignment & (_ucAlignment - 1)) != 0)
+        {
+            throw "Alignment must be power of 2!";
+        }
+
         uint8_t _padding = _ucAlignment - 1;
         uintptr_t _new_address = (_ullAddress + _padding) & ~_padding;
+
+        return _new_address;
+    }
+
+    uintptr_t calculate_aligned_pointer(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset)
+    {
+        uintptr_t _new_address = calculate_aligned_pointer(_ullAddress, _ucAlignment);
 
         _ucPaddedOffset = _new_address - _ullAddress;
 
@@ -25,29 +37,30 @@ namespace Duckvil { namespace Memory {
 
     uint8_t calculate_padding(const uintptr_t& _ullAddress, uint8_t _ucAlignment)
     {
-        uint8_t _padding = _ucAlignment - 1;
-        uintptr_t _new_address = (_ullAddress + _padding) & ~_padding;
-
-        return _new_address - _ullAddress;
+        return calculate_aligned_pointer(_ullAddress, _ucAlignment) - _ullAddress;
     }
 
     uint8_t calculate_padding(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t _ucHeaderSize)
     {
         uint8_t _padding = calculate_padding(_ullAddress, _ucAlignment);
-        uint8_t _needed_space = _ucHeaderSize;
 
-        if(_padding < _needed_space)
+        if(_padding < _ucHeaderSize)
         {
-            _needed_space -= _padding;
-            _padding += _ucAlignment * (_needed_space / _ucAlignment);
+            _ucHeaderSize -= _padding;
+            _padding += _ucAlignment * (_ucHeaderSize / _ucAlignment);
 
-            if(_needed_space % _ucAlignment > 0)
+            if(_ucHeaderSize % _ucAlignment > 0)
             {
                 _padding += _ucAlignment;
             }
         }
 
         return _padding;
+    }
+
+    void* calculate_aligned_pointer(const void* _p, uint8_t _ucAlignment)
+    {
+        return reinterpret_cast<void*>(calculate_aligned_pointer(reinterpret_cast<uintptr_t>(_p), _ucAlignment));
     }
 
     void* calculate_aligned_pointer(const void* _p, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset)
@@ -89,7 +102,7 @@ Duckvil::Memory::ftable* duckvil_memory_init()
     memory.m_fnLinearClear =    &impl_linear_clear;
 
     memory.m_fnFixedStackAllocate_ =        &impl_fixed_stack_allocate;
-    memory.m_fnFixedStackAllocateSize_ =    &impl_fixed_stack_allocate_size;
+    memory.m_fnFixedStackAllocateSize_ =    &impl_fixed_stack_allocate;
     memory.m_fnFixedStackTop_ =             &impl_fixed_stack_allocator_top;
     memory.m_fnFixedStackPop_ =             &impl_fixed_stack_allocator_pop;
     memory.m_fnFixedStackEmpty_ =           &impl_fixed_stack_allocator_empty;
@@ -99,7 +112,7 @@ Duckvil::Memory::ftable* duckvil_memory_init()
     memory.m_fnFixedStackCapacity_ =        &impl_fixed_stack_allocator_capacity;
 
     memory.m_fnFixedQueueAllocate_ =        &impl_fixed_queue_allocate;
-    memory.m_fnFixedQueueAllocateSize_ =    &impl_fixed_queue_allocate_size;
+    memory.m_fnFixedQueueAllocateSize_ =    &impl_fixed_queue_allocate;
     memory.m_fnFixedQueueBegin_ =           &impl_fixed_queue_begin;
     memory.m_fnFixedQueuePop_ =             &impl_fixed_queue_pop;
     memory.m_fnFixedQueueEmpty_ =           &impl_fixed_queue_empty;
@@ -110,7 +123,7 @@ Duckvil::Memory::ftable* duckvil_memory_init()
     memory.m_fnFixedQueueCapacity_ =        &impl_fixed_queue_capacity;
 
     memory.m_fnFixedArrayAllocate_ =        &impl_fixed_array_allocate;
-    memory.m_fnFixedArrayAllocateSize_ =    &impl_fixed_array_allocate_size;
+    memory.m_fnFixedArrayAllocateSize_ =    &impl_fixed_array_allocate;
     memory.m_fnFixedArrayBegin_ =           &impl_fixed_array_begin;
     memory.m_fnFixedArrayBack_ =            &impl_fixed_array_back;
     memory.m_fnFixedArrayAt_ =              &impl_fixed_array_at;
@@ -126,7 +139,7 @@ Duckvil::Memory::ftable* duckvil_memory_init()
     memory.m_fnFreeListClear_ =         &impl_free_list_clear;
 
     memory.m_fnFixedVectorAllocate_ =       &impl_fixed_vector_allocate;
-    memory.m_fnFixedVectorAllocateSize_ =   &impl_fixed_vector_allocate_size;
+    memory.m_fnFixedVectorAllocateSize_ =   &impl_fixed_vector_allocate;
     memory.m_fnFixedVectorBegin_ =          &impl_fixed_vector_begin;
     memory.m_fnFixedVectorBack_ =           &impl_fixed_vector_back;
     memory.m_fnFixedVectorEnd_ =            &impl_fixed_vector_end;
