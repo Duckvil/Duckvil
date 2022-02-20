@@ -13,7 +13,7 @@ namespace Duckvil { namespace Memory {
 
         while(_free_block != nullptr)
         {
-            uint8_t _padding = calculate_padding(_free_block, _ucAlignment, sizeof(__free_list_header));
+            uint8_t _padding = calculate_padding<__free_list_header>(_free_block, _ucAlignment);
             std::size_t _total_size = _ullSize + _padding;
 
             if(_free_block->m_ullSize < _total_size)
@@ -23,6 +23,8 @@ namespace Duckvil { namespace Memory {
 
                 continue;
             }
+
+            static_assert(sizeof(__free_list_header) >= sizeof(__free_list_node), "sizeof(AllocationHeader) < sizeof(FreeBlock)"); 
 
             if(_free_block->m_ullSize - _total_size <= sizeof(__free_list_header))
             {
@@ -60,152 +62,40 @@ namespace Duckvil { namespace Memory {
             _header->m_ullSize = _total_size;
             _header->m_ucPadding = _padding;
 
+            _ASSERT(isAligned(_header));
+
             _pAllocator->m_ullUsed += _total_size;
 
             TracyAllocN((void*)_aligned_address, _ullSize, "FreeList");
 
+            _ASSERT(calculate_padding(_aligned_address, _ucAlignment) == 0);
+
             return reinterpret_cast<void*>(_aligned_address);
         }
 
-        return 0;
+        throw std::bad_alloc();
+
+        return nullptr;
     }
 
     void* impl_free_list_allocate(free_list_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
     {
-        __free_list_node* _free_block = static_cast<__free_list_node*>(_pAllocator->m_pHead);
-        __free_list_node* _previous_free_block = nullptr;
+        void* _memory = impl_free_list_allocate(_pAllocator, _ullSize, _ucAlignment);
 
-        while(_free_block != nullptr)
-        {
-            uint8_t _padding = calculate_padding(_free_block, _ucAlignment, sizeof(__free_list_header));
-            std::size_t _total_size = _ullSize + _padding;
+        memcpy(_memory, _pData, _ullSize);
 
-            if(_free_block->m_ullSize < _total_size)
-            {
-                _previous_free_block = _free_block;
-                _free_block = _free_block->m_pNext;
-
-                continue;
-            }
-
-            if(_free_block->m_ullSize - _total_size <= sizeof(__free_list_header))
-            {
-                _total_size = _free_block->m_ullSize;
-
-                if(_previous_free_block != nullptr)
-                {
-                    _previous_free_block->m_pNext = _free_block->m_pNext;
-                }
-                else
-                {
-                    _pAllocator->m_pHead = _free_block->m_pNext;
-                }
-            }
-            else
-            {
-                __free_list_node* _next_node = reinterpret_cast<__free_list_node*>((reinterpret_cast<uint8_t*>(_free_block) + _total_size));
-
-                _next_node->m_ullSize = _free_block->m_ullSize - _total_size;
-                _next_node->m_pNext = _free_block->m_pNext;
-
-                if(_previous_free_block != nullptr)
-                {
-                    _previous_free_block->m_pNext = _next_node;
-                }
-                else
-                {
-                    _pAllocator->m_pHead = _next_node;
-                }
-            }
-
-            uintptr_t _aligned_address = reinterpret_cast<uintptr_t>(_free_block) + _padding;
-            __free_list_header* _header = reinterpret_cast<__free_list_header*>((_aligned_address - sizeof(__free_list_header)));
-
-            _header->m_ullSize = _total_size;
-            _header->m_ucPadding = _padding;
-
-            _pAllocator->m_ullUsed += _total_size;
-
-            __free_list_node* _new_node = reinterpret_cast<__free_list_node*>(_aligned_address);
-
-            memcpy(_new_node, _pData, _ullSize);
-
-            TracyAllocN((void*)_aligned_address, _ullSize, "FreeList");
-
-            return reinterpret_cast<void*>(_aligned_address);
-        }
-
-        return 0;
+        return _memory;
     }
 
     void* impl_free_list_reallocate(free_list_allocator* _pAllocator, void* _pData, std::size_t _ullDataSize, std::size_t _ullSize, uint8_t _ucAlignment)
     {
-        __free_list_node* _free_block = static_cast<__free_list_node*>(_pAllocator->m_pHead);
-        __free_list_node* _previous_free_block = nullptr;
+        void* _newAddress = impl_free_list_allocate(_pAllocator, _ullSize, _ucAlignment);
 
-        while(_free_block != nullptr)
-        {
-            uint8_t _padding = calculate_padding(_free_block, _ucAlignment, sizeof(__free_list_header));
-            std::size_t _total_size = _ullSize + _padding;
+        memcpy(_newAddress, _pData, _ullDataSize);
 
-            if(_free_block->m_ullSize < _total_size)
-            {
-                _previous_free_block = _free_block;
-                _free_block = _free_block->m_pNext;
+        impl_free_list_free(_pAllocator, _pData);
 
-                continue;
-            }
-
-            if(_free_block->m_ullSize - _total_size <= sizeof(__free_list_header))
-            {
-                _total_size = _free_block->m_ullSize;
-
-                if(_previous_free_block != nullptr)
-                {
-                    _previous_free_block->m_pNext = _free_block->m_pNext;
-                }
-                else
-                {
-                    _pAllocator->m_pHead = _free_block->m_pNext;
-                }
-            }
-            else
-            {
-                __free_list_node* _next_node = reinterpret_cast<__free_list_node*>((reinterpret_cast<uint8_t*>(_free_block) + _total_size));
-
-                _next_node->m_ullSize = _free_block->m_ullSize - _total_size;
-                _next_node->m_pNext = _free_block->m_pNext;
-
-                if(_previous_free_block != nullptr)
-                {
-                    _previous_free_block->m_pNext = _next_node;
-                }
-                else
-                {
-                    _pAllocator->m_pHead = _next_node;
-                }
-            }
-
-            uintptr_t _aligned_address = reinterpret_cast<uintptr_t>(_free_block) + _padding;
-            __free_list_header* _header = reinterpret_cast<__free_list_header*>((_aligned_address - sizeof(__free_list_header)));
-
-            _header->m_ullSize = _total_size;
-            _header->m_ucPadding = _padding;
-
-            _pAllocator->m_ullUsed += _total_size;
-
-            __free_list_node* _new_node = reinterpret_cast<__free_list_node*>(_aligned_address);
-
-            memcpy(_new_node, _pData, _ullDataSize);
-
-            impl_free_list_free(_pAllocator, _pData);
-
-            TracyAllocN((void*)_aligned_address, _ullSize, "FreeList");
-
-            return reinterpret_cast<void*>(_aligned_address);
-        }
-
-        return 0;
+        return _newAddress;
     }
 
     void impl_free_list_free(free_list_allocator* _pAllocator, void* _pointer)
@@ -216,6 +106,8 @@ namespace Duckvil { namespace Memory {
         uintptr_t _block_end = _node + _block_size;
         __free_list_node* _previous_node = nullptr;
         __free_list_node* _iterator = static_cast<__free_list_node*>(_pAllocator->m_pHead);
+
+        _ASSERT(isAligned(_header));
 
         while(_iterator != nullptr)
         {

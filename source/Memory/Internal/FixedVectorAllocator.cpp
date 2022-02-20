@@ -1,6 +1,7 @@
 #include "Memory/Internal/FixedVectorAllocator.h"
 
 #include <cstring>
+#include <stdexcept>
 
 #include "tracy/Tracy.hpp"
 
@@ -10,31 +11,21 @@ namespace Duckvil { namespace Memory {
 
     void* impl_fixed_vector_allocate(fixed_vector_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
     {
-        void* _memory = nullptr;
-
-        if(_pAllocator->m_ullUsed >= _pAllocator->m_ullCapacity || _pAllocator->m_ullBlockSize < _ullSize)
-        {
-            return _memory;
-        }
-
-        uint8_t _padding = 0;
-        _memory = calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_vector_allocator) + _pAllocator->m_ullUsed, _ucAlignment, _padding);
+        void* _memory = impl_fixed_vector_allocate(_pAllocator, _ullSize, _ucAlignment);
 
         memcpy(_memory, _pData, _ullSize);
-
-        _pAllocator->m_ullUsed += _pAllocator->m_ullBlockSize + _padding;
-
-        TracyAllocN(_memory, _ullSize, "Vector");
 
         return _memory;
     }
 
-    void* impl_fixed_vector_allocate_size(fixed_vector_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment)
+    void* impl_fixed_vector_allocate(fixed_vector_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment)
     {
         void* _memory = nullptr;
 
-        if(_pAllocator->m_ullUsed >= _pAllocator->m_ullCapacity || _pAllocator->m_ullBlockSize < _ullSize)
+        if(impl_fixed_vector_full(_pAllocator) || _pAllocator->m_ullBlockSize != _ullSize)
         {
+            throw std::overflow_error("Vector is full!");
+
             return _memory;
         }
 
@@ -144,11 +135,22 @@ namespace Duckvil { namespace Memory {
     {
         TracyFreeN(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_vector_allocator) + (_uiIndex * _pAllocator->m_ullBlockSize), "Vector");
 
-        memcpy(
-            reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_vector_allocator) + (_uiIndex * _pAllocator->m_ullBlockSize),
-            reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_vector_allocator) + ((_uiIndex + 1) * _pAllocator->m_ullBlockSize),
-            _pAllocator->m_ullCapacity - ((_uiIndex + 1) * _pAllocator->m_ullBlockSize)
-        );
+        if(_uiIndex == 0 && _pAllocator->m_ullUsed == _pAllocator->m_ullBlockSize)
+        {
+            memset(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_vector_allocator), 0, _pAllocator->m_ullUsed);
+        }
+        else if((_uiIndex + 1) * _pAllocator->m_ullBlockSize >= _pAllocator->m_ullUsed)
+        {
+            memset(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_vector_allocator) + (_uiIndex * _pAllocator->m_ullBlockSize), 0, _pAllocator->m_ullBlockSize);
+        }
+        else
+        {
+            memcpy(
+                reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_vector_allocator) + (_uiIndex * _pAllocator->m_ullBlockSize),
+                reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_vector_allocator) + ((_uiIndex + 1) * _pAllocator->m_ullBlockSize),
+                _pAllocator->m_ullUsed - ((_uiIndex + 1) * _pAllocator->m_ullBlockSize)
+            );
+        }
 
         _pAllocator->m_ullUsed -= _pAllocator->m_ullBlockSize;
     }

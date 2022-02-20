@@ -1,34 +1,27 @@
 #include "Memory/Internal/FixedStackAllocator.h"
 
 #include <cstring>
+#include <stdexcept>
 
 namespace Duckvil { namespace Memory {
 
     void* impl_fixed_stack_allocate(fixed_stack_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
     {
-        void* _memory = nullptr;
-
-        if(_pAllocator->m_ullCapacity < _pAllocator->m_ullUsed + _ullSize || _pAllocator->m_ullBlockSize < _ullSize)
-        {
-            return _memory;
-        }
-
-        uint8_t _padding = 0;
-        _memory = calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_stack_allocator) + _pAllocator->m_ullUsed, _ucAlignment, _padding);
+        void* _memory = impl_fixed_stack_allocate(_pAllocator, _ullSize, _ucAlignment);
 
         memcpy(_memory, _pData, _ullSize);
-
-        _pAllocator->m_ullUsed += _pAllocator->m_ullBlockSize + _padding;
 
         return _memory;
     }
 
-    void* impl_fixed_stack_allocate_size(fixed_stack_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment)
+    void* impl_fixed_stack_allocate(fixed_stack_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment)
     {
         void* _memory = nullptr;
 
-        if(_pAllocator->m_ullCapacity < _pAllocator->m_ullUsed + _ullSize || _pAllocator->m_ullBlockSize < _ullSize)
+        if(impl_fixed_stack_allocator_full(_pAllocator) || _ullSize != _pAllocator->m_ullBlockSize)
         {
+            throw std::overflow_error("Stack is full!");
+
             return _memory;
         }
 
@@ -49,8 +42,10 @@ namespace Duckvil { namespace Memory {
 
     void impl_fixed_stack_allocator_pop(fixed_stack_allocator* _pAllocator)
     {
-        if(_pAllocator->m_ullUsed == 0)
+        if(impl_fixed_stack_allocator_empty(_pAllocator))
         {
+            throw std::underflow_error("Stack is empty!");
+
             return;
         }
 
@@ -74,6 +69,7 @@ namespace Duckvil { namespace Memory {
     void impl_fixed_stack_clear(fixed_stack_allocator* _pAllocator)
     {
         memset(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_stack_allocator), 0, _pAllocator->m_ullCapacity);
+
         _pAllocator->m_ullUsed = 0;
     }
 

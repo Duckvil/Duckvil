@@ -1,34 +1,27 @@
-#include "Memory/Internal/FixedStackAllocator.h"
+#include "Memory/Internal/FixedArrayAllocator.h"
 
 #include <cstring>
+#include <stdexcept>
 
 namespace Duckvil { namespace Memory {
 
     void* impl_fixed_array_allocate(fixed_array_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
     {
-        void* _memory = nullptr;
-
-        if(_pAllocator->m_ullUsed > _pAllocator->m_ullCapacity || _pAllocator->m_ullBlockSize < _ullSize)
-        {
-            return _memory;
-        }
-
-        uint8_t _padding = 0;
-        _memory = calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_array_allocator) + _pAllocator->m_ullUsed, _ucAlignment, _padding);
+        void* _memory = impl_fixed_array_allocate(_pAllocator, _ullSize, _ucAlignment);
 
         memcpy(_memory, _pData, _ullSize);
-
-        _pAllocator->m_ullUsed += _pAllocator->m_ullBlockSize + _padding;
 
         return _memory;
     }
 
-    void* impl_fixed_array_allocate_size(fixed_array_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment)
+    void* impl_fixed_array_allocate(fixed_array_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment)
     {
         void* _memory = nullptr;
 
-        if(_pAllocator->m_ullUsed > _pAllocator->m_ullCapacity || _pAllocator->m_ullBlockSize < _ullSize)
+        if(impl_fixed_array_full(_pAllocator) || _ullSize != _pAllocator->m_ullBlockSize)
         {
+            throw std::overflow_error("Array is full!");
+
             return _memory;
         }
 
@@ -52,6 +45,13 @@ namespace Duckvil { namespace Memory {
 
     void* impl_fixed_array_at(fixed_array_allocator* _pAllocator, std::size_t _ullIndex)
     {
+        if(_ullIndex * _pAllocator->m_ullBlockSize > _pAllocator->m_ullCapacity)
+        {
+            throw std::out_of_range("Index is out of range!");
+
+            return nullptr;
+        }
+
         return reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_array_allocator) + (_ullIndex * _pAllocator->m_ullBlockSize);
     }
 

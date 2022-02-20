@@ -1,6 +1,7 @@
 #include "Memory/Internal/FixedQueueAllocator.h"
 
 #include <cstring>
+#include <stdexcept>
 
 #include "Memory/FreeListAllocator.h"
 
@@ -8,19 +9,21 @@ namespace Duckvil { namespace Memory {
 
     void* impl_fixed_queue_allocate(fixed_queue_allocator* _pAllocator, const void* _pData, std::size_t _ullSize, uint8_t _ucAlignment)
     {
-        void* _memory = impl_fixed_queue_allocate_size(_pAllocator, _ullSize, _ucAlignment);
+        void* _memory = impl_fixed_queue_allocate(_pAllocator, _ullSize, _ucAlignment);
 
         memcpy(_memory, _pData, _ullSize);
 
         return _memory;
     }
 
-    void* impl_fixed_queue_allocate_size(fixed_queue_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment)
+    void* impl_fixed_queue_allocate(fixed_queue_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment)
     {
         void* _memory = nullptr;
 
-        if(_pAllocator->m_ullUsed >= _pAllocator->m_ullCapacity)
+        if(impl_fixed_queue_full(_pAllocator))
         {
+            throw std::overflow_error("Queue is full!");
+
             return _memory;
         }
         else if(_pAllocator->m_ullHead >= _pAllocator->m_ullCapacity)
@@ -46,9 +49,9 @@ namespace Duckvil { namespace Memory {
 
     void impl_fixed_queue_pop(fixed_queue_allocator* _pAllocator)
     {
-        if(_pAllocator->m_ullUsed == 0)
+        if(impl_fixed_queue_empty(_pAllocator))
         {
-            // Underflow
+            throw std::underflow_error("Queue is empty!");
 
             return;
         }
@@ -79,11 +82,13 @@ namespace Duckvil { namespace Memory {
     void impl_fixed_queue_clear(fixed_queue_allocator* _pAllocator)
     {
         memset(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(fixed_queue_allocator), 0, _pAllocator->m_ullCapacity);
+
         _pAllocator->m_ullHead = 0;
         _pAllocator->m_ullUsed = 0;
         _pAllocator->m_ullTail = 0;
     }
 
+    // Should be here?
     void impl_fixed_queue_resize(ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_queue_allocator** _pAllocator, std::size_t _ullNewSize)
     {
         if(_pParentAllocator->m_ullCapacity < _ullNewSize + _pParentAllocator->m_ullUsed)
