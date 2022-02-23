@@ -23,6 +23,11 @@ namespace Duckvil { namespace Editor {
 
         __time_data* m_pTime;
 
+        uint32_t m_uiFPS;
+        uint32_t m_uiOldFPS;
+
+        double m_dOneSecond;
+
     public:
         EngineInfoWidget();
         EngineInfoWidget(const Memory::FreeList& _heap);
