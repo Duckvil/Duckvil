@@ -9,6 +9,7 @@ list(APPEND INCLUDES
     "${CMAKE_SOURCE_DIR}/include"
     "${CMAKE_SOURCE_DIR}/__generated_reflection__"
     "${CMAKE_SOURCE_DIR}"
+    "${CMAKE_SOURCE_DIR}/external"
 )
 
 FOREACH(child ${children})
@@ -38,5 +39,8 @@ FOREACH(child ${children})
         ${GLOBAL_STATIC_LIBRARIES}
         ${LIBS}
     )
+    if(WIN32)
+        target_link_libraries(${PROJECT_ID} dbghelp)
+    endif()
     add_test(NAME ${PROJECT_ID} COMMAND ${PROJECT_ID})
 ENDFOREACH()

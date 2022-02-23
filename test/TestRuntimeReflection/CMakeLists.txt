@@ -18,7 +18,21 @@ target_include_directories(
     TestType
     PRIVATE
     ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/external
 )
+
+target_link_libraries(
+    TestType
+    ${GLOBAL_STATIC_LIBRARIES}
+    ${LIBS}
+)
+
+if(WIN32)
+target_link_libraries(
+    TestType
+    dbghelp
+)
+endif()
 
 set_target_properties(TestType PROPERTIES
     CXX_STANDARD 20
