@@ -1,36 +1,23 @@
 cmake_minimum_required(VERSION 3.16)
 
-FILE(GLOB_RECURSE SRC_FILES *.cpp)
-FILE(GLOB_RECURSE GENERATED_SRC_FILES ${CMAKE_SOURCE_DIR}/__generated_reflection__/Editor/*.cpp)
-
-list(APPEND SOURCE_FILES ${SRC_FILES})
-
-if(DUCKVIL_COMPILE_REFLECTION_SOURCE)
-    list(APPEND SOURCE_FILES ${GENERATED_SRC_FILES})
-endif()
-
-add_library(
-    Editor
-    SHARED
-    ${SOURCE_FILES}
-    "${CMAKE_SOURCE_DIR}/external/imgui/imgui.cpp"
-    "${CMAKE_SOURCE_DIR}/external/imgui/imgui_draw.cpp"
-    "${CMAKE_SOURCE_DIR}/external/imgui/imgui_tables.cpp"
-    "${CMAKE_SOURCE_DIR}/external/imgui/imgui_widgets.cpp"
-    "${CMAKE_SOURCE_DIR}/external/imgui/backends/imgui_impl_opengl3.cpp"
-    "${CMAKE_SOURCE_DIR}/external/imgui/backends/imgui_impl_sdl.cpp"
+SET(externalFiles
+    ${CMAKE_SOURCE_DIR}/external/imgui/imgui.cpp
+    ${CMAKE_SOURCE_DIR}/external/imgui/imgui_draw.cpp
+    ${CMAKE_SOURCE_DIR}/external/imgui/imgui_tables.cpp
+    ${CMAKE_SOURCE_DIR}/external/imgui/imgui_widgets.cpp
+    ${CMAKE_SOURCE_DIR}/external/imgui/backends/imgui_impl_opengl3.cpp
+    ${CMAKE_SOURCE_DIR}/external/imgui/backends/imgui_impl_sdl.cpp
 )
-target_include_directories(
-    Editor
-    PRIVATE
-    "${CMAKE_SOURCE_DIR}/external/imgui"
-    "${CMAKE_SOURCE_DIR}/external/imgui/backends"
-    "${CMAKE_SOURCE_DIR}/external/SDL2/include"
-    "${CMAKE_SOURCE_DIR}/external/glew/include"
-    "${CMAKE_SOURCE_DIR}/external/hex_editor"
+SET(includeFiles
+    ${CMAKE_SOURCE_DIR}/external/imgui
+    ${CMAKE_SOURCE_DIR}/external/imgui/backends
+    ${CMAKE_SOURCE_DIR}/external/SDL2/include
+    ${CMAKE_SOURCE_DIR}/external/glew/include
+    ${CMAKE_SOURCE_DIR}/external/hex_editor
 )
-target_link_libraries(
-    Editor
+SET(libraries
     glew
     SDL2
 )
+
+DUCKVIL_MODULE("Editor" "SHARED" "${externalFiles}" "${includeFiles}" "${libraries}")

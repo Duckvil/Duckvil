@@ -29,6 +29,7 @@ FOREACH(child ${children})
         RUNTIME_OUTPUT_DIRECTORY_RELEASE ${DUCKVIL_TEST_OUTPUT}
         DEBUG_POSTFIX ""
         PREFIX "run"
+        FOLDER tests
     )
     target_include_directories(
         ${PROJECT_ID} PRIVATE
@@ -44,3 +45,5 @@ FOREACH(child ${children})
     endif()
     add_test(NAME ${PROJECT_ID} COMMAND ${PROJECT_ID})
 ENDFOREACH()
+
+set_target_properties(TestType PROPERTIES FOLDER tests)

@@ -1,20 +1,13 @@
 cmake_minimum_required(VERSION 3.16)
 
-FILE(GLOB_RECURSE SRC_FILES *.cpp)
-FILE(GLOB_RECURSE GENERATED_SRC_FILES ${CMAKE_SOURCE_DIR}/__generated_reflection__/RuntimeReflection/*.cpp)
-
-list(APPEND SOURCE_FILES ${SRC_FILES})
-
-if(DUCKVIL_COMPILE_REFLECTION_SOURCE)
-    list(APPEND SOURCE_FILES ${GENERATED_SRC_FILES})
-endif()
-
-add_library(
-    RuntimeReflection
-    SHARED
-    ${SOURCE_FILES}
+SET(externalFiles
+    
 )
-target_include_directories(
-    RuntimeReflection
-    PRIVATE
+SET(includeFiles
+    
 )
+SET(libraries
+    
+)
+
+DUCKVIL_MODULE("RuntimeReflection" "SHARED" "${externalFiles}" "${includeFiles}" "${libraries}")

@@ -1,24 +1,13 @@
 cmake_minimum_required(VERSION 3.16)
 
-FILE(GLOB_RECURSE SRC_FILES *.cpp)
-FILE(GLOB_RECURSE GENERATED_SRC_FILES ${CMAKE_SOURCE_DIR}/__generated_reflection__/ProjectManager/*.cpp)
-
-list(APPEND SOURCE_FILES ${SRC_FILES})
-
-if(DUCKVIL_COMPILE_REFLECTION_SOURCE)
-    list(APPEND SOURCE_FILES ${GENERATED_SRC_FILES})
-endif()
-
-add_library(
-    ProjectManager
-    SHARED
-    ${SOURCE_FILES}
+SET(externalFiles
+    
 )
-target_include_directories(
-    ProjectManager
-    PRIVATE
+SET(includeFiles
+    
 )
-target_link_libraries(
-    ProjectManager
+SET(libraries
     SDL2
 )
+
+DUCKVIL_MODULE("ProjectManager" "SHARED" "${externalFiles}" "${includeFiles}" "${libraries}")

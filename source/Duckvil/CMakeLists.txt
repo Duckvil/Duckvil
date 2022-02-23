@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.16)
 
-FILE(GLOB_RECURSE SRC_FILES *.cpp)
-
-add_executable(
-    Duckvil
-    ${SRC_FILES}
+SET(externalFiles
+    
+)
+SET(includeFiles
+    
+)
+SET(libraries
+    
 )
 
-target_include_directories(
-    Duckvil
-    PRIVATE
-)
+DUCKVIL_MODULE("Duckvil" "exe" "${externalFiles}" "${includeFiles}" "${libraries}")

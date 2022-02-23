@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.16)
 
 project(Duckvil)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "_CMake")
+
 option(DUCKVIL_GENERATE_REFLECTION "Generate reflection" OFF)
 option(DUCKVIL_COMPILE_REFLECTION_SOURCE "Compile with generated .cpp reflection files" ON)
 option(DUCKVIL_DEBUG_MEMORY "Memory debugger" OFF)

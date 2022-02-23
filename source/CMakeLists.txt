@@ -2,6 +2,59 @@ cmake_minimum_required(VERSION 3.16)
 
 option(DUCKVIL_TRACY_PROFILER "Tracy profiler" OFF)
 
+macro(DUCKVIL_MODULE moduleName moduleType moduleExternalFiles moduleIncludeFiles moduleLinkLibraries)
+    FILE(GLOB_RECURSE SOURCE_FILES *.cpp)
+    FILE(GLOB_RECURSE REFLECTION_SOURCE_FILES ${CMAKE_SOURCE_DIR}/__generated_reflection__/${moduleName}/*.cpp)
+    FILE(GLOB_RECURSE REFLECTION_HEADER_FILES ${CMAKE_SOURCE_DIR}/__generated_reflection__/${moduleName}/*.h)
+    FILE(GLOB_RECURSE HEADER_FILES ${CMAKE_SOURCE_DIR}/include/${moduleName}/*.h)
+
+    SET(REFLECTION_SOURCE)
+    SET(REFLECTION_HEADER)
+
+    if(DUCKVIL_COMPILE_REFLECTION_SOURCE)
+        list(APPEND REFLECTION_SOURCE ${REFLECTION_SOURCE_FILES})
+        list(APPEND REFLECTION_HEADER ${REFLECTION_HEADER_FILES})
+    endif()
+
+    if(NOT ${moduleType} STREQUAL "exe")
+        add_library(
+            ${moduleName}
+            ${moduleType}
+            ${SOURCE_FILES}
+            ${HEADER_FILES}
+            ${REFLECTION_SOURCE}
+            ${REFLECTION_HEADER}
+            ${moduleExternalFiles}
+        )
+    else()
+        add_executable(
+            ${moduleName}
+            ${SOURCE_FILES}
+            ${HEADER_FILES}
+            ${REFLECTION_SOURCE}
+            ${REFLECTION_HEADER}
+            ${moduleExternalFiles}
+        )
+    endif()
+
+    target_include_directories(
+        ${moduleName}
+        PRIVATE
+        ${moduleIncludeFiles}
+    )
+
+    target_link_libraries(
+        ${moduleName}
+        ${moduleLinkLibraries}
+    )
+
+    source_group(TREE ${CMAKE_SOURCE_DIR}/include/${moduleName} PREFIX "Header Files" FILES ${HEADER_FILES})
+    source_group(TREE ${CMAKE_SOURCE_DIR}/__generated_reflection__/${moduleName} PREFIX "Reflection Source Files" FILES ${REFLECTION_SOURCE})
+    source_group(TREE ${CMAKE_SOURCE_DIR}/__generated_reflection__/${moduleName} PREFIX "Reflection Header Files" FILES ${REFLECTION_HEADER})
+    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${SOURCE_FILES})
+    source_group("External Files" FILES ${moduleExternalFiles})
+endmacro(DUCKVIL_MODULE)
+
 FILE(GLOB children */CMakeLists.txt)
 
 list(APPEND INCLUDES

@@ -1,19 +1,13 @@
 cmake_minimum_required(VERSION 3.16)
 
-FILE(GLOB_RECURSE SRC_FILES *.cpp)
-
-add_executable(
-    ReflectionGenerator
-    ${SRC_FILES}
+SET(externalFiles
+    
 )
-
-target_include_directories(
-    ReflectionGenerator
-    PRIVATE
-    "${CMAKE_SOURCE_DIR}/external/json/include"
+SET(includeFiles
+    ${CMAKE_SOURCE_DIR}/external/json/include
 )
-
-target_link_libraries(
-    ReflectionGenerator
+SET(libraries
     nlohmann_json
 )
+
+DUCKVIL_MODULE("ReflectionGenerator" "exe" "${externalFiles}" "${includeFiles}" "${libraries}")

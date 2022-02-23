@@ -1,14 +1,15 @@
 cmake_minimum_required(VERSION 3.16)
 
-FILE(GLOB_RECURSE SRC_FILES *.cpp)
+SET(externalFiles
+    
+)
+SET(includeFiles
+    
+)
+SET(libraries
 
-add_library(
-    UniTestFramework
-    STATIC
-    ${SRC_FILES}
 )
 
-target_include_directories(
-    UniTestFramework
-    PRIVATE
-)
+SET(DUCKVIL_COMPILE_REFLECTION_SOURCE FALSE)
+
+DUCKVIL_MODULE("UniTestFramework" "STATIC" "${externalFiles}" "${includeFiles}" "${libraries}")
