@@ -2,36 +2,37 @@
 
 DUCKVIL_TEST(UniTestFramework)
 {
-    using namespace Duckvil::UniTestFramework;
+    // using namespace Duckvil::UniTestFramework;
+    namespace UTF = Duckvil::UniTestFramework;
 
-    if(!Assert::AreEqual(10, 10))
+    if(!UTF::Assert::AreEqual(10, 10))
     {
         return false;
     }
 
-    if(Assert::AreEqual(10, 11))
+    if(UTF::Assert::AreEqual(10, 11))
     {
         return false;
     }
 
-    if(!Assert::NotEqual(10, 11))
+    if(!UTF::Assert::NotEqual(10, 11))
     {
         return false;
     }
 
-    if(Assert::NotEqual(10, 10))
+    if(UTF::Assert::NotEqual(10, 10))
     {
         return false;
     }
 
     int* _p = nullptr;
 
-    if(!Assert::IsNULL(_p))
+    if(!UTF::Assert::IsNULL(_p))
     {
         return false;
     }
 
-    if(Assert::IsNotNULL(_p))
+    if(UTF::Assert::IsNotNULL(_p))
     {
         return false;
     }
@@ -40,12 +41,12 @@ DUCKVIL_TEST(UniTestFramework)
 
     _p = &_v;
 
-    if(!Assert::IsNotNULL(_p))
+    if(!UTF::Assert::IsNotNULL(_p))
     {
         return false;
     }
 
-    if(Assert::IsNULL(_p))
+    if(UTF::Assert::IsNULL(_p))
     {
         return false;
     }
