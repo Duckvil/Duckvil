@@ -87,19 +87,23 @@ namespace Duckvil { namespace Memory {
         }
 
         template <typename Type, typename... Args>
-        Type* Allocate(const Args&... _vArgs)
+        Type* Allocate(Args&&... _vArgs)
         {
-            void* _pointer = m_pMemory->m_fnFreeListAllocate_(m_pContainer, sizeof(Type), alignof(Type));
+            // void* _pointer = free_list_allocate<Type>(m_pMemory, m_pContainer);
 
-            return new(_pointer) Type(_vArgs...); // (Type*)free_list_allocate(m_pContainer, sizeof(Type), alignof(Type));
+            // return new(_pointer) Type(_vArgs...); // (Type*)free_list_allocate(m_pContainer, sizeof(Type), alignof(Type));
+
+            return free_list_emplace_back<Type>(m_pMemory, m_pContainer, std::forward<Args>(_vArgs)...);
         }
 
         template <typename Type, typename... Args>
-        Type* Allocate(const Args&... _vArgs) const
+        Type* Allocate(Args&&... _vArgs) const
         {
-            void* _pointer = m_pMemory->m_fnFreeListAllocate_(m_pContainer, sizeof(Type), alignof(Type));
+            // void* _pointer = free_list_allocate<Type>(m_pMemory, m_pContainer);
 
-            return new(_pointer) Type(_vArgs...); // (Type*)free_list_allocate(m_pContainer, sizeof(Type), alignof(Type));
+            // return new(_pointer) Type(_vArgs...); // (Type*)free_list_allocate(m_pContainer, sizeof(Type), alignof(Type));
+
+            return free_list_emplace_back<Type>(m_pMemory, m_pContainer, std::forward<Args>(_vArgs)...);
         }
 
         void Allocate(FreeList& _container, std::size_t _ullSize)
@@ -146,7 +150,7 @@ namespace Duckvil { namespace Memory {
         template <typename Type>
         Type* AllocateArray(std::size_t _ullCount) const
         {
-            return static_cast<Type*>(m_pMemory->m_fnFreeListAllocate_(m_pContainer, sizeof(Type) * _ullCount, 8));
+            return static_cast<Type*>(free_list_allocate(m_pMemory, m_pContainer, sizeof(Type) * _ullCount, 8));
         }
 
         template <typename Type>
@@ -157,15 +161,13 @@ namespace Duckvil { namespace Memory {
 
         void Free(void* _pData)
         {
-            m_pMemory->m_fnFreeListFree_(m_pContainer, _pData);
+            free_list_free(m_pMemory, m_pContainer, _pData);
         }
 
         template <typename Type>
         void Free(Type* _pObject)
         {
-            _pObject->~Type();
-
-            m_pMemory->m_fnFreeListFree_(m_pContainer, _pObject);
+            free_list_free(m_pMemory, m_pContainer, _pObject);
         }
 
         ftable* GetMemoryInterface() const

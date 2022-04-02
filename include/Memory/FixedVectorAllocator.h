@@ -8,16 +8,52 @@
 
 namespace Duckvil { namespace Memory {
 
+//     template <typename Type>
+//     static inline typename std::enable_if<std::is_trivially_copy_constructible<Type>::value, Type*>::type fixed_vector_allocate(ftable* _pMemory, fixed_vector_allocator* _pAllocator, const Type& _data)
+//     {
+// #pragma message("Warning: Bitwise copy")
+//         return static_cast<Type*>(_pMemory->m_fnFixedVectorAllocate_(_pAllocator, &_data, sizeof(Type), alignof(Type)));
+//     }
+
+//     // template <typename Type, typename... Args>
+//     // static inline typename std::enable_if<std::is_copy_constructible<Type>::value, Type*>::type fixed_vector_allocate(ftable* _pMemory, fixed_vector_allocator* _pAllocator, Args&&... _data)
+//     // {
+//     //     return new(_pMemory->m_fnFixedVectorAllocateSize_(_pAllocator, sizeof(Type), alignof(Type))) Type(std::forward<Args>(_data)...);
+//     // }
+
+//     template <typename Type>
+//     static inline typename std::enable_if<!std::is_trivially_copy_constructible<Type>::value, Type*>::type fixed_vector_allocate(ftable* _pMemory, fixed_vector_allocator* _pAllocator, const Type& _data)
+//     {
+//         return new(_pMemory->m_fnFixedVectorAllocateSize_(_pAllocator, sizeof(Type), alignof(Type))) Type(_data);
+//     }
+
+    template <typename Type, typename... Args>
+    static inline Type* fixed_vector_emplace_back(ftable* _pMemory, fixed_vector_allocator* _pAllocator, Args&&... _vData)
+    {
+        return new(_pMemory->m_fnFixedVectorAllocateSize_(_pAllocator, sizeof(Type), alignof(Type))) Type(std::forward<Args>(_vData)...);
+    }
+
     template <typename Type>
     static inline Type* fixed_vector_allocate(ftable* _pMemory, fixed_vector_allocator* _pAllocator, const Type& _data)
     {
-        return static_cast<Type*>(_pMemory->m_fnFixedVectorAllocate_(_pAllocator, &_data, sizeof(Type), alignof(Type)));
+        if constexpr (std::is_trivially_copy_constructible<Type>::value)
+        {
+            return static_cast<Type*>(_pMemory->m_fnFixedVectorAllocate_(_pAllocator, &_data, sizeof(Type), alignof(Type)));
+        }
+        else if constexpr (std::is_copy_constructible<Type>::value)
+        {
+            return fixed_vector_emplace_back<Type>(_pMemory, _pAllocator, _data);
+        }
+        else
+        {
+            return nullptr;
+        }
     }
 
     template <typename Type>
     static inline Type* fixed_vector_allocate(ftable* _pMemory, fixed_vector_allocator* _pAllocator, Type&& _data)
     {
-        return new(_pMemory->m_fnFixedVectorAllocateSize_(_pAllocator, sizeof(Type), alignof(Type))) Type(std::forward<Type>(_data));
+        return fixed_vector_emplace_back<Type>(_pMemory, _pAllocator, std::move(_data));
     }
 
     static inline void* fixed_vector_begin(ftable* _pMemory, fixed_vector_allocator* _pAllocator)
@@ -84,6 +120,21 @@ namespace Duckvil { namespace Memory {
         _object->~Type();
 
         fixed_vector_erase(_pMemory, _pAllocator, _uiIndex);
+    }
+
+    static inline void fixed_vector_pop_back(ftable* _pMemory, fixed_vector_allocator* _pAllocator)
+    {
+        uint32_t _index = fixed_vector_size(_pMemory, _pAllocator) / _pAllocator->m_ullBlockSize;
+
+        fixed_vector_erase(_pMemory, _pAllocator, _index - 1);
+    }
+
+    template <typename Type>
+    static inline void fixed_vector_pop_back(ftable* _pMemory, fixed_vector_allocator* _pAllocator)
+    {
+        uint32_t _index = fixed_vector_size(_pMemory, _pAllocator) / _pAllocator->m_ullBlockSize;
+
+        fixed_vector_erase<Type>(_pMemory, _pAllocator, _index - 1);
     }
 
     static inline void fixed_vector_clear(ftable* _pMemory, fixed_vector_allocator* _pAllocator)

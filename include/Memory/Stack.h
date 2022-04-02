@@ -26,52 +26,41 @@ namespace Duckvil { namespace Memory {
         // ftable* m_pMemoryInterface;
         // allocator* m_pAllocator;
 
-        static void free_list_copy(ftable* _pMemoryInterface, const SContainer& _specifiedContainer, SContainer* _pThis)
+        static void free_list_copy(const SContainer& _specifiedContainer, SContainer* _pThis)
         {
-            free_list_allocator* _allocator = (free_list_allocator*)_specifiedContainer.m_pAllocator;
             const Stack& _stack = (const Stack&)_specifiedContainer;
 
-            _pThis->m_pContainer = (fixed_stack_allocator*)free_list_allocate(_pMemoryInterface, _allocator, sizeof(fixed_stack_allocator) + (sizeof(Type) * _stack.GetSize()), alignof(fixed_stack_allocator));
+            _pThis->m_pContainer = (fixed_stack_allocator*)free_list_allocate(_pThis->m_pMemoryInterface, static_cast<free_list_allocator*>(_stack.m_pAllocator), sizeof(fixed_stack_allocator) + (sizeof(Type) * _stack.GetSize()), alignof(fixed_stack_allocator));
 
             TracyMessageL("Copy stack");
 
-            memcpy(_pThis->m_pContainer, _specifiedContainer.m_pContainer, sizeof(fixed_stack_allocator) + (sizeof(Type) * _stack.GetSize()));
+            static_cast<fixed_stack_allocator*>(_pThis->m_pContainer)->m_ullBlockSize = static_cast<fixed_stack_allocator*>(_stack.m_pContainer)->m_ullBlockSize;
+            static_cast<fixed_stack_allocator*>(_pThis->m_pContainer)->m_ullCapacity = static_cast<fixed_stack_allocator*>(_stack.m_pContainer)->m_ullCapacity;
+            static_cast<fixed_stack_allocator*>(_pThis->m_pContainer)->m_ullUsed = 0;
 
-            _pThis->m_fnCopy = _specifiedContainer.m_fnCopy;
-            _pThis->m_fnDestruct = _specifiedContainer.m_fnDestruct;
-            _pThis->m_pAllocator = _specifiedContainer.m_pAllocator;
+            for(uint32_t _i = 0; _i < _stack.GetSize(); ++_i)
+            {
+                Type* _v = reinterpret_cast<Type*>(reinterpret_cast<uint8_t*>(_stack.m_pContainer) + sizeof(fixed_stack_allocator) + (_i * sizeof(Type)));
+
+                fixed_stack_allocate<Type>(_pThis->m_pMemoryInterface, _pThis->m_pContainer, *_v);
+            }
+
+            _pThis->m_fnCopy = _stack.m_fnCopy;
+            _pThis->m_fnDestruct = _stack.m_fnDestruct;
+            _pThis->m_pAllocator = _stack.m_pAllocator;
         }
 
-        static void free_list_destruct(ftable* _pMemoryInterface, allocator* _pAllocator, SContainer* _pThis)
+        static void free_list_destruct(allocator* _pAllocator, SContainer* _pThis)
         {
-            if(std::is_base_of<SContainer, Type>::value)
+            while(!fixed_stack_empty(_pThis->m_pMemoryInterface, _pThis->m_pContainer))
             {
-                while(!fixed_stack_empty(_pMemoryInterface, _pThis->m_pContainer))
-                {
-                    Type* _container = (Type*)fixed_stack_top(_pMemoryInterface, _pThis->m_pContainer);
-
-                    _container->m_fnDestruct(_pMemoryInterface, _pAllocator, _container);
-
-                    fixed_stack_pop(_pMemoryInterface, _pThis->m_pContainer);
-                }
-            }
-            else
-            {
-                while(!fixed_stack_empty(_pMemoryInterface, _pThis->m_pContainer))
-                {
-                    Type* _container = (Type*)fixed_stack_top(_pMemoryInterface, _pThis->m_pContainer);
-
-                    _container->~Type();
-
-                    fixed_stack_pop(_pMemoryInterface, _pThis->m_pContainer);
-                }
+                fixed_stack_pop<Type>(_pThis->m_pMemoryInterface, _pThis->m_pContainer);
             }
 
-            // _pMemoryInterface->m_fnFreeListFree_(_allocator, _pThis->m_pContainer);
-            free_list_free(_pMemoryInterface, (free_list_allocator*)_pAllocator, _pThis->m_pContainer);
+            free_list_free(_pThis->m_pMemoryInterface, static_cast<free_list_allocator*>(_pAllocator), _pThis->m_pContainer);
         }
 
-        static void linear_destruct(ftable* _pMemoryInterface, allocator* _pAllocator, SContainer* _pThis)
+        static void linear_destruct(allocator* _pAllocator, SContainer* _pThis)
         {
             // Can not be destructed in this way, we could only clear whole linear allocator
         }
@@ -102,7 +91,7 @@ namespace Duckvil { namespace Memory {
         Stack(const Stack& _stack) :
             SContainer(_stack.m_pMemoryInterface, _stack.m_pAllocator)
         {
-            _stack.m_fnCopy(this->m_pMemoryInterface, _stack, this);
+            _stack.m_fnCopy(_stack, this);
         }
 
         Stack(Stack&& _stack) noexcept :
@@ -128,7 +117,7 @@ namespace Duckvil { namespace Memory {
                 return;
             }
 
-            this->m_fnDestruct(this->m_pMemoryInterface, this->m_pAllocator, this);
+            this->m_fnDestruct(this->m_pAllocator, this);
 
             this->m_pAllocator = nullptr;
             this->m_pContainer = nullptr;
@@ -160,7 +149,7 @@ namespace Duckvil { namespace Memory {
         {
             this->m_pMemoryInterface = _stack.m_pMemoryInterface;
 
-            _stack.m_fnCopy(this->m_pMemoryInterface, _stack, this);
+            _stack.m_fnCopy(_stack, this);
 
             return *this;
         }

@@ -10,8 +10,8 @@ namespace Duckvil { namespace Memory {
         using container = ContainerType;
         using type = Type;
 
-        typedef void (*copy_callback)(ftable* _pMemoryInterface, const SpecifiedContainer& _vector, SpecifiedContainer* _pThis);
-        typedef void (*destruct_callback)(ftable* _pMemoryInterface, allocator*, SpecifiedContainer* _pThis);
+        typedef void (*copy_callback)(const SpecifiedContainer& _vector, SpecifiedContainer* _pThis);
+        typedef void (*destruct_callback)(allocator*, SpecifiedContainer* _pThis);
 
         SpecifiedContainer()
         {

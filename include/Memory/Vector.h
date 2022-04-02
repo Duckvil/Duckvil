@@ -29,56 +29,45 @@ namespace Duckvil { namespace Memory {
     private:
         erase_callback m_fnErase;
 
-        static void free_list_copy(ftable* _pMemoryInterface, const SpecifiedContainer<Type, fixed_vector_allocator>& _specifiedContainer, SpecifiedContainer<Type, fixed_vector_allocator>* _pThis)
+        static void free_list_copy(const SpecifiedContainer<Type, fixed_vector_allocator>& _specifiedContainer, SpecifiedContainer<Type, fixed_vector_allocator>* _pThis)
         {
-            free_list_allocator* _allocator = (free_list_allocator*)_specifiedContainer.m_pAllocator;
-            const Vector& _vec = (const Vector&)_specifiedContainer;
+            const Vector& _vec = static_cast<const Vector&>(_specifiedContainer);
 
-            // _pThis->m_pContainer = free_list_allocate_allocator<fixed_vector_allocator>(_pMemoryInterface, _allocator, sizeof(Type) * _vec.Size(), sizeof(Type), alignof(Type));
-
-            _pThis->m_pContainer = (fixed_vector_allocator*)free_list_allocate(_pMemoryInterface, _allocator, sizeof(fixed_vector_allocator) + (sizeof(Type) * _vec.Size()), alignof(fixed_vector_allocator));
+            _pThis->m_pContainer = static_cast<fixed_vector_allocator*>(free_list_allocate(_pThis->m_pMemoryInterface, static_cast<free_list_allocator*>(_vec.m_pAllocator), sizeof(fixed_vector_allocator) + (sizeof(Type) * _vec.Size()), alignof(fixed_vector_allocator)));
 
             TracyMessageL("Copy vector");
 
-            memcpy(_pThis->m_pContainer, _specifiedContainer.m_pContainer, sizeof(fixed_vector_allocator) + (sizeof(Type) * _vec.Size()));
+            static_cast<fixed_vector_allocator*>(_pThis->m_pContainer)->m_ullBlockSize = static_cast<fixed_vector_allocator*>(_vec.m_pContainer)->m_ullBlockSize;
+            static_cast<fixed_vector_allocator*>(_pThis->m_pContainer)->m_ullCapacity = static_cast<fixed_vector_allocator*>(_vec.m_pContainer)->m_ullCapacity;
+            static_cast<fixed_vector_allocator*>(_pThis->m_pContainer)->m_ullUsed = 0;
+
+            for(uint32_t _i = 0; _i < _vec.Size(); ++_i)
+            {
+                fixed_vector_allocate<Type>(_pThis->m_pMemoryInterface, _pThis->m_pContainer, _vec[_i]);
+            }
 
             // DUCKVIL_DEBUG_MEMORY(_pThis->m_pContainer, "Copied Vector");
 
-            _pThis->m_fnCopy = _specifiedContainer.m_fnCopy;
-            _pThis->m_fnDestruct = _specifiedContainer.m_fnDestruct;
-            ((Vector<Type>*)_pThis)->m_fnResize = _vec.m_fnResize;
-            _pThis->m_pAllocator = _specifiedContainer.m_pAllocator;
+            _pThis->m_fnCopy = _vec.m_fnCopy;
+            _pThis->m_fnDestruct = _vec.m_fnDestruct;
+            _pThis->m_pAllocator = _vec.m_pAllocator;
+            static_cast<Vector*>(_pThis)->m_fnErase = _vec.m_fnErase;
+            static_cast<Vector*>(_pThis)->m_fnResize = _vec.m_fnResize;
         }
 
-        static void free_list_destruct(ftable* _pMemoryInterface, allocator* _pAllocator, SpecifiedContainer<Type, fixed_vector_allocator>* _pThis)
+        static void free_list_destruct(allocator* _pAllocator, SpecifiedContainer<Type, fixed_vector_allocator>* _pThis)
         {
-            uint32_t _size = fixed_vector_size(_pMemoryInterface, _pThis->m_pContainer) / sizeof(Type);
-
-            if(std::is_base_of<SContainer, Type>::value)
+            while(!fixed_vector_empty(_pThis->m_pMemoryInterface, _pThis->m_pContainer))
             {
-                for(uint32_t i = _size; i > 0; --i)
-                {
-                    SContainer* _container = (SContainer*)fixed_vector_at(_pMemoryInterface, _pThis->m_pContainer, i - 1);
-
-                    _container->m_fnDestruct(_pMemoryInterface, _pAllocator, _container);
-                }
-            }
-            else
-            {
-                for(uint32_t i = _size; i > 0; --i)
-                {
-                    fixed_vector_erase<Type>(_pMemoryInterface, _pThis->m_pContainer, i - 1);
-                }
+                fixed_vector_pop_back<Type>(_pThis->m_pMemoryInterface, _pThis->m_pContainer);
             }
 
-            free_list_free(_pMemoryInterface, (free_list_allocator*)_pAllocator, _pThis->m_pContainer);
+            free_list_free(_pThis->m_pMemoryInterface, static_cast<free_list_allocator*>(_pAllocator), _pThis->m_pContainer);
         }
 
         static void free_list_resize(ftable* _pMemoryInterface, SContainer* _pThis, std::size_t _ullNewSize)
         {
-            free_list_allocator* _allocator = (free_list_allocator*)_pThis->m_pAllocator;
-
-            fixed_vector_resize(_pMemoryInterface, _allocator, &_pThis->m_pContainer, _ullNewSize);
+            fixed_vector_resize(_pMemoryInterface, static_cast<free_list_allocator*>(_pThis->m_pAllocator), &_pThis->m_pContainer, _ullNewSize);
         }
 
         static void free_list_erase(ftable* _pMemoryInterface, SContainer* _pThis, uint32_t _uiIndex)
@@ -87,7 +76,16 @@ namespace Duckvil { namespace Memory {
         }
 
     public:
-        Vector()
+        Vector() :
+            SContainer(
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr
+            ),
+            m_fnErase(nullptr)
         {
 
         }
@@ -106,7 +104,7 @@ namespace Duckvil { namespace Memory {
         Vector(const Vector& _vector) :
             SContainer(_vector.m_pMemoryInterface, _vector.m_pAllocator)
         {
-            _vector.m_fnCopy(SContainer::m_pMemoryInterface, _vector, this);
+            _vector.m_fnCopy(_vector, this);
         }
 
         Vector(Vector&& _vector) noexcept :
@@ -136,7 +134,7 @@ namespace Duckvil { namespace Memory {
                 return;
             }
 
-            SContainer::m_fnDestruct(SContainer::m_pMemoryInterface, SContainer::m_pAllocator, this);
+            SContainer::m_fnDestruct(SContainer::m_pAllocator, this);
 
             SContainer::m_pAllocator = nullptr;
             SContainer::m_pContainer = nullptr;
@@ -173,159 +171,29 @@ namespace Duckvil { namespace Memory {
         {
             SContainer::m_pMemoryInterface = _vector.m_pMemoryInterface;
 
-            _vector.m_fnCopy(SContainer::m_pMemoryInterface, _vector, this);
+            _vector.m_fnCopy(_vector, this);
 
             return *this;
         }
 
-        void* Allocate(const Type& _value)
+        Type* Allocate(const Type& _value)
         {
-            if constexpr(std::is_base_of<Container, Type>::value)
-            {
-                if constexpr(std::is_base_of<SpecifiedResizableContainer<typename Type::container, typename Type::type>, Type>::value)
-                {
-                    typedef SpecifiedResizableContainer<typename Type::container, typename Type::type> ContainerType;
-
-                    const ContainerType& _container =
-                        (const ContainerType&)_value;
-
-                    ContainerType _container2;
-
-                    _container2.m_fnCopy = _container.m_fnCopy;
-                    _container2.m_fnDestruct = _container.m_fnDestruct;
-                    _container2.m_fnResize = _container.m_fnResize;
-                    _container2.m_pAllocator = _container.m_pAllocator;
-                    _container2.m_pMemoryInterface = _container.m_pMemoryInterface;
-
-                    _container2.m_pContainer = (typename Type::type*)free_list_allocate(
-                        _container.m_pMemoryInterface,
-                        (free_list_allocator*)_container.m_pAllocator,
-                        sizeof(typename Type::type) + _container.m_pContainer->m_ullCapacity,
-                        alignof(typename Type::type)
-                    );
-
-                    memcpy(_container2.m_pContainer, _container.m_pContainer, sizeof(typename Type::type));
-                    memcpy(
-                        _container2.GetWorkingMemory(),
-                        _container.GetWorkingMemory(),
-                        _container.m_pContainer->m_ullCapacity
-                    );
-
-                    return fixed_vector_allocate(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _container2);
-                }
-                else
-                {
-                    const SpecifiedContainer<typename Type::container, typename Type::type>& _container =
-                        (const SpecifiedContainer<typename Type::container, typename Type::type>&)_value;
-
-                    SpecifiedContainer<typename Type::container, typename Type::type> _container2;
-
-                    _container2.m_fnCopy = _container.m_fnCopy;
-                    _container2.m_fnDestruct = _container.m_fnDestruct;
-                    _container2.m_pAllocator = _container.m_pAllocator;
-                    _container2.m_pMemoryInterface = _container.m_pMemoryInterface;
-
-                    _container2.m_pContainer = (typename Type::type*)free_list_allocate(
-                        _container.m_pMemoryInterface,
-                        (free_list_allocator*)_container.m_pAllocator,
-                        sizeof(typename Type::type) + _container.m_pContainer->m_ullCapacity,
-                        alignof(typename Type::type)
-                    );
-
-                    memcpy(_container2.m_pContainer, _container.m_pContainer, sizeof(typename Type::type));
-                    memcpy(
-                        _container2.GetWorkingMemory(),
-                        _container.GetWorkingMemory(),
-                        _container.m_pContainer->m_ullCapacity
-                    );
-
-                    return fixed_vector_allocate(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _container2);
-                }
-            }
-            else
-            {
-                return fixed_vector_allocate(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _value);
-            }
+            return fixed_vector_allocate<Type>(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _value);
         }
 
-        void* Allocate(Type&& _value)
+        Type* Allocate(Type&& _value)
         {
-            if constexpr(std::is_base_of<Container, Type>::value)
-            {
-                if constexpr(std::is_base_of<SpecifiedResizableContainer<typename Type::container, typename Type::type>, Type>::value)
-                {
-                    typedef SpecifiedResizableContainer<typename Type::container, typename Type::type> ContainerType;
-
-                    const ContainerType& _container =
-                        (const ContainerType&)_value;
-
-                    ContainerType _container2;
-
-                    _container2.m_fnCopy = _container.m_fnCopy;
-                    _container2.m_fnDestruct = _container.m_fnDestruct;
-                    _container2.m_fnResize = _container.m_fnResize;
-                    _container2.m_pAllocator = _container.m_pAllocator;
-                    _container2.m_pMemoryInterface = _container.m_pMemoryInterface;
-
-                    _container2.m_pContainer = (typename Type::type*)free_list_allocate(
-                        _container.m_pMemoryInterface,
-                        (free_list_allocator*)_container.m_pAllocator,
-                        sizeof(typename Type::type) + _container.m_pContainer->m_ullCapacity,
-                        alignof(typename Type::type)
-                    );
-
-                    memcpy(_container2.m_pContainer, _container.m_pContainer, sizeof(typename Type::type));
-                    memcpy(
-                        _container2.GetWorkingMemory(),
-                        _container.GetWorkingMemory(),
-                        _container.m_pContainer->m_ullCapacity
-                    );
-
-                    return fixed_vector_allocate(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _container2);
-                }
-                else
-                {
-                    const SpecifiedContainer<typename Type::container, typename Type::type>& _container =
-                        (const SpecifiedContainer<typename Type::container, typename Type::type>&)_value;
-
-                    SpecifiedContainer<typename Type::container, typename Type::type> _container2;
-
-                    _container2.m_fnCopy = _container.m_fnCopy;
-                    _container2.m_fnDestruct = _container.m_fnDestruct;
-                    _container2.m_pAllocator = _container.m_pAllocator;
-                    _container2.m_pMemoryInterface = _container.m_pMemoryInterface;
-
-                    _container2.m_pContainer = (typename Type::type*)free_list_allocate(
-                        _container.m_pMemoryInterface,
-                        (free_list_allocator*)_container.m_pAllocator,
-                        sizeof(typename Type::type) + _container.m_pContainer->m_ullCapacity,
-                        alignof(typename Type::type)
-                    );
-
-                    memcpy(_container2.m_pContainer, _container.m_pContainer, sizeof(typename Type::type));
-                    memcpy(
-                        _container2.GetWorkingMemory(),
-                        _container.GetWorkingMemory(),
-                        _container.m_pContainer->m_ullCapacity
-                    );
-
-                    return fixed_vector_allocate(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _container2);
-                }
-            }
-            else
-            {
-                return fixed_vector_allocate(SContainer::m_pMemoryInterface, SContainer::m_pContainer, std::forward<Type>(_value));
-            }
+            return fixed_vector_allocate<Type>(SContainer::m_pMemoryInterface, SContainer::m_pContainer, std::move(_value));
         }
 
         const Type& At(std::size_t _ullIndex) const
         {
-            return *(Type*)fixed_vector_at(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _ullIndex);
+            return *static_cast<Type*>(fixed_vector_at(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _ullIndex));
         }
 
         Type& At(std::size_t _ullIndex)
         {
-            return *(Type*)fixed_vector_at(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _ullIndex);
+            return *static_cast<Type*>(fixed_vector_at(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _ullIndex));
         }
 
         std::size_t Size() const
@@ -403,23 +271,23 @@ namespace Duckvil { namespace Memory {
         Iterator begin() const
         {
             // return Iterator((Type*)SContainer::m_pContainer->m_pMemory);
-            return Iterator((Type*)fixed_vector_begin(SContainer::m_pMemoryInterface, SContainer::m_pContainer));
+            return Iterator(static_cast<Type*>(fixed_vector_begin(SContainer::m_pMemoryInterface, SContainer::m_pContainer)));
         }
 
         Iterator end() const
         {
             // return Iterator((Type*)(SContainer::m_pContainer->m_pMemory + SContainer::m_pContainer->m_ullUsed));
-            return Iterator((Type*)fixed_vector_end(SContainer::m_pMemoryInterface, SContainer::m_pContainer));
+            return Iterator(static_cast<Type*>(fixed_vector_end(SContainer::m_pMemoryInterface, SContainer::m_pContainer)));
         }
 
         ConstIterator cbegin() const
         {
-            return ConstIterator((Type*)SContainer::GetWorkingMemory());
+            return ConstIterator(static_cast<Type*>(SContainer::GetWorkingMemory()));
         }
 
         ConstIterator cend() const
         {
-            return ConstIterator((Type*)((uint8_t*)SContainer::GetWorkingMemory() + SContainer::m_pContainer->m_ullUsed));
+            return ConstIterator(static_cast<Type*>((static_cast<uint8_t*>(SContainer::GetWorkingMemory()) + SContainer::m_pContainer->m_ullUsed)));
         }
     };
 

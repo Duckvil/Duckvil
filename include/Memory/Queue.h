@@ -26,48 +26,41 @@ namespace Duckvil { namespace Memory {
         // fixed_queue_allocator* m_pAllocator;
         // ftable* m_pMemoryInterface;
 
-        static void free_list_copy(ftable* _pMemoryInterface, const SpecifiedContainer<Type, fixed_queue_allocator>& _specifiedContainer, SpecifiedContainer<Type, fixed_queue_allocator>* _pThis)
+        static void free_list_copy(const SpecifiedContainer<Type, fixed_queue_allocator>& _specifiedContainer, SpecifiedContainer<Type, fixed_queue_allocator>* _pThis)
         {
-            free_list_allocator* _allocator = (free_list_allocator*)_specifiedContainer.m_pAllocator;
             const Queue& _queue = (const Queue&)_specifiedContainer;
 
-            _pThis->m_pContainer = (fixed_queue_allocator*)free_list_allocate(_pMemoryInterface, _allocator, sizeof(fixed_queue_allocator) + (sizeof(Type) * _queue.GetSize()), alignof(fixed_queue_allocator));
+            _pThis->m_pContainer = (fixed_queue_allocator*)free_list_allocate(_pThis->m_pMemoryInterface, static_cast<free_list_allocator*>(_queue.m_pAllocator), sizeof(fixed_queue_allocator) + (sizeof(Type) * _queue.GetSize()), alignof(fixed_queue_allocator));
 
             TracyMessageL("Copy queue");
 
-            memcpy(_pThis->m_pContainer, _specifiedContainer.m_pContainer, sizeof(fixed_queue_allocator) + (sizeof(Type) * _queue.GetSize()));
+            static_cast<fixed_queue_allocator*>(_pThis->m_pContainer)->m_ullBlockSize = static_cast<fixed_queue_allocator*>(_queue.m_pContainer)->m_ullBlockSize;
+            static_cast<fixed_queue_allocator*>(_pThis->m_pContainer)->m_ullCapacity = static_cast<fixed_queue_allocator*>(_queue.m_pContainer)->m_ullCapacity;
+            static_cast<fixed_queue_allocator*>(_pThis->m_pContainer)->m_ullHead = 0;
+            static_cast<fixed_queue_allocator*>(_pThis->m_pContainer)->m_ullTail = 0;
+            static_cast<fixed_queue_allocator*>(_pThis->m_pContainer)->m_ullUsed = 0;
 
-            _pThis->m_fnCopy = _specifiedContainer.m_fnCopy;
-            _pThis->m_fnDestruct = _specifiedContainer.m_fnDestruct;
-            _pThis->m_pAllocator = _specifiedContainer.m_pAllocator;
+            for(uint32_t _i = 0; _i < _queue.GetSize(); ++_i)
+            {
+                Type* _v = reinterpret_cast<Type*>(reinterpret_cast<uint8_t*>(_queue.m_pContainer) + sizeof(fixed_queue_allocator) + (_i * sizeof(Type)));
+
+                fixed_queue_allocate<Type>(_pThis->m_pMemoryInterface, _pThis->m_pContainer, *_v);
+            }
+
+            _pThis->m_fnCopy = _queue.m_fnCopy;
+            _pThis->m_fnDestruct = _queue.m_fnDestruct;
+            _pThis->m_pAllocator = _queue.m_pAllocator;
             ((Queue<Type>*)_pThis)->m_fnResize = _queue.m_fnResize;
         }
 
-        static void free_list_destruct(ftable* _pMemoryInterface, allocator* _pAllocator, SpecifiedContainer<Type, fixed_queue_allocator>* _pThis)
+        static void free_list_destruct(allocator* _pAllocator, SpecifiedContainer<Type, fixed_queue_allocator>* _pThis)
         {
-            if(std::is_base_of<SContainer, Type>::value)
+            while(!fixed_queue_empty(_pThis->m_pMemoryInterface, _pThis->m_pContainer))
             {
-                while(!fixed_queue_empty(_pMemoryInterface, _pThis->m_pContainer))
-                {
-                    SContainer* _container = (SContainer*)fixed_queue_begin(_pMemoryInterface, _pThis->m_pContainer);
-
-                    _container->m_fnDestruct(_pMemoryInterface, _pAllocator, _container);
-                }
-            }
-            else
-            {
-                while(!fixed_queue_empty(_pMemoryInterface, _pThis->m_pContainer))
-                {
-                    Type* _data = (Type*)fixed_queue_begin(_pMemoryInterface, _pThis->m_pContainer);
-
-                    _data->~Type();
-
-                    fixed_queue_pop(_pMemoryInterface, _pThis->m_pContainer);
-                }
+                fixed_queue_pop<Type>(_pThis->m_pMemoryInterface, _pThis->m_pContainer);
             }
 
-            // _pMemoryInterface->m_fnFreeListFree_(_allocator, _pThis->m_pContainer);
-            free_list_free(_pMemoryInterface, (free_list_allocator*)_pAllocator, _pThis->m_pContainer);
+            free_list_free(_pThis->m_pMemoryInterface, (free_list_allocator*)_pAllocator, _pThis->m_pContainer);
         }
 
         static void free_list_resize(ftable* _pMemoryInterface, SContainer* _pThis, std::size_t _ullNewSize)
@@ -103,7 +96,7 @@ namespace Duckvil { namespace Memory {
         Queue(const Queue& _queue) :
             SContainer(_queue.m_pMemoryInterface, _queue.m_pAllocator)
         {
-            _queue.m_fnCopy(this->m_pMemoryInterface, _queue, this);
+            _queue.m_fnCopy(_queue, this);
         }
 
         Queue(Queue&& _queue) noexcept :
@@ -131,7 +124,7 @@ namespace Duckvil { namespace Memory {
                 return;
             }
 
-            this->m_fnDestruct(this->m_pMemoryInterface, this->m_pAllocator, this);
+            this->m_fnDestruct(this->m_pAllocator, this);
 
             this->m_pAllocator = nullptr;
             this->m_pContainer = nullptr;
@@ -165,7 +158,7 @@ namespace Duckvil { namespace Memory {
         {
             this->m_pMemoryInterface = _queue.m_pMemoryInterface;
 
-            _queue.m_fnCopy(this->m_pMemoryInterface, _queue, this);
+            _queue.m_fnCopy(_queue, this);
 
             return *this;
         }
@@ -196,7 +189,7 @@ namespace Duckvil { namespace Memory {
 
         inline Type* Allocate(Type&& _data)
         {
-            return fixed_queue_allocate(this->m_pMemoryInterface, this->m_pContainer, std::forward<Type>(_data));
+            return fixed_queue_allocate(this->m_pMemoryInterface, this->m_pContainer, std::move(_data));
         }
 
         inline const Type& Begin() const
