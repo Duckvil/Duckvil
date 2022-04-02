@@ -21,7 +21,10 @@ namespace Duckvil { namespace Event {
 
     struct IChannel
     {
+        virtual ~IChannel()
+        {
 
+        }
     };
 
     struct event_lookup
