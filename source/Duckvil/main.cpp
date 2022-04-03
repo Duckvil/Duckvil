@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 
     Duckvil::Memory::linear_allocator* _mainMemoryAllocator;
 
-    _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 512 * 1024);
+    _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024);
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
     duckvil_memory_debug_info _memoryDebug = {};
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
     });
 #endif
 
-    Duckvil::Memory::free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(_mainMemoryAllocator, 500 * 1024);
+    Duckvil::Memory::free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(_mainMemoryAllocator, 1000 * 1024);
 
     Duckvil::__ftable* _engine = duckvil_init();
     Duckvil::__data _engineData = { .m_ecs = flecs::world() };
