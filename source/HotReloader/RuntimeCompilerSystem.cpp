@@ -757,7 +757,7 @@ namespace Duckvil { namespace HotReloader {
         m_aLoadedModules = _aLoaded;
     }
 
-    void RuntimeCompilerSystem::SetReflectedTypes(Memory::Vector<duckvil_recorderd_types>* _aReflected)
+    void RuntimeCompilerSystem::SetReflectedTypes(Memory::ThreadsafeVector<duckvil_recorderd_types>* _aReflected)
     {
         m_aReflectedTypes = _aReflected;
     }

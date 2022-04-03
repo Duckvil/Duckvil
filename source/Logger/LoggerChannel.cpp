@@ -17,8 +17,10 @@ namespace Duckvil {
         _data->m_llInitTime = std::chrono::high_resolution_clock::now().time_since_epoch().count();
         _data->m_flags = {};
 
-        _heap.Allocate(_data->m_logs, 1);
+        // _heap.Allocate(_data->m_logs, 1);
         memset(_data->m_buffer, 0, 128);
+
+        _data->m_logs = Memory::ThreadsafeQueue<__logger_channel_log_info>(_heap);
 
         // _data->m_aCustomLogs = Memory::Vector<custom_log_t>(_pMemoryInterface, _pAllocator, 1);
 
@@ -33,14 +35,15 @@ namespace Duckvil {
         return _data;
     }
 
-    void log(__logger_channel_ftable* _pFTable, __logger_channel_data* _pData, __logger_channel_log_info& _logInfo)
+    void log(__logger_channel_ftable* _pFTable, __logger_channel_data* _pData, const __logger_channel_log_info& _logInfo2)
     {
+        __logger_channel_log_info _logInfo = _logInfo2;
         _logInfo.m_time = std::time(nullptr);
         _logInfo.m_pOwner = _pData;
 
         if(_pData->m_flags & __logger_channel_flags::__logger_flags_console_output)
         {
-            if(_logInfo._flags & __logger_channel_log_flags::__flags_immediate_log)
+            if(_logInfo.m_flags & __logger_channel_log_flags::__flags_immediate_log)
             {
                 _pFTable->format(_pData, _logInfo, _pData->m_buffer);
 
@@ -58,7 +61,7 @@ namespace Duckvil {
         }
         else if(_pData->m_flags & __logger_channel_flags::__logger_flags_file_output)
         {
-            if(_logInfo._flags & __logger_channel_log_flags::__flags_immediate_log)
+            if(_logInfo.m_flags & __logger_channel_log_flags::__flags_immediate_log)
             {
                 // TODO: Print some error?
             }

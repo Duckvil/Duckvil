@@ -9,6 +9,7 @@
 #include "RuntimeReflection/TrackedObjectCreatedEvent.h"
 
 #include "Memory/FreeList.h"
+#include "Memory/ThreadsafeVector.h"
 
 #include "HotReloader/FileWatcher.h"
 #include "HotReloader/HotObject.h"
@@ -105,7 +106,7 @@ namespace Duckvil { namespace HotReloader {
         Thread::pool_data* m_pThreadData;
 
         Memory::Vector<PlugNPlay::__module_information>* m_aLoadedModules;
-        Memory::Vector<duckvil_recorderd_types>* m_aReflectedTypes;
+        Memory::ThreadsafeVector<duckvil_recorderd_types>* m_aReflectedTypes;
 
         RuntimeReflection::__function<bool(RuntimeCompiler::Compiler::*)()>*                        m_fnInternalCompilerSetup;
         RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::string&)>*      m_fnInternalCompilerAddFlag;
@@ -173,7 +174,7 @@ namespace Duckvil { namespace HotReloader {
 
         void SetObjectsHeap(const Memory::FreeList& _heap);
         void SetModules(Memory::Vector<PlugNPlay::__module_information>* _aLoaded);
-        void SetReflectedTypes(Memory::Vector<duckvil_recorderd_types>* _aReflected);
+        void SetReflectedTypes(Memory::ThreadsafeVector<duckvil_recorderd_types>* _aReflected);
 
         void OnEvent(const RuntimeReflection::TrackedObjectCreatedEvent& _event);
     };

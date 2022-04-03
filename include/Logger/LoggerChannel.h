@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Memory/Memory.h"
-#include "Memory/Queue.h"
+#include "Memory/ThreadsafeQueue.h"
 #include "Memory/Vector.h"
 
 #include "Utils/Utils.h"
@@ -71,7 +71,7 @@ namespace Duckvil {
         {
             m_uiLine = 0;
             m_verbosity = __logger_channel_verbosity::__verbosity_info;
-            _flags = __logger_channel_log_flags::__flags_immediate_log;
+            m_flags = __logger_channel_log_flags::__flags_immediate_log;
             m_pOwner = nullptr;
         }
 
@@ -98,14 +98,15 @@ namespace Duckvil {
                 assert(false && "Message is too long!");
             }
 
-            _flags = {};
+            m_flags = {};
+            m_pOwner = nullptr;
         }
 
         uint32_t m_uiLine;
         char m_sFile[DUCKVIL_LOGGER_PATH_LENGTH_MAX] = { 0 };
         char m_sMessage[DUCKVIL_LOGGER_MESSAGE_LENGTH_MAX] = { 0 };
         __logger_channel_verbosity m_verbosity;
-        __logger_channel_log_flags _flags;
+        __logger_channel_log_flags m_flags;
         std::time_t m_time;
         __logger_channel_data* m_pOwner;
     };
@@ -114,7 +115,7 @@ namespace Duckvil {
     {
         char m_buffer[DUCKVIL_LOGGER_BUFFER_MAX];
         char m_sPathFile[DUCKVIL_LOGGER_OUT_FILE_PATH_LENGTH_MAX];
-        Memory::Queue<__logger_channel_log_info> m_logs;
+        Memory::ThreadsafeQueue<__logger_channel_log_info> m_logs;
         Event::Pool<Event::mode::immediate>* m_pLogEventPool;
         int64_t m_llInitTime;
         time_t m_lastTime;
@@ -125,7 +126,7 @@ namespace Duckvil {
     struct __logger_channel_ftable
     {
         __logger_channel_data* (*init)(const Memory::FreeList& _heap);
-        void (*log)(__logger_channel_ftable* _pFTable, __logger_channel_data* _pData, __logger_channel_log_info& _logInfo);
+        void (*log)(__logger_channel_ftable* _pFTable, __logger_channel_data* _pData, const __logger_channel_log_info& _logInfo);
         void (*format)(__logger_channel_data* _pData, const __logger_channel_log_info& _logInfo, char* _ppBuffer);
         void (*dispatch_logs)(__logger_channel_ftable* _pFTable, __logger_channel_data* _pData);
     };
@@ -138,7 +139,7 @@ namespace Duckvil {
 
         _log.m_verbosity = _verbosity;
         _log.m_uiLine = _uiLine;
-        _log._flags = {};
+        _log.m_flags = {};
 
         if(_ullFileLength < DUCKVIL_LOGGER_PATH_LENGTH_MAX)
         {
