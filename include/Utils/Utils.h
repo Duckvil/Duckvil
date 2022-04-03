@@ -5,6 +5,7 @@
 #include <iterator>
 #include <type_traits>
 #include <cstring>
+#include <filesystem>
 
 #include "Memory/Memory.h"
 
@@ -28,7 +29,8 @@ namespace Duckvil { namespace Utils {
             m_pAllocator = nullptr;
         }
 
-        string(const string& _string, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0)
+        string(const string& _string, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
+            m_ullLength(_string.m_ullLength)
         {
             allocate(this, _pMemory, _pAllocator, _string.m_ullLength);
             memcpy(m_sText, _string.m_sText, _string.m_ullLength);
@@ -46,9 +48,14 @@ namespace Duckvil { namespace Utils {
             _string.m_ullLength = 0;
         }
 
-        string(const char* _sText, std::size_t _ullLength, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0)
+        string(std::size_t _ullLength, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0)
         {
             allocate(this, _pMemory, _pAllocator, _ullLength);
+        }
+
+        string(const char* _sText, std::size_t _ullLength, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
+            string(_ullLength, _pMemory, _pAllocator)
+        {
             memcpy(m_sText, _sText, _ullLength);
         }
 
@@ -61,6 +68,12 @@ namespace Duckvil { namespace Utils {
 
         string(const std::string& _sText, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
             string(_sText.c_str(), _sText.size() + 1, _pMemory, _pAllocator)
+        {
+
+        }
+
+        string(const std::filesystem::path& _sText, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
+            string(_sText.string(), _pMemory, _pAllocator)
         {
 
         }
@@ -136,6 +149,31 @@ namespace Duckvil { namespace Utils {
         char operator[](int _iAt) const
         {
             return m_sText[_iAt];
+        }
+
+        operator const char*() const
+        {
+            return m_sText;
+        }
+
+        // TODO: Check problem with weird string size, and add checks for non zero string size
+        static string parentPath(const string& _s)
+        {
+            uint32_t _i = _s.m_ullLength - 1;
+
+            for(; _i > 0; --_i)
+            {
+                if(_s[_i] == '\\' || _s[_i] == '/')
+                {
+                    break;
+                }
+            }
+
+            string _res(_i + 1);
+
+            memcpy(_res.m_sText, _s.m_sText, _i);
+
+            return _res;
         }
     };
 
