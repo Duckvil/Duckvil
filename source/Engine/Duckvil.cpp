@@ -148,7 +148,10 @@ namespace Duckvil {
         _pData->m_pRenderer->m_fnInit(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pWindow, &_pData->m_pRendererData);
 
         const auto& _modelLoaderHandle = RuntimeReflection::get_type("ModelLoader", { "Duckvil", "Graphics" });
-        void* _modelLoader = RuntimeReflection::create<const char*>(_pData->m_heap, _modelLoaderHandle, false, "F:/Projects/C++/Duckvil/resource/object/test.obj");
+        
+        std::filesystem::path _cwd = DUCKVIL_CWD;
+
+        void* _modelLoader = RuntimeReflection::create<const char*>(_pData->m_heap, _modelLoaderHandle, false, (_cwd / "resource/object/test.obj").string().c_str());
 
         const auto& _modelLoaderGetRawHandle = RuntimeReflection::get_function_handle(_modelLoaderHandle, "GetRaw");
         const Graphics::ModelLoader::Raw& _raw = RuntimeReflection::invoke_member_result<const Graphics::ModelLoader::Raw&>(_modelLoaderHandle, _modelLoaderGetRawHandle, _modelLoader);
@@ -183,7 +186,7 @@ namespace Duckvil {
 
         for(uint32_t i = 0; i < 100; ++i)
         {
-            for(uint32_t j = 0; j < 100; ++j)
+            for(uint32_t j = 0; j < 1; ++j)
             {
                 _pData->m_ecs.entity().set([_pData, &_desc, i, j, _raw](Graphics::MeshComponent& _mesh, Graphics::TransformComponent& _transform)
                 {
@@ -245,7 +248,7 @@ namespace Duckvil {
 
         _initProjectManager(&_pData->m_projectManager);
 
-        if(!_pData->m_projectManager.m_fnInitProjectManager(&_pData->m_projectManagerData, _pData->m_heap))
+        if(!_pData->m_projectManager.m_fnInitProjectManager(&_pData->m_projectManagerData, _pData->m_heap, &_pData->m_eventPool))
         {
             return false;
         }
@@ -271,18 +274,20 @@ namespace Duckvil {
 
         FrameMarkStart("Initializing memory");
 
-        _pData->m_heap.Allocate(_pData->m_objectsHeap, 1024);
-        _pData->m_heap.Allocate(_pData->m_eventsHeap, 1024 * 4);
+        _pData->m_heap.Allocate(_pData->m_objectsHeap, 1024 * 4);
+        _pData->m_heap.Allocate(_pData->m_eventsHeap, 1024 * 8);
         _pData->m_heap.Allocate(_pData->m_aEngineSystems, 1);
-        _pData->m_heap.Allocate(_pData->m_aRecordedTypes, 1);
+        // _pData->m_heap.Allocate(_pData->m_aRecordedTypes, 1);
         _pData->m_heap.Allocate(_pData->m_aLoadedModules, 1);
+
+        _pData->m_aRecordedTypes = Memory::ThreadsafeVector<duckvil_recorderd_types>(_pData->m_heap);
 
         FrameMarkEnd("Initializing memory");
 
         DUCKVIL_DEBUG_MEMORY(_pData->m_objectsHeap.GetAllocator(), "m_objectsHeap");
         DUCKVIL_DEBUG_MEMORY(_pData->m_eventsHeap.GetAllocator(), "m_eventsHeap");
         DUCKVIL_DEBUG_MEMORY(_pData->m_aEngineSystems.GetAllocator(), "m_aEngineSystems");
-        DUCKVIL_DEBUG_MEMORY(_pData->m_aRecordedTypes.GetAllocator(), "m_aRecordedTypes");
+        // DUCKVIL_DEBUG_MEMORY(_pData->m_aRecordedTypes.GetAllocator(), "m_aRecordedTypes");
 
         _pData->m_time.init(&_pData->m_timeData);
 
@@ -503,7 +508,7 @@ namespace Duckvil {
 
                 _type.Invoke<const Memory::FreeList&>("SetObjectsHeap", _pData->m_pRuntimeCompiler, _pData->m_objectsHeap);
                 _type.Invoke<Memory::Vector<PlugNPlay::__module_information>*>("SetModules", _pData->m_pRuntimeCompiler, &_pData->m_aLoadedModules);
-                _type.Invoke<Memory::Vector<duckvil_recorderd_types>*>("SetReflectedTypes", _pData->m_pRuntimeCompiler, &_pData->m_aRecordedTypes);
+                _type.Invoke<Memory::ThreadsafeVector<duckvil_recorderd_types>*>("SetReflectedTypes", _pData->m_pRuntimeCompiler, &_pData->m_aRecordedTypes);
             }
 
             for(uint32_t i = 0; i < _types.Size(); ++i)
