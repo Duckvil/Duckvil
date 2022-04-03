@@ -49,7 +49,7 @@ namespace Duckvil { namespace PlugNPlay {
     { \
         _pMemoryInterface->m_fnFreeListFree_(_pAllocator, _pointer); \
     } \
-    extern "C" DUCKVIL_EXPORT Duckvil::PlugNPlay::__plugin_details g_pluginDetails = \
+    DUCKVIL_EXPORT Duckvil::PlugNPlay::__plugin_details g_pluginDetails = \
     { \
         #name, \
         Duckvil::PlugNPlay::__instantiation::MANY, \
@@ -64,7 +64,7 @@ namespace Duckvil { namespace PlugNPlay {
         static name _instance; \
         return &_instance; \
     } \
-    extern "C" DUCKVIL_EXPORT Duckvil::PlugNPlay::__plugin_details g_pluginDetails = \
+    DUCKVIL_EXPORT Duckvil::PlugNPlay::__plugin_details g_pluginDetails = \
     { \
         #name, \
         Duckvil::PlugNPlay::__instantiation::SINGLE, \
