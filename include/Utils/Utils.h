@@ -59,6 +59,24 @@ namespace Duckvil { namespace Utils {
             memcpy(m_sText, _sText, _ullLength);
         }
 
+        string(char* _sText, std::size_t _ullLength, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
+            string(static_cast<const char*>(_sText), _ullLength, _pMemory, _pAllocator)
+        {
+
+        }
+
+        string(char* _sText, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
+            string(static_cast<const char*>(_sText), strlen(_sText) + 1, _pMemory, _pAllocator)
+        {
+
+        }
+
+        string(const char* _sText, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
+            string(_sText, strlen(_sText) + 1, _pMemory, _pAllocator)
+        {
+
+        }
+
         template <std::size_t Length>
         string(const char (&_sText)[Length], Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
             string(_sText, Length, _pMemory, _pAllocator)
