@@ -28,9 +28,20 @@ DUCKVIL_TEST(FixedStackAllocation)
         _stack.Allocate(2);
         _stack.Allocate(3);
         _stack.Allocate(4);
-        _stack.Allocate(5);
+
+        bool _overflow = false;
+
+        try
+        {
+            _stack.Allocate(5);
+        }
+        catch(const std::exception& _e)
+        {
+            _overflow = true;
+        }
 
         DUCKVIL_TEST_EQUAL(_stack.GetSize(), (size_t)4, "Wrong size");
+        DUCKVIL_TEST_EXP(_overflow, "Overflow not detected");
         DUCKVIL_TEST_EXP(_stack.Full(), "Overflow not detected");
         DUCKVIL_TEST_EQUAL(_stack.Top(), 4, "Overflow not detected");
 

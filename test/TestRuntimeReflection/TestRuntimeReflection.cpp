@@ -8,6 +8,8 @@
 
 #include "TestType/TestType.h"
 
+#include "Memory/FreeList.h"
+
 Duckvil::PlugNPlay::__module __duckvil_global::m_module;
 Duckvil::PlugNPlay::__module_information __duckvil_global::m_memoryModule = Duckvil::PlugNPlay::__module_information("Memory");
 Duckvil::Memory::ftable* __duckvil_global::m_pMemoryInterface;
@@ -34,6 +36,8 @@ DUCKVIL_TEST(RuntimeReflection)
     _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024);
     Duckvil::Memory::free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(_mainMemoryAllocator, 512 * 1024);
 
+    Duckvil::Memory::FreeList _heap(_memoryInterface, _free_list);
+
     Duckvil::PlugNPlay::__module_information _runtimeReflectionModule("RuntimeReflection");
 
     _module.load(&_runtimeReflectionModule);
@@ -59,6 +63,8 @@ DUCKVIL_TEST(RuntimeReflection)
         Duckvil::RuntimeReflection::__data* _rr_data = _rr_ftable->m_fnInit(_memoryInterface, _free_list, _rr_ftable);
 
         DUCKVIL_TEST_IS_NOT_NULL(_rr_data, "Could not init runtime reflection data");
+
+        _rr_data->m_pEvents = static_cast<Duckvil::Event::Pool<Duckvil::Event::mode::immediate>*>(_heap.Allocate<Duckvil::Event::Pool<Duckvil::Event::mode::immediate>>(_heap));
 
         {
             Duckvil::PlugNPlay::__module_information _test_type_module("TestType", DUCKVIL_TEST_OUTPUT);

@@ -33,7 +33,7 @@ record_function<Duckvil::Test::TestType, void>(DUCKVIL_RUNTIME_REFLECTION_RECORD
 record_function<Duckvil::Test::TestType, void, int>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Test::TestType::test7, "test7");
 record_function<void>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Test::TestType::test8, "test8");
 record_function<void, int>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Test::TestType::test8, "test8");
-Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = new Duckvil::RuntimeReflection::__duckvil_resource_type_t[_recordedTypes.size()];
+Duckvil::RuntimeReflection::__duckvil_resource_type_t* _types = (Duckvil::RuntimeReflection::__duckvil_resource_type_t*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _recordedTypes.size() * sizeof(Duckvil::RuntimeReflection::__duckvil_resource_type_t), 8);
 for(size_t i = 0; i < _recordedTypes.size(); i++) { _types[i] = _recordedTypes[i]; }
 return duckvil_recorderd_types { _types, _recordedTypes.size(), "test/TestRuntimeReflection/TestType/TestType.h", 0 };
 }

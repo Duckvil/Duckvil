@@ -21,6 +21,8 @@ DUCKVIL_TEST(FixedQueueAllocation)
             _queue.Allocate(3);
             _queue.Allocate(4);
 
+            auto _q = _queue;
+
             DUCKVIL_TEST_EXP(_queue.Full(), "Queue is not full");
             DUCKVIL_TEST_EQUAL(_queue.GetSize(), (size_t)4, "Wrong size");
 
@@ -107,6 +109,153 @@ DUCKVIL_TEST(FixedQueueAllocation)
 
         }
     }
+
+    DUCKVIL_TEST_SUCCESS_PASS;
+}
+
+DUCKVIL_TEST(FixedQueueMove)
+{
+    {
+        struct test_struct
+        {
+            int* m_pValue;
+            bool m_bMoveCalled;
+
+            test_struct(int _iValue) :
+                m_bMoveCalled(false)
+            {
+                m_pValue = new int(_iValue);
+            }
+
+            test_struct(test_struct&& _other)
+            {
+                m_pValue = std::move(_other.m_pValue);
+                m_bMoveCalled = true;
+
+                _other.m_pValue = nullptr;
+                _other.m_bMoveCalled = true;
+            }
+
+            ~test_struct()
+            {
+                if(m_pValue == nullptr)
+                {
+                    return;
+                }
+
+                delete m_pValue;
+
+                m_pValue = nullptr;
+            }
+        };
+
+        Duckvil::Memory::Queue<test_struct> _queue(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::free_list_allocator*)__duckvil_global::m_pHeap, 4);
+
+        {
+            _queue.Allocate(test_struct(10));
+
+            const auto& _v = _queue.Begin();
+
+            DUCKVIL_TEST_EQUAL(_v.m_bMoveCalled, true, "Move contructor not called");
+
+            _queue.Pop();
+        }
+
+        {
+            test_struct _ts(20);
+
+            _queue.Allocate(std::move(_ts));
+
+            DUCKVIL_TEST_EQUAL(_ts.m_bMoveCalled, true, "Move contructor not called");
+            DUCKVIL_TEST_EQUAL(_ts.m_pValue, (int*)nullptr, "Pointer is not null");
+
+            const auto& _v = _queue.Begin();
+
+            DUCKVIL_TEST_EQUAL(_v.m_bMoveCalled, true, "Move contructor not called");
+        }
+    }
+}
+
+DUCKVIL_TEST(FixedQueueCopy)
+{
+    {
+        Duckvil::Memory::Queue<int> _queue(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::free_list_allocator*)__duckvil_global::m_pHeap, 4);
+
+        _queue.Allocate(1);
+        _queue.Allocate(2);
+        _queue.Allocate(3);
+
+        auto _q = _queue;
+
+        DUCKVIL_TEST_EQUAL(_q.Begin(), _queue.Begin(), "Values are not equal");
+
+        _queue.Pop();
+
+        DUCKVIL_TEST_EQUAL(_queue.Begin(), 2, "Wrong value");
+        DUCKVIL_TEST_EQUAL(_q.Begin(), 1, "Wrong value");
+
+        _q.Pop();
+
+        DUCKVIL_TEST_EQUAL(_q.Begin(), 2, "Wrong value");
+
+        _queue.Allocate(4);
+        _q.Allocate(4);
+
+        DUCKVIL_TEST_EQUAL(_q.Begin(), 2, "Wrong value");
+        DUCKVIL_TEST_EQUAL(_queue.Begin(), 2, "Wrong value");
+    }
+
+    {
+        struct test_struct
+        {
+            int* m_pValue;
+            bool m_bCopyConstructorCalled;
+
+            test_struct(int _iValue) :
+                m_bCopyConstructorCalled(false)
+            {
+                m_pValue = new int(_iValue);
+            }
+
+            test_struct(const test_struct& _other)
+            {
+                m_pValue = new int(*_other.m_pValue);
+                m_bCopyConstructorCalled = true;
+            }
+
+            ~test_struct()
+            {
+                if(m_pValue == nullptr)
+                {
+                    return;
+                }
+
+                delete m_pValue;
+
+                m_pValue = nullptr;
+            }
+        };
+
+        Duckvil::Memory::Queue<test_struct> _queue(__duckvil_global::m_pMemoryInterface, (Duckvil::Memory::free_list_allocator*)__duckvil_global::m_pHeap, 4);
+
+        test_struct _ts(10);
+
+        _queue.Allocate(_ts);
+
+        const auto& _v = _queue.Begin();
+
+        DUCKVIL_TEST_EQUAL(_v.m_bCopyConstructorCalled, true, "Copy constructor not called");
+        DUCKVIL_TEST_NOT_EQUAL(_v.m_pValue, _ts.m_pValue, "Pointers are not different");
+    }
+
+    // DUCKVIL_TEST_EQUAL(_q.m_pContainer->m_ullTail, _queue.m_pContainer->m_ullTail, "Tail is different");
+    // DUCKVIL_TEST_EQUAL(_q.m_pContainer->m_ullHead, _queue.m_pContainer->m_ullHead, "Head is different");
+
+    // _q.Allocate(4);
+    // _queue.Allocate(4);
+
+    // DUCKVIL_TEST_EQUAL(_q.m_pContainer->m_ullTail, _queue.m_pContainer->m_ullTail, "Tail is different");
+    // DUCKVIL_TEST_EQUAL(_q.m_pContainer->m_ullHead, _queue.m_pContainer->m_ullHead, "Head is different");
 
     DUCKVIL_TEST_SUCCESS_PASS;
 }
