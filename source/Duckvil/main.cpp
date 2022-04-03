@@ -104,6 +104,7 @@ int main(int argc, char* argv[])
     _engine->start(&_engineData, _engine);
 
     _memoryInterface->m_fnFreeListClear_(_free_list);
+    _memoryInterface->m_fnLinearClear(_mainMemoryAllocator);
 
     return 0;
 }
