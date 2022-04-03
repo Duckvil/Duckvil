@@ -93,6 +93,34 @@ void generate(std::ofstream& _file, void* _pUserData)
     _file << "#define DUCKVIL_CURRENT_FILE_ID " << _fileID << "\n";
 }
 
+void generate_plugin_info(std::ofstream& _file, const uint32_t& _uiIndex, const std::filesystem::path& _path)
+{
+    _file << "#include \"RuntimeReflection/Recorder.h\"\n";
+    _file << "#include \"Logger/Logger.h\"\n";
+    _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(" << _uiIndex << ")\n\n";
+    _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_runtime_reflection_context(const duckvil_frontend_reflection_context& _runtimeReflectionContext)\n";
+    _file << "{\n";
+    _file << "Duckvil::RuntimeReflection::make_current(_runtimeReflectionContext);\n";
+    _file << "}\n\n";
+    _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_logger_context(const Duckvil::logger_context& _loggerContext)\n";
+    _file << "{\n";
+    _file << "Duckvil::logger_make_current(_loggerContext);\n";
+    _file << "}\n\n";
+    _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_heap_context(const Duckvil::Memory::free_list_context& _heapContext)";
+    _file << "{\n";
+    _file << "Duckvil::Memory::heap_make_current(_heapContext);\n";
+    _file << "}\n\n";
+
+    // std::string _moduleName = _path.string();
+
+    // std::transform(_moduleName.begin(), _moduleName.end(), _moduleName.begin(), [](uint8_t _c)
+    // {
+    //     return std::tolower(_c);
+    // });
+
+    // _file << "DUCKVIL_EXPORT const char* DUCKVIL_MODULE_NAME = \"duckvil_" << _moduleName << "_module\";\n";
+}
+
 nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil::Parser::__lexer_ftable* _pLexerFTable, Duckvil::RuntimeReflection::__generator_ftable* _pGeneratorFTable, const std::filesystem::path& _cwd, const std::filesystem::path& _path, std::filesystem::path& _lastPath, uint32_t& _index, const std::function<void(nlohmann::json&)> _fnProcessJson, bool _bOneFile = false)
 {
     if(_path.extension() != ".h")
@@ -185,21 +213,7 @@ nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil
     {
         std::ofstream _file(_cwd / "__generated_reflection__" / _lastPath / "plugin_info.cpp");
 
-        _file << "#include \"RuntimeReflection/Recorder.h\"\n";
-        _file << "#include \"Logger/Logger.h\"\n";
-        _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(" << _index << ")\n\n";
-        _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_runtime_reflection_context(const duckvil_frontend_reflection_context& _runtimeReflectionContext)\n";
-        _file << "{\n";
-        _file << "Duckvil::RuntimeReflection::make_current(_runtimeReflectionContext);\n";
-        _file << "}\n\n";
-        _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_logger_context(const Duckvil::logger_context& _loggerContext)\n";
-        _file << "{\n";
-        _file << "Duckvil::logger_make_current(_loggerContext);\n";
-        _file << "}\n\n";
-        _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_heap_context(const Duckvil::Memory::free_list_context& _heapContext)";
-        _file << "{\n";
-        _file << "Duckvil::Memory::heap_make_current(_heapContext);\n";
-        _file << "}\n";
+        generate_plugin_info(_file, _index, _lastPath);
 
         _file.close();
 
@@ -482,21 +496,7 @@ int main(int argc, char* argv[])
 
         std::ofstream _file(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / _lastPath / "plugin_info.cpp");
 
-        _file << "#include \"RuntimeReflection/Recorder.h\"\n";
-        _file << "#include \"Logger/Logger.h\"\n";
-        _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(" << _index << ")";
-        _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_runtime_reflection_context(const duckvil_frontend_reflection_context& _runtimeReflectionContext)\n";
-        _file << "{\n";
-        _file << "Duckvil::RuntimeReflection::make_current(_runtimeReflectionContext);\n";
-        _file << "}\n\n";
-        _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_logger_context(const Duckvil::logger_context& _loggerContext)\n";
-        _file << "{\n";
-        _file << "Duckvil::logger_make_current(_loggerContext);\n";
-        _file << "}\n\n";
-        _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_heap_context(const Duckvil::Memory::free_list_context& _heapContext)";
-        _file << "{\n";
-        _file << "Duckvil::Memory::heap_make_current(_heapContext);\n";
-        _file << "}\n";
+        generate_plugin_info(_file, _index, _lastPath);
 
         _file.close();
 
