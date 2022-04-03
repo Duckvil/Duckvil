@@ -60,7 +60,7 @@ namespace Duckvil { namespace LOL {
         ~Test();
 
         bool Init();
-        void Update();
+        void Update(double _dDelta);
 
         void InitEditor(void* _pImguiContext);
         void OnDraw();
