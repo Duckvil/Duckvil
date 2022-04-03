@@ -1,8 +1,13 @@
 #include "Memory/Internal/FreeListAllocator.h"
 
 #include <cstring>
+#include <assert.h>
 
 #include "tracy/Tracy.hpp"
+
+#if defined DUCKVIL_PLATFORM_LINUX
+#define _ASSERT(x) assert(x)
+#endif
 
 namespace Duckvil { namespace Memory {
 
