@@ -36,6 +36,11 @@ namespace Duckvil { namespace PlugNPlay {
             m_pModule = nullptr;
         }
 
+        ~__module_information()
+        {
+
+        }
+
         Utils::string m_sName;
         void* m_pModule;
         Utils::string m_sPath;
