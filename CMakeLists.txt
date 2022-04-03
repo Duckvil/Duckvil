@@ -11,6 +11,16 @@ option(DUCKVIL_DEBUG_MEMORY "Memory debugger" OFF)
 option(DUCKVIL_CICD "CI/CD" OFF)
 option(DUCKVIL_HOT_RELOADING "Hot reloading" ON)
 
+find_program(DUCKVIL_MSBUILD_PATH "MSBuild.exe")
+
+add_definitions(-DDUCKVIL_MSBUILD_PATH="${DUCKVIL_MSBUILD_PATH}")
+
+if(NOT DUCKVIL_COMPILE_REFLECTION_SOURCE)
+    add_definitions(-DDUCKVIL_GENERATED_BODY="")
+else()
+    add_definitions(-DDUCKVIL_COMPILE_REFLECTION_SOURCE)
+endif()
+
 find_program(CLANG_TIDY_COMMAND NAMES clang-tidy)
 
 if(NOT CLANG_TIDY_COMMAND)
@@ -38,9 +48,17 @@ else()
     endif()
 endif()
 
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /arch:AVX2")
+elseif(UNIX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1")
+endif()
+
 add_definitions(-DDUCKVIL_OUTPUT="${CMAKE_SOURCE_DIR}/bin")
 add_definitions(-DDUCKVIL_SWAP_OUTPUT="${CMAKE_SOURCE_DIR}/bin/Swap")
 add_definitions(-DDUCKVIL_CWD="${CMAKE_SOURCE_DIR}")
+add_definitions(-DGLM_FORCE_DEFAULT_ALIGNED_GENTYPES)
+add_definitions(-DGLM_FORCE_AVX2)
 
 if(DUCKVIL_DEBUG_MEMORY)
     add_definitions(-DDUCKVIL_MEMORY_DEBUGGER)
@@ -58,6 +76,6 @@ add_subdirectory(test)
 
 if(DUCKVIL_GENERATE_REFLECTION)
     message(STATUS "Generating reflection started!")
-    execute_process(COMMAND "${CMAKE_SOURCE_DIR}/bin/ReflectionGenerator.exe")
+    execute_process(COMMAND ${CMAKE_SOURCE_DIR}/bin/ReflectionGenerator.exe -CWD ${CMAKE_SOURCE_DIR})
     message(STATUS "Generating reflection done!")
 endif()
