@@ -356,6 +356,8 @@ namespace Duckvil { namespace Event {
 
                 if(_channel.m_ullMessageTypeID == typeid(Message).hash_code())
                 {
+                    m_heap.Free(_channel.m_pChannel);
+
                     m_aChannels.Erase(i);
                 }
             }
