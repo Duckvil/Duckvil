@@ -9,6 +9,11 @@ namespace Duckvil { namespace PlugNPlay {
 
     struct __module_information
     {
+        __module_information()
+        {
+            m_pModule = nullptr;
+        }
+
         __module_information(const Utils::string& _sName) :
             m_sName(_sName)
         {
