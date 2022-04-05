@@ -6,9 +6,9 @@
 
 // If hot reloading is enabled, we want to use tracked object otherwise use straight object
 #ifdef DUCKVIL_HOT_RELOADING
-#define DUCKVIL_TRACK_KEEPER_GET_OBJECT(object) (static_cast<HotReloader::ITrackKeeper*>(object))->GetObject()
-#define DUCKVIL_TRACK_KEEPER_OBJECT(object) HotReloader::ITrackKeeper*
-#define DUCKVIL_TRACK_KEEPER_CAST(type, object) static_cast<HotReloader::ITrackKeeper*>(object)
+#define DUCKVIL_TRACK_KEEPER_GET_OBJECT(object) (static_cast<Duckvil::HotReloader::ITrackKeeper*>(object))->GetObject()
+#define DUCKVIL_TRACK_KEEPER_OBJECT(object) Duckvil::HotReloader::ITrackKeeper*
+#define DUCKVIL_TRACK_KEEPER_CAST(type, object) static_cast<Duckvil::HotReloader::ITrackKeeper*>(object)
 #else
 #define DUCKVIL_TRACK_KEEPER_GET_OBJECT(object) object
 #define DUCKVIL_TRACK_KEEPER_OBJECT(object) object*
