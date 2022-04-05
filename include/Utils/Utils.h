@@ -169,6 +169,8 @@ namespace Duckvil { namespace Utils {
             return m_sText[_iAt];
         }
 
+        inline string operator/(const string& _str) const;
+
         operator const char*() const
         {
             return m_sText;
@@ -207,6 +209,11 @@ namespace Duckvil { namespace Utils {
         memcpy((uint8_t*)_res.m_sText + _sText.m_ullLength - 1, _sText2.m_sText, _sText2.m_ullLength - 1);
 
         return _res;
+    }
+
+    string string::operator/(const string& _str) const
+    {
+        return *this + "/" + _str;
     }
 
     bool operator==(const string& _lhs, const string& _rhs);
