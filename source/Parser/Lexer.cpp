@@ -23,6 +23,11 @@ namespace Duckvil { namespace Parser {
 
         _hFile.close();
 
+        if(_pData->m_aLines.empty())
+        {
+            throw blank_file();
+        }
+
         _pData->m_sCurrentLine = _pData->m_aLines[_pData->m_uiCurrentLine];
     }
 

@@ -174,6 +174,11 @@ nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil
         _pluginDirectory = _pluginDirectory.parent_path();
     }
 
+    if(!std::filesystem::is_directory(_cwd / "include" / _pluginDirectory))
+    {
+        _pluginDirectory = "";
+    }
+
     if(_lastPath == "")
     {
         _lastPath = _pluginDirectory;
@@ -204,10 +209,8 @@ nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil
     {
         _fnProcessJson(_jFile);
 
-        _index = _jFile["index"].get<uint32_t>() + 1;
+        _index = _jFile["index"].get<uint32_t>();
     }
-
-    _jFile["index"] = _index;
 
     if(_bOneFile || _lastPath != _pluginDirectory)
     {
@@ -223,6 +226,8 @@ nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil
         }
         _lastPath = _pluginDirectory;
     }
+
+    _jFile["index"] = _index;
 
     if(_relativePath.string().size() < DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX)
     {
@@ -439,33 +444,56 @@ int main(int argc, char* argv[])
 
         nlohmann::json _last;
         nlohmann::json _exists;
-        nlohmann::json::iterator _lastIt;
+        nlohmann::json::iterator _lastIt = _j["files"].end();
 
-        const nlohmann::json& _jFile = process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _file, _lastPath, _index, [&](nlohmann::json& _json)
+        try
         {
-            for(nlohmann::json::iterator _it = _j["files"].begin(); _it != _j["files"].end(); ++_it)
+            const nlohmann::json& _jFile = process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _file, _lastPath, _index, [&](nlohmann::json& _json)
             {
-                if((*_it)["name"].get<std::string>() == _json["name"].get<std::string>())
+                for(nlohmann::json::iterator _it = _j["files"].begin(); _it != _j["files"].end(); ++_it)
                 {
-                    if(_last.empty() || _last["index"].get<uint32_t>() < (*_it)["index"])
+                    if((*_it)["name"].get<std::string>() == _json["name"].get<std::string>())
                     {
-                        _last = *_it;
-                        _lastIt = _it;
+                        if(_last.empty() || _last["index"].get<uint32_t>() < (*_it)["index"])
+                        {
+                            _last = *_it;
+                            _lastIt = _it;
 
-                        _json["index"] = _last["index"].get<uint32_t>();
-                    }
+                            if(_last["source"].get<std::string>() == _relativePath.string())
+                            {
+                                _json["index"] = _last["index"].get<uint32_t>();
 
-                    if(_last["source"].get<std::string>() == _relativePath.string())
-                    {
-                        _exists = *_it;
+                                _exists = *_it;
+                            }
+                            else
+                            {
+                                _json["index"] = _last["index"].get<uint32_t>() + 1;
+                            }
+                        }
                     }
                 }
-            }
-        }, true);
 
-        if(_exists.empty())
+                if(_last.empty())
+                {
+                    _json["index"] = (*(_lastIt - 1))["index"].get<uint32_t>() + 1;
+                }
+            }, true);
+
+            if(_exists.empty())
+            {
+                if(_lastIt != _j["files"].end())
+                {
+                    _j["files"].insert(_lastIt + 1, _jFile);
+                }
+                else
+                {
+                    _j["files"].insert(_lastIt, _jFile);
+                }
+            }
+        }
+        catch(const Duckvil::Parser::blank_file& _e)
         {
-            _j["files"].insert(_lastIt + 1, _jFile);
+            return 0;
         }
 
         std::ofstream _oJson(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / "reflection_db.json");
@@ -482,7 +510,14 @@ int main(int argc, char* argv[])
 
         for(auto& _path : std::filesystem::recursive_directory_iterator(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "include"))
         {
-            _j["files"].push_back(process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _path, _lastPath, _index, 0));
+            try
+            {
+                _j["files"].push_back(process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _path, _lastPath, _index, nullptr));
+            }
+            catch(const Duckvil::Parser::blank_file& _e)
+            {
+
+            }
         }
 
         if(!_lastPath.has_extension())

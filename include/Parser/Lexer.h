@@ -11,6 +11,14 @@
 
 namespace Duckvil { namespace Parser {
 
+    struct blank_file : public std::exception
+    {
+        const char* what() const throw()
+        {
+            return "Blank file";
+        }
+    };
+
     enum __lexer_token_type
     {
         __lexer_token_type_symbol, // (, ), &, !, etc.
