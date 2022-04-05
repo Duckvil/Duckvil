@@ -280,7 +280,7 @@ namespace Duckvil { namespace HotReloader {
         ImGui::End();
     }
 
-    void RuntimeCompilerSystem::Compile(const std::filesystem::path& _CWD, const std::string& _sFile, void (*_fnSwap)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), const RuntimeCompiler::Options& _compileOptions)
+    void RuntimeCompilerSystem::Compile(const std::filesystem::path& _CWD, const std::string& _sFile, void (*_fnSwap)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), bool _bGenerateReflection, const RuntimeCompiler::Options& _compileOptions)
     {
         FrameMarkStart("Compile");
 
@@ -366,6 +366,7 @@ namespace Duckvil { namespace HotReloader {
             FrameMarkEnd("Reflection");
         }*/
 
+        if(_bGenerateReflection)
         {
             FrameMarkStart("Reflection");
             DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Generating reflection");
@@ -633,7 +634,7 @@ namespace Duckvil { namespace HotReloader {
         FrameMarkEnd("Compile");
     }
 
-    void RuntimeCompilerSystem::Compile(const std::string& _sFile, const RuntimeCompiler::Options& _compileOptions)
+    void RuntimeCompilerSystem::Compile(const std::string& _sFile, bool _bGenerateReflection, const RuntimeCompiler::Options& _compileOptions)
     {
         Compile(std::filesystem::path(DUCKVIL_OUTPUT).parent_path(), _sFile, Utils::lambda([&](Memory::Vector<RuntimeCompilerSystem::hot_object>* _pHotObjects, duckvil_recorderd_types& _newTypes)
         {
@@ -700,7 +701,7 @@ namespace Duckvil { namespace HotReloader {
                     }
                 }
             }
-        }), _compileOptions);
+        }), _bGenerateReflection, _compileOptions);
     }
 
     void RuntimeCompilerSystem::Swap(hot_object* _pHotObject, const RuntimeReflection::__duckvil_resource_type_t& _typeHandle)
