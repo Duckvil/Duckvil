@@ -26,6 +26,50 @@ if(NOT DUCKVIL_CICD)
     add_subdirectory(assimp)
     add_subdirectory(json)
 
+    if(${DUCKVIL_TRACY_PROFILER})
+        if(UNIX)
+            SET(CONDITIONAL_LIBS pthread)
+        endif()
+
+        if(WIN32)
+            set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+            set(BUILD_SHARED_LIBS TRUE)
+        endif()
+
+        SET(libraries
+            "${CONDITIONAL_LIBS}"
+        )
+
+        add_library(
+            tracy
+            SHARED
+            ${CMAKE_SOURCE_DIR}/external/tracy/TracyClient.cpp
+        )
+
+        target_link_libraries(
+            tracy
+            ${libraries}
+        )
+
+        set_target_properties(tracy PROPERTIES
+            CXX_STANDARD 20
+            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+            LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/bin"
+            ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/bin"
+            RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/bin"
+            LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin"
+            ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin"
+            RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin"
+            DEBUG_POSTFIX ""
+            PREFIX ""
+            FOLDER external
+        )
+
+        target_compile_definitions(tracy PRIVATE TRACY_ENABLE)
+    endif()
+
     set_target_properties(SDL2 PROPERTIES
         CXX_STANDARD 20
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"

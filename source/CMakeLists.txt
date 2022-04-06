@@ -152,12 +152,10 @@ if(NOT DUCKVIL_CICD)
             )
 
             if(${DUCKVIL_TRACY_PROFILER})
-                if(NOT ${PROJECT_ID} STREQUAL "_tracy")
-                    target_link_libraries(
-                        ${PROJECT_ID}
-                        _tracy
-                    )
-                endif()
+                target_link_libraries(
+                    ${PROJECT_ID}
+                    tracy
+                )
 
                 target_compile_definitions(${PROJECT_ID} PRIVATE TRACY_ENABLE)
                 target_compile_definitions(${PROJECT_ID} PRIVATE TRACY_CALLSTACK=40)
