@@ -413,6 +413,16 @@ namespace Duckvil {
             {
                 _event.m_pRequestedSystem = _pData->m_pRuntimeCompiler;
             }
+
+            if(_event.m_typeHandle.m_ID == RuntimeReflection::get_type<ProjectManager::ftable>().m_ID)
+            {
+                _event.m_pRequestedSystem = &_pData->m_projectManager;
+            }
+
+            if(_event.m_typeHandle.m_ID == RuntimeReflection::get_type<ProjectManager::data>().m_ID)
+            {
+                _event.m_pRequestedSystem = &_pData->m_projectManagerData;
+            }
         });
 
         (static_cast<Event::Pool<Event::mode::immediate>*>(_pData->m_pRuntimeReflectionData->m_pEvents))->AddA<RuntimeReflection::TrackedObjectCreatedEvent>([_pData](const RuntimeReflection::TrackedObjectCreatedEvent& _event)
@@ -554,6 +564,16 @@ namespace Duckvil {
                                 if(typeid(HotReloader::RuntimeCompilerSystem*).hash_code() == _argument.m_ullTypeID)
                                 {
                                     c.Push(_pData->m_pRuntimeCompiler);
+                                }
+
+                                if(typeid(ProjectManager::ftable*).hash_code() == _argument.m_ullTypeID)
+                                {
+                                    c.Push(_pData->m_projectManager);
+                                }
+
+                                if(typeid(ProjectManager::data*).hash_code() == _argument.m_ullTypeID)
+                                {
+                                    c.Push(_pData->m_projectManagerData);
                                 }
 
                                 const auto& _engine = RuntimeReflection::get_argument_meta_variant(_typeHandle, _constructorHandle, i, "Engine");
@@ -842,7 +862,7 @@ namespace Duckvil {
             }
         }
 
-        _pData->m_projectManager.m_fnUpdate(&_pData->m_projectManagerData);
+        _pData->m_projectManager.m_fnUpdate(&_pData->m_projectManagerData, _delta);
 
         if(_pData->m_ullLastTimeUsed != _pData->m_pHeap->m_ullUsed)
         {
@@ -927,6 +947,12 @@ namespace Duckvil {
 
         _pData->m_pWindow->Refresh();
         _pData->m_time.update(&_pData->m_timeData);
+
+        {
+            ZoneScopedN("Sleeping, zzz...");
+
+            Sleep(16);
+        }
     }
 
 }

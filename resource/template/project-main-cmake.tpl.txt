@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.16)
+project({$projectName})
+add_definitions(-DDUCKVIL_OUTPUT="F:/Projects/Duckvil/{$projectName}/bin" -DDUCKVIL_PLATFORM_WINDOWS -DDUCKVIL_HOT_RELOADING)
+message(STATUS "Generating reflection started!")
+execute_process(COMMAND {$duckvilWorkingDirectory}/bin/ReflectionGenerator.exe -CWD ${CMAKE_SOURCE_DIR})
+message(STATUS "Generating reflection done!")
+add_subdirectory(source)

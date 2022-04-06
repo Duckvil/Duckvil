@@ -27,6 +27,7 @@ namespace Duckvil { namespace Editor {
         Memory::FreeList m_heap;
 
         const Event::Pool<Event::mode::immediate>* m_pEditorEventPool;
+        const Event::Pool<Event::mode::immediate>* m_pEngineEventPool;
 
         int m_iSelectedProject;
 
@@ -34,13 +35,11 @@ namespace Duckvil { namespace Editor {
 
     public:
         LoadProjectWidget();
-        LoadProjectWidget(const Memory::FreeList& _heap);
+        LoadProjectWidget(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Editor") const Event::Pool<Event::mode::immediate>* _pEventPool, DUCKVIL_ARGUMENT("Engine") const Event::Pool<Event::mode::immediate>* _pEngineEventPool);
         ~LoadProjectWidget();
 
         void InitEditor(void* _pImguiContext);
         void OnDraw();
-
-        void SetEditorEventPool(const Event::Pool<Event::mode::immediate>* _pEventPool);
     };
 
 }}

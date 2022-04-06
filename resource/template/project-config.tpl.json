@@ -1,0 +1,12 @@
+{
+    "files": [
+        {
+            "path": "source/Project.cpp",
+            "hash": "{$project_cpp_md5}"
+        },
+        {
+            "path": "include/Project.h",
+            "hash": "{$project_h_md5}"
+        }
+    ]
+}

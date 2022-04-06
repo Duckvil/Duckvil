@@ -31,6 +31,8 @@
 
 #include "Engine/Events/RequestSystemEvent.h"
 
+#include "ProjectManager/ProjectManager.h"
+
 #undef GetObject
 
 namespace Duckvil { namespace Editor {
@@ -130,14 +132,14 @@ namespace Duckvil { namespace Editor {
                 _data->m_pEditorEvents.Add<HexEditorWidgetInitEvent>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_event.m_pTrackKeeper), _event.m_pTrackKeeper->GetTypeHandle());
             }
 
-            _pEngineEventPool->AddA<HotReloader::SwapEvent>([_data, _pEditor](const HotReloader::SwapEvent& _event)
-            {
-                // if(_event.m_stage == HotReloader::HotReloadedEvent::stage_after_swap)
-                if(RuntimeReflection::inherits<Widget>(_event.m_pTrackKeeper->GetTypeHandle()))
-                {
-                    _pEditor->m_fnHotReloadInit(_data, _event);
-                }
-            });
+            // _pEngineEventPool->AddA<HotReloader::SwapEvent>([_data, _pEditor](const HotReloader::SwapEvent& _event)
+            // {
+            //     // if(_event.m_stage == HotReloader::HotReloadedEvent::stage_after_swap)
+            //     if(RuntimeReflection::inherits<Widget>(_event.m_pTrackKeeper->GetTypeHandle()))
+            //     {
+            //         _pEditor->m_fnHotReloadInit(_data, _event);
+            //     }
+            // });
         }));
 
         _pRuntimeReflectionEventPool->Add(Utils::lambda([_data, _pEngineEventPool, _pEditor](const RuntimeReflection::ObjectCreatedEvent& _event)
@@ -175,16 +177,16 @@ namespace Duckvil { namespace Editor {
             {
                 _data->m_pEditorEvents.Add<HexEditorWidgetInitEvent>(_event.m_pObject, _type.GetTypeHandle());
             }
-
-            _pEngineEventPool->AddA<HotReloader::SwapEvent>([_data, _pEditor, _type](const HotReloader::SwapEvent& _event)
-            {
-                // if(_event.m_stage == HotReloader::HotReloadedEvent::stage_after_swap)
-                if(RuntimeReflection::inherits<Widget>(_type.GetTypeHandle()))
-                {
-                    _pEditor->m_fnHotReloadInit(_data, _event);
-                }
-            });
         }));
+
+        _pEngineEventPool->AddA<HotReloader::SwapEvent>([_data, _pEditor](const HotReloader::SwapEvent& _event)
+        {
+            // if(_event.m_stage == HotReloader::HotReloadedEvent::stage_after_swap)
+            if(RuntimeReflection::inherits<Widget>(/*_type.GetTypeHandle()*/ _event.m_pTrackKeeper->GetTypeHandle()))
+            {
+                _pEditor->m_fnHotReloadInit(_data, _event);
+            }
+        });
 
         return _data;
     }
@@ -360,6 +362,28 @@ namespace Duckvil { namespace Editor {
                                 }
                             }
                         }
+
+                        if(typeid(ProjectManager::ftable*).hash_code() == _argument.m_ullTypeID)
+                        {
+                            RequestSystemEvent _rEvent;
+
+                            _rEvent.m_typeHandle = RuntimeReflection::get_type<ProjectManager::ftable>();
+
+                            _pEventPool->Broadcast(_rEvent);
+
+                            c.Push(_rEvent.m_pRequestedSystem);
+                        }
+
+                        if(typeid(ProjectManager::data*).hash_code() == _argument.m_ullTypeID)
+                        {
+                            RequestSystemEvent _rEvent;
+
+                            _rEvent.m_typeHandle = RuntimeReflection::get_type<ProjectManager::data>();
+
+                            _pEventPool->Broadcast(_rEvent);
+
+                            c.Push(_rEvent.m_pRequestedSystem);
+                        }
                     }
 
                     // const auto& _h = RuntimeReflection::get_constructor_handle<const Memory::FreeList&>(_type.GetTypeHandle());
@@ -413,7 +437,7 @@ namespace Duckvil { namespace Editor {
         RuntimeReflection::ReflectedType<> _type(_pData->m_heap, _event.m_pTrackKeeper->GetTypeHandle());
         RuntimeReflection::__duckvil_resource_function_t _onDrawFunctionHandle = _type.GetFunctionHandle("OnDraw");
         RuntimeReflection::__duckvil_resource_function_t _initEditorFunctionHandle = _type.GetFunctionHandle<void*>("InitEditor");
-        Editor::Widget* _widgetInheritance = (Editor::Widget*)_type.InvokeStatic<void*, void*>("Cast", DUCKVIL_TRACK_KEEPER_GET_OBJECT(_event.m_pTrackKeeper));
+        //Editor::Widget* _widgetInheritance = (Editor::Widget*)_type.InvokeStatic<void*, void*>("Cast", DUCKVIL_TRACK_KEEPER_GET_OBJECT(_event.m_pTrackKeeper));
 
         for(uint32_t i = 0; i < _pData->m_aHotDraws.Size(); ++i)
         {
