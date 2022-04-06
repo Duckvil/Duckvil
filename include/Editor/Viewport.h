@@ -14,6 +14,8 @@
 #include "Graphics/MeshComponent.h"
 #include "Graphics/TransformComponent.h"
 
+#include "Utils/Utils.h"
+
 #include "tracy/Tracy.hpp"
 
 namespace Duckvil { namespace Editor {
@@ -42,6 +44,8 @@ namespace Duckvil { namespace Editor {
         Graphics::Renderer::renderer_data* _pRendererData,
         flecs::world* _pECS)
     {
+        Utils::string _cwd = DUCKVIL_CWD;
+
         ecs_os_set_api_defaults();
 
         _pViewport->m_ecs = _pECS;
@@ -51,8 +55,8 @@ namespace Duckvil { namespace Editor {
                 _pMemory,
                 _pAllocator,
                 _pRendererData,
-                "F:/Projects/C++/Duckvil/resource/shader/test.vs",
-                "F:/Projects/C++/Duckvil/resource/shader/test.fs"
+                _cwd / "resource/shader/test.vs",
+                _cwd / "resource/shader/test.fs"
             );
 
         _pViewport->m_rendererQuery = _pECS->query<Graphics::MeshComponent, Graphics::TransformComponent>();
@@ -92,7 +96,7 @@ namespace Duckvil { namespace Editor {
         );
 
         int _x, _y, _bytesPerPixels;
-        unsigned char* _textureData = stbi_load("F:/Projects/C++/Duckvil/resource/texture/test.jpg", &_x, &_y, &_bytesPerPixels, 4);
+        unsigned char* _textureData = stbi_load(_cwd / "resource/texture/test.jpg", &_x, &_y, &_bytesPerPixels, 4);
 
         _pViewport->m_textureID =
             _pRenderer->m_fnCreateTexture(
