@@ -951,7 +951,9 @@ namespace Duckvil {
         {
             ZoneScopedN("Sleeping, zzz...");
 
+#ifdef DUCKVIL_PLATFORM_WINDOWS
             Sleep(16);
+#endif
         }
     }
 
