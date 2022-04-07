@@ -10,6 +10,7 @@ DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
 DUCKVIL_RESOURCE(destructor_t) _destructor;
+DUCKVIL_RESOURCE(function_t) _function;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
 return duckvil_recorded_types_create(_pMemoryInterface, _pAllocator, _recordedTypes, "Memory/Internal/FixedArrayAllocator.h", 12);
 }

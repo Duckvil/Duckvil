@@ -10,6 +10,7 @@ DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
 DUCKVIL_RESOURCE(destructor_t) _destructor;
+DUCKVIL_RESOURCE(function_t) _function;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
 using namespace Duckvil::Utils;
 _type = record_type<Duckvil::Utils::CommandArgumentsParser>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "CommandArgumentsParser");
@@ -20,9 +21,7 @@ record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::
 _constructor = record_constructor<Duckvil::Utils::CommandArgumentsParser, int, char*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
 _constructor = record_constructor<Duckvil::Utils::CommandArgumentsParser, int, const char*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
 _destructor = record_destructor<Duckvil::Utils::CommandArgumentsParser>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
-record_function<Duckvil::Utils::CommandArgumentsParser, bool, Descriptor*, std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::CommandArgumentsParser::Parse, "Parse");
-record_function<Duckvil::Utils::CommandArgumentsParser, Descriptor&, A>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::CommandArgumentsParser::operator, "operator");
-record_function<Duckvil::Utils::CommandArgumentsParser, Descriptor&, A>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::CommandArgumentsParser::operator, "operator");
+_function = record_function<Duckvil::Utils::CommandArgumentsParser, bool, Descriptor*, std::size_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Utils::CommandArgumentsParser::Parse, "Parse");
 _type = record_type<Duckvil::Utils::CommandArgumentsParser::Descriptor>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "Descriptor");
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");

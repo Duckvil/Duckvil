@@ -1,7 +1,7 @@
 #include "Serializer/Runtime/ISerializer.h"
 
-#define DUCKVIL_GENERATED_BODY \
-public: \
-void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
-{\
-}
+#include "RuntimeReflection/Markers.h"
+
+#undef DUCKVIL_CURRENT_FILE_ID
+#define DUCKVIL_CURRENT_FILE_ID Memory_FixedStackAllocator_h
+

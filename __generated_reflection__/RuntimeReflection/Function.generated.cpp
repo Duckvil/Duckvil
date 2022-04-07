@@ -10,6 +10,7 @@ DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
 DUCKVIL_RESOURCE(destructor_t) _destructor;
+DUCKVIL_RESOURCE(function_t) _function;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
 using namespace Duckvil::RuntimeReflection;
 _type = record_type<Duckvil::RuntimeReflection::__ifunction>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__ifunction");
@@ -18,6 +19,7 @@ record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duc
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "RuntimeReflection");
 record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 0);
 _destructor = record_destructor<Duckvil::RuntimeReflection::__ifunction>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
+_function = record_function<Duckvil::RuntimeReflection::__ifunction, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeReflection::__ifunction::GetRawPointer, "GetRawPointer");
 return duckvil_recorded_types_create(_pMemoryInterface, _pAllocator, _recordedTypes, "RuntimeReflection/Function.h", 0);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE

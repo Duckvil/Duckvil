@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(2)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(3)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -10,6 +10,7 @@ DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
 DUCKVIL_RESOURCE(destructor_t) _destructor;
+DUCKVIL_RESOURCE(function_t) _function;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
 using namespace Duckvil::Graphics::Renderer;
 _type = record_type<Duckvil::Graphics::Renderer::texture_descriptor>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "texture_descriptor");
@@ -17,7 +18,7 @@ _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Graphics");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Renderer");
-record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
+record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
 _property = record_property<GLenum>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::texture_descriptor, m_target), "m_target");
 _property = record_property<GLfloat>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::texture_descriptor, m_filter), "m_filter");
 _property = record_property<GLsizei>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::texture_descriptor, m_width), "m_width");
@@ -28,7 +29,7 @@ _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Graphics");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Renderer");
-record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
+record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
 _property = record_property<GLenum>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::texture_object_descriptor, m_target), "m_target");
 _property = record_property<GLfloat*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::texture_object_descriptor, m_filter), "m_filter");
 _property = record_property<GLsizei>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::texture_object_descriptor, m_width), "m_width");
@@ -40,7 +41,7 @@ _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Graphics");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Renderer");
-record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
+record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
 _property = record_property<GLenum>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::framebuffer_descriptor, m_target), "m_target");
 _property = record_property<GLenum*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::framebuffer_descriptor, m_aAttachments), "m_aAttachments");
 _property = record_property<uint32_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::framebuffer_descriptor, m_uiCount), "m_uiCount");
@@ -51,27 +52,27 @@ _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Graphics");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Renderer");
-record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
+record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
 _property = record_property<uint32_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::vertex_buffer_object_descriptor, m_uiTypeSize), "m_uiTypeSize");
-_property = record_property<void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::vertex_buffer_object_descriptor, m_pData), "m_pData");
+_property = record_property<const void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::vertex_buffer_object_descriptor, m_pData), "m_pData");
 _property = record_property<uint16_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::vertex_buffer_object_descriptor, m_usNumber), "m_usNumber");
 _property = record_property<GLenum>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::vertex_buffer_object_descriptor, m_target), "m_target");
-_constructor = record_constructor<Duckvil::Graphics::Renderer::vertex_buffer_object_descriptor, GLenum, uint32_t, void*, uint16_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
+_property = record_property<uint32_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::vertex_buffer_object_descriptor, m_uiCount), "m_uiCount");
+_constructor = record_constructor<Duckvil::Graphics::Renderer::vertex_buffer_object_descriptor, GLenum, uint32_t, const void*, uint32_t, uint16_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
 _type = record_type<Duckvil::Graphics::Renderer::vertex_array_object_descriptor>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "vertex_array_object_descriptor");
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Graphics");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Renderer");
-record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
+record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
 _property = record_property<uint32_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::vertex_array_object_descriptor, m_uiVBO_Count), "m_uiVBO_Count");
 _property = record_property<vertex_buffer_object_descriptor*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::vertex_array_object_descriptor, m_aVBO), "m_aVBO");
-_property = record_property<uint32_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::vertex_array_object_descriptor, m_uiCount), "m_uiCount");
 _type = record_type<Duckvil::Graphics::Renderer::texture_object>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "texture_object");
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Graphics");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Renderer");
-record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
+record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
 _property = record_property<GLuint*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::texture_object, m_pTexture), "m_pTexture");
 _property = record_property<uint32_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::texture_object, m_uiTextureCount), "m_uiTextureCount");
 _type = record_type<Duckvil::Graphics::Renderer::framebuffer>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "framebuffer");
@@ -79,14 +80,14 @@ _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Graphics");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Renderer");
-record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
+record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
 _property = record_property<GLuint>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::framebuffer, m_FBO), "m_FBO");
 _type = record_type<Duckvil::Graphics::Renderer::vertex_array_object>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "vertex_array_object");
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Graphics");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Renderer");
-record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
+record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
 _property = record_property<GLuint>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::vertex_array_object, m_vao), "m_vao");
 _property = record_property<uint32_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::vertex_array_object, m_uiDrawCount), "m_uiDrawCount");
 _type = record_type<Duckvil::Graphics::Renderer::renderer_data>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "renderer_data");
@@ -94,7 +95,7 @@ _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Graphics");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Renderer");
-record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
+record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
 _property = record_property<DUCKVIL_SLOT_ARRAY(shader)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::renderer_data, m_shader), "m_shader");
 _property = record_property<DUCKVIL_SLOT_ARRAY(texture)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::renderer_data, m_texture), "m_texture");
 _property = record_property<DUCKVIL_SLOT_ARRAY(texture_object)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::renderer_data, m_textureObject), "m_textureObject");
@@ -109,7 +110,7 @@ _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Graphics");
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Renderer");
-record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
+record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
 _property = record_property<bool(*)(Memory::ftable*, Memory::free_list_allocator*, Window::IWindow*, renderer_data*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::renderer_ftable, m_fnInit), "m_fnInit");
 _property = record_property<void(*)(Memory::ftable*, renderer_data*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::renderer_ftable, m_fnUpdate), "m_fnUpdate");
 _property = record_property<void(*)(Memory::ftable*, renderer_data*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::renderer_ftable, m_fnSubmitCommandBuffer), "m_fnSubmitCommandBuffer");
@@ -122,11 +123,11 @@ _property = record_property<uint32_t(*)(Memory::ftable*, Memory::free_list_alloc
 _property = record_property<uint32_t(*)(Memory::ftable*, Memory::free_list_allocator*, renderer_data*, uint32_t, const char*)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::renderer_ftable, m_fnGetUniformLocation), "m_fnGetUniformLocation");
 _property = record_property<void*(*)(renderer_data*, uint32_t)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::renderer_ftable, m_fnGetTexture), "m_fnGetTexture");
 _property = record_property<GLuint*(*)(renderer_data*, uint32_t)>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Graphics::Renderer::renderer_ftable, m_fnGetTextures), "m_fnGetTextures");
-return duckvil_recorded_types_create(_pMemoryInterface, _pAllocator, _recordedTypes, "Graphics/Renderer/Renderer.h", 2);
+return duckvil_recorded_types_create(_pMemoryInterface, _pAllocator, _recordedTypes, "Graphics/Renderer/Renderer.h", 3);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 2;
+return 3;
 }
 #endif

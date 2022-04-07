@@ -1,10 +1,7 @@
 #include "Serializer/Runtime/ISerializer.h"
 
-#define DUCKVIL_GENERATED_BODY \
-public: \
-static void* Cast(void* _pObject) { return static_cast<KeyUpEvent*>(_pObject); } \
-public: \
-void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
-{\
-_pSerializer->SerializeProperty("m_key", m_key); \
-}
+#include "RuntimeReflection/Markers.h"
+
+#undef DUCKVIL_CURRENT_FILE_ID
+#define DUCKVIL_CURRENT_FILE_ID Window_Events_KeyUpEvent_h
+

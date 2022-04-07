@@ -10,6 +10,7 @@ DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
 DUCKVIL_RESOURCE(destructor_t) _destructor;
+DUCKVIL_RESOURCE(function_t) _function;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
 using namespace Duckvil::RuntimeCompiler;
 _type = record_type<Duckvil::RuntimeCompiler::WindowsCompiler>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "WindowsCompiler");
@@ -20,13 +21,18 @@ record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::
 record_inheritance<ICompiler>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, __protection::__protection_public);
 _constructor = record_constructor<Duckvil::RuntimeCompiler::WindowsCompiler, const Process::ftable&, Process::data*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
 _destructor = record_destructor<Duckvil::RuntimeCompiler::WindowsCompiler>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
-record_function<Duckvil::RuntimeCompiler::WindowsCompiler, void, const std::vector<std::string>&, const Options&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::Compile, "Compile");
-record_function<Duckvil::RuntimeCompiler::WindowsCompiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::AddDefine, "AddDefine");
-record_function<Duckvil::RuntimeCompiler::WindowsCompiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::AddFlag, "AddFlag");
-record_function<Duckvil::RuntimeCompiler::WindowsCompiler, void, Flag>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::AddFlag, "AddFlag");
-record_function<Duckvil::RuntimeCompiler::WindowsCompiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::AddInclude, "AddInclude");
-record_function<Duckvil::RuntimeCompiler::WindowsCompiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::AddLibraryPath, "AddLibraryPath");
-record_function<Duckvil::RuntimeCompiler::WindowsCompiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::AddLibrary, "AddLibrary");
+_function = record_function<Duckvil::RuntimeCompiler::WindowsCompiler, void, const std::vector<std::string>&, const Options&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::Compile, "Compile");
+_function = record_function<Duckvil::RuntimeCompiler::WindowsCompiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::AddDefine, "AddDefine");
+_function = record_function<Duckvil::RuntimeCompiler::WindowsCompiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::AddFlag, "AddFlag");
+_function = record_function<Duckvil::RuntimeCompiler::WindowsCompiler, void, Flag>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::AddFlag, "AddFlag");
+_function = record_function<Duckvil::RuntimeCompiler::WindowsCompiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::AddInclude, "AddInclude");
+_function = record_function<Duckvil::RuntimeCompiler::WindowsCompiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::AddLibraryPath, "AddLibraryPath");
+_function = record_function<Duckvil::RuntimeCompiler::WindowsCompiler, void, const std::string&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::AddLibrary, "AddLibrary");
+_function = record_function<Duckvil::RuntimeCompiler::WindowsCompiler, const std::vector<std::string>&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::GetDefines, "GetDefines");
+_function = record_function<Duckvil::RuntimeCompiler::WindowsCompiler, const std::vector<std::string>&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::GetFlags, "GetFlags");
+_function = record_function<Duckvil::RuntimeCompiler::WindowsCompiler, const std::vector<std::string>&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::GetIncludes, "GetIncludes");
+_function = record_function<Duckvil::RuntimeCompiler::WindowsCompiler, const std::vector<std::string>&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::GetLibrariesPaths, "GetLibrariesPaths");
+_function = record_function<Duckvil::RuntimeCompiler::WindowsCompiler, const std::vector<std::string>&>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::RuntimeCompiler::WindowsCompiler::GetLibraries, "GetLibraries");
 return duckvil_recorded_types_create(_pMemoryInterface, _pAllocator, _recordedTypes, "RuntimeCompiler/Platform/Windows/Compiler.h", 2);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE

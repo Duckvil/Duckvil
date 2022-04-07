@@ -10,6 +10,7 @@ DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
 DUCKVIL_RESOURCE(destructor_t) _destructor;
+DUCKVIL_RESOURCE(function_t) _function;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
 using namespace Duckvil::Parser;
 _type = record_type<Duckvil::Parser::__ast_inheritance>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__ast_inheritance");
@@ -86,6 +87,7 @@ _property = record_property<std::string>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STA
 _property = record_property<__ast_structure_type>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast_entity_structure, m_structureType), "m_structureType");
 _property = record_property<std::vector<__ast_inheritance>>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast_entity_structure, m_aInheritance), "m_aInheritance");
 _property = record_property<std::vector<__ast_template>>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast_entity_structure, m_aTemplates), "m_aTemplates");
+_property = record_property<uint32_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast_entity_structure, m_uiGeneratedBodyMacroLine), "m_uiGeneratedBodyMacroLine");
 _type = record_type<Duckvil::Parser::__ast_entity_enum>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__ast_entity_enum");
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");
@@ -189,6 +191,8 @@ _property = record_property<__ast_access>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_ST
 _property = record_property<std::string>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast, m_sCurrentDefineNeeded), "m_sCurrentDefineNeeded");
 _property = record_property<std::vector<user_define>>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast, m_aUserDefines), "m_aUserDefines");
 _property = record_property<bool>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast, m_bPendingIfdef), "m_bPendingIfdef");
+_property = record_property<std::filesystem::path>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast, m_sFile), "m_sFile");
+_property = record_property<std::vector<__ast_template>>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Parser::__ast, m_aTemplates), "m_aTemplates");
 _type = record_type<Duckvil::Parser::__ast_ftable>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__ast_ftable");
 _recordedTypes.push_back(_type);
 record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, "Duckvil");

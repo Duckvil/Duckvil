@@ -10,6 +10,7 @@ DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
 DUCKVIL_RESOURCE(destructor_t) _destructor;
+DUCKVIL_RESOURCE(function_t) _function;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
 using namespace Duckvil::Window;
 _type = record_type<Duckvil::Window::WindowSDL>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "WindowSDL");
@@ -20,12 +21,12 @@ record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::
 record_inheritance<IWindow>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, __protection::__protection_public);
 _constructor = record_constructor<Duckvil::Window::WindowSDL, Event::Pool<Event::mode::buffered>*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
 _destructor = record_destructor<Duckvil::Window::WindowSDL>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);
-record_function<Duckvil::Window::WindowSDL, bool, const char*, int, int>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Window::WindowSDL::Create, "Create");
-record_function<Duckvil::Window::WindowSDL, void>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Window::WindowSDL::Refresh, "Refresh");
-record_function<Duckvil::Window::WindowSDL, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Window::WindowSDL::GetWindow, "GetWindow");
-record_function<Duckvil::Window::WindowSDL, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Window::WindowSDL::GetContext, "GetContext");
-record_function<Duckvil::Window::WindowSDL, void, int, int>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Window::WindowSDL::SetMousePosition, "SetMousePosition");
-record_function<Duckvil::Window::WindowSDL, void>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Window::WindowSDL::SetProcessEventsCallback, "SetProcessEventsCallback");
+_function = record_function<Duckvil::Window::WindowSDL, bool, const char*, int, int>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Window::WindowSDL::Create, "Create");
+_function = record_function<Duckvil::Window::WindowSDL, void>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Window::WindowSDL::Refresh, "Refresh");
+_function = record_function<Duckvil::Window::WindowSDL, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Window::WindowSDL::GetWindow, "GetWindow");
+_function = record_function<Duckvil::Window::WindowSDL, void*>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Window::WindowSDL::GetContext, "GetContext");
+_function = record_function<Duckvil::Window::WindowSDL, void, int, int>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Window::WindowSDL::SetMousePosition, "SetMousePosition");
+_function = record_function<Duckvil::Window::WindowSDL, void>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &Duckvil::Window::WindowSDL::SetProcessEventsCallback, "SetProcessEventsCallback");
 return duckvil_recorded_types_create(_pMemoryInterface, _pAllocator, _recordedTypes, "Window/SDL_Window.h", 8);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE

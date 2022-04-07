@@ -10,6 +10,7 @@ DUCKVIL_RESOURCE(type_t) _type;
 DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
 DUCKVIL_RESOURCE(destructor_t) _destructor;
+DUCKVIL_RESOURCE(function_t) _function;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
 using namespace Duckvil::Thread;
 _type = record_type<Duckvil::Thread::task>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "task");
@@ -74,12 +75,6 @@ _property = record_property<Memory::FreeList>(DUCKVIL_RUNTIME_REFLECTION_RECORDE
 #endif
 #ifdef DUCKVIL_PLATFORM_LINUX
 _property = record_property<uint32_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Thread::pool_data, m_uiThreadsCount), "m_uiThreadsCount");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
-_property = record_property<TracyLockable(std::mutex,>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Thread::pool_data, m_lock), "m_lock");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
-_property = record_property<TracyLockable(std::mutex,>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Thread::pool_data, m_threadPoolLock), "m_threadPoolLock");
 #endif
 #ifdef DUCKVIL_PLATFORM_LINUX
 _property = record_property<std::condition_variable_any>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(Duckvil::Thread::pool_data, m_condition), "m_condition");
