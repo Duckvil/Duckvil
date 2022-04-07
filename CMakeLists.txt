@@ -69,13 +69,14 @@ if(DUCKVIL_HOT_RELOADING)
 endif()
 
 add_subdirectory(external)
-add_subdirectory(source)
-list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
-ENABLE_TESTING()
-add_subdirectory(test)
 
 if(DUCKVIL_GENERATE_REFLECTION)
     message(STATUS "Generating reflection started!")
     execute_process(COMMAND ${CMAKE_SOURCE_DIR}/bin/ReflectionGenerator.exe -CWD ${CMAKE_SOURCE_DIR})
     message(STATUS "Generating reflection done!")
 endif()
+
+add_subdirectory(source)
+list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
+ENABLE_TESTING()
+add_subdirectory(test)
