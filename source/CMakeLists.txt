@@ -154,7 +154,7 @@ if(NOT DUCKVIL_CICD)
             if(${DUCKVIL_TRACY_PROFILER})
                 target_link_libraries(
                     ${PROJECT_ID}
-                    tracy
+                    TracyClient
                 )
 
                 target_compile_definitions(${PROJECT_ID} PRIVATE TRACY_ENABLE)
