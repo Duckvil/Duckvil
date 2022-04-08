@@ -71,7 +71,7 @@ namespace Duckvil { namespace Memory {
     template <typename Type>
     static inline Type* free_list_allocate(ftable* _pMemory, free_list_allocator* _pAllocator, Type&& _data)
     {
-        return fixed_array_emplace_back<Type>(_pMemory, _pAllocator, std::move(_data));
+        return free_list_emplace_back<Type>(_pMemory, _pAllocator, std::move(_data));
     }
 
 
