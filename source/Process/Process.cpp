@@ -16,6 +16,8 @@ void duckvil_process_init(Duckvil::Process::ftable* _pFTable)
     _pFTable->m_fnStop = &Duckvil::Process::windows_stop;
     _pFTable->m_fnWait = &Duckvil::Process::windows_wait;
     _pFTable->m_fnWrite = &Duckvil::Process::windows_write;
+    _pFTable->m_fnTerminate = &Duckvil::Process::windows_terminate;
+    _pFTable->m_fnCleanup = &Duckvil::Process::windows_cleanup;
 #else
 #ifdef DUCKVIL_PLATFORM_LINUX
     _pFTable->m_fnInit = &Duckvil::Process::linux_init;
@@ -24,6 +26,8 @@ void duckvil_process_init(Duckvil::Process::ftable* _pFTable)
     _pFTable->m_fnStop = &Duckvil::Process::linux_stop;
     _pFTable->m_fnWait = &Duckvil::Process::linux_wait;
     _pFTable->m_fnWrite = &Duckvil::Process::linux_write;
+    _pFTable->m_fnTerminate = &Duckvil::Process::linux_terminate;
+    _pFTable->m_fnCleanup = &Duckvil::Process::linux_cleanup;
 #endif
 #endif
 }

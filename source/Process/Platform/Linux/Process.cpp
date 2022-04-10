@@ -5,6 +5,8 @@
 #include <unistd.h>
 #endif
 
+#include "Memory/FreeList.h"
+
 namespace Duckvil { namespace Process {
 
 #ifdef DUCKVIL_PLATFORM_LINUX
@@ -61,6 +63,18 @@ namespace Duckvil { namespace Process {
     void linux_wait(data* _pData)
     {
         // wait(nullptr);
+    }
+
+    bool linux_terminate(data* _pData)
+    {
+        throw "Not implemented yet!";
+
+        return true;
+    }
+
+    void linux_cleanup(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator, data* _pData)
+    {
+        Memory::free_list_free(_pMemory, _pAllocator, _pData->m_pImplementationData);
     }
 #endif
 

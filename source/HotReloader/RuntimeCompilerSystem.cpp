@@ -392,6 +392,12 @@ namespace Duckvil { namespace HotReloader {
 
             _process.m_fnWrite(&_processData, std::string((std::filesystem::path(DUCKVIL_OUTPUT) / "ReflectionGenerator.exe -CWD ").string() + _CWD.string() + "\n_COMPLETION_TOKEN_\n").c_str());
             _process.m_fnWait(&_processData);
+            _process.m_fnStop(&_processData);
+
+            if(_process.m_fnTerminate(&_processData))
+            {
+                _process.m_fnCleanup(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), &_processData);
+            }
 
             DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Generating reflection finished");
             FrameMarkEnd("Reflection");

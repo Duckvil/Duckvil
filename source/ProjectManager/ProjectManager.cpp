@@ -174,6 +174,12 @@ namespace Duckvil { namespace ProjectManager {
 
             _process.m_fnWrite(&_processData, std::string((std::filesystem::path(DUCKVIL_OUTPUT) / "ReflectionGenerator.exe -CWD ").string() + _data->m_loadedProject.m_sPath + " -file " + _file + "\n_COMPLETION_TOKEN_\n").c_str());
             _process.m_fnWait(&_processData);
+            _process.m_fnStop(&_processData);
+
+            if(_process.m_fnTerminate(&_processData))
+            {
+                _process.m_fnCleanup(_data->m_heap.GetMemoryInterface(), _data->m_heap.GetAllocator(), &_processData);
+            }
 
             nlohmann::json _j;
 
@@ -525,6 +531,12 @@ namespace Duckvil { namespace ProjectManager {
 
         _process.m_fnWrite(&_processData, std::string((std::filesystem::path(DUCKVIL_OUTPUT) / "ReflectionGenerator.exe -CWD ").string() + _projectPath + "\n_COMPLETION_TOKEN_\n").c_str());
         _process.m_fnWait(&_processData);
+        _process.m_fnStop(&_processData);
+
+        if(_process.m_fnTerminate(&_processData))
+        {
+            _process.m_fnCleanup(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), &_processData);
+        }
 
 #ifdef DUCKVIL_PLATFORM_WINDOWS
         if(!execute_command("CMake", (_projectPath + "/build").m_sText, ".."))

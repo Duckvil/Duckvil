@@ -2,6 +2,8 @@
 
 #include "Process/Process.h"
 
+#include "Memory/FreeList.h"
+
 #ifdef DUCKVIL_PLATFORM_WINDOWS
 #include <process.h>
 #include <Windows.h>
@@ -24,9 +26,9 @@ namespace Duckvil { namespace Process {
         DWORD nBytesRead;
         bool _readActive = true;
         bool _readOneMore = false;
-        windows_data* pImpl = (windows_data*)arg;
+        windows_data* pImpl = static_cast<windows_data*>(arg);
 
-        while(_readActive && ((data*)pImpl->m_pData)->m_bRunning)
+        while(_readActive && static_cast<data*>(pImpl->m_pData)->m_bRunning)
         {
             if(!ReadFile(
                 pImpl->m_pCommandProcessOutputRead,
@@ -52,7 +54,7 @@ namespace Duckvil { namespace Process {
                 if(found != std::string::npos)
                 {
                     buffer = buffer.substr(0, found);
-                    ((data*)pImpl->m_pData)->m_bComplete = true;
+                    static_cast<data*>(pImpl->m_pData)->m_bComplete = true;
                 }
 
                 if(_readActive || buffer.length())
@@ -92,7 +94,8 @@ namespace Duckvil { namespace Process {
 
     void windows_init(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator, data* _pData)
     {
-        windows_data* _data = (windows_data*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(windows_data), alignof(windows_data));
+        // windows_data* _data = (windows_data*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(windows_data), alignof(windows_data));
+        windows_data* _data = Memory::free_list_allocate<windows_data>(_pMemory, _pAllocator, windows_data{});
 
         _pData->m_pImplementationData = _data;
     }
@@ -106,7 +109,7 @@ namespace Duckvil { namespace Process {
 
         DWORD nBytesWritten;
         DWORD length = (DWORD)strlen(_csMessage);
-        windows_data* _data = (windows_data*)_pData->m_pImplementationData;
+        windows_data* _data = static_cast<windows_data*>(_pData->m_pImplementationData);
 
         _pData->m_bComplete = false;
 
@@ -121,7 +124,7 @@ namespace Duckvil { namespace Process {
 
     bool windows_setup(data* _pData)
     {
-        ((windows_data*)_pData->m_pImplementationData)->m_pData = _pData;
+        static_cast<windows_data*>(_pData->m_pImplementationData)->m_pData = _pData;
         _pData->m_bRunning = true;
 
         STARTUPINFOW _si;
@@ -173,7 +176,7 @@ namespace Duckvil { namespace Process {
                 GetCurrentProcess(),
                 _outputReadTmp,
                 GetCurrentProcess(),
-                &(((windows_data*)_pData->m_pImplementationData)->m_pCommandProcessOutputRead),
+                &(static_cast<windows_data*>(_pData->m_pImplementationData)->m_pCommandProcessOutputRead),
                 0,
                 FALSE,
                 DUPLICATE_SAME_ACCESS))
@@ -206,7 +209,7 @@ namespace Duckvil { namespace Process {
                 GetCurrentProcess(),
                 _inputWriteTmp,
                 GetCurrentProcess(),
-                &(((windows_data*)_pData->m_pImplementationData)->m_pCommandProcessInputWrite),
+                &(static_cast<windows_data*>(_pData->m_pImplementationData)->m_pCommandProcessInputWrite),
                 0,
                 FALSE,
                 DUPLICATE_SAME_ACCESS))
@@ -230,7 +233,7 @@ namespace Duckvil { namespace Process {
             nullptr,
             nullptr,
             &_si,
-            &((windows_data*)_pData->m_pImplementationData)->m_commandProcessInfo
+            &(static_cast<windows_data*>(_pData->m_pImplementationData)->m_commandProcessInfo)
         );
 
         windows_write(_pData, "vcvarsall x86_amd64\n");
@@ -242,13 +245,13 @@ namespace Duckvil { namespace Process {
     void windows_start(data* _pData)
     {
         _pData->m_bRunning = true;
+
         _beginthread(readAndHandleOutputThread, 0, _pData->m_pImplementationData);
     }
 
     void windows_stop(data* _pData)
     {
         _pData->m_bRunning = false;
-        // TODO: Something else?
     }
 
     void windows_wait(data* _pData)
@@ -257,6 +260,23 @@ namespace Duckvil { namespace Process {
         {
 
         }
+    }
+
+    bool windows_terminate(data* _pData)
+    {
+        windows_data* _data = static_cast<windows_data*>(_pData->m_pImplementationData);
+
+        if(!TerminateProcess(_data->m_commandProcessInfo.hProcess, 0))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    void windows_cleanup(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator, data* _pData)
+    {
+        Memory::free_list_free(_pMemory, _pAllocator, _pData->m_pImplementationData);
     }
 #endif
 

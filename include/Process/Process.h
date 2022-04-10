@@ -25,6 +25,8 @@ namespace Duckvil { namespace Process {
         void (*m_fnStop)(data* _pData);
         void (*m_fnWait)(data* _pData);
         void (*m_fnWrite)(data* _pData, const char* _csMessage);
+        bool (*m_fnTerminate)(data* _pData);
+        void (*m_fnCleanup)(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator, data* _pData);
     };
 
 }}

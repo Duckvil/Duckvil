@@ -15,6 +15,8 @@ namespace Duckvil { namespace Process {
     void windows_start(data* _pData);
     void windows_stop(data* _pData);
     void windows_wait(data* _pData);
+    bool windows_terminate(data* _pData);
+    void windows_cleanup(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator, data* _pData);
 #endif
 
 }}
