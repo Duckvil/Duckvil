@@ -110,7 +110,8 @@ namespace Duckvil { namespace RuntimeReflection {
 
         for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type->m_variantKeys.m_data); ++i)
         {
-            __variant_t _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, i);
+            const auto& _m = DUCKVIL_SLOT_ARRAY_GET(_type->m_metas, i);
+            const auto& _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, _m.m_key.m_ID);
 
             if(_key.m_owner == __variant_owner::__variant_owner_type &&
                 _key.m_variant.m_ullTypeID == _meta.m_ullKeyTypeID &&
@@ -185,9 +186,10 @@ namespace Duckvil { namespace RuntimeReflection {
         __property_t* _property = DUCKVIL_SLOT_ARRAY_GET_POINTER(_type->m_properties, _owner.m_ID);
         bool _keyFound = false;
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type->m_variantKeys.m_data); ++i)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_property->m_metas.m_data); ++i)
         {
-            __variant_t _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, i);
+            const auto& _m = DUCKVIL_SLOT_ARRAY_GET(_property->m_metas, i);
+            const auto& _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, _m.m_key.m_ID);
 
             if(_key.m_owner == __variant_owner::__variant_owner_property &&
                 _key.m_variant.m_ullTypeID == _meta.m_ullKeyTypeID &&
@@ -262,9 +264,10 @@ namespace Duckvil { namespace RuntimeReflection {
         __constructor_t* _property = DUCKVIL_SLOT_ARRAY_GET_POINTER(_type->m_constructors, _owner.m_ID);
         bool _keyFound = false;
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type->m_variantKeys.m_data); ++i)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_property->m_metas.m_data); ++i)
         {
-            __variant_t _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, i);
+            const auto& _m = DUCKVIL_SLOT_ARRAY_GET(_property->m_metas, i);
+            const auto& _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, _m.m_key.m_ID);
 
             if(_key.m_owner == __variant_owner::__variant_owner_constructor &&
                 _key.m_variant.m_ullTypeID == _meta.m_ullKeyTypeID &&
@@ -339,9 +342,10 @@ namespace Duckvil { namespace RuntimeReflection {
         __constructor_t* _constructor = DUCKVIL_SLOT_ARRAY_GET_POINTER(_type->m_constructors, _owner.m_ID);
         bool _keyFound = false;
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type->m_variantKeys.m_data); ++i)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_constructor->m_metas.m_data); ++i)
         {
-            __variant_t _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, i);
+            const auto& _m = DUCKVIL_SLOT_ARRAY_GET(_constructor->m_metas, i);
+            const auto& _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, _m.m_key.m_ID);
 
             if(_key.m_owner == __variant_owner::__variant_owner_constructor_argument &&
                 _key.m_variant.m_ullTypeID == _meta.m_ullKeyTypeID &&
@@ -418,9 +422,10 @@ namespace Duckvil { namespace RuntimeReflection {
         __function_t* _function = DUCKVIL_SLOT_ARRAY_GET_POINTER(_type->m_functions, _owner.m_ID);
         bool _keyFound = false;
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type->m_variantKeys.m_data); ++i)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_function->m_metas.m_data); ++i)
         {
-            __variant_t _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, i);
+            const auto& _m = DUCKVIL_SLOT_ARRAY_GET(_function->m_metas, i);
+            const auto& _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, _m.m_key.m_ID);
 
             if(_key.m_owner == __variant_owner::__variant_owner_function &&
                 _key.m_variant.m_ullTypeID == _meta.m_ullKeyTypeID &&
@@ -495,9 +500,10 @@ namespace Duckvil { namespace RuntimeReflection {
         __function_t* _function = DUCKVIL_SLOT_ARRAY_GET_POINTER(_type->m_functions, _owner.m_ID);
         bool _keyFound = false;
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type->m_variantKeys.m_data); ++i)
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_function->m_metas.m_data); ++i)
         {
-            __variant_t _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, i);
+            const auto& _m = DUCKVIL_SLOT_ARRAY_GET(_function->m_metas, i);
+            const auto& _key = DUCKVIL_SLOT_ARRAY_GET(_type->m_variantKeys, _m.m_key.m_ID);
 
             if(_key.m_owner == __variant_owner::__variant_owner_function_argument &&
                 _key.m_variant.m_ullTypeID == _meta.m_ullKeyTypeID &&
