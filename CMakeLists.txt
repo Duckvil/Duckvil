@@ -10,6 +10,7 @@ option(DUCKVIL_COMPILE_REFLECTION_SOURCE "Compile with generated .cpp reflection
 option(DUCKVIL_DEBUG_MEMORY "Memory debugger" OFF)
 option(DUCKVIL_CICD "CI/CD" OFF)
 option(DUCKVIL_HOT_RELOADING "Hot reloading" ON)
+option(DUCKVIL_TRACY_PROFILER "Tracy profiler" OFF)
 
 find_program(DUCKVIL_MSBUILD_PATH "MSBuild.exe")
 

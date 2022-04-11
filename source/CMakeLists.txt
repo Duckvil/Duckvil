@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
 
-option(DUCKVIL_TRACY_PROFILER "Tracy profiler" OFF)
-
 macro(DUCKVIL_MODULE moduleName moduleType moduleExternalFiles moduleIncludeFiles moduleLinkLibraries)
     FILE(GLOB_RECURSE SOURCE_FILES *.cpp)
     FILE(GLOB_RECURSE REFLECTION_SOURCE_FILES ${CMAKE_SOURCE_DIR}/__generated_reflection__/${moduleName}/*.cpp)
