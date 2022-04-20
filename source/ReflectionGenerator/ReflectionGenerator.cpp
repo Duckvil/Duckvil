@@ -16,11 +16,23 @@
 #include "Utils/AST.h"
 #include "Utils/Utils.h"
 #include "Utils/CommandArgumentsParser.h"
+#include "Utils/md5.h"
 
 #include <fstream>
 #include <cassert>
 
 #include "nlohmann/json.hpp"
+
+std::string load_file_as_string(const std::string& _sFile)
+{
+    std::ifstream _f(_sFile);
+
+    std::string _str = std::string((std::istreambuf_iterator<char>(_f)), std::istreambuf_iterator<char>());
+
+    _f.close();
+
+    return _str;
+}
 
 struct reflection_module
 {
@@ -121,7 +133,7 @@ void generate_plugin_info(std::ofstream& _file, const uint32_t& _uiIndex, const 
     // _file << "DUCKVIL_EXPORT const char* DUCKVIL_MODULE_NAME = \"duckvil_" << _moduleName << "_module\";\n";
 }
 
-nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil::Parser::__lexer_ftable* _pLexerFTable, Duckvil::RuntimeReflection::__generator_ftable* _pGeneratorFTable, const std::filesystem::path& _cwd, const std::filesystem::path& _path, std::filesystem::path& _lastPath, uint32_t& _index, const std::function<void(nlohmann::json&)> _fnProcessJson, bool _bOneFile = false)
+nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil::Parser::__lexer_ftable* _pLexerFTable, Duckvil::RuntimeReflection::__generator_ftable* _pGeneratorFTable, const std::filesystem::path& _cwd, const std::filesystem::path& _path, std::filesystem::path& _lastPath, uint32_t& _index, const std::function<void(nlohmann::json&)> _fnProcessJson, bool _bGenerate = false, bool _bOneFile = false)
 {
     if(_path.extension() != ".h")
     {
@@ -214,11 +226,14 @@ nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil
 
     if(_bOneFile || _lastPath != _pluginDirectory)
     {
-        std::ofstream _file(_cwd / "__generated_reflection__" / _lastPath / "plugin_info.cpp");
+        if(_bGenerate)
+        {
+            std::ofstream _file(_cwd / "__generated_reflection__" / _lastPath / "plugin_info.cpp");
 
-        generate_plugin_info(_file, _index, _lastPath);
+            generate_plugin_info(_file, _index, _lastPath);
 
-        _file.close();
+            _file.close();
+        }
 
         if(!_bOneFile)
         {
@@ -259,7 +274,10 @@ nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil
 
     _userData.m_path = _relativePath;
 
-    _pGeneratorFTable->generate(&_generatorData, _source.string().c_str(), _header.string().c_str(), _astData, &generate, &_userData);
+    if(_bGenerate)
+    {
+        _pGeneratorFTable->generate(&_generatorData, _source.string().c_str(), _header.string().c_str(), _astData, &generate, &_userData);
+    }
 
     for(auto& _module : _aModules)
     {
@@ -280,14 +298,16 @@ enum class Options
 {
     CWD,
     FILE,
-    IS_RELATIVE
+    IS_RELATIVE,
+    FORCE
 };
 
 Duckvil::Utils::CommandArgumentsParser::Descriptor g_pDescriptors[] =
 {
     Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::CWD, "CWD"),
     Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::FILE, "file"),
-    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::IS_RELATIVE, "is_relative")
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::IS_RELATIVE, "is_relative"),
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::FORCE, "force")
 };
 
 int main(int argc, char* argv[])
@@ -477,7 +497,7 @@ int main(int argc, char* argv[])
                 {
                     _json["index"] = (*(_lastIt - 1))["index"].get<uint32_t>() + 1;
                 }
-            }, true);
+            }, true, true);
 
             if(_exists.empty())
             {
@@ -505,14 +525,72 @@ int main(int argc, char* argv[])
     else
     {
         nlohmann::json _j;
+        const auto& _p = std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / "reflection_db.json";
 
-        _j["files"] = nlohmann::json::array();
+        if(std::filesystem::exists(_p))
+        {
+            std::ifstream _iJson(_p);
+
+            _iJson >> _j;
+
+            _iJson.close();
+        }
+        else
+        {
+            std::ofstream _oJson(_p);
+
+            _oJson << _j;
+
+            _oJson.close();
+        }
 
         for(auto& _path : std::filesystem::recursive_directory_iterator(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "include"))
         {
+            if(!_path.path().has_extension())
+            {
+                continue;
+            }
+
+            bool _equal = false;
+            uint32_t _foundIndex = -1;
+            uint32_t _i = 0;
+
+            for(const auto& _e : _j["files"])
+            {
+                if(!_e.empty())
+                {
+                    const auto& _a = std::filesystem::relative(_path.path(), std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "include");
+
+                    if(_a == _e["source"].get<std::string>())
+                    {
+                        if(_e.contains("hash") && _e["hash"] == md5(load_file_as_string(_path.path().string())))
+                        {
+                            _equal = true;
+                        }
+
+                        _foundIndex = _i;
+
+                        break;
+                    }
+                }
+
+                ++_i;
+            }
+
             try
             {
-                _j["files"].push_back(process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _path, _lastPath, _index, nullptr));
+                auto _jFile = process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _path, _lastPath, _index, nullptr, _argumentsParser[Options::FORCE].m_bIsSet ? true : !_equal);
+
+                _jFile["hash"] = md5(load_file_as_string(_path.path().string()));
+
+                if(_foundIndex == -1)
+                {
+                    _j["files"].push_back(_jFile);
+                }
+                else
+                {
+                    _j["files"][_i] = _jFile;
+                }
             }
             catch(const Duckvil::Parser::blank_file& _e)
             {
