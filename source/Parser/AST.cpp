@@ -103,6 +103,11 @@ namespace Duckvil { namespace Parser {
                     }
                     else
                     {
+                        if(_tmp_expression == "")
+                        {
+                            break;
+                        }
+
                         _meta.m_sKey = _tmp_expression;
                     }
 
