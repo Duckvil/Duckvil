@@ -173,6 +173,7 @@ namespace Duckvil { namespace Parser {
         bool _continue = false;
         bool _wasType = false;
         std::vector<__ast_meta> _argumentMetas;
+        std::string _value;
 
         while(_continue || _pLexer->next_token(&_exp, &_token))
         {
@@ -235,6 +236,7 @@ namespace Duckvil { namespace Parser {
                     __ast_entity_argument _arg = {};
 
                     _arg.m_aMeta = _argumentMetas;
+                    _arg.m_sValue = _value;
 
                     _argumentMetas.clear();
 
@@ -251,6 +253,7 @@ namespace Duckvil { namespace Parser {
                     _res.push_back(_arg);
 
                     _tmp.clear();
+                    _value.clear();
                 }
             }
             else if(_token == "<")
@@ -334,6 +337,7 @@ namespace Duckvil { namespace Parser {
                 __ast_entity_argument _arg = {};
 
                 _arg.m_aMeta = _argumentMetas;
+                _arg.m_sValue = _value;
 
                 _argumentMetas.clear();
 
@@ -350,6 +354,7 @@ namespace Duckvil { namespace Parser {
                 _res.push_back(_arg);
 
                 _tmp.clear();
+                _value.clear();
 
                 _wasType = false;
 
@@ -372,6 +377,11 @@ namespace Duckvil { namespace Parser {
                         _continue = true;
 
                         break;
+                    }
+
+                    if(_token != "")
+                    {
+                        _value += _token;
                     }
                 }
             }

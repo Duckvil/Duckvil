@@ -119,6 +119,7 @@ namespace Duckvil { namespace Parser {
 
         std::string m_sType;
         std::string m_sName;
+        std::string m_sValue;
     };
 
     struct __ast_entity_variable : public __ast_entity_argument
