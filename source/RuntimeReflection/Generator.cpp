@@ -393,7 +393,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
         while(_namespace->m_scopeType != Parser::__ast_entity_type::__ast_entity_type_main)
         {
-            if(_namespace->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_namespace)
+            if(_namespace->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_namespace || _namespace->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_structure)
             {
                 _namespaces.push(static_cast<Parser::__ast_entity_namespace*>(_namespace));
             }
