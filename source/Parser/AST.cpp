@@ -109,6 +109,7 @@ namespace Duckvil { namespace Parser {
                         }
 
                         _meta.m_sKey = _tmp_expression;
+                        _meta.m_sValue = "true";
                     }
 
                     _result.push_back(_meta);
@@ -128,6 +129,7 @@ namespace Duckvil { namespace Parser {
                 else
                 {
                     _meta.m_sKey = _tmp_expression;
+                    _meta.m_sValue = "true";
                 }
 
                 _result.push_back(_meta);
