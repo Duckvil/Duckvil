@@ -236,7 +236,7 @@ namespace Duckvil { namespace Process {
             &(static_cast<windows_data*>(_pData->m_pImplementationData)->m_commandProcessInfo)
         );
 
-        windows_write(_pData, "vcvarsall x86_amd64\n");
+        windows_write(_pData, ("\"" + std::string(DUCKVIL_VCVARS_PATH) + "\" x86_amd64\n").c_str());
         _beginthread(readAndHandleOutputThread, 0, _pData->m_pImplementationData);
 
         return true;

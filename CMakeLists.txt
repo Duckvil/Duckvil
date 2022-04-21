@@ -13,8 +13,10 @@ option(DUCKVIL_HOT_RELOADING "Hot reloading" ON)
 option(DUCKVIL_TRACY_PROFILER "Tracy profiler" OFF)
 
 find_program(DUCKVIL_MSBUILD_PATH "MSBuild.exe")
+find_program(DUCKVIL_VCVARS_PATH "vcvarsall.bat")
 
 add_definitions(-DDUCKVIL_MSBUILD_PATH="${DUCKVIL_MSBUILD_PATH}")
+add_definitions(-DDUCKVIL_VCVARS_PATH="${DUCKVIL_VCVARS_PATH}")
 
 if(NOT DUCKVIL_COMPILE_REFLECTION_SOURCE)
     add_definitions(-DDUCKVIL_GENERATED_BODY="")
