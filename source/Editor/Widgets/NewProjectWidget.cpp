@@ -52,7 +52,7 @@ namespace Duckvil { namespace Editor {
 
         if(ImGui::Button("Create") && m_iSelectedType > -1 && strcmp(m_sProjectName, "") != 0)
         {
-            Utils::string _projectPath("F:/Projects/Duckvil");
+            Utils::string _projectPath(DUCKVIL_PROJECTS_PATH);
 
             if(m_pProjectManager->m_fnCreateProject(m_pProjectManagerData, m_sProjectName, _projectPath))
             {

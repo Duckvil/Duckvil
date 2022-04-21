@@ -741,7 +741,7 @@ namespace Duckvil {
 
         _pData->m_eventPool.AddA<ProjectManager::LoadProjectEvent>([_pData](const ProjectManager::LoadProjectEvent& _event)
         {
-            _pData->m_projectManager.m_fnLoadProject(&_pData->m_projectManagerData, _event.m_sProjectName, "F:/Projects/Duckvil/" + _event.m_sProjectName + "/bin");
+            _pData->m_projectManager.m_fnLoadProject(&_pData->m_projectManagerData, _event.m_sProjectName, Utils::string(DUCKVIL_PROJECTS_PATH) / _event.m_sProjectName / "bin");
         });
 
         for(const system& _system : _pData->m_aEngineSystems)

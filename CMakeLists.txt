@@ -11,12 +11,14 @@ option(DUCKVIL_DEBUG_MEMORY "Memory debugger" OFF)
 option(DUCKVIL_CICD "CI/CD" OFF)
 option(DUCKVIL_HOT_RELOADING "Hot reloading" ON)
 option(DUCKVIL_TRACY_PROFILER "Tracy profiler" OFF)
+set(DUCKVIL_PROJECTS_PATH CACHE PATH "Projects path")
 
 find_program(DUCKVIL_MSBUILD_PATH "MSBuild.exe")
 find_program(DUCKVIL_VCVARS_PATH "vcvarsall.bat")
 
 add_definitions(-DDUCKVIL_MSBUILD_PATH="${DUCKVIL_MSBUILD_PATH}")
 add_definitions(-DDUCKVIL_VCVARS_PATH="${DUCKVIL_VCVARS_PATH}")
+add_definitions(-DDUCKVIL_PROJECTS_PATH="${DUCKVIL_PROJECTS_PATH}")
 
 if(NOT DUCKVIL_COMPILE_REFLECTION_SOURCE)
     add_definitions(-DDUCKVIL_GENERATED_BODY="")

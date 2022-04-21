@@ -25,7 +25,7 @@ namespace Duckvil { namespace Editor {
 
         _heap.Allocate(m_aProjects, 1);
 
-        for(const auto& _dir : std::filesystem::directory_iterator("F:/Projects/Duckvil"))
+        for(const auto& _dir : std::filesystem::directory_iterator(DUCKVIL_PROJECTS_PATH))
         {
             if(m_aProjects.Full())
             {
