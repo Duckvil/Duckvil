@@ -95,162 +95,162 @@ namespace Duckvil { namespace HotReloader {
 
     void recursive(RuntimeCompilerReflectionModule* _pData, const Parser::__ast& _ast, Parser::__ast_entity* _entity)
     {
-        if(_entity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_structure)
+        if(_entity->m_scopeType != Parser::__ast_entity_type::__ast_entity_type_structure)
         {
-            if(_pData->m_pCurrentContext != nullptr)
+            for(Parser::__ast_entity* _ent : _entity->m_aScopes)
             {
-                RuntimeCompilerReflectionModule::Context* _context = new RuntimeCompilerReflectionModule::Context();
-
-                _context->m_pParent = _pData->m_pCurrentContext;
-
-                _pData->m_pCurrentContext->m_aChildren.push_back(_context);
-
-                _pData->m_pCurrentContext = _context;
-            }
-            else
-            {
-                RuntimeCompilerReflectionModule::Context* _context = new RuntimeCompilerReflectionModule::Context();
-
-                _context->m_pParent = _pData->m_pCurrentContext;
-
-                _pData->m_aContexts.push_back(_context);
-
-                _pData->m_pCurrentContext = _pData->m_aContexts.back();
+                recursive(_pData, _ast, _ent);
             }
 
-            Parser::__ast_entity_structure* _struct = (Parser::__ast_entity_structure*)_entity;
+            return;
+        }
 
-            _pData->m_pCurrentContext->m_uiGeneratedBodyLine = _struct->m_uiGeneratedBodyMacroLine;
+        if(_pData->m_pCurrentContext != nullptr)
+        {
+            RuntimeCompilerReflectionModule::Context* _context = new RuntimeCompilerReflectionModule::Context();
 
-            if(_pData->m_pCurrentContext->m_uiGeneratedBodyLine == -1)
+            _context->m_pParent = _pData->m_pCurrentContext;
+
+            _pData->m_pCurrentContext->m_aChildren.push_back(_context);
+
+            _pData->m_pCurrentContext = _context;
+        }
+        else
+        {
+            RuntimeCompilerReflectionModule::Context* _context = new RuntimeCompilerReflectionModule::Context();
+
+            _context->m_pParent = _pData->m_pCurrentContext;
+
+            _pData->m_aContexts.push_back(_context);
+
+            _pData->m_pCurrentContext = _pData->m_aContexts.back();
+        }
+
+        Parser::__ast_entity_structure* _struct = (Parser::__ast_entity_structure*)_entity;
+
+        _pData->m_pCurrentContext->m_uiGeneratedBodyLine = _struct->m_uiGeneratedBodyMacroLine;
+
+        if(_pData->m_pCurrentContext->m_uiGeneratedBodyLine == -1)
+        {
+            for(Parser::__ast_entity* _ent : _entity->m_aScopes)
             {
-                for(Parser::__ast_entity* _ent : _entity->m_aScopes)
-                {
-                    recursive(_pData, _ast, _ent);
-                }
-
-                return;
+                recursive(_pData, _ast, _ent);
             }
 
-            Parser::__ast_entity* _current = _struct->m_pParentScope;
-            std::vector<const char*> _namespaces;
+            return;
+        }
 
-            while(_current != nullptr && _current->m_scopeType != Parser::__ast_entity_type::__ast_entity_type_main)
+        Parser::__ast_entity* _current = _struct->m_pParentScope;
+        std::vector<const char*> _namespaces;
+
+        while(_current != nullptr && _current->m_scopeType != Parser::__ast_entity_type::__ast_entity_type_main)
+        {
+            if(_current->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_namespace)
             {
-                if(_current->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_namespace)
-                {
-                    Parser::__ast_entity_namespace* _entity = (Parser::__ast_entity_namespace*)_current;
+                Parser::__ast_entity_namespace* _entity = (Parser::__ast_entity_namespace*)_current;
 
-                    _namespaces.push_back(_entity->m_sName.c_str());
-                }
-                else if(_current->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_structure)
-                {
-                    Parser::__ast_entity_structure* _entity = (Parser::__ast_entity_structure*)_current;
+                _namespaces.push_back(_entity->m_sName.c_str());
+            }
+            else if(_current->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_structure)
+            {
+                Parser::__ast_entity_structure* _entity = (Parser::__ast_entity_structure*)_current;
 
-                    _namespaces.push_back(_entity->m_sName.c_str());
-                }
-
-                _current = _current->m_pParentScope;
+                _namespaces.push_back(_entity->m_sName.c_str());
             }
 
-            std::reverse(_namespaces.begin(), _namespaces.end());
+            _current = _current->m_pParentScope;
+        }
 
-            RuntimeReflection::__duckvil_resource_type_t _typeHandle = RuntimeReflection::get_type(_pData->m_pRuntimeReflectionData, _struct->m_sName.c_str(), _namespaces);
+        std::reverse(_namespaces.begin(), _namespaces.end());
 
-            if(_typeHandle.m_ID != -1)
+        RuntimeReflection::__duckvil_resource_type_t _typeHandle = RuntimeReflection::get_type(_pData->m_pRuntimeReflectionData, _struct->m_sName.c_str(), _namespaces);
+
+        if(_typeHandle.m_ID != -1)
+        {
+            const Memory::Vector<RuntimeReflection::__duckvil_resource_inheritance_t>& _inhs = _pData->m_pRuntimeReflection->m_fnGetInheritances(_pData->m_pRuntimeReflectionData, _pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _typeHandle);
+
+            for(const auto& _inh : _inhs)
             {
-                const Memory::Vector<RuntimeReflection::__duckvil_resource_inheritance_t>& _inhs = _pData->m_pRuntimeReflection->m_fnGetInheritances(_pData->m_pRuntimeReflectionData, _pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), _typeHandle);
+                const RuntimeReflection::__inheritance_t& _inhData = _pData->m_pRuntimeReflection->m_fnGetInheritance(_pData->m_pRuntimeReflectionData, _typeHandle, _inh);
+                RuntimeReflection::__duckvil_resource_type_t _inhTypeHandle = RuntimeReflection::get_type(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _inhData.m_ullInheritanceTypeID);
 
-                for(const auto& _inh : _inhs)
+                if(_inhTypeHandle.m_ID != -1)
                 {
-                    const RuntimeReflection::__inheritance_t& _inhData = _pData->m_pRuntimeReflection->m_fnGetInheritance(_pData->m_pRuntimeReflectionData, _typeHandle, _inh);
-                    RuntimeReflection::__duckvil_resource_type_t _inhTypeHandle = RuntimeReflection::get_type(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _inhData.m_ullInheritanceTypeID);
+                    RuntimeReflection::__duckvil_resource_function_t _funcHandle = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _inhTypeHandle, "Serialize");
 
-                    if(_inhTypeHandle.m_ID != -1)
+                    if(_funcHandle.m_ID != -1)
                     {
-                        RuntimeReflection::__duckvil_resource_function_t _funcHandle = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData, _inhTypeHandle, "Serialize");
+                        const RuntimeReflection::__type_t& _inhType = _pData->m_pRuntimeReflection->m_fnGetType(_pData->m_pRuntimeReflectionData, _inhTypeHandle);
 
-                        if(_funcHandle.m_ID != -1)
-                        {
-                            const RuntimeReflection::__type_t& _inhType = _pData->m_pRuntimeReflection->m_fnGetType(_pData->m_pRuntimeReflectionData, _inhTypeHandle);
-
-                            _pData->m_pCurrentContext->m_aChildSerializers.push_back(_inhType.m_sTypeName);
-                        }
+                        _pData->m_pCurrentContext->m_aChildSerializers.push_back(_inhType.m_sTypeName);
                     }
                 }
             }
+        }
 
-            Parser::__ast_entity_function* _func = new Parser::__ast_entity_function();
+        Parser::__ast_entity_function* _func = new Parser::__ast_entity_function();
 
-            _func->m_sReturnType = "void";
-            _func->m_sName = "Serialize";
-            _func->m_pParentScope = _struct;
-            _func->m_accessLevel = Parser::__ast_access::__ast_access_public;
-            _func->m_flags = (Parser::__ast_flags)0;
-            _func->m_aMeta.push_back(Parser::__ast_meta{ DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_AutoGenerated), "true" });
+        _func->m_sReturnType = "void";
+        _func->m_sName = "Serialize";
+        _func->m_pParentScope = _struct;
+        _func->m_accessLevel = Parser::__ast_access::__ast_access_public;
+        _func->m_flags = (Parser::__ast_flags)0;
+        _func->m_aMeta.push_back(Parser::__ast_meta{ DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_AutoGenerated), "true" });
 
+        {
+            Parser::__ast_entity_argument _arg;
+
+            _arg.m_sName = "_pSerializer";
+            _arg.m_sType = "Duckvil::RuntimeSerializer::ISerializer*";
+            _arg.m_pParentScope = _func;
+
+            _func->m_aArguments.push_back(_arg);
+        }
+
+        _struct->m_aScopes.push_back(_func);
+
+        for(Parser::__ast_entity* _child : _struct->m_aScopes)
+        {
+            if(_child->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_variable)
             {
-                Parser::__ast_entity_argument _arg;
+                Parser::__ast_entity_variable* _var = (Parser::__ast_entity_variable*)_child;
+                bool _skip = false;
 
-                _arg.m_sName = "_pSerializer";
-                _arg.m_sType = "Duckvil::RuntimeSerializer::ISerializer*";
-                _arg.m_pParentScope = _func;
-
-                _func->m_aArguments.push_back(_arg);
-            }
-
-            _struct->m_aScopes.push_back(_func);
-
-            for(Parser::__ast_entity* _child : _struct->m_aScopes)
-            {
-                if(_child->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_variable)
+                for(const auto& _needed : _var->m_aNeededDefines)
                 {
-                    Parser::__ast_entity_variable* _var = (Parser::__ast_entity_variable*)_child;
-                    bool _skip = false;
+                    bool _contain = false;
 
-                    for(const auto& _needed : _var->m_aNeededDefines)
+                    for(const auto& _declared : _ast.m_aUserDefines)
                     {
-                        bool _contain = false;
-
-                        for(const auto& _declared : _ast.m_aUserDefines)
+                        if(_needed == _declared.m_sUserDefine)
                         {
-                            if(_needed == _declared.m_sUserDefine)
-                            {
-                                _contain = true;
-
-                                break;
-                            }
-                        }
-
-                        if(!_contain)
-                        {
-                            _skip = true;
+                            _contain = true;
 
                             break;
                         }
                     }
 
-                    if(!_skip && _var->m_sType.find("const") == std::string::npos)
+                    if(!_contain)
                     {
-                        _pData->m_pCurrentContext->m_aVars.push_back(_var->m_sName);
+                        _skip = true;
+
+                        break;
                     }
                 }
-            }
 
-            for(Parser::__ast_entity* _ent : _entity->m_aScopes)
-            {
-                recursive(_pData, _ast, _ent);
+                if(!_skip && _var->m_sType.find("const") == std::string::npos)
+                {
+                    _pData->m_pCurrentContext->m_aVars.push_back(_var->m_sName);
+                }
             }
-
-            _pData->m_pCurrentContext = _pData->m_pCurrentContext ? _pData->m_pCurrentContext->m_pParent : nullptr;
         }
-        else
+
+        for(Parser::__ast_entity* _ent : _entity->m_aScopes)
         {
-            for(Parser::__ast_entity* _ent : _entity->m_aScopes)
-            {
-                recursive(_pData, _ast, _ent);
-            }
+            recursive(_pData, _ast, _ent);
         }
+
+        _pData->m_pCurrentContext = _pData->m_pCurrentContext ? _pData->m_pCurrentContext->m_pParent : nullptr;
     }
 
     void recursive_generate(void* _pContext, const std::string& _sFileID, std::ofstream& _file, const char* _sModuleName, std::vector<std::pair<uint32_t, std::vector<std::string>>>& _aGenerated)
