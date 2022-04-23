@@ -621,7 +621,7 @@ namespace Duckvil { namespace RuntimeReflection {
         return _handle;
     }
 
-    DUCKVIL_RESOURCE(property_t) record_property(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, const char* _sName, std::size_t _ullLength, uintptr_t _ullAddress)
+    DUCKVIL_RESOURCE(property_t) record_property(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, const char* _sName, std::size_t _ullLength, uintptr_t _ullAddress, const property_traits& _traits)
     {
         __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aTypes, _owner.m_ID);
         __property_t _property = {};
@@ -630,6 +630,7 @@ namespace Duckvil { namespace RuntimeReflection {
         _property.m_ullTypeID = _ullTypeID;
         _property.m_owner = _owner;
         _property.m_metas = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __meta_t);
+        _property.m_traits = _traits;
 
         // _property.m_sName = new char[_ullLength];
         _property.m_sName = static_cast<char*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8));
@@ -675,7 +676,7 @@ namespace Duckvil { namespace RuntimeReflection {
         return _handle;
     }
 
-    DUCKVIL_RESOURCE(function_t) record_function(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, __ifunction* _pFunction, const char* _sName, std::size_t _ullLength, std::size_t _ullReturnTypeID, std::size_t _ullArgumentsTypeID, Memory::Queue<__argument_t>& _arguments)
+    DUCKVIL_RESOURCE(function_t) record_function(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __data* _pData, DUCKVIL_RESOURCE(type_t) _owner, __ifunction* _pFunction, const char* _sName, std::size_t _ullLength, std::size_t _ullReturnTypeID, std::size_t _ullArgumentsTypeID, Memory::Queue<__argument_t>& _arguments, const function_traits& _traits)
     {
         __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aTypes, _owner.m_ID);
         __function_t _function = {};
@@ -684,6 +685,7 @@ namespace Duckvil { namespace RuntimeReflection {
         _function.m_ullReturnTypeID = _ullReturnTypeID;
         _function.m_ullArgumentsTypeID = _ullArgumentsTypeID;
         _function.m_pRawFunction = _pFunction->GetRawPointer();
+        _function.m_traits = _traits;
 
         // _function.m_sFunctionName = new char[_ullLength];
         _function.m_sFunctionName = static_cast<char*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _ullLength, 8));

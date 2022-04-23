@@ -7,6 +7,7 @@
 #include "Memory/SlotArray.h"
 
 #include "RuntimeReflection/Function.h"
+#include "RuntimeReflection/Trait.h"
 
 // #include "Event/ImmediatePool.h"
 
@@ -37,15 +38,6 @@
 #define DUCKVIL_RUNTIME_REFLECTION_FUNCTION_NAME_MAX 32
 
 #define DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(...) typeid(void(__VA_ARGS__)).hash_code()
-
-#define DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(type, trait) (std::trait<type>::value ? static_cast<property_traits>((uint8_t)_traits | (uint8_t)property_traits::trait) : _traits)
-
-namespace std {
-
-    template <typename Type>
-    struct is_bool : std::is_same<bool, typename std::remove_cv<Type>::type> {};
-
-}
 
 namespace Duckvil { namespace RuntimeReflection {
 
@@ -78,19 +70,6 @@ namespace Duckvil { namespace RuntimeReflection {
     DUCKVIL_RESOURCE_DECLARE(variant_t);
     DUCKVIL_RESOURCE_DECLARE(meta_t);
     DUCKVIL_RESOURCE_DECLARE(argument_t);
-
-    enum class property_traits : uint16_t
-    {
-        is_pointer          = 1 << 0,
-        is_reference        = 1 << 1,
-        is_array            = 1 << 2,
-        is_void             = 1 << 3,
-        is_integral         = 1 << 4,
-        is_floating_point   = 1 << 5,
-        is_enum             = 1 << 6,
-        is_bool             = 1 << 7,
-        is_const            = 1 << 8
-    };
 
     enum __protection : uint8_t
     {
@@ -194,6 +173,7 @@ namespace Duckvil { namespace RuntimeReflection {
         std::size_t m_ullArgumentsTypeID;
         // DUCKVIL_RESOURCE(function_t) m_uiTypeSlotIndex; // TODO: Check if set
         void* m_pRawFunction;
+        function_traits m_traits;
     });
 
     slot(__type_t,
@@ -225,30 +205,6 @@ namespace Duckvil { namespace RuntimeReflection {
 
         void* m_pObject;
     });
-
-    template <typename Type>
-    static inline property_traits recorder_generate_traits()
-    {
-        property_traits _traits = {};
-
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_pointer);
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_reference);
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_array);
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_void);
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_integral);
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_floating_point);
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_enum);
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_bool);
-        _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, is_const);
-
-        return _traits;
-    }
-
-    template <typename Type>
-    static inline property_traits recorder_generate_traits(const Type& _type)
-    {
-        return recorder_generate_traits<Type>();
-    }
 
     template <std::size_t Length>
     void compare_namespace(const DUCKVIL_SLOT_ARRAY(__namespace_t)& _typeNamespaces, uint32_t& _uiIndex, bool& _bRes, const char(&_sName)[Length])
@@ -1152,12 +1108,12 @@ namespace Duckvil { namespace RuntimeReflection {
             typeid(KeyType).hash_code(),
             sizeof(KeyType),
             alignof(KeyType),
-            recorder_generate_traits(_key),
+            recorder_generate_property_traits(_key),
             &_key,
             typeid(ValueType).hash_code(),
             sizeof(ValueType),
             alignof(ValueType),
-            recorder_generate_traits(_value),
+            recorder_generate_property_traits(_value),
             &_value
             );
     }
@@ -1176,12 +1132,12 @@ namespace Duckvil { namespace RuntimeReflection {
             typeid(KeyType).hash_code(),
             sizeof(KeyType),
             alignof(KeyType),
-            recorder_generate_traits(_key),
+            recorder_generate_property_traits(_key),
             &_key,
             typeid(ValueType).hash_code(),
             sizeof(ValueType),
             alignof(ValueType),
-            recorder_generate_traits(_value),
+            recorder_generate_property_traits(_value),
             &_value
             );
     }
@@ -1217,7 +1173,7 @@ namespace Duckvil { namespace RuntimeReflection {
             typeid(ValueType).hash_code(),
             sizeof(ValueType),
             alignof(ValueType),
-            recorder_generate_traits(_value),
+            recorder_generate_property_traits(_value),
             &_value
         );
     }
@@ -1253,12 +1209,12 @@ namespace Duckvil { namespace RuntimeReflection {
             typeid(const char*).hash_code(),
             Length,
             8,
-            recorder_generate_traits(_sKey),
+            recorder_generate_property_traits(_sKey),
             _sKey,
             typeid(ValueType).hash_code(),
             sizeof(ValueType),
             alignof(ValueType),
-            recorder_generate_traits(_value),
+            recorder_generate_property_traits(_value),
             &_value
         );
     }
@@ -1294,7 +1250,7 @@ namespace Duckvil { namespace RuntimeReflection {
             typeid(ValueType).hash_code(),
             sizeof(ValueType),
             alignof(ValueType),
-            recorder_generate_traits(_value),
+            recorder_generate_property_traits(_value),
             &_value
         );
     }
