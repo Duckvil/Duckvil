@@ -203,7 +203,7 @@ namespace Duckvil { namespace Utils {
 
         _res.m_ullLength = _sText.m_ullLength - 1 + _sText2.m_ullLength - 1 + 1;
 
-        allocate(&_res, _res.m_ullLength);
+        allocate(&_res, _sText.m_pMemory, _sText.m_pAllocator, _res.m_ullLength);
 
         memcpy(_res.m_sText, _sText.m_sText, _sText.m_ullLength - 1);
         memcpy((uint8_t*)_res.m_sText + _sText.m_ullLength - 1, _sText2.m_sText, _sText2.m_ullLength - 1);
