@@ -136,6 +136,20 @@ namespace Duckvil { namespace Utils {
                 return *this;
             }
 
+            if(m_ullLength != 0)
+            {
+                if(m_pMemory != nullptr && m_pAllocator != nullptr)
+                {
+                    m_pMemory->m_fnFreeListFree_(m_pAllocator, m_sText);
+                }
+                else if(m_sText)
+                {
+                    delete[] m_sText;
+
+                    m_sText = nullptr;
+                }
+            }
+
             m_sText = std::move(_string.m_sText);
             m_ullLength = std::move(_string.m_ullLength);
             m_pMemory = std::move(_string.m_pMemory);
