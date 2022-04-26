@@ -346,7 +346,7 @@ namespace Duckvil { namespace Editor {
 
                         if(typeid(const Event::Pool<Event::mode::immediate>*).hash_code() == _argument.m_ullTypeID)
                         {
-                            auto _argumentMeta = RuntimeReflection::get_argument_meta_variant(_type.GetTypeHandle(), _constructorHandle, i, "Editor");
+                            auto _argumentMeta = RuntimeReflection::get_meta(_type.GetTypeHandle(), _constructorHandle, i, "Editor");
 
                             if(_argumentMeta.m_ullTypeID == typeid(bool).hash_code() && *static_cast<bool*>(_argumentMeta.m_pData))
                             {
@@ -354,7 +354,7 @@ namespace Duckvil { namespace Editor {
                             }
                             else
                             {
-                                _argumentMeta = RuntimeReflection::get_argument_meta_variant(_type.GetTypeHandle(), _constructorHandle, i, "Engine");
+                                _argumentMeta = RuntimeReflection::get_meta(_type.GetTypeHandle(), _constructorHandle, i, "Engine");
 
                                 if(_argumentMeta.m_ullTypeID == typeid(bool).hash_code() && *static_cast<bool*>(_argumentMeta.m_pData))
                                 {

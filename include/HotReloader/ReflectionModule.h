@@ -180,7 +180,7 @@ namespace Duckvil { namespace HotReloader {
 
                     if(_funcHandle.m_ID != -1)
                     {
-                        const RuntimeReflection::__type_t& _inhType = _pData->m_pRuntimeReflection->m_fnGetType(_pData->m_pRuntimeReflectionData, _inhTypeHandle);
+                        const RuntimeReflection::__type_t& _inhType = _pData->m_pRuntimeReflection->m_fnGetTypeByHandle(_pData->m_pRuntimeReflectionData, _inhTypeHandle);
 
                         _pData->m_pCurrentContext->m_aChildSerializers.push_back(_inhType.m_sTypeName);
                     }

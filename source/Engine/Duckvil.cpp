@@ -576,14 +576,14 @@ namespace Duckvil {
                                     c.Push(_pData->m_projectManagerData);
                                 }
 
-                                const auto& _engine = RuntimeReflection::get_argument_meta_variant(_typeHandle, _constructorHandle, i, "Engine");
+                                const auto& _engine = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, i, "Engine");
 
                                 if(_engine.m_ullTypeID == typeid(bool).hash_code() && _engine.m_pData && *(bool*)_engine.m_pData)
                                 {
                                     c.Push(&_pData->m_eventPool);
                                 }
 
-                                const auto& _editor = RuntimeReflection::get_argument_meta_variant(_typeHandle, _constructorHandle, i, "Editor");
+                                const auto& _editor = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, i, "Editor");
 
                                 if(_editor.m_ullTypeID == typeid(bool).hash_code() && _editor.m_pData && *(bool*)_editor.m_pData)
                                 {

@@ -4,12 +4,11 @@
 #include "RuntimeReflection/ObjectCreatedEvent.h"
 #include "RuntimeReflection/TrackedObjectCreatedEvent.h"
 #include "RuntimeReflection/PrepareObjectEvent.h"
+#include "RuntimeReflection/Meta.h"
 
 #include "Memory/Queue.h"
 
 #include "Event/ImmediatePool.h"
-
-#include "PlugNPlay/Module.h"
 
 // Index will be incremented each source file to avoid function name collision
 // Each plugin/__module will be created file which contains total count of recorders
