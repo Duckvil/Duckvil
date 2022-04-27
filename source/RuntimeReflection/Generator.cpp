@@ -29,7 +29,7 @@ namespace Duckvil { namespace RuntimeReflection {
     {
         for(const Parser::__ast_inheritance& _inheritance : _pEntity->m_aInheritance)
         {
-            _file << "record_inheritance<" << _inheritance.m_sName << ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, ";
+            _file << "record_inheritance<" << _inheritance.m_sName << ">(_data, _type, ";
 
             if(_inheritance.m_protection == Parser::__ast_access::__ast_access_public)
             {
@@ -86,17 +86,17 @@ namespace Duckvil { namespace RuntimeReflection {
             }
         }
 
-        _file << ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);\n";
+        _file << ">(_data, _type);\n";
 
         for(const Parser::__ast_meta& _meta : _castedConstructor->m_aMeta)
         {
             if(!_meta.m_sValue.empty())
             {
-                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _constructor, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+                _file << "record_meta(_data, _type, _constructor, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
             }
             else
             {
-                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _constructor, " + _meta.m_sKey + ", true);\n";
+                _file << "record_meta(_data, _type, _constructor, " + _meta.m_sKey + ", true);\n";
             }
         }
 
@@ -108,11 +108,11 @@ namespace Duckvil { namespace RuntimeReflection {
             {
                 if(!_meta.m_sValue.empty())
                 {
-                    _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _constructor, " << _index << ", " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+                    _file << "record_meta(_data, _type, _constructor, " << _index << ", " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
                 }
                 else
                 {
-                    _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _constructor, " << _index << ", " + _meta.m_sKey + ", true);\n";
+                    _file << "record_meta(_data, _type, _constructor, " << _index << ", " + _meta.m_sKey + ", true);\n";
                 }
             }
 
@@ -139,11 +139,11 @@ namespace Duckvil { namespace RuntimeReflection {
         }
 
         _file << "_destructor = record_destructor<" + _sNamespace + _pParentEntity->m_sName;
-        _file << ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type);\n";
+        _file << ">(_data, _type);\n";
 
         for(const Parser::__ast_meta& _meta : _castedDestructor->m_aMeta)
         {
-            _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _destructor, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+            _file << "record_meta(_data, _type, _destructor, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
         }
     }
 
@@ -203,11 +203,11 @@ namespace Duckvil { namespace RuntimeReflection {
             _file << "#ifdef " << _define << "\n";
         }
 
-        _file << "_property = record_property<" + _additionalNamespaceTypedef + _castedVariable->m_sType + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(" + _sNamespace + _pParentEntity->m_sName + ", " + _castedVariable->m_sName + "), \"" + _castedVariable->m_sName + "\");\n";
+        _file << "_property = record_property<" + _additionalNamespaceTypedef + _castedVariable->m_sType + ">(_data, _type, offsetof(" + _sNamespace + _pParentEntity->m_sName + ", " + _castedVariable->m_sName + "), \"" + _castedVariable->m_sName + "\");\n";
 
         for(const Parser::__ast_meta& _meta : _castedVariable->m_aMeta)
         {
-            _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _property, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+            _file << "record_meta(_data, _type, _property, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
         }
 
         for(const auto& _define : _castedVariable->m_aNeededDefines)
@@ -256,7 +256,7 @@ namespace Duckvil { namespace RuntimeReflection {
             }
         }
 
-        _file << ")>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(" << _sNamespace + _pParentEntity->m_sName << ", " << _castedCallback->m_sName << "), \"" << _castedCallback->m_sName << "\");\n";
+        _file << ")>(_data, _type, offsetof(" << _sNamespace + _pParentEntity->m_sName << ", " << _castedCallback->m_sName << "), \"" << _castedCallback->m_sName << "\");\n";
 
         for(const auto& _define : _castedCallback->m_aNeededDefines)
         {
@@ -323,11 +323,11 @@ namespace Duckvil { namespace RuntimeReflection {
             }
         }
 
-        _file << ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, &" << _sNamespace + _pParentEntity->m_sName + "::" + _castedFunction->m_sName << ", \"" << _castedFunction->m_sName << "\");\n";
+        _file << ">(_data, _type, &" << _sNamespace + _pParentEntity->m_sName + "::" + _castedFunction->m_sName << ", \"" << _castedFunction->m_sName << "\");\n";
 
         for(const Parser::__ast_meta& _meta : _castedFunction->m_aMeta)
         {
-            _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _function, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+            _file << "record_meta(_data, _type, _function, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
         }
 
         uint32_t _index = 0;
@@ -336,7 +336,7 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             for(const Parser::__ast_meta& _meta : _argument.m_aMeta)
             {
-                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, _function, " << _index << ", " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+                _file << "record_meta(_data, _type, _function, " << _index << ", " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
             }
 
             ++_index;
@@ -385,7 +385,7 @@ namespace Duckvil { namespace RuntimeReflection {
             _file << "#ifdef " << _define << "\n";
         }
 
-        _file << "_type = record_type<" + _additionalNamespace + _casted->m_sName + ">(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, \"" + _casted->m_sName + "\");\n";
+        _file << "_type = record_type<" + _additionalNamespace + _casted->m_sName + ">(_data, \"" + _casted->m_sName + "\");\n";
         _file << "_recordedTypes.push_back(_type);\n";
 
         Parser::__ast_entity* _namespace = _casted->m_pParentScope;
@@ -405,22 +405,22 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             Parser::__ast_entity_namespace* _n = _namespaces.top();
 
-            _file << "record_namespace(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, \"" << _n->m_sName << "\");\n";
+            _file << "record_namespace(_data, _type, \"" << _n->m_sName << "\");\n";
 
             _namespaces.pop();
         }
 
-        _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, " << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID) << ", " << _pData->m_uiRecorderIndex << ");\n";
+        _file << "record_meta(_data, _type, " << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID) << ", " << _pData->m_uiRecorderIndex << ");\n";
 
         for(const Parser::__ast_meta& _meta : _casted->m_aMeta)
         {
             if(!_meta.m_sValue.empty())
             {
-                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+                _file << "record_meta(_data, _type, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
             }
             else
             {
-                _file << "record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, " + _meta.m_sKey + ", true);\n";
+                _file << "record_meta(_data, _type, " + _meta.m_sKey + ", true);\n";
             }
         }
 
@@ -544,7 +544,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
             recursive(_pData, _ast, &_ast.m_main, _file);
 
-            _file << "return duckvil_recorded_types_create(_pMemoryInterface, _pAllocator, _recordedTypes, \"" << _pData->m_sInclude << "\", " << _pData->m_uiRecorderIndex << ");\n";
+            _file << "return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, \"" << _pData->m_sInclude << "\", " << _pData->m_uiRecorderIndex << ");\n";
             _file << "}\n";
 
             _file << "#ifdef DUCKVIL_RUNTIME_COMPILE\n";

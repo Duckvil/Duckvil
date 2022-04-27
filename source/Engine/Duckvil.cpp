@@ -126,7 +126,15 @@ namespace Duckvil {
 
         _pData->m_pThread->m_fnStart(_pData->m_pThreadData);
 
-        RuntimeReflection::record_meta(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), RuntimeReflection::get_current().m_pRecorder, RuntimeReflection::get_current().m_pReflectionData, RuntimeReflection::get_type<__data>(), "Thread", _pData->m_pThreadData);
+        duckvil_runtime_reflection_recorder_stuff _stuff =
+        {
+            ._pMemoryInterface = _pData->m_heap.GetMemoryInterface(),
+            ._pAllocator = _pData->m_heap.GetAllocator(),
+            ._pFunctions = RuntimeReflection::get_current().m_pRecorder,
+            ._pData = RuntimeReflection::get_current().m_pReflectionData
+        };
+
+        RuntimeReflection::record_meta(_stuff, RuntimeReflection::get_type<__data>(), "Thread", _pData->m_pThreadData);
 
         return true;
     }
@@ -313,10 +321,18 @@ namespace Duckvil {
 
         FrameMarkStart("Initializing reflection");
 
+        duckvil_runtime_reflection_recorder_stuff _stuff =
+        {
+            ._pMemoryInterface = _pData->m_heap.GetMemoryInterface(),
+            ._pAllocator = _pData->m_heap.GetAllocator(),
+            ._pFunctions = RuntimeReflection::get_current().m_pRecorder,
+            ._pData = RuntimeReflection::get_current().m_pReflectionData
+        };
+
         for(uint32_t i = 0; i < _pData->m_aLoadedModules.Size(); ++i)
         {
             PlugNPlay::__module_information& _loadedModule = _pData->m_aLoadedModules[i];
-            uint32_t (*get_recorder_count)();
+            RuntimeReflection::GetRecordersCountFunction get_recorder_count = nullptr;
             void (*make_current_runtime_reflection_context)(const duckvil_frontend_reflection_context&);
             void (*make_current_heap_context)(const Memory::free_list_context&);
 
@@ -340,7 +356,7 @@ namespace Duckvil {
 
             for(uint32_t j = 0; j < _recordersCount; ++j)
             {
-                duckvil_recorderd_types (*record)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);
+                RuntimeReflection::RecordFunction record = nullptr;
 
                 _module.get(_loadedModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(j)).c_str(), reinterpret_cast<void**>(&record));
 
@@ -351,7 +367,7 @@ namespace Duckvil {
                     continue;
                 }
 
-                duckvil_recorderd_types _types = record(_pMemoryInterface, _pAllocator, _pData->m_pRuntimeReflectionRecorder, _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
+                duckvil_recorderd_types _types = record(_stuff);
 
                 _types.m_pModule = &_loadedModule;
 
@@ -379,7 +395,7 @@ namespace Duckvil {
         init_logger(_pData, &_module);
         init_threading(_pData, &_module);
 
-        RuntimeReflection::record_meta(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), RuntimeReflection::get_current().m_pRecorder, RuntimeReflection::get_current().m_pReflectionData, RuntimeReflection::get_type<__data>(), "Time", &(_pData->m_timeData));
+        RuntimeReflection::record_meta(_stuff, RuntimeReflection::get_type<__data>(), "Time", &(_pData->m_timeData));
 
         for(uint32_t i = 0; i < _pData->m_aLoadedModules.Size(); ++i)
         {
@@ -537,8 +553,10 @@ namespace Duckvil {
                     auto _constructors = RuntimeReflection::get_constructors(_pData->m_heap, _typeHandle);
                     void* _system = nullptr;
 
-                    for(const auto& _constructorHandle : _constructors)
+                // TODO: Problem in release
+                    for(/*const auto& _constructorHandle : _constructors*/ uint32_t i = 0; i < _constructors.Size(); ++i)
                     {
+                        const auto& _constructorHandle = _constructors[i];
                         const auto& _constructor = RuntimeReflection::get_constructor(_typeHandle, _constructorHandle);
                         uint32_t _constructorArgumentsCount = DUCKVIL_SLOT_ARRAY_SIZE(_constructor.m_arguments);
 

@@ -385,7 +385,7 @@ int main(int argc, char* argv[])
     for(uint32_t i = 0; i < _loadedModulesCount; ++i)
     {
         const Duckvil::PlugNPlay::__module_information& _loadedModule = _loadedModules[i];
-        uint32_t (*get_recorder_count)();
+        Duckvil::RuntimeReflection::GetRecordersCountFunction get_recorder_count = nullptr;
 
         _module.get(_loadedModule, "duckvil_get_runtime_reflection_recorder_count", reinterpret_cast<void**>(&get_recorder_count));
 
@@ -400,9 +400,17 @@ int main(int argc, char* argv[])
 
         uint32_t _recordersCount = get_recorder_count();
 
+        duckvil_runtime_reflection_recorder_stuff _stuff =
+        {
+            ._pMemoryInterface = _memoryInterface,
+            ._pAllocator = _free_list,
+            ._pFunctions = _reflectionRecorderFTable,
+            ._pData = _runtimeReflectionData
+        };
+
         for(uint32_t j = 0; j < _recordersCount; ++j)
         {
-            duckvil_recorderd_types (*record)(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData);
+            Duckvil::RuntimeReflection::RecordFunction record = nullptr;
 
             _module.get(_loadedModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(j)).c_str(), reinterpret_cast<void**>(&record));
 
@@ -413,7 +421,7 @@ int main(int argc, char* argv[])
                 continue;
             }
 
-            record(_memoryInterface, _free_list, _reflectionRecorderFTable, _reflectionFTable, _runtimeReflectionData);
+            record(_stuff);
         }
     }
 

@@ -513,7 +513,7 @@ namespace Duckvil { namespace HotReloader {
 
         PlugNPlay::__module_information _testModule(Utils::string(m_sModuleName.c_str(), strlen(m_sModuleName.c_str()) + 1), DUCKVIL_SWAP_OUTPUT);
         uint32_t (*get_recorder_index)();
-        duckvil_recorderd_types (*record)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);
+        RuntimeReflection::RecordFunction record = nullptr;
 
         _module.load(&_testModule);
 
@@ -543,7 +543,15 @@ namespace Duckvil { namespace HotReloader {
         FrameMarkEnd("SetupContexts");
         FrameMarkStart("RecordTypeReflection");
 
-        duckvil_recorderd_types _types = record(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), g_duckvilFrontendReflectionContext.m_pRecorder, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData);
+        duckvil_runtime_reflection_recorder_stuff _stuff =
+        {
+            ._pMemoryInterface = m_heap.GetMemoryInterface(),
+            ._pAllocator = m_heap.GetAllocator(),
+            ._pFunctions = RuntimeReflection::get_current().m_pRecorder,
+            ._pData = RuntimeReflection::get_current().m_pReflectionData
+        };
+
+        duckvil_recorderd_types _types = record(_stuff);
 
         FrameMarkEnd("RecordTypeReflection");
 

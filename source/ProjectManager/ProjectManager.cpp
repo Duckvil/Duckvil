@@ -267,7 +267,7 @@ namespace Duckvil { namespace ProjectManager {
 
         _module.load(&_projectManager);
 
-        uint32_t (*get_recorder_count)();
+        RuntimeReflection::GetRecordersCountFunction get_recorder_count = nullptr;
         void (*make_current_runtime_reflection_context)(const duckvil_frontend_reflection_context&);
         void (*make_current_logger_context)(const logger_context&);
 
@@ -291,7 +291,7 @@ namespace Duckvil { namespace ProjectManager {
 
         for(uint32_t j = 0; j < _recordersCount; ++j)
         {
-            duckvil_recorderd_types (*record)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);
+            RuntimeReflection::RecordFunction record = nullptr;
 
             _module.get(_projectManager, (std::string("duckvil_runtime_reflection_record_") + std::to_string(j)).c_str(), reinterpret_cast<void**>(&record));
 
@@ -302,7 +302,15 @@ namespace Duckvil { namespace ProjectManager {
                 continue;
             }
 
-            duckvil_recorderd_types _types = record(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), RuntimeReflection::get_current().m_pRecorder, RuntimeReflection::get_current().m_pReflection, RuntimeReflection::get_current().m_pReflectionData);
+            duckvil_runtime_reflection_recorder_stuff _stuff =
+            {
+                ._pMemoryInterface = _pData->m_heap.GetMemoryInterface(),
+                ._pAllocator = _pData->m_heap.GetAllocator(),
+                ._pFunctions = RuntimeReflection::get_current().m_pRecorder,
+                ._pData = RuntimeReflection::get_current().m_pReflectionData
+            };
+
+            duckvil_recorderd_types _types = record(_stuff);
 
             if(_pProject->m_aTypes.Full())
             {
@@ -412,9 +420,17 @@ namespace Duckvil { namespace ProjectManager {
 
         _pData->m_heap.Allocate(_project.m_aTypes, 1);
 
+        duckvil_runtime_reflection_recorder_stuff _stuff =
+        {
+            ._pMemoryInterface = _pData->m_heap.GetMemoryInterface(),
+            ._pAllocator = _pData->m_heap.GetAllocator(),
+            ._pFunctions = RuntimeReflection::get_current().m_pRecorder,
+            ._pData = RuntimeReflection::get_current().m_pReflectionData
+        };
+
         for(uint32_t j = 0; j < _recordersCount; ++j)
         {
-            duckvil_recorderd_types (*record)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, RuntimeReflection::__recorder_ftable* _pRecorder, RuntimeReflection::__ftable* _pRuntimeReflection, RuntimeReflection::__data* _pData);
+            RuntimeReflection::RecordFunction record = nullptr;
 
             _module.get(_project.m_module, (std::string("duckvil_runtime_reflection_record_") + std::to_string(j)).c_str(), reinterpret_cast<void**>(&record));
 
@@ -425,7 +441,7 @@ namespace Duckvil { namespace ProjectManager {
                 continue;
             }
 
-            duckvil_recorderd_types _types = record(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), RuntimeReflection::get_current().m_pRecorder, RuntimeReflection::get_current().m_pReflection, RuntimeReflection::get_current().m_pReflectionData);
+            duckvil_recorderd_types _types = record(_stuff);
 
             if(_project.m_aTypes.Full())
             {

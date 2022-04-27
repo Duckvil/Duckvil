@@ -15,8 +15,16 @@ namespace Duckvil {
 
         _heap.Allocate(_data._loggers, 1);
 
-        RuntimeReflection::record_meta(_heap.GetMemoryInterface(), _heap.GetAllocator(), RuntimeReflection::get_current().m_pRecorder, RuntimeReflection::get_current().m_pReflectionData, _loggerType.GetTypeHandle(), "EventPool", _eventPool);
-        RuntimeReflection::record_meta(_heap.GetMemoryInterface(), _heap.GetAllocator(), RuntimeReflection::get_current().m_pRecorder, RuntimeReflection::get_current().m_pReflectionData, _loggerType.GetTypeHandle(), "Loggers", _data._loggers);
+        duckvil_runtime_reflection_recorder_stuff _stuff =
+        {
+            ._pMemoryInterface = _heap.GetMemoryInterface(),
+            ._pAllocator = _heap.GetAllocator(),
+            ._pFunctions = RuntimeReflection::get_current().m_pRecorder,
+            ._pData = RuntimeReflection::get_current().m_pReflectionData
+        };
+
+        RuntimeReflection::record_meta(_stuff, _loggerType.GetTypeHandle(), "EventPool", _eventPool);
+        RuntimeReflection::record_meta(_stuff, _loggerType.GetTypeHandle(), "Loggers", _data._loggers);
 
         _heap.Allocate(_data.m_aChannels, 1);
 
