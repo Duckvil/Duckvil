@@ -348,6 +348,28 @@ namespace Duckvil { namespace RuntimeReflection {
         }
     }
 
+    void generate_enum(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
+    {
+        const Parser::__ast_entity_enum* _castedEnum = static_cast<const Parser::__ast_entity_enum*>(_pEntity);
+
+        for(const auto& _define : _castedEnum->m_aNeededDefines)
+        {
+            _file << "#ifdef " << _define << "\n";
+        }
+
+        _file << "_enum = record_enum<" << _sNamespace + _pParentEntity->m_sName << "::" << _castedEnum->m_sName << ">(_data, _type, \"" << _castedEnum->m_sName << "\");\n";
+
+        for(const Parser::__ast_meta& _meta : _castedEnum->m_aMeta)
+        {
+            _file << "record_meta(_data, _type, _enum, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+        }
+
+        for(const auto& _element : _castedEnum->m_aElements)
+        {
+            _file << "_enumElement = record_enum_element(_data, _type, _enum, " << _sNamespace + _pParentEntity->m_sName << "::" << _castedEnum->m_sName << "::" << _element << ", \"" << _element << "\");\n";
+        }
+    }
+
     void generate_structure(__generator_data* _pData, const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, std::ofstream& _file)
     {
         const Parser::__ast_entity_structure* _casted = static_cast<const Parser::__ast_entity_structure*>(_pEntity);
@@ -450,6 +472,9 @@ namespace Duckvil { namespace RuntimeReflection {
             case Parser::__ast_entity_type::__ast_entity_type_function:
                 generate_function(_ast, _ent, _casted, _file, _additionalNamespace);
                 break;
+            case Parser::__ast_entity_type::__ast_entity_type_enum:
+                generate_enum(_ast, _ent, _casted, _file, _additionalNamespace);
+                break;
             default:
                 break;
             }
@@ -540,6 +565,8 @@ namespace Duckvil { namespace RuntimeReflection {
             _file << "DUCKVIL_RESOURCE(constructor_t) _constructor;\n";
             _file << "DUCKVIL_RESOURCE(destructor_t) _destructor;\n";
             _file << "DUCKVIL_RESOURCE(function_t) _function;\n";
+            _file << "DUCKVIL_RESOURCE(enum_t) _enum;\n";
+            _file << "DUCKVIL_RESOURCE(enum_element_t) _enumElement;\n";
             _file << "std::vector<" << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) << "> _recordedTypes;\n";
 
             recursive(_pData, _ast, &_ast.m_main, _file);
