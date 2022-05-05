@@ -2,7 +2,7 @@
 
 namespace Duckvil { namespace Utils {
 
-    bool user_define_behavior(Parser::__ast* _pAST, Parser::__lexer_ftable* _pLexer, Parser::__lexer_data* _pLexerData, const std::string& _sUserDefine, std::string* _spResult)
+    Parser::__behavior user_define_behavior(Parser::__ast* _pAST, Parser::__lexer_ftable* _pLexer, Parser::__lexer_data* _pLexerData, const std::string& _sUserDefine, std::string* _spResult)
     {
         uint32_t _roundBrackets = 0;
         std::string _token;
@@ -35,10 +35,10 @@ namespace Duckvil { namespace Utils {
 
         _pAST->m_pCurrentScope->m_aScopes.push_back(_defineEntity);
 
-        return true;
+        return Parser::__behavior::__behavior_Proceed;
     }
 
-    bool user_define_resource_behavior(Parser::__ast* _pAST, Parser::__lexer_ftable* _pLexer, Parser::__lexer_data* _pLexerData, const std::string& _sUserDefine, std::string* _spResult)
+    Parser::__behavior user_define_resource_behavior(Parser::__ast* _pAST, Parser::__lexer_ftable* _pLexer, Parser::__lexer_data* _pLexerData, const std::string& _sUserDefine, std::string* _spResult)
     {
         uint32_t _roundBrackets = 0;
         std::string _token;
@@ -69,7 +69,7 @@ namespace Duckvil { namespace Utils {
             _spResult->append(_token);
         }
 
-        return true;
+        return Parser::__behavior::__behavior_Proceed;
     }
 
 }}

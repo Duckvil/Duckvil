@@ -10,6 +10,15 @@
 
 namespace Duckvil { namespace Parser {
 
+    enum class __behavior : uint8_t
+    {
+        __behavior_Nothing,
+        __behavior_Skip,
+        __behavior_Pause,
+        __behavior_Resume,
+        __behavior_Proceed
+    };
+
     enum class __ast_entity_type : uint8_t
     {
         __ast_entity_type_function,
@@ -263,7 +272,7 @@ namespace Duckvil { namespace Parser {
     struct user_define
     {
         std::string m_sUserDefine;
-        bool (*m_fnBehavior)(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data* _pLexerData, const std::string& _sUserDefine, std::string* _spResult);
+        __behavior (*m_fnBehavior)(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data* _pLexerData, const std::string& _sUserDefine, std::string* _spResult);
     };
 
     struct __ast

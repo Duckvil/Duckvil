@@ -466,8 +466,17 @@ namespace Duckvil { namespace Parser {
         return _res;
     }
 
-    bool check_define(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data* _pLexerData, std::string& _sToken, std::string* _spCurrent)
+    __behavior check_define(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data* _pLexerData, std::string& _sToken, std::string* _spCurrent)
     {
+        if(_sToken == "DUCKVIL_RUNTIME_REFLECTION_SKIP")
+        {
+            return __behavior::__behavior_Skip;
+        }
+        else if(_sToken == "DUCKVIL_RUNTIME_REFLECTION_PAUSE")
+        {
+            return __behavior::__behavior_Pause;
+        }
+
         for(const user_define& _define : _pAST->m_aUserDefines)
         {
             if(_sToken == _define.m_sUserDefine)
@@ -506,7 +515,7 @@ namespace Duckvil { namespace Parser {
             }
         }
 
-        return false;
+        return __behavior::__behavior_Nothing;
     }
 
     void skip_body(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, std::string& _sToken)
@@ -1426,9 +1435,28 @@ namespace Duckvil { namespace Parser {
         bool _oneSlash = false;
         bool _continue = false;
         bool _wasContinue = false;
+        bool _skipRest = false;
+        bool _paused = false;
 
         while(_continue || _pLexer->next_token(&_lexerData, &_token))
         {
+            if(_paused)
+            {
+                if(_token == "DUCKVIL_RUNTIME_REFLECTION_RESUME")
+                {
+                    _paused = false;
+                }
+
+                continue;
+            }
+
+            if(_skipRest)
+            {
+                printf("Skipping: %s\n", _pAST->m_sFile.string().c_str());
+
+                break;
+            }
+
             _wasContinue = _continue;
             _continue = false;
 
@@ -1972,9 +2000,29 @@ namespace Duckvil { namespace Parser {
             }
             else
             {
-                if(check_define(_pAST, _pLexer, &_lexerData, _token, &_tmpExpression))
+                // if(check_define(_pAST, _pLexer, &_lexerData, _token, &_tmpExpression))
+                // {
+                //     continue;
+                // }
+
+                switch (check_define(_pAST, _pLexer, &_lexerData, _token, &_tmpExpression))
                 {
+                case __behavior::__behavior_Nothing:
+                    break;
+                case __behavior::__behavior_Pause:
+                    _paused = true;
+                    break;
+                case __behavior::__behavior_Proceed:
                     continue;
+                    break;
+                case __behavior::__behavior_Resume:
+                    break;
+                case __behavior::__behavior_Skip:
+                    _skipRest = true;
+                    continue;
+                    break;
+                default:
+                    break;
                 }
 
                 if(_token == "")
