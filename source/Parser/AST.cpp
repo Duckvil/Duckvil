@@ -1314,6 +1314,8 @@ namespace Duckvil { namespace Parser {
         }
     }
 
+    bool g_bPause = false;
+
     void process_pending(__lexer_ftable* _pLexer, __lexer_data* _pLexerData, __ast* _pAST, std::string& _sToken, std::string& _sTmpExpression, bool& _bContinue)
     {
         if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_namespace)
@@ -1408,9 +1410,13 @@ namespace Duckvil { namespace Parser {
 
             if(_sToken == ",")
             {
-
+                g_bPause = false;
             }
-            else if(_sToken != "")
+            else if(_sToken == "=")
+            {
+                g_bPause = true;
+            }
+            else if(!g_bPause && _sToken != "")
             {
                 _enum->m_aElements.push_back(_sToken);
             }
