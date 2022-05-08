@@ -1,5 +1,9 @@
 #pragma once
 
+#define DUCKVIL_RUNTIME_REFLECTION_SKIP
+
+DUCKVIL_RUNTIME_REFLECTION_SKIP
+
 #include "PlugNPlay/Module.h"
 
 #include "Memory/Vector.h"
@@ -8,6 +12,8 @@
 
 #include "RuntimeReflection/Function.h"
 #include "RuntimeReflection/Trait.h"
+
+#include <vector>
 
 // #include "Event/ImmediatePool.h"
 
@@ -75,6 +81,7 @@ namespace Duckvil { namespace RuntimeReflection {
     DUCKVIL_RESOURCE_DECLARE(argument_t);
     DUCKVIL_RESOURCE_DECLARE(enum_t);
     DUCKVIL_RESOURCE_DECLARE(enum_element_t);
+    DUCKVIL_RESOURCE_DECLARE(ntype_t);
 
     enum __protection : uint8_t
     {
@@ -204,7 +211,6 @@ namespace Duckvil { namespace RuntimeReflection {
         DUCKVIL_SLOT_ARRAY(__namespace_t) m_namespaces;
         DUCKVIL_SLOT_ARRAY(__inheritance_t) m_inheritances;
         DUCKVIL_SLOT_ARRAY(__function_t) m_functions;
-        DUCKVIL_SLOT_ARRAY(__enum_t) m_enums;
     // This contains all variant keys, even for properties, functions, etc.
     // It could be useful if we want to get all metas that contains specific key in specific type
         DUCKVIL_SLOT_ARRAY(__variant_t) m_variantKeys;
@@ -215,6 +221,18 @@ namespace Duckvil { namespace RuntimeReflection {
         std::size_t m_ullTypeID;
         char* m_sTypeName;
         DUCKVIL_RESOURCE(type_t) m_uiSlotIndex;
+    });
+
+    slot(__ntype_t,
+    {
+        DUCKVIL_SLOT_ARRAY(__property_t) m_properties;
+        DUCKVIL_SLOT_ARRAY(__namespace_t) m_namespaces;
+        DUCKVIL_SLOT_ARRAY(__function_t) m_functions;
+        DUCKVIL_SLOT_ARRAY(__enum_t) m_enums;
+    // This contains all variant keys, even for properties, functions, etc.
+    // It could be useful if we want to get all metas that contains specific key in specific type
+        DUCKVIL_SLOT_ARRAY(__variant_t) m_variantKeys;
+        DUCKVIL_SLOT_ARRAY(__variant_t) m_variantValues;
     });
 
     slot(__object_t,
@@ -261,6 +279,7 @@ namespace Duckvil { namespace RuntimeReflection {
     struct __data
     {
         DUCKVIL_SLOT_ARRAY(__type_t) m_aTypes;
+        DUCKVIL_SLOT_ARRAY(__ntype_t) m_aNTypes;
         DUCKVIL_SLOT_ARRAY(__object_t) m_aObjects;
         // Event::Pool<Event::mode::immediate> m_events;
         void* m_pEvents;
@@ -321,14 +340,23 @@ namespace Duckvil { namespace RuntimeReflection {
         const __variant_t& (*m_fnGetVariantKeyByHandle)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(variant_t) _handle);
         const __variant_t& (*m_fnGetVariantValueByHandle)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(variant_t) _handle);
 
-    // Enum
-        DUCKVIL_RESOURCE(enum_t) (*m_fnGetEnumHandleByName)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength);
-        DUCKVIL_RESOURCE(enum_t) (*m_fnGetEnumHandleByTypeID)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, std::size_t _ullTypeID);
-        const __enum_t& (*m_fnGetEnumByHandle)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle);
 
-        DUCKVIL_RESOURCE(enum_element_t) (*m_fnGetEnumElementHandleByName)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const char* _sName, std::size_t _ullLength);
-        DUCKVIL_RESOURCE(enum_element_t) (*m_fnGetEnumElementHandleByValue)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const void* _pValue, std::size_t _ullSize);
-        const __enum_element_t& (*m_fnGetEnumElementByHandle)(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _enumHandle, DUCKVIL_RESOURCE(enum_element_t) _handle);
+
+    //////////////////////////////////////
+    /////////////// GLOBAL /////////////////
+    //////////////////////////////////////
+
+        DUCKVIL_RESOURCE(ntype_t) (*m_fnGetNTypeHandleByNamespaces)(__data* _pData, const std::vector<const char*>& _aNamespaces);
+        const __ntype_t& (*m_fnGetNTypeByHandle)(__data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle);
+
+        DUCKVIL_RESOURCE(enum_t) (*m_fnGetNEnumHandleByName)(__data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, const char* _sName, std::size_t _ullLength);
+        DUCKVIL_RESOURCE(enum_t) (*m_fnGetNEnumHandleByTypeID)(__data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, std::size_t _ullTypeID);
+        const __enum_t& (*m_fnGetNEnumByHandle)(__data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle);
+        const __enum_t& (*m_fnGetNEnumByTypeID)(__data* _pData, std::size_t _ullTypeID, DUCKVIL_RESOURCE(ntype_t)* _pTypeHandle, DUCKVIL_RESOURCE(enum_t)* _pHandle);
+
+        DUCKVIL_RESOURCE(enum_element_t) (*m_fnGetNEnumElementHandleByName)(__data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const char* _sName, std::size_t _ullLength);
+        DUCKVIL_RESOURCE(enum_element_t) (*m_fnGetNEnumElementHandleByValue)(__data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const void* _pValue, std::size_t _ullSize);
+        const __enum_element_t& (*m_fnGetNEnumElementByHandle)(__data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _enumHandle, DUCKVIL_RESOURCE(enum_element_t) _handle);
 
 
 
@@ -728,39 +756,60 @@ namespace Duckvil { namespace RuntimeReflection {
         return _pReflection->m_fnGetFunctionArgument(_pData, _typeHandle, _functionHandle, _argumentHandle);
     }
 
-// Enum
-    template <std::size_t Length>
-    static inline DUCKVIL_RESOURCE(enum_t) get_enum_handle(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char (&_sName)[Length])
+    static inline DUCKVIL_RESOURCE(ntype_t) get_type(__ftable* _pReflection, __data* _pData, const std::vector<const char*>& _aNamespaces)
     {
-        return _pReflection->m_fnGetEnumHandleByName(_pData, _typeHandle, _sName, Length);
+        return _pReflection->m_fnGetNTypeHandleByNamespaces(_pData, _aNamespaces);
     }
 
-    template <typename Type>
-    static inline DUCKVIL_RESOURCE(enum_t) get_enum_handle(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle)
+    static inline const __ntype_t& get_type(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle)
     {
-        return _pReflection->m_fnGetEnumHandleByTypeID(_pData, _typeHandle, typeid(Type).hash_code());
-    }
-
-    static inline const __enum_t& get_enum(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle)
-    {
-        return _pReflection->m_fnGetEnumByHandle(_pData, _typeHandle, _handle);
+        return _pReflection->m_fnGetNTypeByHandle(_pData, _typeHandle);
     }
 
     template <std::size_t Length>
-    static inline DUCKVIL_RESOURCE(enum_element_t) get_enum_element_handle(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const char (&_sName)[Length])
+    static inline DUCKVIL_RESOURCE(enum_t) get_enum_handle(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, const char (&_sName)[Length])
     {
-        return _pReflection->m_fnGetEnumElementHandleByName(_pData, _typeHandle, _handle, _sName, Length);
+        return _pReflection->m_fnGetNEnumHandleByName(_pData, _typeHandle, _sName, Length);
+    }
+
+    static inline DUCKVIL_RESOURCE(enum_t) get_enum_handle(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, std::size_t _ullTypeID)
+    {
+        return _pReflection->m_fnGetNEnumHandleByTypeID(_pData, _typeHandle, _ullTypeID);
     }
 
     template <typename Type>
-    static inline DUCKVIL_RESOURCE(enum_element_t) get_enum_element_handle(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const Type& _value)
+    static inline DUCKVIL_RESOURCE(enum_t) get_enum_handle(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle)
     {
-        return _pReflection->m_fnGetEnumElementHandleByValue(_pData, _typeHandle, _handle, &_value, sizeof(Type));
+        // return _pReflection->m_fnGetNEnumHandleByTypeID(_pData, _typeHandle, typeid(Type).hash_code());
+        return get_enum_handle(_pReflection, _pData, _typeHandle, typeid(Type).hash_code());
     }
 
-    static inline const __enum_element_t& get_enum_element(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _enumHandle, DUCKVIL_RESOURCE(enum_element_t) _handle)
+    static inline const __enum_t& get_enum(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle)
     {
-        return _pReflection->m_fnGetEnumElementByHandle(_pData, _typeHandle, _enumHandle, _handle);
+        return _pReflection->m_fnGetNEnumByHandle(_pData, _typeHandle, _handle);
+    }
+
+    // TODO: Not sure
+    static inline const __enum_t& get_enum(__ftable* _pReflection, __data* _pData, std::size_t _ullTypeID, DUCKVIL_RESOURCE(ntype_t)* _pTypeHandle = nullptr, DUCKVIL_RESOURCE(enum_t)* _pHandle = nullptr)
+    {
+        return _pReflection->m_fnGetNEnumByTypeID(_pData, _ullTypeID, _pTypeHandle, _pHandle);
+    }
+
+    template <std::size_t Length>
+    static inline DUCKVIL_RESOURCE(enum_element_t) get_enum_element_handle(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const char (&_sName)[Length])
+    {
+        return _pReflection->m_fnGetNEnumElementHandleByName(_pData, _typeHandle, _handle, _sName, Length);
+    }
+
+    template <typename Type>
+    static inline DUCKVIL_RESOURCE(enum_element_t) get_enum_element_handle(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const Type& _value)
+    {
+        return _pReflection->m_fnGetNEnumElementHandleByValue(_pData, _typeHandle, _handle, &_value, sizeof(Type));
+    }
+
+    static inline const __enum_element_t& get_enum_element(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _enumHandle, DUCKVIL_RESOURCE(enum_element_t) _handle)
+    {
+        return _pReflection->m_fnGetNEnumElementByHandle(_pData, _typeHandle, _enumHandle, _handle);
     }
 
 
@@ -1103,32 +1152,58 @@ namespace Duckvil { namespace RuntimeReflection {
         return get_variant_value(_context.m_pReflection, _context.m_pReflectionData, _typeHandle, _handle);
     }
 
-// Enum
+    static inline DUCKVIL_RESOURCE(ntype_t) get_type(const std::vector<const char*>& _aNamespaces)
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        return get_type(_context.m_pReflection, _context.m_pReflectionData, _aNamespaces);
+    }
+
+    static inline const __ntype_t& get_type(DUCKVIL_RESOURCE(ntype_t) _typeHandle)
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        return get_type(_context.m_pReflection, _context.m_pReflectionData, _typeHandle);
+    }
+
     template <std::size_t Length>
-    static inline DUCKVIL_RESOURCE(enum_t) get_enum_handle(DUCKVIL_RESOURCE(type_t) _typeHandle, const char (&_sName)[Length])
+    static inline DUCKVIL_RESOURCE(enum_t) get_enum_handle(DUCKVIL_RESOURCE(ntype_t) _typeHandle, const char (&_sName)[Length])
     {
         duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
 
         return get_enum_handle(_context.m_pReflection, _context.m_pReflectionData, _typeHandle, _sName);
     }
 
-    template <typename Type>
-    static inline DUCKVIL_RESOURCE(enum_t) get_enum_handle(DUCKVIL_RESOURCE(type_t) _typeHandle)
+    static inline DUCKVIL_RESOURCE(enum_t) get_enum_handle(DUCKVIL_RESOURCE(ntype_t) _typeHandle, std::size_t _ullTypeID)
     {
         duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
 
-        return get_enum_handle<Type>(_context.m_pReflection, _context.m_pReflectionData, _typeHandle);
+        return get_enum_handle(_context.m_pReflection, _context.m_pReflectionData, _typeHandle, _ullTypeID);
     }
 
-    static inline const __enum_t& get_enum(DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle)
+    template <typename Type>
+    static inline DUCKVIL_RESOURCE(enum_t) get_enum_handle(DUCKVIL_RESOURCE(ntype_t) _typeHandle)
+    {
+        return get_enum_handle(_typeHandle, typeid(Type).hash_code());
+    }
+
+    static inline const __enum_t& get_enum(DUCKVIL_RESOURCE(ntype_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle)
     {
         duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
 
         return get_enum(_context.m_pReflection, _context.m_pReflectionData, _typeHandle, _handle);
     }
 
+    // TODO: Not sure
+    static inline const __enum_t& get_enum(size_t _ullTypeID, DUCKVIL_RESOURCE(ntype_t)* _pTypeHandle = nullptr, DUCKVIL_RESOURCE(enum_t)* _pHandle = nullptr)
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        return get_enum(_context.m_pReflection, _context.m_pReflectionData, _ullTypeID, _pTypeHandle, _pHandle);
+    }
+
     template <std::size_t Length>
-    static inline DUCKVIL_RESOURCE(enum_element_t) get_enum_element_handle(DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const char (&_sName)[Length])
+    static inline DUCKVIL_RESOURCE(enum_element_t) get_enum_element_handle(DUCKVIL_RESOURCE(ntype_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const char (&_sName)[Length])
     {
         duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
 
@@ -1136,14 +1211,14 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename Type>
-    static inline DUCKVIL_RESOURCE(enum_element_t) get_enum_element_handle(DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const Type& _value)
+    static inline DUCKVIL_RESOURCE(enum_element_t) get_enum_element_handle(DUCKVIL_RESOURCE(ntype_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const Type& _value)
     {
         duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
 
         return get_enum_element_handle(_context.m_pReflection, _context.m_pReflectionData, _typeHandle, _handle, _value);
     }
 
-    static inline const __enum_element_t& get_enum_element(DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _enumHandle, DUCKVIL_RESOURCE(enum_element_t) _handle)
+    static inline const __enum_element_t& get_enum_element(DUCKVIL_RESOURCE(ntype_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _enumHandle, DUCKVIL_RESOURCE(enum_element_t) _handle)
     {
         duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
 

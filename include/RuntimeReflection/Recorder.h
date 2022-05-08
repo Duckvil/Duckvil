@@ -1,5 +1,9 @@
 #pragma once
 
+#define DUCKVIL_RUNTIME_REFLECTION_SKIP
+
+DUCKVIL_RUNTIME_REFLECTION_SKIP
+
 #include "RuntimeReflection/RuntimeReflection.h"
 #include "RuntimeReflection/ObjectCreatedEvent.h"
 #include "RuntimeReflection/TrackedObjectCreatedEvent.h"
@@ -297,8 +301,6 @@ namespace Duckvil { namespace RuntimeReflection {
         DUCKVIL_RESOURCE(namespace_t) (*m_fnRecordNamespace)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, const char* _sName, std::size_t _ullLength);
         DUCKVIL_RESOURCE(inheritance_t) (*m_fnRecordInheritance)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullInheritanceTypeID, __protection _protection);
         DUCKVIL_RESOURCE(function_t) (*m_fnRecordFunction)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, __ifunction* _pFunction, const char* _sName, std::size_t _ullLength, std::size_t _ullReturnTypeID, std::size_t _ullArgumentsTypeID, Memory::Queue<__argument_t>& _arguments, const function_traits& _traits);
-        DUCKVIL_RESOURCE(enum_t) (*m_fnRecordEnum)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, const char* _sName, std::size_t _ullLength);
-        DUCKVIL_RESOURCE(enum_element_t) (*m_fnRecordEnumElement)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, DUCKVIL_RESOURCE(enum_t) _enum, void* _pValue, std::size_t _ullTypeSize, const char* _sName, std::size_t _ullLength);
         DUCKVIL_RESOURCE(meta_t) (*m_fnRecordTypeMeta)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, const __recorder_meta_info& _meta);
         DUCKVIL_RESOURCE(meta_t) (*m_fnRecordPropertyMeta)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(property_t) _owner, const __recorder_meta_info& _meta);
         DUCKVIL_RESOURCE(meta_t) (*m_fnRecordConstructorMeta)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(constructor_t) _owner, const __recorder_meta_info& _meta);
@@ -306,6 +308,10 @@ namespace Duckvil { namespace RuntimeReflection {
         DUCKVIL_RESOURCE(meta_t) (*m_fnRecordFunctionMeta)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _owner, const __recorder_meta_info& _meta);
         DUCKVIL_RESOURCE(meta_t) (*m_fnRecordFunctionArgumentMeta)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _owner, uint32_t _uiArgumentIndex, const __recorder_meta_info& _meta);
         DUCKVIL_RESOURCE(meta_t) (*m_fnRecordEnumMeta)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, DUCKVIL_RESOURCE(enum_t) _enum, const __recorder_meta_info& _meta);
+
+        DUCKVIL_RESOURCE(ntype_t) (*m_fnRecordNType)(const duckvil_runtime_reflection_recorder_stuff& _data, const std::vector<const char*>& _aNamespaces);
+        DUCKVIL_RESOURCE(enum_t) (*m_fnRecordNEnum)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(ntype_t) _owner, std::size_t _ullTypeID, const char* _sName, std::size_t _ullLength);
+        DUCKVIL_RESOURCE(enum_element_t) (*m_fnRecordNEnumElement)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(ntype_t) _owner, DUCKVIL_RESOURCE(enum_t) _enum, void* _pValue, std::size_t _ullTypeSize, const char* _sName, std::size_t _ullLength);
     };
 
     template <typename Type, std::size_t Length>
@@ -325,6 +331,11 @@ namespace Duckvil { namespace RuntimeReflection {
         // _pData->m_aFrontend.Allocate(_froentendType);
 
         return _typeHandle;
+    }
+
+    static DUCKVIL_RESOURCE(ntype_t) record_type(const duckvil_runtime_reflection_recorder_stuff& _data, const std::vector<const char*>& _aNamespaces)
+    {
+        return _data._pFunctions->m_fnRecordNType(_data, _aNamespaces);
     }
 
     template <typename Type, typename... Args>
@@ -461,15 +472,15 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename Type, std::size_t Length>
-    static DUCKVIL_RESOURCE(enum_t) record_enum(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _typeHandle, const char (&_sName)[Length])
+    static DUCKVIL_RESOURCE(enum_t) record_enum(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(ntype_t) _typeHandle, const char (&_sName)[Length])
     {
-        return _data._pFunctions->m_fnRecordEnum(_data, _typeHandle, typeid(Type).hash_code(), _sName, Length);
+        return _data._pFunctions->m_fnRecordNEnum(_data, _typeHandle, typeid(Type).hash_code(), _sName, Length);
     }
 
     template <typename Type, std::size_t Length>
-    static DUCKVIL_RESOURCE(enum_element_t) record_enum_element(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _enumHandle, Type _value, const char (&_sName)[Length])
+    static DUCKVIL_RESOURCE(enum_element_t) record_enum_element(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(ntype_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _enumHandle, Type _value, const char (&_sName)[Length])
     {
-        return _data._pFunctions->m_fnRecordEnumElement(_data, _typeHandle, _enumHandle, &_value, sizeof(Type), _sName, Length);
+        return _data._pFunctions->m_fnRecordNEnumElement(_data, _typeHandle, _enumHandle, &_value, sizeof(Type), _sName, Length);
     }
 
 }}

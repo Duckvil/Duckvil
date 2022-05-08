@@ -472,9 +472,6 @@ namespace Duckvil { namespace RuntimeReflection {
             case Parser::__ast_entity_type::__ast_entity_type_function:
                 generate_function(_ast, _ent, _casted, _file, _additionalNamespace);
                 break;
-            case Parser::__ast_entity_type::__ast_entity_type_enum:
-                generate_enum(_ast, _ent, _casted, _file, _additionalNamespace);
-                break;
             default:
                 break;
             }
@@ -499,12 +496,84 @@ namespace Duckvil { namespace RuntimeReflection {
             }
 
             _pData->m_aNamespaces.push(_namespace);
+
+            _file << "{\n";
+            _file << "_namespaces.push_back(\"" << _casted->m_sName << "\");\n";
+            _file << "_ntype = record_type(_data, _namespaces);\n";
+            _file << "_recordedNTypes.push_back(_ntype);\n";
         }
         else if(_entity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_structure)
         {
+            const Parser::__ast_entity_structure* _c = static_cast<const Parser::__ast_entity_structure*>(_entity);
+
+            // _file << "{\n";
+            _file << "_namespaces.push_back(\"" << _c->m_sName << "\");\n";
+            _file << "_ntype = record_type(_data, _namespaces);\n";
+            _file << "_recordedNTypes.push_back(_ntype);\n";
+
             generate_structure(_pData, _ast, _entity, _file);
 
+            _file << "_namespaces.pop_back();\n";
+            // _file << "}\n";
+
             // _pData->m_pCurrent = _casted;
+        }
+        else if(_entity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_enum)
+        {
+            const Parser::__ast_entity* _parent = _entity;
+            std::string _additionalNamespace;
+
+            std::string _combined = combine_namespace(_pData->m_aNamespaces);
+
+            for(const auto& _define : _entity->m_aNeededDefines)
+            {
+                _file << "#ifdef " << _define << "\n";
+            }
+
+            if(_combined.size() > 0)
+            {
+                _additionalNamespace += _combined + "::";
+            }
+
+            std::queue<std::string> _ns;
+
+            while(_parent->m_pParentScope)
+            {
+                if(_parent->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_structure)
+                {
+                    const Parser::__ast_entity_structure* _c = static_cast<const Parser::__ast_entity_structure*>(_parent);
+
+                    _ns.push(_c->m_sName);
+                }
+
+                _parent = _parent->m_pParentScope;
+            }
+
+            while(!_ns.empty())
+            {
+                _additionalNamespace += _ns.front() + "::";
+
+                _ns.pop();
+            }
+
+            const Parser::__ast_entity_enum* _castedEnum = static_cast<const Parser::__ast_entity_enum*>(_entity);
+
+            _file << "_enum = record_enum<" << _additionalNamespace << _castedEnum->m_sName << ">(_data, _ntype, \"" << _castedEnum->m_sName << "\");\n";
+
+            // for(const Parser::__ast_meta& _meta : _castedEnum->m_aMeta)
+            // {
+            //     _file << "record_meta(_data, _ntype, _enum, " + _meta.m_sKey + ", " + _meta.m_sValue + ");\n";
+            // }
+
+            for(const auto& _element : _castedEnum->m_aElements)
+            {
+                _file << "_enumElement = record_enum_element(_data, _ntype, _enum, " << _additionalNamespace << _castedEnum->m_sName << "::" << _element << ", \"" << _element << "\");\n";
+            }
+
+            for(const auto& _define : _entity->m_aNeededDefines)
+            {
+                _file << "#endif\n";
+            }
         }
 
         for(Parser::__ast_entity* _ent : _entity->m_aScopes)
@@ -515,6 +584,9 @@ namespace Duckvil { namespace RuntimeReflection {
         if(_entity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_namespace)
         {
             _pData->m_aNamespaces.pop();
+
+            _file << "_namespaces.pop_back();\n";
+            _file << "}\n";
         }
     }
 
@@ -567,7 +639,10 @@ namespace Duckvil { namespace RuntimeReflection {
             _file << "DUCKVIL_RESOURCE(function_t) _function;\n";
             _file << "DUCKVIL_RESOURCE(enum_t) _enum;\n";
             _file << "DUCKVIL_RESOURCE(enum_element_t) _enumElement;\n";
+            _file << "DUCKVIL_RESOURCE(ntype_t) _ntype;\n";
             _file << "std::vector<" << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_type_t) << "> _recordedTypes;\n";
+            _file << "std::vector<" << DUCKVIL_TO_STRING(Duckvil::RuntimeReflection::__duckvil_resource_ntype_t) << "> _recordedNTypes;\n";
+            _file << "std::vector<const char*> _namespaces;\n";
 
             recursive(_pData, _ast, &_ast.m_main, _file);
 

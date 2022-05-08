@@ -180,6 +180,60 @@ namespace Duckvil { namespace RuntimeReflection {
         return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
     }
 
+    DUCKVIL_RESOURCE(ntype_t) record_ntype(const duckvil_runtime_reflection_recorder_stuff& _data, const std::vector<const char*>& _aNamespaces)
+    {
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_data._pData->m_aNTypes.m_data); ++i)
+        {
+            const auto& _t = DUCKVIL_SLOT_ARRAY_GET(_data._pData->m_aNTypes, i);
+
+            if(DUCKVIL_DYNAMIC_ARRAY_SIZE(_t.m_namespaces.m_data) != _aNamespaces.size())
+            {
+                continue;
+            }
+
+            bool _skip = false;
+
+            for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_t.m_namespaces.m_data); ++j)
+            {
+                const auto& _n = DUCKVIL_SLOT_ARRAY_GET(_t.m_namespaces, j);
+
+                if(strcmp(_n.m_sNamespaceName, _aNamespaces[j]) != 0)
+                {
+                    _skip = true;
+
+                    break;
+                }
+            }
+
+            if(!_skip)
+            {
+                return { i };
+            }
+        }
+
+        __ntype_t _type = {};
+
+        _type.m_properties =    DUCKVIL_SLOT_ARRAY_NEW(_data._pMemoryInterface, _data._pAllocator, __property_t);
+        _type.m_namespaces =    DUCKVIL_SLOT_ARRAY_NEW(_data._pMemoryInterface, _data._pAllocator, __namespace_t);
+        _type.m_functions =     DUCKVIL_SLOT_ARRAY_NEW(_data._pMemoryInterface, _data._pAllocator, __function_t);
+        _type.m_variantKeys =   DUCKVIL_SLOT_ARRAY_NEW(_data._pMemoryInterface, _data._pAllocator, __variant_t);
+        _type.m_variantValues = DUCKVIL_SLOT_ARRAY_NEW(_data._pMemoryInterface, _data._pAllocator, __variant_t);
+
+        for(uint32_t i = 0; i < _aNamespaces.size(); ++i)
+        {
+            std::size_t _len = strlen(_aNamespaces[i]) + 1;
+            __namespace_t _namespace = {};
+
+            _namespace.m_sNamespaceName = static_cast<char*>(_data._pMemoryInterface->m_fnFreeListAllocate_(_data._pAllocator, _len, 8));
+
+            memcpy(_namespace.m_sNamespaceName, _aNamespaces[i], _len);
+
+            duckvil_slot_array_insert(_data._pMemoryInterface, _data._pAllocator, _type.m_namespaces, _namespace);
+        }
+
+        return { duckvil_slot_array_insert(_data._pMemoryInterface, _data._pAllocator, _data._pData->m_aNTypes, _type) };
+    }
+
     DUCKVIL_RESOURCE(meta_t) record_property_meta(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(property_t) _owner, const __recorder_meta_info& _meta)
     {
         __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_data._pData->m_aTypes, _typeHandle.m_ID);
@@ -712,9 +766,9 @@ namespace Duckvil { namespace RuntimeReflection {
         return _handle;
     }
 
-    DUCKVIL_RESOURCE(enum_t) record_enum(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, const char* _sName, std::size_t _ullLength)
+    DUCKVIL_RESOURCE(enum_t) record_enum(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(ntype_t) _owner, std::size_t _ullTypeID, const char* _sName, std::size_t _ullLength)
     {
-        __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_data._pData->m_aTypes, _owner.m_ID);
+        __ntype_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_data._pData->m_aNTypes, _owner.m_ID);
         __enum_t _enum = {};
 
         _enum.m_metas = DUCKVIL_SLOT_ARRAY_NEW(_data._pMemoryInterface, _data._pAllocator, __meta_t);
@@ -724,16 +778,12 @@ namespace Duckvil { namespace RuntimeReflection {
 
         memcpy(_enum.m_sName, _sName, _ullLength);
 
-        DUCKVIL_RESOURCE(enum_t) _handle = {};
-
-        _handle.m_ID = duckvil_slot_array_insert(_data._pMemoryInterface, _data._pAllocator, _type->m_enums, _enum);
-
-        return _handle;
+        return { duckvil_slot_array_insert(_data._pMemoryInterface, _data._pAllocator, _type->m_enums, _enum) };
     }
 
-    DUCKVIL_RESOURCE(enum_element_t) record_enum_element(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, DUCKVIL_RESOURCE(enum_t) _enumHandle, void* _pValue, std::size_t _ullTypeSize, const char* _sName, std::size_t _ullLength)
+    DUCKVIL_RESOURCE(enum_element_t) record_enum_element(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(ntype_t) _owner, DUCKVIL_RESOURCE(enum_t) _enumHandle, void* _pValue, std::size_t _ullTypeSize, const char* _sName, std::size_t _ullLength)
     {
-        __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_data._pData->m_aTypes, _owner.m_ID);
+        __ntype_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_data._pData->m_aNTypes, _owner.m_ID);
         __enum_t* _enum = DUCKVIL_SLOT_ARRAY_GET_POINTER(_type->m_enums, _enumHandle.m_ID);
         __enum_element_t _element = {};
 
@@ -766,14 +816,16 @@ Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_record
     _functions.m_fnRecordNamespace = &Duckvil::RuntimeReflection::record_namespace;
     _functions.m_fnRecordInheritance = &Duckvil::RuntimeReflection::record_inheritance;
     _functions.m_fnRecordFunction = &Duckvil::RuntimeReflection::record_function;
-    _functions.m_fnRecordEnum = &Duckvil::RuntimeReflection::record_enum;
-    _functions.m_fnRecordEnumElement = &Duckvil::RuntimeReflection::record_enum_element;
     _functions.m_fnRecordTypeMeta = &Duckvil::RuntimeReflection::record_type_meta;
     _functions.m_fnRecordPropertyMeta = &Duckvil::RuntimeReflection::record_property_meta;
     _functions.m_fnRecordConstructorMeta = &Duckvil::RuntimeReflection::record_constructor_meta;
     _functions.m_fnRecordConstructorArgumentMeta = &Duckvil::RuntimeReflection::record_argument_meta;
     _functions.m_fnRecordFunctionMeta = &Duckvil::RuntimeReflection::record_function_meta;
     _functions.m_fnRecordFunctionArgumentMeta = &Duckvil::RuntimeReflection::record_argument_meta;
+
+    _functions.m_fnRecordNType = &Duckvil::RuntimeReflection::record_ntype;
+    _functions.m_fnRecordNEnum = &Duckvil::RuntimeReflection::record_enum;
+    _functions.m_fnRecordNEnumElement = &Duckvil::RuntimeReflection::record_enum_element;
 
     return &_functions;
 }

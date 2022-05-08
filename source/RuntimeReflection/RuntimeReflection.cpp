@@ -103,6 +103,7 @@ namespace Duckvil { namespace RuntimeReflection {
         __data* _data = static_cast<__data*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__data), alignof(__data)));
 
         _data->m_aTypes = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __type_t);
+        _data->m_aNTypes = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __ntype_t);
         _data->m_aObjects = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __object_t);
         // _data->m_aFrontend = Memory::Vector<IReflectedType*>(_pMemoryInterface, _pAllocator, 1);
 
@@ -492,90 +493,90 @@ namespace Duckvil { namespace RuntimeReflection {
         return DUCKVIL_SLOT_ARRAY_GET(_type.m_variantValues, _handle.m_ID);
     }
 
-    DUCKVIL_RESOURCE(enum_t) get_enum_handle_by_name(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength)
-    {
-        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+    // DUCKVIL_RESOURCE(enum_t) get_enum_handle_by_name(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength)
+    // {
+    //     const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_enums.m_data); ++i)
-        {
-            const auto& _enum = DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, i);
+    //     for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_enums.m_data); ++i)
+    //     {
+    //         const auto& _enum = DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, i);
 
-            if(strcmp(_enum.m_sName, _sName) == 0)
-            {
-                return { i };
-            }
-        }
+    //         if(strcmp(_enum.m_sName, _sName) == 0)
+    //         {
+    //             return { i };
+    //         }
+    //     }
 
-        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
-    }
+    //     return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    // }
 
-    DUCKVIL_RESOURCE(enum_t) get_enum_handle_by_type_id(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, std::size_t _ullTypeID)
-    {
-        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+    // DUCKVIL_RESOURCE(enum_t) get_enum_handle_by_type_id(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, std::size_t _ullTypeID)
+    // {
+    //     const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_enums.m_data); ++i)
-        {
-            const auto& _enum = DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, i);
+    //     for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_enums.m_data); ++i)
+    //     {
+    //         const auto& _enum = DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, i);
 
-            if(_enum.m_ullTypeID == _ullTypeID)
-            {
-                return { i };
-            }
-        }
+    //         if(_enum.m_ullTypeID == _ullTypeID)
+    //         {
+    //             return { i };
+    //         }
+    //     }
 
-        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
-    }
+    //     return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    // }
 
-    const __enum_t& get_enum_by_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle)
-    {
-        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+    // const __enum_t& get_enum_by_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle)
+    // {
+    //     const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
 
-        return DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, _handle.m_ID);
-    }
+    //     return DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, _handle.m_ID);
+    // }
 
-    DUCKVIL_RESOURCE(enum_element_t) get_enum_element_handle_by_name(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const char* _sName, std::size_t _ullLength)
-    {
-        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
-        const __enum_t& _enum = DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, _handle.m_ID);
+    // DUCKVIL_RESOURCE(enum_element_t) get_enum_element_handle_by_name(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const char* _sName, std::size_t _ullLength)
+    // {
+    //     const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+    //     const __enum_t& _enum = DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, _handle.m_ID);
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_enum.m_elements.m_data); ++i)
-        {
-            const auto& _element = DUCKVIL_SLOT_ARRAY_GET(_enum.m_elements, i);
+    //     for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_enum.m_elements.m_data); ++i)
+    //     {
+    //         const auto& _element = DUCKVIL_SLOT_ARRAY_GET(_enum.m_elements, i);
 
-            if(strcmp(_element.m_sName, _sName) == 0)
-            {
-                return { i };
-            }
-        }
+    //         if(strcmp(_element.m_sName, _sName) == 0)
+    //         {
+    //             return { i };
+    //         }
+    //     }
 
-        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
-    }
+    //     return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    // }
 
-    DUCKVIL_RESOURCE(enum_element_t) get_enum_element_handle_by_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const void* _pValue, std::size_t _ullSize)
-    {
-        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
-        const __enum_t& _enum = DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, _handle.m_ID);
+    // DUCKVIL_RESOURCE(enum_element_t) get_enum_element_handle_by_value(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const void* _pValue, std::size_t _ullSize)
+    // {
+    //     const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+    //     const __enum_t& _enum = DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, _handle.m_ID);
 
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_enum.m_elements.m_data); ++i)
-        {
-            const auto& _element = DUCKVIL_SLOT_ARRAY_GET(_enum.m_elements, i);
+    //     for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_enum.m_elements.m_data); ++i)
+    //     {
+    //         const auto& _element = DUCKVIL_SLOT_ARRAY_GET(_enum.m_elements, i);
 
-            if(memcmp(_element.m_pValue, _pValue, _ullSize) == 0)
-            {
-                return { i };
-            }
-        }
+    //         if(memcmp(_element.m_pValue, _pValue, _ullSize) == 0)
+    //         {
+    //             return { i };
+    //         }
+    //     }
 
-        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
-    }
+    //     return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    // }
 
-    const __enum_element_t& get_enum_element_by_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _enumHandle, DUCKVIL_RESOURCE(enum_element_t) _handle)
-    {
-        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
-        const __enum_t& _enum = DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, _handle.m_ID);
+    // const __enum_element_t& get_enum_element_by_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _enumHandle, DUCKVIL_RESOURCE(enum_element_t) _handle)
+    // {
+    //     const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+    //     const __enum_t& _enum = DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, _handle.m_ID);
 
-        return DUCKVIL_SLOT_ARRAY_GET(_enum.m_elements, _handle.m_ID);
-    }
+    //     return DUCKVIL_SLOT_ARRAY_GET(_enum.m_elements, _handle.m_ID);
+    // }
 
 
 
@@ -1085,6 +1086,163 @@ namespace Duckvil { namespace RuntimeReflection {
         }
     }
 
+    static DUCKVIL_RESOURCE(ntype_t) get_type(__data* _pData, const std::vector<const char*>& _aNamespaces)
+    {
+        const __data& _data = *_pData;
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_data.m_aNTypes.m_data); ++i)
+        {
+            const __ntype_t& _type = DUCKVIL_SLOT_ARRAY_GET(_data.m_aNTypes, i);
+            size_t _namespacesSize = DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_namespaces.m_data);
+
+            if(_aNamespaces.size() == _namespacesSize)
+            {
+                bool _valid = true;
+
+                for(uint32_t j = 0; j < _aNamespaces.size(); ++j)
+                {
+                    const __namespace_t& _namespace = DUCKVIL_SLOT_ARRAY_GET(_type.m_namespaces, j);
+
+                    if(strcmp(_namespace.m_sNamespaceName, _aNamespaces[j]) != 0)
+                    {
+                        _valid = false;
+
+                        break;
+                    }
+                }
+
+                if(_valid)
+                {
+                    return { i };
+                }
+            }
+        }
+
+        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    }
+
+    const __ntype_t& get_type_by_handle(__data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle)
+    {
+        return DUCKVIL_SLOT_ARRAY_GET(_pData->m_aNTypes, _typeHandle.m_ID);
+    }
+
+    DUCKVIL_RESOURCE(enum_t) get_enum_handle_by_name(__data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, const char* _sName, std::size_t _ullLength)
+    {
+        const __ntype_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aNTypes, _typeHandle.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_enums.m_data); ++i)
+        {
+            const auto& _enum = DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, i);
+
+            if(strcmp(_enum.m_sName, _sName) == 0)
+            {
+                return { i };
+            }
+        }
+
+        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    }
+
+    DUCKVIL_RESOURCE(enum_t) get_enum_handle_by_type_id(__data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, std::size_t _ullTypeID)
+    {
+        const __ntype_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aNTypes, _typeHandle.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_enums.m_data); ++i)
+        {
+            const auto& _enum = DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, i);
+
+            if(_enum.m_ullTypeID == _ullTypeID)
+            {
+                return { i };
+            }
+        }
+
+        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    }
+
+    const __enum_t& get_enum_by_handle(__data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle)
+    {
+        const __ntype_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aNTypes, _typeHandle.m_ID);
+
+        return DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, _handle.m_ID);
+    }
+
+    const __enum_t& get_enum_by_typeid(__data* _pData, std::size_t _ullTypeID, DUCKVIL_RESOURCE(ntype_t)* _pTypeHandle, DUCKVIL_RESOURCE(enum_t)* _pHandle)
+    {
+        static __enum_t _invalid =
+        {
+            .m_ullTypeID = static_cast<size_t>(-1),
+            .m_sName = nullptr
+        };
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aNTypes.m_data); ++i)
+        {
+            const auto& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aNTypes, i);
+
+            for(uint32_t j = 0; j < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_enums.m_data); ++j)
+            {
+                const auto& _enum = DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, j);
+
+                if(_enum.m_ullTypeID == _ullTypeID)
+                {
+                    if(_pTypeHandle != nullptr && _pHandle != nullptr)
+                    {
+                        *_pTypeHandle = { i };
+                        *_pHandle = { j };
+                    }
+
+                    return _enum;
+                }
+            }
+        }
+
+        return _invalid;
+    }
+
+    DUCKVIL_RESOURCE(enum_element_t) get_enum_element_handle_by_name(__data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const char* _sName, std::size_t _ullLength)
+    {
+        const __ntype_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aNTypes, _typeHandle.m_ID);
+        const __enum_t& _enum = DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, _handle.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_enum.m_elements.m_data); ++i)
+        {
+            const auto& _element = DUCKVIL_SLOT_ARRAY_GET(_enum.m_elements, i);
+
+            if(strcmp(_element.m_sName, _sName) == 0)
+            {
+                return { i };
+            }
+        }
+
+        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    }
+
+    DUCKVIL_RESOURCE(enum_element_t) get_enum_element_handle_by_value(__data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _handle, const void* _pValue, std::size_t _ullSize)
+    {
+        const __ntype_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aNTypes, _typeHandle.m_ID);
+        const __enum_t& _enum = DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, _handle.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_enum.m_elements.m_data); ++i)
+        {
+            const auto& _element = DUCKVIL_SLOT_ARRAY_GET(_enum.m_elements, i);
+
+            if(memcmp(_element.m_pValue, _pValue, _ullSize) == 0)
+            {
+                return { i };
+            }
+        }
+
+        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    }
+
+    const __enum_element_t& get_enum_element_by_handle(__data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle, DUCKVIL_RESOURCE(enum_t) _enumHandle, DUCKVIL_RESOURCE(enum_element_t) _handle)
+    {
+        const __ntype_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aNTypes, _typeHandle.m_ID);
+        const __enum_t& _enum = DUCKVIL_SLOT_ARRAY_GET(_type.m_enums, _handle.m_ID);
+
+        return DUCKVIL_SLOT_ARRAY_GET(_enum.m_elements, _handle.m_ID);
+    }
+
 }}
 
 #define DUCKVIL_ASSIGN(ftable, name) \
@@ -1145,16 +1303,31 @@ Duckvil::RuntimeReflection::__ftable* duckvil_runtime_reflection_init()
     _functions.m_fnGetVariantKeyByHandle = &Duckvil::RuntimeReflection::get_variant_key_by_handle;
     _functions.m_fnGetVariantValueByHandle = &Duckvil::RuntimeReflection::get_variant_value_by_handle;
 
-// Enum
-    _functions.m_fnGetEnumHandleByName = &Duckvil::RuntimeReflection::get_enum_handle_by_name;
-    _functions.m_fnGetEnumHandleByTypeID = &Duckvil::RuntimeReflection::get_enum_handle_by_type_id;
+// // Enum
+//     _functions.m_fnGetEnumHandleByName = &Duckvil::RuntimeReflection::get_enum_handle_by_name;
+//     _functions.m_fnGetEnumHandleByTypeID = &Duckvil::RuntimeReflection::get_enum_handle_by_type_id;
 
-    _functions.m_fnGetEnumByHandle = &Duckvil::RuntimeReflection::get_enum_by_handle;
+//     _functions.m_fnGetEnumByHandle = &Duckvil::RuntimeReflection::get_enum_by_handle;
 
-    _functions.m_fnGetEnumElementHandleByName = &Duckvil::RuntimeReflection::get_enum_element_handle_by_name;
-    _functions.m_fnGetEnumElementHandleByValue = &Duckvil::RuntimeReflection::get_enum_element_handle_by_value;
+//     _functions.m_fnGetEnumElementHandleByName = &Duckvil::RuntimeReflection::get_enum_element_handle_by_name;
+//     _functions.m_fnGetEnumElementHandleByValue = &Duckvil::RuntimeReflection::get_enum_element_handle_by_value;
 
-    _functions.m_fnGetEnumElementByHandle = &Duckvil::RuntimeReflection::get_enum_element_by_handle;
+//     _functions.m_fnGetEnumElementByHandle = &Duckvil::RuntimeReflection::get_enum_element_by_handle;
+
+// Global
+    _functions.m_fnGetNTypeHandleByNamespaces = &Duckvil::RuntimeReflection::get_type;
+    _functions.m_fnGetNTypeByHandle = &Duckvil::RuntimeReflection::get_type_by_handle;
+
+    _functions.m_fnGetNEnumHandleByName = &Duckvil::RuntimeReflection::get_enum_handle_by_name;
+    _functions.m_fnGetNEnumHandleByTypeID = &Duckvil::RuntimeReflection::get_enum_handle_by_type_id;
+
+    _functions.m_fnGetNEnumByHandle = &Duckvil::RuntimeReflection::get_enum_by_handle;
+    _functions.m_fnGetNEnumByTypeID = &Duckvil::RuntimeReflection::get_enum_by_typeid;
+
+    _functions.m_fnGetNEnumElementHandleByName = &Duckvil::RuntimeReflection::get_enum_element_handle_by_name;
+    _functions.m_fnGetNEnumElementHandleByValue = &Duckvil::RuntimeReflection::get_enum_element_handle_by_value;
+
+    _functions.m_fnGetNEnumElementByHandle = &Duckvil::RuntimeReflection::get_enum_element_by_handle;
 
 // Meta
     DUCKVIL_ASSIGN(_functions, Type)
