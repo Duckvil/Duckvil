@@ -115,6 +115,9 @@ namespace Duckvil { namespace Editor {
 
         if(!m_bSkip)
         {
+            m_viewport.m_uiWidth = 1920;
+            m_viewport.m_uiHeight = 1080;
+
             setup_viewport(
                 &m_viewport,
                 m_heap.GetMemoryInterface(),
@@ -144,6 +147,11 @@ namespace Duckvil { namespace Editor {
         if((_size.x != m_oldSize.x || _size.y != m_oldSize.y) && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
         {
             DUCKVIL_LOG_INFO(LoggerChannelID::Default, "New viewport size: %f %f", _size.x, _size.y);
+
+            m_viewport.m_uiWidth = _size.x;
+            m_viewport.m_uiHeight = _size.y;
+
+            reset(&m_viewport);
 
             m_oldSize = _size;
         }

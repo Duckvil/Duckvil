@@ -32,9 +32,17 @@ namespace Duckvil { namespace Editor {
         glm::quat m_rotation;
         glm::vec3 m_position;
 
+        uint32_t m_uiWidth;
+        uint32_t m_uiHeight;
+
         flecs::world* m_ecs;
         flecs::query<Graphics::MeshComponent, Graphics::TransformComponent> m_rendererQuery;
     };
+
+    static inline void reset(viewport* _pViewport)
+    {
+        _pViewport->m_projection = glm::perspective(70.f, static_cast<float>(_pViewport->m_uiWidth) / static_cast<float>(_pViewport->m_uiHeight), 0.1f, 1000.f);
+    }
 
     static void setup_viewport(
         viewport* _pViewport,
@@ -124,7 +132,7 @@ namespace Duckvil { namespace Editor {
                 "transform"
             );
 
-        _pViewport->m_projection = glm::perspective(70.f, 1920.f / 1080.f, 0.1f, 1000.f);
+        reset(_pViewport);
 
         _pViewport->m_position = glm::vec3(0, 0, -5);
         _pViewport->m_rotation = glm::quat(0, 0, 0, 1);
