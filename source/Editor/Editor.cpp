@@ -264,11 +264,9 @@ namespace Duckvil { namespace Editor {
             if(RuntimeReflection::get_type(_widget.m_typeHandle).m_ullTypeID == RuntimeReflection::get_type(RuntimeReflection::get_type("ViewportWidget", { "Duckvil", "Editor" })).m_ullTypeID)
             {
                 const auto& _func = RuntimeReflection::get_function_handle<Graphics::Renderer::renderer_ftable*, Graphics::Renderer::renderer_data*>(_widget.m_typeHandle, "SetRenderer");
-                const auto& _func2 = RuntimeReflection::get_function_handle<Event::Pool<Event::mode::buffered>*>(_widget.m_typeHandle, "SetEventPool");
                 const auto& _func3 = RuntimeReflection::get_function_handle<flecs::world*>(_widget.m_typeHandle, "SetECS");
 
                 RuntimeReflection::invoke_member(_widget.m_typeHandle, _func, _pWidget, _data->m_pRenderer, _data->m_pRendererData);
-                RuntimeReflection::invoke_member(_widget.m_typeHandle, _func2, _pWidget, _data->m_pWindowEventPool);
                 RuntimeReflection::invoke_member(_widget.m_typeHandle, _func3, _pWidget, _data->m_pECS);
             }
 
@@ -284,11 +282,9 @@ namespace Duckvil { namespace Editor {
             if(RuntimeReflection::get_type(_widget.m_typeHandle).m_ullTypeID == RuntimeReflection::get_type(RuntimeReflection::get_type("ViewportWidget", { "Duckvil", "Editor" })).m_ullTypeID)
             {
                 const auto& _func = RuntimeReflection::get_function_handle<Graphics::Renderer::renderer_ftable*, Graphics::Renderer::renderer_data*>(_widget.m_typeHandle, "SetRenderer");
-                const auto& _func2 = RuntimeReflection::get_function_handle<Event::Pool<Event::mode::buffered>*>(_widget.m_typeHandle, "SetEventPool");
                 const auto& _func3 = RuntimeReflection::get_function_handle<flecs::world*>(_widget.m_typeHandle, "SetECS");
 
                 RuntimeReflection::invoke_member(_widget.m_typeHandle, _func, _pWidget, _data->m_pRenderer, _data->m_pRendererData);
-                RuntimeReflection::invoke_member(_widget.m_typeHandle, _func2, _pWidget, _data->m_pWindowEventPool);
                 RuntimeReflection::invoke_member(_widget.m_typeHandle, _func3, _pWidget, _data->m_pECS);
             }
 

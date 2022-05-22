@@ -594,18 +594,35 @@ namespace Duckvil {
                                     c.Push(_pData->m_projectManagerData);
                                 }
 
-                                const auto& _engine = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, i, "Engine");
+                            // Process event pools
+                                const size_t _bufferedEventPoolTypeID = typeid(Event::Pool<Event::mode::buffered>*).hash_code();
+                                const size_t _immediateEventPoolTypeID = typeid(Event::Pool<Event::mode::immediate>*).hash_code();
 
-                                if(_engine.m_ullTypeID == typeid(bool).hash_code() && _engine.m_pData && *(bool*)_engine.m_pData)
                                 {
-                                    c.Push(&_pData->m_eventPool);
+                                    const auto& _eventPool = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, i, "Engine");
+
+                                    if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && _immediateEventPoolTypeID == _argument.m_ullTypeID)
+                                    {
+                                        c.Push(&_pData->m_eventPool);
+                                    }
                                 }
 
-                                const auto& _editor = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, i, "Editor");
-
-                                if(_editor.m_ullTypeID == typeid(bool).hash_code() && _editor.m_pData && *(bool*)_editor.m_pData)
                                 {
-                                    c.Push(&_pData->m_pEditorData->m_pEditorEvents);
+                                    const auto& _eventPool = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, i, "Editor");
+
+                                    if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && _bufferedEventPoolTypeID == _argument.m_ullTypeID)
+                                    {
+                                        c.Push(&_pData->m_pEditorData->m_pEditorEvents);
+                                    }
+                                }
+
+                                {
+                                    const auto& _eventPool = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, i, "Window");
+
+                                    if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && _bufferedEventPoolTypeID == _argument.m_ullTypeID)
+                                    {
+                                        c.Push(&_pData->m_windowEventPool);
+                                    }
                                 }
                             }
 

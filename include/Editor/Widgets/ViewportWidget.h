@@ -55,7 +55,7 @@ namespace Duckvil { namespace Editor {
 
     public:
         ViewportWidget();
-        ViewportWidget(const Memory::FreeList& _heap);
+        ViewportWidget(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Window") Event::Pool<Event::mode::buffered>* _pWindowEventPool);
         ~ViewportWidget();
 
         bool Init();
@@ -65,7 +65,6 @@ namespace Duckvil { namespace Editor {
         void OnDraw();
 
         void SetRenderer(Graphics::Renderer::renderer_ftable* _pRenderer, Graphics::Renderer::renderer_data* _pRendererData);
-        void SetEventPool(Event::Pool<Event::mode::buffered>* _pEventPool);
         void SetECS(flecs::world* _pECS);
     };
 

@@ -19,8 +19,9 @@ namespace Duckvil { namespace Editor {
 
     }
 
-    ViewportWidget::ViewportWidget(const Memory::FreeList& _heap) :
-        m_heap(_heap)
+    ViewportWidget::ViewportWidget(const Memory::FreeList& _heap, Event::Pool<Event::mode::buffered>* _pWindowEventPool) :
+        m_heap(_heap),
+        m_pWindowEventPool(_pWindowEventPool)
     {
 
     }
@@ -169,11 +170,6 @@ namespace Duckvil { namespace Editor {
     {
         m_pRenderer = _pRenderer;
         m_pRendererData = _pRendererData;
-    }
-
-    void ViewportWidget::SetEventPool(Event::Pool<Event::mode::buffered>* _pEventPool)
-    {
-        m_pWindowEventPool = _pEventPool;
     }
 
     void ViewportWidget::SetECS(flecs::world* _pECS)
