@@ -47,6 +47,11 @@ namespace Duckvil { namespace Window {
 
     void WindowSDL::Refresh() const
     {
+        SDL_GL_SwapWindow((SDL_Window*)m_pWindow);
+    }
+
+    void WindowSDL::PopulateEvents()
+    {
         SDL_Event _event;
 
         while(SDL_PollEvent(&_event))
@@ -112,8 +117,6 @@ namespace Duckvil { namespace Window {
                 break;
             }
         }
-
-        SDL_GL_SwapWindow((SDL_Window*)m_pWindow);
     }
 
     void* WindowSDL::GetWindow() const

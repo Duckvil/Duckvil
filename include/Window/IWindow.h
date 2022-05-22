@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Event/BufferedPool.h"
+
 namespace Duckvil { namespace Window {
 
     struct IWindow
@@ -8,6 +10,7 @@ namespace Duckvil { namespace Window {
         virtual void Refresh() const = 0;
         virtual void* GetWindow() const = 0;
         virtual void* GetContext() const = 0;
+        virtual void PopulateEvents() = 0;
 
         virtual void SetMousePosition(int _iX, int _iY) = 0;
 

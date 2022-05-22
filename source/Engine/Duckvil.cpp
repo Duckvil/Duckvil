@@ -35,7 +35,7 @@
 
 #include "Utils/FunctionArgumentsPusher.h"
 
-#include "TestSystem/TestSystem.h"
+// #include "TestSystem/TestSystem.h"
 
 #include "Graphics/ModelLoader.h"
 
@@ -863,6 +863,8 @@ namespace Duckvil {
 
     void update(__data* _pData, __ftable* _pFTable)
     {
+        _pData->m_pWindow->PopulateEvents();
+
         ZoneScopedN("Update");
 
         double _delta = _pData->m_timeData.m_dDelta;
@@ -966,13 +968,13 @@ namespace Duckvil {
         _pData->m_pWindow->Refresh();
         _pData->m_time.update(&_pData->m_timeData);
 
-        {
-            ZoneScopedN("Sleeping, zzz...");
+//         {
+//             ZoneScopedN("Sleeping, zzz...");
 
-#ifdef DUCKVIL_PLATFORM_WINDOWS
-            Sleep(16);
-#endif
-        }
+// #ifdef DUCKVIL_PLATFORM_WINDOWS
+//             Sleep(16);
+// #endif
+//         }
     }
 
 }

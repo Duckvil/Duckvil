@@ -29,6 +29,8 @@ namespace Duckvil { namespace Window {
         bool Create(const char* _sTitle, int _iWidth, int _iHeight) override;
         void Refresh() const override;
 
+        void PopulateEvents() override;
+
         void* GetWindow() const override;
         void* GetContext() const override;
 
