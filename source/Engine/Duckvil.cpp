@@ -20,6 +20,8 @@
 
 #include "Memory/ByteBuffer.h"
 
+#include "Engine/Events/InjectConstructorArgumentEvent.h"
+
 #undef max
 #undef min
 #undef GetObject
@@ -41,7 +43,7 @@
 
 namespace Duckvil {
 
-    bool init_runtime_reflection(__data* _pData, PlugNPlay::__module* _pModule)
+    bool init_runtime_reflection_module(__data* _pData, PlugNPlay::__module* _pModule)
     {
         PlugNPlay::__module_information _runtimeReflectionModule("RuntimeReflection");
 
@@ -64,6 +66,80 @@ namespace Duckvil {
         return true;
     }
 
+    void init_runtime_reflection(__data* _pData, const PlugNPlay::__module& _module)
+    {
+        duckvil_runtime_reflection_recorder_stuff _stuff =
+        {
+            ._pMemoryInterface = _pData->m_heap.GetMemoryInterface(),
+            ._pAllocator = _pData->m_heap.GetAllocator(),
+            ._pFunctions = RuntimeReflection::get_current().m_pRecorder,
+            ._pData = RuntimeReflection::get_current().m_pReflectionData
+        };
+
+        for(uint32_t i = 0; i < _pData->m_aLoadedModules.Size(); ++i)
+        {
+            PlugNPlay::__module_information& _loadedModule = _pData->m_aLoadedModules[i];
+            RuntimeReflection::GetRecordersCountFunction get_recorder_count = nullptr;
+            void (*make_current_runtime_reflection_context)(const duckvil_frontend_reflection_context&);
+            void (*make_current_heap_context)(const Memory::free_list_context&);
+
+            make_current_runtime_reflection_context = nullptr;
+            make_current_heap_context = nullptr;
+
+            _module.get(_loadedModule, "duckvil_get_runtime_reflection_recorder_count", reinterpret_cast<void**>(&get_recorder_count));
+            _module.get(_loadedModule, "duckvil_plugin_make_current_runtime_reflection_context", reinterpret_cast<void**>(&make_current_runtime_reflection_context));
+            _module.get(_loadedModule, "duckvil_plugin_make_current_heap_context", reinterpret_cast<void**>(&make_current_heap_context));
+
+            if(get_recorder_count == nullptr)
+            {
+                // DUCKVIL_LOG_INFO_("No recorder for %s", _loadedModule.m_sName.m_sText);
+
+                continue;
+            }
+
+            // DUCKVIL_LOG_INFO_("Module %s is present", _loadedModule.m_sName.m_sText);
+
+            uint32_t _recordersCount = get_recorder_count();
+
+            for(uint32_t j = 0; j < _recordersCount; ++j)
+            {
+                RuntimeReflection::RecordFunction record = nullptr;
+
+                _module.get(_loadedModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(j)).c_str(), reinterpret_cast<void**>(&record));
+
+                if(record == nullptr)
+                {
+                    // TODO: Should return false?
+
+                    continue;
+                }
+
+                duckvil_recorderd_types _types = record(_stuff);
+
+                _types.m_pModule = &_loadedModule;
+
+                if(_pData->m_aRecordedTypes.Full())
+                {
+                    _pData->m_aRecordedTypes.Resize(_pData->m_aRecordedTypes.Size() * 2);
+                }
+
+                _pData->m_aRecordedTypes.Allocate(_types);
+            }
+
+            if(make_current_runtime_reflection_context != nullptr)
+            {
+                make_current_runtime_reflection_context(RuntimeReflection::get_current());
+            }
+
+            if(make_current_heap_context != nullptr)
+            {
+                make_current_heap_context(Memory::heap_get_current());
+            }
+        }
+
+        RuntimeReflection::record_meta(_stuff, RuntimeReflection::get_type<__data>(), "Time", &(_pData->m_timeData));
+    }
+
     bool init_logger(__data* _pData, PlugNPlay::__module* _pModule)
     {
         logger_ftable(*_duckvilLoggerInit)();
@@ -77,17 +153,13 @@ namespace Duckvil {
         _pData->_loggerData = _pData->_loggerFTable.m_fnInitLogger(_pData->m_heap);
 
         {
-            PlugNPlay::__module _module = { };
-
-            PlugNPlay::module_init(&_module);
-
             PlugNPlay::__module_information _loggerModule("Logger");
 
-            _module.load(&_loggerModule);
+            _pModule->load(&_loggerModule);
 
             duckvil_logger_channel_init_callback _loggerInit;
 
-            _module.get(_loggerModule, "duckvil_logger_channel_init", reinterpret_cast<void**>(&_loggerInit));
+            _pModule->get(_loggerModule, "duckvil_logger_channel_init", reinterpret_cast<void**>(&_loggerInit));
 
             _pData->m_pLoggerChannel = _loggerInit();
 
@@ -107,6 +179,20 @@ namespace Duckvil {
             },
             LoggerChannelID::Default
         );
+
+        for(uint32_t i = 0; i < _pData->m_aLoadedModules.Size(); ++i)
+        {
+            const PlugNPlay::__module_information& _loadedModule = _pData->m_aLoadedModules[i];
+
+            void (*make_current_logger_context)(const logger_context&);
+
+            _pModule->get(_loadedModule, "duckvil_plugin_make_current_logger_context", reinterpret_cast<void**>(&make_current_logger_context));
+
+            if(make_current_logger_context != nullptr)
+            {
+                make_current_logger_context(logger_get_current());
+            }
+        }
 
         return true;
     }
@@ -264,10 +350,63 @@ namespace Duckvil {
         return true;
     }
 
+    bool argument_event_pool_inject(__data* _pData, RuntimeReflection::__duckvil_resource_type_t _typeHandle, RuntimeReflection::__duckvil_resource_constructor_t _constructorHandle, const RuntimeReflection::__argument_t& _arg, uint32_t _uiIndex, FunctionArgumentsPusher& _FAP)
+    {
+        // TODO: Restrict to *const
+        static const size_t _bufferedEventPoolTypeID = typeid(Event::Pool<Event::mode::buffered>*).hash_code();
+        static const size_t _cBufferedEventPoolTypeID = typeid(const Event::Pool<Event::mode::buffered>*).hash_code();
+        static const size_t _immediateEventPoolTypeID = typeid(Event::Pool<Event::mode::immediate>*).hash_code();
+        static const size_t _cImmediateEventPoolTypeID = typeid(const Event::Pool<Event::mode::immediate>*).hash_code();
+
+        {
+            const auto& _eventPool = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, _uiIndex, "Engine");
+
+            if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && (_immediateEventPoolTypeID == _arg.m_ullTypeID || _cImmediateEventPoolTypeID == _arg.m_ullTypeID))
+            {
+                _FAP.Push(&_pData->m_eventPool);
+
+                return true;
+            }
+        }
+
+        {
+            const auto& _eventPool = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, _uiIndex, "Window");
+
+            if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && (_bufferedEventPoolTypeID == _arg.m_ullTypeID || _cBufferedEventPoolTypeID == _arg.m_ullTypeID))
+            {
+                _FAP.Push(&_pData->m_windowEventPool);
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    void create_window(__data* _pData)
+    {
+        RuntimeReflection::ReflectedType<> _windowType(_pData->m_heap, RuntimeReflection::get_type(_pData->m_pRuntimeReflectionData, "WindowSDL", "Duckvil", "Window"));
+
+        _pData->m_pWindow = static_cast<Window::IWindow*>(_windowType.Create<Event::Pool<Event::mode::buffered>*>(&_pData->m_windowEventPool));
+
+        _pData->m_pWindow->Create("Duckvil", 1920, 1080);
+    }
+
+    void init_memory(__data* _pData)
+    {
+        _pData->m_heap.Allocate(_pData->m_objectsHeap, 1024 * 4);
+        _pData->m_heap.Allocate(_pData->m_eventsHeap, 1024 * 8);
+        _pData->m_heap.Allocate(_pData->m_aEngineSystems, 1);
+        _pData->m_heap.Allocate(_pData->m_aLoadedModules, 1);
+
+        _pData->m_aRecordedTypes = Memory::ThreadsafeVector<duckvil_recorderd_types>(_pData->m_heap);
+    }
+
     bool init(__data* _pData, Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator)
     {
         TracyMessageL("Initializing engine");
 
+        _pData->m_bRunning = false;
         _pData->m_pHeap = _pAllocator;
         _pData->m_pMemory = _pMemoryInterface;
         // _pData->m_aLoadedModules = nullptr;
@@ -281,15 +420,7 @@ namespace Duckvil {
         Memory::heap_make_current(Memory::free_list_context(_pData->m_globalHeap));
 
         FrameMarkStart("Initializing memory");
-
-        _pData->m_heap.Allocate(_pData->m_objectsHeap, 1024 * 4);
-        _pData->m_heap.Allocate(_pData->m_eventsHeap, 1024 * 8);
-        _pData->m_heap.Allocate(_pData->m_aEngineSystems, 1);
-        // _pData->m_heap.Allocate(_pData->m_aRecordedTypes, 1);
-        _pData->m_heap.Allocate(_pData->m_aLoadedModules, 1);
-
-        _pData->m_aRecordedTypes = Memory::ThreadsafeVector<duckvil_recorderd_types>(_pData->m_heap);
-
+        init_memory(_pData);
         FrameMarkEnd("Initializing memory");
 
         DUCKVIL_DEBUG_MEMORY(_pData->m_objectsHeap.GetAllocator(), "m_objectsHeap");
@@ -303,7 +434,7 @@ namespace Duckvil {
 
         PlugNPlay::module_init(&_module);
 
-        init_runtime_reflection(_pData, &_module);
+        init_runtime_reflection_module(_pData, &_module);
 
         _pData->m_eventPool = Event::Pool<Event::mode::immediate>(_pData->m_eventsHeap, _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
         _pData->m_windowEventPool = Event::Pool<Event::mode::buffered>(_pData->m_eventsHeap, _pData->m_pRuntimeReflectionData);
@@ -311,114 +442,18 @@ namespace Duckvil {
         PlugNPlay::AutoLoader _autoLoader(DUCKVIL_OUTPUT);
 
         FrameMarkStart("Loading engine modules");
-
-        // _autoLoader.LoadAll(_pMemoryInterface, _pAllocator, &_pData->m_aLoadedModules, &_pData->m_uiLoadedModulesCount);
         _autoLoader.LoadAll(_pMemoryInterface, _pAllocator, &_pData->m_aLoadedModules);
-
         FrameMarkEnd("Loading engine modules");
 
         // DUCKVIL_LOG_INFO_("Modules to load %i", _pData->m_uiLoadedModulesCount);
 
         FrameMarkStart("Initializing reflection");
-
-        duckvil_runtime_reflection_recorder_stuff _stuff =
-        {
-            ._pMemoryInterface = _pData->m_heap.GetMemoryInterface(),
-            ._pAllocator = _pData->m_heap.GetAllocator(),
-            ._pFunctions = RuntimeReflection::get_current().m_pRecorder,
-            ._pData = RuntimeReflection::get_current().m_pReflectionData
-        };
-
-        for(uint32_t i = 0; i < _pData->m_aLoadedModules.Size(); ++i)
-        {
-            PlugNPlay::__module_information& _loadedModule = _pData->m_aLoadedModules[i];
-            RuntimeReflection::GetRecordersCountFunction get_recorder_count = nullptr;
-            void (*make_current_runtime_reflection_context)(const duckvil_frontend_reflection_context&);
-            void (*make_current_heap_context)(const Memory::free_list_context&);
-
-            make_current_runtime_reflection_context = nullptr;
-            make_current_heap_context = nullptr;
-
-            _module.get(_loadedModule, "duckvil_get_runtime_reflection_recorder_count", reinterpret_cast<void**>(&get_recorder_count));
-            _module.get(_loadedModule, "duckvil_plugin_make_current_runtime_reflection_context", reinterpret_cast<void**>(&make_current_runtime_reflection_context));
-            _module.get(_loadedModule, "duckvil_plugin_make_current_heap_context", reinterpret_cast<void**>(&make_current_heap_context));
-
-            if(get_recorder_count == nullptr)
-            {
-                // DUCKVIL_LOG_INFO_("No recorder for %s", _loadedModule.m_sName.m_sText);
-
-                continue;
-            }
-
-            // DUCKVIL_LOG_INFO_("Module %s is present", _loadedModule.m_sName.m_sText);
-
-            uint32_t _recordersCount = get_recorder_count();
-
-            for(uint32_t j = 0; j < _recordersCount; ++j)
-            {
-                RuntimeReflection::RecordFunction record = nullptr;
-
-                _module.get(_loadedModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(j)).c_str(), reinterpret_cast<void**>(&record));
-
-                if(record == nullptr)
-                {
-                    // TODO: Should return false?
-
-                    continue;
-                }
-
-                duckvil_recorderd_types _types = record(_stuff);
-
-                _types.m_pModule = &_loadedModule;
-
-                if(_pData->m_aRecordedTypes.Full())
-                {
-                    _pData->m_aRecordedTypes.Resize(_pData->m_aRecordedTypes.Size() * 2);
-                }
-
-                _pData->m_aRecordedTypes.Allocate(_types);
-            }
-
-            if(make_current_runtime_reflection_context != nullptr)
-            {
-                make_current_runtime_reflection_context(RuntimeReflection::get_current());
-            }
-
-            if(make_current_heap_context != nullptr)
-            {
-                make_current_heap_context(Memory::heap_get_current());
-            }
-        }
-
+        init_runtime_reflection(_pData, _module);
         FrameMarkEnd("Initializing reflection");
 
         init_logger(_pData, &_module);
         init_threading(_pData, &_module);
-
-        RuntimeReflection::record_meta(_stuff, RuntimeReflection::get_type<__data>(), "Time", &(_pData->m_timeData));
-
-        for(uint32_t i = 0; i < _pData->m_aLoadedModules.Size(); ++i)
-        {
-            const PlugNPlay::__module_information& _loadedModule = _pData->m_aLoadedModules[i];
-
-            void (*make_current_logger_context)(const logger_context&);
-
-            _module.get(_loadedModule, "duckvil_plugin_make_current_logger_context", reinterpret_cast<void**>(&make_current_logger_context));
-
-            if(make_current_logger_context != nullptr)
-            {
-                make_current_logger_context(logger_get_current());
-            }
-        }
-
-        _pData->m_bRunning = false;
-
-        RuntimeReflection::ReflectedType<> _windowType(_pData->m_heap, RuntimeReflection::get_type(_pData->m_pRuntimeReflectionData, "WindowSDL", "Duckvil", "Window"));
-
-        _pData->m_pWindow = (Window::IWindow*)_windowType.Create<Event::Pool<Event::mode::buffered>*>(&_pData->m_windowEventPool);
-
-        _pData->m_pWindow->Create("Duckvil", 1920, 1080);
-
+        create_window(_pData);
         init_renderer(_pData, &_module);
         init_editor(_pData, &_module);
         init_project_manager(_pData, &_module);
@@ -485,16 +520,6 @@ namespace Duckvil {
                     }
                 }
             }
-
-            RuntimeReflection::add_object_meta(_event.m_pTrackKeeper->GetObject(), 1, 2);
-            RuntimeReflection::add_object_meta(_event.m_pTrackKeeper->GetObject(), 2, 3);
-
-            const auto& _r = RuntimeReflection::get_object_meta(_event.m_pTrackKeeper->GetObject(), 1);
-            const auto& _r2 = RuntimeReflection::get_object_meta(_event.m_pTrackKeeper->GetObject(), 2);
-
-            RuntimeReflection::set_object_meta(_event.m_pTrackKeeper->GetObject(), 1, 4);
-
-            const auto& _r3 = RuntimeReflection::get_object_meta(_event.m_pTrackKeeper->GetObject(), 1);
         });
 
         {
@@ -522,16 +547,6 @@ namespace Duckvil {
                 _pData->m_fnRuntimeCompilerUpdate = _type.GetFunctionCallback<ISystem, double>("Update")->m_fnFunction;
                 _pData->m_fnRuntimeCompilerInit = _type.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
 
-                // _pData->m_pEditor->m_fnAddDraw(_pData->m_pEditorData,
-                //     Editor::Draw
-                //     {
-                //         _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction,
-                //         _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction,
-                //         _pData->m_pRuntimeCompiler,
-                //         _runtimeCompilerType
-                //     }
-                // );
-
                 _type.Invoke<const Memory::FreeList&>("SetObjectsHeap", _pData->m_pRuntimeCompiler, _pData->m_objectsHeap);
                 _type.Invoke<Memory::Vector<PlugNPlay::__module_information>*>("SetModules", _pData->m_pRuntimeCompiler, &_pData->m_aLoadedModules);
                 _type.Invoke<Memory::ThreadsafeVector<duckvil_recorderd_types>*>("SetReflectedTypes", _pData->m_pRuntimeCompiler, &_pData->m_aRecordedTypes);
@@ -541,213 +556,77 @@ namespace Duckvil {
             {
                 const RuntimeReflection::__duckvil_resource_type_t& _typeHandle = _types[i];
                 const RuntimeReflection::ReflectedType<> _type(_pData->m_heap, _typeHandle);
-                const auto a = RuntimeReflection::get_type(_typeHandle).m_sTypeName;
 
-                if((_type.Inherits<Editor::Widget>() || _type.Inherits<ISystem>()) && _type.GetTypeHandle().m_ID != RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>().m_ID)
+                if((!_type.Inherits<Editor::Widget>() && !_type.Inherits<ISystem>()) || _type.GetTypeHandle().m_ID == RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>().m_ID)
                 {
-                    if(_pData->m_aEngineSystems.Full())
-                    {
-                        _pData->m_aEngineSystems.Resize(_pData->m_aEngineSystems.Size() * 2);
-                    }
-
-                    auto _constructors = RuntimeReflection::get_constructors(_pData->m_heap, _typeHandle);
-                    void* _system = nullptr;
-
-                // TODO: Problem in release
-                    for(/*const auto& _constructorHandle : _constructors*/ uint32_t i = 0; i < _constructors.Size(); ++i)
-                    {
-                        const auto& _constructorHandle = _constructors[i];
-                        const auto& _constructor = RuntimeReflection::get_constructor(_typeHandle, _constructorHandle);
-                        uint32_t _constructorArgumentsCount = DUCKVIL_SLOT_ARRAY_SIZE(_constructor.m_arguments);
-
-                        if(_constructorArgumentsCount > 0)
-                        {
-                            FunctionArgumentsPusher c(5 + _constructorArgumentsCount);
-
-                            c.Push(_pData->m_pMemory);
-                            c.Push(_pData->m_pHeap);
-                            c.Push(_pData->m_pRuntimeReflection);
-                            c.Push(_pData->m_pRuntimeReflectionData);
-                            c.Push(true);
-
-                            for(uint32_t i = 0; i < _constructorArgumentsCount; ++i)
-                            {
-                                const RuntimeReflection::__argument_t& _argument = DUCKVIL_SLOT_ARRAY_GET(_constructor.m_arguments, i);
-
-                                if(typeid(Memory::FreeList).hash_code() == _argument.m_ullTypeID)
-                                {
-                                    c.Push(_pData->m_heap);
-                                }
-
-                                if(typeid(HotReloader::RuntimeCompilerSystem*).hash_code() == _argument.m_ullTypeID)
-                                {
-                                    c.Push(_pData->m_pRuntimeCompiler);
-                                }
-
-                                if(typeid(ProjectManager::ftable*).hash_code() == _argument.m_ullTypeID)
-                                {
-                                    c.Push(_pData->m_projectManager);
-                                }
-
-                                if(typeid(ProjectManager::data*).hash_code() == _argument.m_ullTypeID)
-                                {
-                                    c.Push(_pData->m_projectManagerData);
-                                }
-
-                            // Process event pools
-                                const size_t _bufferedEventPoolTypeID = typeid(Event::Pool<Event::mode::buffered>*).hash_code();
-                                const size_t _immediateEventPoolTypeID = typeid(Event::Pool<Event::mode::immediate>*).hash_code();
-
-                                {
-                                    const auto& _eventPool = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, i, "Engine");
-
-                                    if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && _immediateEventPoolTypeID == _argument.m_ullTypeID)
-                                    {
-                                        c.Push(&_pData->m_eventPool);
-                                    }
-                                }
-
-                                {
-                                    const auto& _eventPool = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, i, "Editor");
-
-                                    if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && _bufferedEventPoolTypeID == _argument.m_ullTypeID)
-                                    {
-                                        c.Push(&_pData->m_pEditorData->m_pEditorEvents);
-                                    }
-                                }
-
-                                {
-                                    const auto& _eventPool = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, i, "Window");
-
-                                    if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && _bufferedEventPoolTypeID == _argument.m_ullTypeID)
-                                    {
-                                        c.Push(&_pData->m_windowEventPool);
-                                    }
-                                }
-                            }
-
-                            // const auto& _h = RuntimeReflection::get_constructor_handle<const Memory::FreeList&>(_type.GetTypeHandle());
-                            const auto& _hc = RuntimeReflection::get_constructor(_type.GetTypeHandle(), _constructorHandle);
-
-                            c.Call(_hc.m_pData);
-
-                            _system = c.getCode<void*(*)()>()();
-                        }
-                    }
+                    continue;
                 }
 
-//                 const RuntimeReflection::__variant& _variant = RuntimeReflection::get_meta(_typeHandle, ReflectionFlags::ReflectionFlags_UserSystem);
+                if(_pData->m_aEngineSystems.Full())
+                {
+                    _pData->m_aEngineSystems.Resize(_pData->m_aEngineSystems.Size() * 2);
+                }
 
-//                 if(_variant.m_ullTypeID != std::numeric_limits<std::size_t>::max() &&
-//                     static_cast<uint8_t>(_variant.m_traits) & static_cast<uint8_t>(RuntimeReflection::property_traits::is_bool))
-//                 {
-//                     if(_pData->m_aEngineSystems.Full())
-//                     {
-//                         _pData->m_aEngineSystems.Resize(_pData->m_aEngineSystems.Size() * 2);
-//                     }
+                auto _constructors = RuntimeReflection::get_constructors(_pData->m_heap, _typeHandle);
 
-//                     RuntimeReflection::ReflectedType<> _type(_pData->m_heap, _typeHandle);
+            // TODO: Problem in release
+                for(/*const auto& _constructorHandle : _constructors*/ uint32_t i = 0; i < _constructors.Size(); ++i)
+                {
+                    const auto& _constructorHandle = _constructors[i];
+                    const auto& _constructor = RuntimeReflection::get_constructor(_typeHandle, _constructorHandle);
+                    uint32_t _constructorArgumentsCount = DUCKVIL_SLOT_ARRAY_SIZE(_constructor.m_arguments);
 
-//                     auto _constructors = RuntimeReflection::get_constructors(_pData->m_heap, _typeHandle);
-//                     void* _testSystem = nullptr;
+                    if(_constructorArgumentsCount == 0)
+                    {
+                        continue;
+                    }
 
-//                     for(const auto& _constructorHandle : _constructors)
-//                     {
-//                         const auto& _constructor = RuntimeReflection::get_constructor(_typeHandle, _constructorHandle);
-//                         uint32_t _constructorArgumentsCount = DUCKVIL_SLOT_ARRAY_SIZE(_constructor.m_arguments);
+                    FunctionArgumentsPusher _fap(5 + _constructorArgumentsCount);
 
-//                         if(_constructorArgumentsCount > 0)
-//                         {
-//                             FunctionArgumentsPusher c(5 + _constructorArgumentsCount);
+                    _fap.Push(_pData->m_pMemory);
+                    _fap.Push(_pData->m_pHeap);
+                    _fap.Push(_pData->m_pRuntimeReflection);
+                    _fap.Push(_pData->m_pRuntimeReflectionData);
+                    _fap.Push(true);
 
-//                             c.Push(_pData->m_pMemory);
-//                             c.Push(_pData->m_pHeap);
-//                             c.Push(_pData->m_pRuntimeReflection);
-//                             c.Push(_pData->m_pRuntimeReflectionData);
-//                             c.Push(true);
+                    for(uint32_t i = 0; i < _constructorArgumentsCount; ++i)
+                    {
+                        const RuntimeReflection::__argument_t& _argument = DUCKVIL_SLOT_ARRAY_GET(_constructor.m_arguments, i);
 
-//                             for(uint32_t i = 0; i < _constructorArgumentsCount; ++i)
-//                             {
-//                                 const RuntimeReflection::__argument_t& _argument = DUCKVIL_SLOT_ARRAY_GET(_constructor.m_arguments, i);
+                        if(typeid(Memory::FreeList).hash_code() == _argument.m_ullTypeID)
+                        {
+                            _fap.Push(_pData->m_heap);
+                        }
+                        else if(typeid(HotReloader::RuntimeCompilerSystem*).hash_code() == _argument.m_ullTypeID)
+                        {
+                            _fap.Push(_pData->m_pRuntimeCompiler);
+                        }
+                        else if(typeid(ProjectManager::ftable*).hash_code() == _argument.m_ullTypeID)
+                        {
+                            _fap.Push(_pData->m_projectManager);
+                        }
+                        else if(typeid(ProjectManager::data*).hash_code() == _argument.m_ullTypeID)
+                        {
+                            _fap.Push(_pData->m_projectManagerData);
+                        }
+                        else if(!argument_event_pool_inject(_pData, _typeHandle, _constructorHandle, _argument, i, _fap))
+                        {
+                            // Call other events to incject
+                            InjectConstructorArgumentEvent::Info _info;
 
-//                                 if(typeid(Memory::FreeList).hash_code() == _argument.m_ullTypeID)
-//                                 {
-//                                     c.Push(_pData->m_heap);
-//                                 }
+                            _info.m_uiArgumentIndex = i;
+                            _info.m_constructorHandle = _constructorHandle;
+                            _info.m_typeHandle = _typeHandle;
 
-//                                 if(typeid(HotReloader::RuntimeCompilerSystem*).hash_code() == _argument.m_ullTypeID)
-//                                 {
-//                                     c.Push(_pData->m_pRuntimeCompiler);
-//                                 }
-//                             }
+                            InjectConstructorArgumentEvent _e(&_fap, _info, _argument);
 
-//                             const auto& _h = RuntimeReflection::get_constructor_handle<const Memory::FreeList&>(_type.GetTypeHandle());
-//                             const auto& _hc = RuntimeReflection::get_constructor(_type.GetTypeHandle(), _h);
+                            _pData->m_eventPool.Broadcast(_e);
+                        }
+                    }
 
-//                             c.Call(_hc.m_pData);
-
-//                             _testSystem = c.getCode<void*(*)()>()();
-//                         }
-//                     }
-
-//                     // void* _testSystem = _type.CreateTracked<
-//                     //     const Memory::FreeList&
-//                     // >(
-//                     //     _pData->m_heap
-//                     // );
-
-//                     // system _system = {};
-
-//                     // _system.m_type = _typeHandle;
-//                     // _system.m_pTrackKeeper = DUCKVIL_TRACK_KEEPER_CAST(ISystem, _testSystem);
-//                     // _system.m_fnUpdateCallback = _type.GetFunctionCallback<ISystem, double>("Update")->m_fnFunction;
-//                     // _system.m_fnInitCallback = _type.GetFunctionCallback<bool, ISystem>("Init")->m_fnFunction;
-
-//                     // if(RuntimeReflection::get_meta(_typeHandle, ReflectionFlags_AutoEventsAdding).m_ullTypeID != -1)
-//                     // {
-//                     //     const auto& _functions = RuntimeReflection::get_functions(_pData->m_heap, _typeHandle);
-
-//                     //     for(const auto& _functionHandle : _functions)
-//                     //     {
-//                     //         const auto& _func = RuntimeReflection::get_function(_typeHandle, _functionHandle);
-
-//                     //         if(_func.m_ullArgumentsTypeID == DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(const HotReloader::SwapEvent&) && strcmp(_func.m_sFunctionName, "OnEvent") == 0)
-//                     //         {
-//                     //             _pData->m_eventPool.Add<HotReloader::SwapEvent>(DUCKVIL_TRACK_KEEPER_CAST(void, _testSystem), _typeHandle);
-//                     //         }
-//                     //     }
-//                     // }
-
-//                     // _pData->m_aEngineSystems.Allocate(_system);
-
-//                     if(RuntimeReflection::inherits<Editor::Widget>(_typeHandle))
-//                     {
-// #ifdef DUCKVIL_HOT_RELOADING
-//                         _pData->m_pEditor->m_fnAddHotDraw(_pData->m_pEditorData,
-//                             Editor::HotDraw
-//                             {
-//                                 _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction,
-//                                 _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction,
-//                                 DUCKVIL_TRACK_KEEPER_CAST(Editor::Widget, _testSystem), _typeHandle
-//                             }
-//                         );
-// #else
-//                         _pData->m_pEditor->m_fnAddDraw(_pData->m_pEditorData,
-//                             Editor::Draw
-//                             {
-//                                 _type.GetFunctionCallback<Editor::Widget>("OnDraw")->m_fnFunction,
-//                                 _type.GetFunctionCallback<Editor::Widget, void*>("InitEditor")->m_fnFunction,
-//                                 _testSystem, _typeHandle
-//                             }
-//                         );
-// #endif
-//                     }
-
-//                     // if(!(static_cast<ISystem*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pTrackKeeper))->*_system.m_fnInitCallback)())
-//                     // {
-//                     //     return false;
-//                     // }
-//                 }
+                    _fap.Call(_constructor.m_pData);
+                    _fap.getCode<void*(*)()>()();
+                }
             }
 
             _pData->m_eventPool.AddA<HotReloader::SwapEvent>([_pData](const HotReloader::SwapEvent& _event)

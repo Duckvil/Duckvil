@@ -30,6 +30,7 @@
 #include "Utils/FunctionArgumentsPusher.h"
 
 #include "Engine/Events/RequestSystemEvent.h"
+#include "Engine/Events/InjectConstructorArgumentEvent.h"
 
 #include "ProjectManager/ProjectManager.h"
 
@@ -95,6 +96,28 @@ namespace Duckvil { namespace Editor {
         _pWindow->SetProcessEventsCallback(&process_sdl_events);
 
         _data->m_pEditorEvents = Event::Pool<Event::mode::immediate>(_heap, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData);
+
+        _pEngineEventPool->Add(Utils::lambda([_data](InjectConstructorArgumentEvent& _e)
+        {
+            if(_e.m_bSuccess)
+            {
+                return;
+            }
+
+            static const size_t _eventPoolTypeID = typeid(Event::Pool<Event::mode::immediate>*).hash_code();
+            static const size_t _cEventPoolTypeID = typeid(const Event::Pool<Event::mode::immediate>*).hash_code();
+
+            {
+                const auto& _eventPool = RuntimeReflection::get_meta(_e.m_info.m_typeHandle, _e.m_info.m_constructorHandle, _e.m_info.m_uiArgumentIndex, "Editor");
+
+                if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && (_eventPoolTypeID == _e.m_argument.m_ullTypeID || _cEventPoolTypeID == _e.m_argument.m_ullTypeID))
+                {
+                    _e.m_pFAP->Push(_data->m_pEditorEvents);
+
+                    _e.m_bSuccess = true;
+                }
+            }
+        }));
 
         _pRuntimeReflectionEventPool->Add(Utils::lambda([_data, _pEngineEventPool, _pEditor](const RuntimeReflection::TrackedObjectCreatedEvent& _event)
         {
