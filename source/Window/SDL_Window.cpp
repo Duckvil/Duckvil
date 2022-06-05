@@ -7,11 +7,7 @@ namespace Duckvil { namespace Window {
     WindowSDL::WindowSDL(Event::Pool<Event::mode::buffered>* _pEventsPool) :
         m_pEvents(_pEventsPool)
     {
-        _pEventsPool->Add<CloseEvent>();
-        _pEventsPool->Add<ResizeEvent>();
-        _pEventsPool->Add<KeyDownEvent>();
-        _pEventsPool->Add<KeyUpEvent>();
-        _pEventsPool->Add<MouseMotionEvent>();
+
     }
 
     WindowSDL::~WindowSDL()

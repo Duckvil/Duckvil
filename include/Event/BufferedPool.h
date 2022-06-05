@@ -1,18 +1,40 @@
 #pragma once
 
 #include "Event/Pool.h"
-#include "Event/BufferedChannel.h"
+
+#include "Memory/QueueAllocator.h"
+#include "Memory/StackAllocator.h"
 
 namespace Duckvil { namespace Event {
 
     template <>
     class Pool<mode::buffered>
     {
-    private:
-        Memory::Vector<event_lookup> m_aChannels; // Each one for specific message type
+    public:
+        struct EventType
+        {
+            std::size_t m_ullMessageTypeID;
+            std::size_t m_ullMessageTypeSize;
+            uint8_t m_ucAlignment;
+        };
 
+        // template <typename Message>
+        // struct EventMessage : public EventType
+        // {
+        //     Message m_message;
+        // };
+
+        struct EventMessage : public EventType
+        {
+            void* m_pMessage;
+        };
+
+    private:
         Memory::FreeList m_heap;
         RuntimeReflection::__data* m_pReflectionData;
+
+        Memory::fixed_queue_allocator* m_pMessages;
+        Memory::fixed_stack_allocator* m_pRemaining;
 
     public:
         Pool()
@@ -24,15 +46,30 @@ namespace Duckvil { namespace Event {
             m_heap(_heap),
             m_pReflectionData(_pReflectionData)
         {
-            _heap.Allocate(m_aChannels, 1);
+            m_pMessages = static_cast<Memory::fixed_queue_allocator*>(_heap.GetMemoryInterface()->m_fnFreeListAllocate_(_heap.GetAllocator(), sizeof(Memory::fixed_queue_allocator) + 512, alignof(Memory::fixed_queue_allocator)));
+
+            m_pMessages->m_ullCapacity = 512;
+            m_pMessages->m_ullUsed = 0;
+            m_pMessages->m_ullTail = 0;
+            m_pMessages->m_ullHead = 0;
+            m_pMessages->m_ullBlockSize = sizeof(EventMessage);
+
+            m_pRemaining = static_cast<Memory::fixed_stack_allocator*>(_heap.GetMemoryInterface()->m_fnFreeListAllocate_(_heap.GetAllocator(), sizeof(Memory::fixed_stack_allocator) + 512, alignof(Memory::fixed_stack_allocator)));
+
+            m_pRemaining->m_ullCapacity = 512;
+            m_pRemaining->m_ullUsed = 0;
+            m_pRemaining->m_ullBlockSize = sizeof(EventMessage);
         }
 
         Pool(Pool&& _pool) noexcept :
-            m_aChannels(std::move(_pool.m_aChannels)),
             m_heap(std::move(_pool.m_heap)),
-            m_pReflectionData(std::move(_pool.m_pReflectionData))
+            m_pReflectionData(std::move(_pool.m_pReflectionData)),
+            m_pMessages(std::move(_pool.m_pMessages)),
+            m_pRemaining(std::move(_pool.m_pRemaining))
         {
             _pool.m_pReflectionData = nullptr;
+            _pool.m_pMessages = nullptr;
+            _pool.m_pRemaining = nullptr;
         }
 
         ~Pool()
@@ -47,77 +84,52 @@ namespace Duckvil { namespace Event {
                 return *this;
             }
 
-            this->m_aChannels = std::move(_pool.m_aChannels);
             this->m_heap = std::move(_pool.m_heap);
             this->m_pReflectionData = std::move(_pool.m_pReflectionData);
+            this->m_pMessages = std::move(_pool.m_pMessages);
+            this->m_pRemaining = std::move(_pool.m_pRemaining);
 
             _pool.m_pReflectionData = nullptr;
+            _pool.m_pMessages = nullptr;
+            _pool.m_pRemaining = nullptr;
 
             return *this;
         }
 
         template <typename Message>
-        void Add()
-        {
-            if(m_aChannels.Full())
-            {
-                m_aChannels.Resize(m_aChannels.Size() * 2);
-            }
-
-            event_lookup _event = {};
-
-            _event.m_mode = mode::buffered;
-            _event.m_ullMessageTypeID = typeid(Message).hash_code();
-
-            Channel<Message, mode::buffered>* _newChannel = m_heap.Allocate<Channel<Message, mode::buffered>>(m_heap, m_pReflectionData);
-
-            _event.m_pChannel = _newChannel;
-
-            m_aChannels.Allocate(_event);
-        }
-
-        template <typename Message>
         void Broadcast(const Message& _message)
         {
-            for(const auto& _channel : m_aChannels)
-            {
-                if(_channel.m_ullMessageTypeID == typeid(Message).hash_code())
-                {
-                    Channel<Message, mode::buffered>* _right = (Channel<Message, mode::buffered>*)_channel.m_pChannel;
+            EventMessage _event;
 
-                    _right->Broadcast(_message);
-                }
-            }
+            // _event.m_message = _message;
+            _event.m_pMessage = m_heap.Allocate(_message);
+            _event.m_ullMessageTypeID = typeid(Message).hash_code();
+            _event.m_ullMessageTypeSize = sizeof(EventMessage);
+            _event.m_ucAlignment = alignof(EventMessage);
+
+            Memory::fixed_queue_allocate(m_heap.GetMemoryInterface(), m_pMessages, _event);
         }
 
         // Check if there are any pending events
         bool AnyEvents() const
         {
-            for(const auto& _channel : m_aChannels)
-            {
-                BufferedChannel* _right = (BufferedChannel*)_channel.m_pChannel;
-
-                if(_right->m_fnAnyEvents(_right))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return !Memory::fixed_queue_empty(m_heap.GetMemoryInterface(), m_pMessages);
         }
 
         // Catch the message
         template <typename Message>
         bool GetMessage(Message* _pMessage)
         {
-            for(const auto& _channel : m_aChannels)
-            {
-                if(_channel.m_ullMessageTypeID == typeid(Message).hash_code())
-                {
-                    Channel<Message, mode::buffered>* _right = (Channel<Message, mode::buffered>*)_channel.m_pChannel;
+            EventType* _event = static_cast<EventType*>(Memory::fixed_queue_begin(m_heap.GetMemoryInterface(), m_pMessages));
 
-                    return _right->GetMessage(_pMessage);
-                }
+            if(_event->m_ullMessageTypeID == typeid(Message).hash_code())
+            {
+                EventMessage* _right = static_cast<EventMessage*>(_event);
+
+                // *_pMessage = _right->m_message;
+                memcpy(_pMessage, _right->m_pMessage, sizeof(Message));
+
+                return true;
             }
 
             return false;
@@ -128,42 +140,91 @@ namespace Duckvil { namespace Event {
         template <typename Message>
         void EventHandled()
         {
-            for(const auto& _channel : m_aChannels)
-            {
-                if(_channel.m_ullMessageTypeID == typeid(Message).hash_code())
-                {
-                    Channel<Message, mode::buffered>* _right = (Channel<Message, mode::buffered>*)_channel.m_pChannel;
+            EventType* _event = static_cast<EventType*>(Memory::fixed_queue_begin(m_heap.GetMemoryInterface(), m_pMessages));
 
-                    _right->EventHandled();
-                }
+            if(_event->m_ullMessageTypeID == typeid(Message).hash_code())
+            {
+                EventMessage* _right = static_cast<EventMessage*>(_event);
+
+                m_heap.Free(_right->m_pMessage);
+
+                Memory::fixed_queue_pop(m_heap.GetMemoryInterface(), m_pMessages);
             }
         }
 
-        // Call it if the catched event can not be handled.
-        // The message will be pushed back to queue after 'Reset' function call
+        // Push event back to queue
         template <typename Message>
         void EventHandled(const Message& _message)
         {
-            for(const auto& _channel : m_aChannels)
-            {
-                if(_channel.m_ullMessageTypeID == typeid(Message).hash_code())
-                {
-                    Channel<Message, mode::buffered>* _right = (Channel<Message, mode::buffered>*)_channel.m_pChannel;
+            EventType* _event = static_cast<EventType*>(Memory::fixed_queue_begin(m_heap.GetMemoryInterface(), m_pMessages));
 
-                    _right->EventHandled(_message);
-                }
+            if(_event->m_ullMessageTypeID == typeid(Message).hash_code())
+            {
+                EventMessage* _right = static_cast<EventMessage*>(_event);
+                // Message _message = _right->m_message;
+
+                EventMessage _newEvent;
+
+                // _newEvent.m_message = _message;
+                _newEvent.m_pMessage = m_heap.Allocate(*static_cast<Message*>(_right->m_pMessage));
+                _newEvent.m_ullMessageTypeID = typeid(Message).hash_code();
+                _newEvent.m_ullMessageTypeSize = sizeof(EventMessage);
+                _newEvent.m_ucAlignment = alignof(EventMessage);
+
+                m_heap.Free(_right->m_pMessage);
+
+                // Memory::queue_allocate(m_heap.GetMemoryInterface(), m_pMessages2, _newEvent);
+                Memory::fixed_stack_allocate(m_heap.GetMemoryInterface(), m_pRemaining, _newEvent);
+                Memory::fixed_queue_pop(m_heap.GetMemoryInterface(), m_pMessages);
             }
         }
 
-        // After each event loop it have to be called
+        // Before iterating over events, it should be called in order to get all events which wasn't handled
         void Reset()
         {
-            for(const auto& _channel : m_aChannels)
+            while(!Memory::fixed_stack_empty(m_heap.GetMemoryInterface(), m_pRemaining))
             {
-                Event::BufferedChannel* _right = (Event::BufferedChannel*)_channel.m_pChannel;
+                EventType* _event = static_cast<EventType*>(Memory::fixed_stack_top(m_heap.GetMemoryInterface(), m_pRemaining));
 
-                _right->m_uiIndex = 0;
+                m_heap.GetMemoryInterface()->m_fnFixedQueueAllocate_(m_pMessages, _event, _event->m_ullMessageTypeSize, _event->m_ucAlignment);
+
+                Memory::fixed_stack_pop(m_heap.GetMemoryInterface(), m_pRemaining);
             }
+        }
+
+        // Clear all remaining events
+        void Clear()
+        {
+            while(!Memory::fixed_queue_empty(m_heap.GetMemoryInterface(), m_pMessages))
+            {
+                EventMessage* _event = static_cast<EventMessage*>(Memory::fixed_queue_begin(m_heap.GetMemoryInterface(), m_pMessages));
+
+                m_heap.Free(_event->m_pMessage);
+
+                Memory::fixed_queue_pop(m_heap.GetMemoryInterface(), m_pMessages);
+            }
+
+            while(!Memory::fixed_stack_empty(m_heap.GetMemoryInterface(), m_pRemaining))
+            {
+                EventMessage* _event = static_cast<EventMessage*>(Memory::fixed_stack_top(m_heap.GetMemoryInterface(), m_pRemaining));
+
+                m_heap.Free(_event->m_pMessage);
+
+                Memory::fixed_stack_pop(m_heap.GetMemoryInterface(), m_pRemaining);
+            }
+
+            // Memory::queue_clear(m_heap.GetMemoryInterface(), m_pMessages);
+            // Memory::stack_clear(m_heap.GetMemoryInterface(), m_pRemaining);
+        }
+
+        void Skip()
+        {
+            EventType* _event = static_cast<EventType*>(Memory::fixed_queue_begin(m_heap.GetMemoryInterface(), m_pMessages));
+
+            // m_heap.GetMemoryInterface()->m_fnQueueAllocate_(m_pMessages2, _event, _event->m_ullMessageTypeSize, _event->m_ucAlignment);
+            m_heap.GetMemoryInterface()->m_fnFixedStackAllocate_(m_pRemaining, _event, _event->m_ullMessageTypeSize, _event->m_ucAlignment);
+
+            Memory::fixed_queue_pop(m_heap.GetMemoryInterface(), m_pMessages);
         }
     };
 

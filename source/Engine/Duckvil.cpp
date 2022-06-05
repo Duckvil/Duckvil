@@ -325,8 +325,6 @@ namespace Duckvil {
 
         _pData->m_pEditor->m_fnSetWindowEventPool(_pData->m_pEditorData, &_pData->m_windowEventPool);
 
-        _pData->m_windowEventPool.Add<Window::SetMousePositionEvent>();
-
         return true;
     }
 
@@ -395,7 +393,7 @@ namespace Duckvil {
     void init_memory(__data* _pData)
     {
         _pData->m_heap.Allocate(_pData->m_objectsHeap, 1024 * 4);
-        _pData->m_heap.Allocate(_pData->m_eventsHeap, 1024 * 8);
+        _pData->m_heap.Allocate(_pData->m_eventsHeap, 1024 * 16);
         _pData->m_heap.Allocate(_pData->m_aEngineSystems, 1);
         _pData->m_heap.Allocate(_pData->m_aLoadedModules, 1);
 
@@ -836,9 +834,9 @@ namespace Duckvil {
 
             while(_pData->m_windowEventPool.AnyEvents())
             {
-                Window::CloseEvent _closeEvent;
-                Window::ResizeEvent _resizeEvent;
-                Window::SetMousePositionEvent _setMousePositionEvent;
+                static Window::CloseEvent _closeEvent;
+                static Window::ResizeEvent _resizeEvent;
+                static Window::SetMousePositionEvent _setMousePositionEvent;
 
                 if(_pData->m_windowEventPool.GetMessage(&_closeEvent))
                 {
@@ -858,17 +856,23 @@ namespace Duckvil {
 
                     _pData->m_windowEventPool.EventHandled<Window::SetMousePositionEvent>();
                 }
+                else
+                {
+                    _pData->m_windowEventPool.Skip();
+                }
             }
         }
 
         _pData->m_pWindow->Refresh();
         _pData->m_time.update(&_pData->m_timeData);
 
+        _pData->m_windowEventPool.Clear();
+
 //         {
 //             ZoneScopedN("Sleeping, zzz...");
 
 // #ifdef DUCKVIL_PLATFORM_WINDOWS
-//             Sleep(16);
+//             Sleep(33);
 // #endif
 //         }
     }

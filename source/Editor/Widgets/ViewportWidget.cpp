@@ -40,11 +40,13 @@ namespace Duckvil { namespace Editor {
     {
         ZoneScopedN("Viewport update");
 
+        m_pWindowEventPool->Reset();
+
         while(m_pWindowEventPool->AnyEvents())
         {
-            Window::KeyDownEvent _keyDownEvent;
-            Window::KeyUpEvent _keyUpEvent;
-            Window::MouseMotionEvent _mouseMotionEvent;
+            static Window::KeyDownEvent _keyDownEvent;
+            static Window::KeyUpEvent _keyUpEvent;
+            static Window::MouseMotionEvent _mouseMotionEvent;
 
             if(m_pWindowEventPool->GetMessage(&_keyDownEvent))
             {
@@ -53,7 +55,7 @@ namespace Duckvil { namespace Editor {
                     m_aKeys[_keyDownEvent.m_key] = true;
                 }
 
-                m_pWindowEventPool->EventHandled<Window::KeyDownEvent>();
+                m_pWindowEventPool->EventHandled(_keyDownEvent);
             }
             else if(m_pWindowEventPool->GetMessage(&_keyUpEvent))
             {
@@ -62,7 +64,7 @@ namespace Duckvil { namespace Editor {
                     m_aKeys[_keyUpEvent.m_key] = false;
                 }
 
-                m_pWindowEventPool->EventHandled<Window::KeyUpEvent>();
+                m_pWindowEventPool->EventHandled(_keyUpEvent);
             }
             else if(m_pWindowEventPool->GetMessage(&_mouseMotionEvent))
             {
@@ -79,8 +81,12 @@ namespace Duckvil { namespace Editor {
                 m_viewport.m_rotation = glm::normalize(glm::angleAxis(_y * (float)_dDelta, m_viewport.m_rotation * glm::vec3(-1, 0, 0)) * m_viewport.m_rotation);
                 m_viewport.m_rotation = glm::normalize(glm::angleAxis(_x * (float)_dDelta, glm::vec3(0, -1, 0)) * m_viewport.m_rotation);
 
-                m_pWindowEventPool->EventHandled<Window::MouseMotionEvent>();
+                m_pWindowEventPool->EventHandled(_mouseMotionEvent);
                 m_pWindowEventPool->Broadcast(m_setMousePosition);
+            }
+            else
+            {
+                m_pWindowEventPool->Skip();
             }
         }
 
