@@ -4,6 +4,8 @@
 
 #include "Memory/Queue.h"
 
+#include "Memory/QueueAllocator.h"
+
 #include <cstring>
 
 DUCKVIL_TEST(FixedQueueAllocation)
@@ -174,6 +176,269 @@ DUCKVIL_TEST(FixedQueueMove)
             DUCKVIL_TEST_EQUAL(_v.m_bMoveCalled, true, "Move contructor not called");
         }
     }
+
+    DUCKVIL_TEST_SUCCESS_PASS;
+}
+
+DUCKVIL_TEST(QueueAllocation)
+{
+    {
+        Duckvil::Memory::queue_allocator* _queue = static_cast<Duckvil::Memory::queue_allocator*>(__duckvil_global::m_pMemoryInterface->m_fnFreeListAllocate_((Duckvil::Memory::free_list_allocator*)__duckvil_global::m_pHeap, sizeof(Duckvil::Memory::queue_allocator) + 128, alignof(Duckvil::Memory::queue_allocator)));
+
+        DUCKVIL_TEST_IS_NOT_NULL(_queue, "Queue allocator is null");
+
+        _queue->m_ullCapacity = 128;
+        _queue->m_ullUsed = 0;
+        _queue->m_ullTail = 0;
+        _queue->m_ullHead = 0;
+
+        {
+            int _v = 10;
+
+            int* _a = Duckvil::Memory::queue_allocate(__duckvil_global::m_pMemoryInterface, _queue, _v);
+            int* _b = static_cast<int*>(Duckvil::Memory::queue_begin(__duckvil_global::m_pMemoryInterface, _queue));
+
+            DUCKVIL_TEST_IS_NOT_NULL(_a, "Allocated value is null");
+            DUCKVIL_TEST_IS_NOT_NULL(_b, "First value is null");
+
+            DUCKVIL_TEST_EQUAL(*_a, _v, "Wrong allocated value");
+            DUCKVIL_TEST_EQUAL(*_b, _v, "Wrong first value");
+        }
+
+        {
+            float _v = 20;
+
+            float* _a = Duckvil::Memory::queue_allocate(__duckvil_global::m_pMemoryInterface, _queue, _v);
+            int* _b = static_cast<int*>(Duckvil::Memory::queue_begin(__duckvil_global::m_pMemoryInterface, _queue));
+
+            DUCKVIL_TEST_IS_NOT_NULL(_a, "Allocated value is null");
+            DUCKVIL_TEST_IS_NOT_NULL(_b, "First value is null");
+
+            DUCKVIL_TEST_EQUAL(*_a, _v, "Wrong allocated value");
+            DUCKVIL_TEST_EQUAL(*_b, 10, "Wrong first value");
+        }
+
+        {
+            char _v = 'a';
+
+            char* _a = Duckvil::Memory::queue_allocate(__duckvil_global::m_pMemoryInterface, _queue, _v);
+            int* _b = static_cast<int*>(Duckvil::Memory::queue_begin(__duckvil_global::m_pMemoryInterface, _queue));
+
+            DUCKVIL_TEST_IS_NOT_NULL(_a, "Allocated value is null");
+            DUCKVIL_TEST_IS_NOT_NULL(_b, "First value is null");
+
+            DUCKVIL_TEST_EQUAL(*_a, _v, "Wrong allocated value");
+            DUCKVIL_TEST_EQUAL(*_b, 10, "Wrong first value");
+        }
+
+        {
+            Duckvil::Memory::queue_pop(__duckvil_global::m_pMemoryInterface, _queue);
+
+            float* _b = static_cast<float*>(Duckvil::Memory::queue_begin(__duckvil_global::m_pMemoryInterface, _queue));
+
+            DUCKVIL_TEST_IS_NOT_NULL(_b, "First value is null");
+            DUCKVIL_TEST_EQUAL(*_b, 20.f, "Wrong first value");
+        }
+
+        {
+            Duckvil::Memory::queue_pop(__duckvil_global::m_pMemoryInterface, _queue);
+
+            char* _b = static_cast<char*>(Duckvil::Memory::queue_begin(__duckvil_global::m_pMemoryInterface, _queue));
+
+            DUCKVIL_TEST_IS_NOT_NULL(_b, "First value is null");
+            DUCKVIL_TEST_EQUAL(*_b, 'a', "Wrong first value");
+        }
+
+        Duckvil::Memory::queue_pop(__duckvil_global::m_pMemoryInterface, _queue);
+
+        {
+            int _v = 10;
+
+            int* _a = Duckvil::Memory::queue_allocate(__duckvil_global::m_pMemoryInterface, _queue, _v);
+            int* _b = static_cast<int*>(Duckvil::Memory::queue_begin(__duckvil_global::m_pMemoryInterface, _queue));
+
+            DUCKVIL_TEST_IS_NOT_NULL(_a, "Allocated value is null");
+            DUCKVIL_TEST_IS_NOT_NULL(_b, "First value is null");
+
+            DUCKVIL_TEST_EQUAL(*_a, _v, "Wrong allocated value");
+            DUCKVIL_TEST_EQUAL(*_b, _v, "Wrong first value");
+        }
+
+        {
+            float _v = 20;
+
+            float* _a = Duckvil::Memory::queue_allocate(__duckvil_global::m_pMemoryInterface, _queue, _v);
+            int* _b = static_cast<int*>(Duckvil::Memory::queue_begin(__duckvil_global::m_pMemoryInterface, _queue));
+
+            DUCKVIL_TEST_IS_NOT_NULL(_a, "Allocated value is null");
+            DUCKVIL_TEST_IS_NOT_NULL(_b, "First value is null");
+
+            DUCKVIL_TEST_EQUAL(*_a, _v, "Wrong allocated value");
+            DUCKVIL_TEST_EQUAL(*_b, 10, "Wrong first value");
+        }
+
+        {
+            char _v = 'a';
+
+            char* _a = Duckvil::Memory::queue_allocate(__duckvil_global::m_pMemoryInterface, _queue, _v);
+            int* _b = static_cast<int*>(Duckvil::Memory::queue_begin(__duckvil_global::m_pMemoryInterface, _queue));
+
+            DUCKVIL_TEST_IS_NOT_NULL(_a, "Allocated value is null");
+            DUCKVIL_TEST_IS_NOT_NULL(_b, "First value is null");
+
+            DUCKVIL_TEST_EQUAL(*_a, _v, "Wrong allocated value");
+            DUCKVIL_TEST_EQUAL(*_b, 10, "Wrong first value");
+        }
+
+        {
+            Duckvil::Memory::queue_pop(__duckvil_global::m_pMemoryInterface, _queue);
+
+            float* _b = static_cast<float*>(Duckvil::Memory::queue_begin(__duckvil_global::m_pMemoryInterface, _queue));
+
+            DUCKVIL_TEST_IS_NOT_NULL(_b, "First value is null");
+            DUCKVIL_TEST_EQUAL(*_b, 20.f, "Wrong first value");
+        }
+
+        {
+            Duckvil::Memory::queue_pop(__duckvil_global::m_pMemoryInterface, _queue);
+
+            char* _b = static_cast<char*>(Duckvil::Memory::queue_begin(__duckvil_global::m_pMemoryInterface, _queue));
+
+            DUCKVIL_TEST_IS_NOT_NULL(_b, "First value is null");
+            DUCKVIL_TEST_EQUAL(*_b, 'a', "Wrong first value");
+        }
+
+        Duckvil::Memory::queue_pop(__duckvil_global::m_pMemoryInterface, _queue);
+    }
+
+    {
+        Duckvil::Memory::queue_allocator* _queue = static_cast<Duckvil::Memory::queue_allocator*>(__duckvil_global::m_pMemoryInterface->m_fnFreeListAllocate_((Duckvil::Memory::free_list_allocator*)__duckvil_global::m_pHeap, sizeof(Duckvil::Memory::queue_allocator) + 128, alignof(Duckvil::Memory::queue_allocator)));
+
+        DUCKVIL_TEST_IS_NOT_NULL(_queue, "Queue allocator is null");
+
+        _queue->m_ullCapacity = 128;
+        _queue->m_ullUsed = 0;
+        _queue->m_ullTail = 0;
+        _queue->m_ullHead = 0;
+
+        {
+            int _v = 10;
+
+            int* _a = Duckvil::Memory::queue_allocate(__duckvil_global::m_pMemoryInterface, _queue, _v);
+            int* _b = static_cast<int*>(Duckvil::Memory::queue_begin(__duckvil_global::m_pMemoryInterface, _queue));
+
+            DUCKVIL_TEST_IS_NOT_NULL(_a, "Allocated value is null");
+            DUCKVIL_TEST_IS_NOT_NULL(_b, "First value is null");
+
+            DUCKVIL_TEST_EQUAL(*_a, _v, "Wrong allocated value");
+            DUCKVIL_TEST_EQUAL(*_b, _v, "Wrong first value");
+        }
+
+        Duckvil::Memory::queue_pop(__duckvil_global::m_pMemoryInterface, _queue);
+
+        {
+            float _v = 20;
+
+            float* _a = Duckvil::Memory::queue_allocate(__duckvil_global::m_pMemoryInterface, _queue, _v);
+            float* _b = static_cast<float*>(Duckvil::Memory::queue_begin(__duckvil_global::m_pMemoryInterface, _queue));
+
+            DUCKVIL_TEST_IS_NOT_NULL(_a, "Allocated value is null");
+            DUCKVIL_TEST_IS_NOT_NULL(_b, "First value is null");
+
+            DUCKVIL_TEST_EQUAL(*_a, _v, "Wrong allocated value");
+            DUCKVIL_TEST_EQUAL(*_b, _v, "Wrong first value");
+        }
+
+        Duckvil::Memory::queue_pop(__duckvil_global::m_pMemoryInterface, _queue);
+
+        {
+            char _v = 'a';
+
+            char* _a = Duckvil::Memory::queue_allocate(__duckvil_global::m_pMemoryInterface, _queue, _v);
+            char* _b = static_cast<char*>(Duckvil::Memory::queue_begin(__duckvil_global::m_pMemoryInterface, _queue));
+
+            DUCKVIL_TEST_IS_NOT_NULL(_a, "Allocated value is null");
+            DUCKVIL_TEST_IS_NOT_NULL(_b, "First value is null");
+
+            DUCKVIL_TEST_EQUAL(*_a, _v, "Wrong allocated value");
+            DUCKVIL_TEST_EQUAL(*_b, _v, "Wrong first value");
+        }
+    }
+
+    {
+        Duckvil::Memory::queue_allocator* _queue = static_cast<Duckvil::Memory::queue_allocator*>(__duckvil_global::m_pMemoryInterface->m_fnFreeListAllocate_((Duckvil::Memory::free_list_allocator*)__duckvil_global::m_pHeap, sizeof(Duckvil::Memory::queue_allocator) + 64, alignof(Duckvil::Memory::queue_allocator)));
+
+        DUCKVIL_TEST_IS_NOT_NULL(_queue, "Queue allocator is null");
+
+        _queue->m_ullCapacity = 64;
+        _queue->m_ullUsed = 0;
+        _queue->m_ullTail = 0;
+        _queue->m_ullHead = 0;
+
+        {
+            int _v = 10;
+
+            int* _a = Duckvil::Memory::queue_allocate(__duckvil_global::m_pMemoryInterface, _queue, _v);
+            int* _b = static_cast<int*>(Duckvil::Memory::queue_begin(__duckvil_global::m_pMemoryInterface, _queue));
+
+            DUCKVIL_TEST_IS_NOT_NULL(_a, "Allocated value is null");
+            DUCKVIL_TEST_IS_NOT_NULL(_b, "First value is null");
+
+            DUCKVIL_TEST_EQUAL(*_a, _v, "Wrong allocated value");
+            DUCKVIL_TEST_EQUAL(*_b, _v, "Wrong first value");
+        }
+
+        {
+            float _v = 20;
+
+            float* _a = Duckvil::Memory::queue_allocate(__duckvil_global::m_pMemoryInterface, _queue, _v);
+            int* _b = static_cast<int*>(Duckvil::Memory::queue_begin(__duckvil_global::m_pMemoryInterface, _queue));
+
+            DUCKVIL_TEST_IS_NOT_NULL(_a, "Allocated value is null");
+            DUCKVIL_TEST_IS_NOT_NULL(_b, "First value is null");
+
+            DUCKVIL_TEST_EQUAL(*_a, _v, "Wrong allocated value");
+            DUCKVIL_TEST_EQUAL(*_b, 10, "Wrong first value");
+        }
+
+        {
+            char _v = 'c';
+            bool _exception = false;
+
+            try
+            {
+                char* _a = Duckvil::Memory::queue_allocate(__duckvil_global::m_pMemoryInterface, _queue, _v);
+            }
+            catch(const std::exception& _e)
+            {
+                _exception = true;
+            }
+
+            DUCKVIL_TEST_EQUAL(_exception, true, "Exception was not thrown");
+
+            int* _b = static_cast<int*>(Duckvil::Memory::queue_begin(__duckvil_global::m_pMemoryInterface, _queue));
+
+            DUCKVIL_TEST_IS_NOT_NULL(_b, "First value is null");
+            DUCKVIL_TEST_EQUAL(*_b, 10, "Wrong first value");
+        }
+
+        {
+            Duckvil::Memory::queue_pop(__duckvil_global::m_pMemoryInterface, _queue);
+
+            float* _b = static_cast<float*>(Duckvil::Memory::queue_begin(__duckvil_global::m_pMemoryInterface, _queue));
+
+            DUCKVIL_TEST_IS_NOT_NULL(_b, "First value is null");
+            DUCKVIL_TEST_EQUAL(*_b, 20.f, "Wrong first value");
+        }
+
+        {
+            Duckvil::Memory::queue_pop(__duckvil_global::m_pMemoryInterface, _queue);
+
+            DUCKVIL_TEST_EQUAL(_queue->m_ullUsed, static_cast<std::size_t>(0), "Size not equal to 0");
+        }
+    }
+
+    DUCKVIL_TEST_SUCCESS_PASS;
 }
 
 DUCKVIL_TEST(FixedQueueCopy)

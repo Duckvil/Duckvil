@@ -73,7 +73,7 @@ DUCKVIL_TEST(RuntimeReflection)
 
             DUCKVIL_TEST_IS_NOT_NULL(_test_type_module.m_pModule, "Could not load 'TestType'");
 
-            uint32_t (*get_recorder_count)();
+            Duckvil::RuntimeReflection::GetRecordersCountFunction get_recorder_count = nullptr;
 
             _module.get(_test_type_module, "duckvil_get_runtime_reflection_recorder_count", (void**)&get_recorder_count);
 

@@ -58,9 +58,9 @@ DUCKVIL_TEST(MainMemoryAllocation)
     *_main = 0;
 
     DUCKVIL_TEST_EXP(__duckvil_global::m_pMemoryInterface->m_fnBasicAllocate(_main, std::numeric_limits<std::size_t>::max() - sizeof(Duckvil::Memory::linear_allocator)) == false, "Allocating such big chunk of memory should not be possible");
-    DUCKVIL_TEST_EXP(__duckvil_global::m_pMemoryInterface->m_fnBasicAllocate(_main, 1024) == true, "Could not allocate memory");
+    DUCKVIL_TEST_EXP(__duckvil_global::m_pMemoryInterface->m_fnBasicAllocate(_main, 2048) == true, "Could not allocate memory");
 
-    __duckvil_global::m_pHeap = __duckvil_global::m_pMemoryInterface->m_fnLinearAllocateFreeListAllocator(*_main, 512);
+    __duckvil_global::m_pHeap = __duckvil_global::m_pMemoryInterface->m_fnLinearAllocateFreeListAllocator(*_main, 1024);
 
     DUCKVIL_TEST_IS_NOT_NULL(__duckvil_global::m_pHeap, "Could not allocate memory for heap");
 
