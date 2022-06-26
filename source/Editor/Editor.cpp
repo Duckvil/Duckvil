@@ -33,6 +33,7 @@
 #include "Engine/Events/InjectConstructorArgumentEvent.h"
 
 #include "ProjectManager/ProjectManager.h"
+#include "ProjectManager/Script.h"
 
 #undef GetObject
 
@@ -153,6 +154,11 @@ namespace Duckvil { namespace Editor {
             if(_type.GetFunctionHandle<const HexEditorWidgetInitEvent&>("OnEvent").m_ID != -1)
             {
                 _data->m_pEditorEvents.Add<HexEditorWidgetInitEvent>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_event.m_pTrackKeeper), _event.m_pTrackKeeper->GetTypeHandle());
+            }
+
+            if(_type.Inherits<Project::Script>())
+            {
+                (static_cast<Widget*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_event.m_pTrackKeeper))->*_type.GetFunctionCallback<Widget, void*>("InitEditor")->m_fnFunction)(_data->_ctx);
             }
 
             // _pEngineEventPool->AddA<HotReloader::SwapEvent>([_data, _pEditor](const HotReloader::SwapEvent& _event)
