@@ -2,6 +2,7 @@
 
 #include "RuntimeReflection/Markers.h"
 
+#define Editor_Widgets_ContentExplorerWidget_h_15_REFLECTION_MODULE_DUMMY 
 #define Editor_Widgets_ContentExplorerWidget_h_15_REFLECTION_MODULE_CASTER \
 public: \
 static void* Cast(void* _pObject) { return static_cast<ContentExplorerWidget*>(_pObject); }
@@ -16,6 +17,7 @@ _pSerializer->SerializeProperty("m_bCreateDirectoryPopup", m_bCreateDirectoryPop
 _pSerializer->SerializeProperty("m_sSelectedPath", m_sSelectedPath); \
 }
 #define Editor_Widgets_ContentExplorerWidget_h_15_GENERATED_BODY \
+Editor_Widgets_ContentExplorerWidget_h_15_REFLECTION_MODULE_DUMMY \
 Editor_Widgets_ContentExplorerWidget_h_15_REFLECTION_MODULE_CASTER \
 Editor_Widgets_ContentExplorerWidget_h_15_REFLECTION_MODULE_RUNTIME_COMPILER
 

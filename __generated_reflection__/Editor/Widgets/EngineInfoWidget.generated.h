@@ -2,6 +2,7 @@
 
 #include "RuntimeReflection/Markers.h"
 
+#define Editor_Widgets_EngineInfoWidget_h_20_REFLECTION_MODULE_DUMMY 
 #define Editor_Widgets_EngineInfoWidget_h_20_REFLECTION_MODULE_CASTER \
 public: \
 static void* Cast(void* _pObject) { return static_cast<EngineInfoWidget*>(_pObject); }
@@ -16,6 +17,7 @@ _pSerializer->SerializeProperty("m_uiOldFPS", m_uiOldFPS); \
 _pSerializer->SerializeProperty("m_dOneSecond", m_dOneSecond); \
 }
 #define Editor_Widgets_EngineInfoWidget_h_20_GENERATED_BODY \
+Editor_Widgets_EngineInfoWidget_h_20_REFLECTION_MODULE_DUMMY \
 Editor_Widgets_EngineInfoWidget_h_20_REFLECTION_MODULE_CASTER \
 Editor_Widgets_EngineInfoWidget_h_20_REFLECTION_MODULE_RUNTIME_COMPILER
 

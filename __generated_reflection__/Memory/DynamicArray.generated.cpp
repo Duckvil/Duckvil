@@ -11,13 +11,22 @@ DUCKVIL_RESOURCE(property_t) _property;
 DUCKVIL_RESOURCE(constructor_t) _constructor;
 DUCKVIL_RESOURCE(destructor_t) _destructor;
 DUCKVIL_RESOURCE(function_t) _function;
+DUCKVIL_RESOURCE(enum_t) _enum;
+DUCKVIL_RESOURCE(enum_element_t) _enumElement;
+DUCKVIL_RESOURCE(ntype_t) _ntype;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
-_type = record_type<__duckvil_dynamic_array>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, "__duckvil_dynamic_array");
+std::vector<Duckvil::RuntimeReflection::__duckvil_resource_ntype_t> _recordedNTypes;
+std::vector<const char*> _namespaces;
+_namespaces.push_back("__duckvil_dynamic_array");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+_type = record_type<__duckvil_dynamic_array>(_data, "__duckvil_dynamic_array");
 _recordedTypes.push_back(_type);
-record_meta(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
-_property = record_property<uint32_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(__duckvil_dynamic_array, m_ullSize), "m_ullSize");
-_property = record_property<uint32_t>(DUCKVIL_RUNTIME_REFLECTION_RECORDER_STANDARD_STUFF, _type, offsetof(__duckvil_dynamic_array, m_ullCapacity), "m_ullCapacity");
-return duckvil_recorded_types_create(_pMemoryInterface, _pAllocator, _recordedTypes, "Memory/DynamicArray.h", 3);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
+_property = record_property<uint32_t>(_data, _type, offsetof(__duckvil_dynamic_array, m_ullSize), "m_ullSize");
+_property = record_property<uint32_t>(_data, _type, offsetof(__duckvil_dynamic_array, m_ullCapacity), "m_ullCapacity");
+_namespaces.pop_back();
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Memory/DynamicArray.h", 3);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()

@@ -2,6 +2,7 @@
 
 #include "RuntimeReflection/Markers.h"
 
+#define Engine_ISystem_h_14_REFLECTION_MODULE_DUMMY 
 #define Engine_ISystem_h_14_REFLECTION_MODULE_CASTER \
 public: \
 static void* Cast(void* _pObject) { return static_cast<ISystem*>(_pObject); }
@@ -11,6 +12,7 @@ void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\
 }
 #define Engine_ISystem_h_14_GENERATED_BODY \
+Engine_ISystem_h_14_REFLECTION_MODULE_DUMMY \
 Engine_ISystem_h_14_REFLECTION_MODULE_CASTER \
 Engine_ISystem_h_14_REFLECTION_MODULE_RUNTIME_COMPILER
 
