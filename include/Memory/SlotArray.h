@@ -1,5 +1,9 @@
 #pragma once
 
+#define DUCKVIL_RUNTIME_REFLECTION_SKIP
+
+DUCKVIL_RUNTIME_REFLECTION_SKIP
+
 #include "Memory/DynamicArray.h"
 
 #undef max

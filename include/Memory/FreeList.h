@@ -86,6 +86,16 @@ namespace Duckvil { namespace Memory {
             return *this;
         }
 
+        template <typename Type>
+        Type* Allocate(const Type& _data)
+        {
+            // void* _pointer = free_list_allocate<Type>(m_pMemory, m_pContainer);
+
+            // return new(_pointer) Type(_vArgs...); // (Type*)free_list_allocate(m_pContainer, sizeof(Type), alignof(Type));
+
+            return free_list_allocate(m_pMemory, m_pContainer, _data);
+        }
+
         template <typename Type, typename... Args>
         Type* Allocate(Args&&... _vArgs)
         {

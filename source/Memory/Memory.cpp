@@ -2,7 +2,9 @@
 
 #include "Memory/Internal/Allocator.h"
 #include "Memory/Internal/LinearAllocator.h"
+#include "Memory/Internal/StackAllocator.h"
 #include "Memory/Internal/FixedStackAllocator.h"
+#include "Memory/Internal/QueueAllocator.h"
 #include "Memory/Internal/FixedQueueAllocator.h"
 #include "Memory/Internal/FixedArrayAllocator.h"
 #include "Memory/Internal/FreeListAllocator.h"
@@ -101,6 +103,16 @@ Duckvil::Memory::ftable* duckvil_memory_init()
     memory.m_fnLinearAllocate = &impl_linear_allocate;
     memory.m_fnLinearClear =    &impl_linear_clear;
 
+    memory.m_fnStackAllocate_ =        &impl_stack_allocate;
+    memory.m_fnStackAllocateSize_ =    &impl_stack_allocate;
+    memory.m_fnStackTop_ =             &impl_stack_allocator_top;
+    memory.m_fnStackPop_ =             &impl_stack_allocator_pop;
+    memory.m_fnStackEmpty_ =           &impl_stack_allocator_empty;
+    memory.m_fnStackFull_ =            &impl_stack_allocator_full;
+    memory.m_fnStackClear_ =           &impl_stack_clear;
+    memory.m_fnStackSize_ =            &impl_stack_allocator_size;
+    memory.m_fnStackCapacity_ =        &impl_stack_allocator_capacity;
+
     memory.m_fnFixedStackAllocate_ =        &impl_fixed_stack_allocate;
     memory.m_fnFixedStackAllocateSize_ =    &impl_fixed_stack_allocate;
     memory.m_fnFixedStackTop_ =             &impl_fixed_stack_allocator_top;
@@ -110,6 +122,17 @@ Duckvil::Memory::ftable* duckvil_memory_init()
     memory.m_fnFixedStackClear_ =           &impl_fixed_stack_clear;
     memory.m_fnFixedStackSize_ =            &impl_fixed_stack_allocator_size;
     memory.m_fnFixedStackCapacity_ =        &impl_fixed_stack_allocator_capacity;
+
+    memory.m_fnQueueAllocate_ =        &impl_queue_allocate;
+    memory.m_fnQueueAllocateSize_ =    &impl_queue_allocate;
+    memory.m_fnQueueBegin_ =           &impl_queue_begin;
+    memory.m_fnQueuePop_ =             &impl_queue_pop;
+    memory.m_fnQueueEmpty_ =           &impl_queue_empty;
+    memory.m_fnQueueFull_ =            &impl_queue_full;
+    memory.m_fnQueueClear_ =           &impl_queue_clear;
+    memory.m_fnQueueResize_ =          &impl_queue_resize;
+    memory.m_fnQueueSize_ =            &impl_queue_size;
+    memory.m_fnQueueCapacity_ =        &impl_queue_capacity;
 
     memory.m_fnFixedQueueAllocate_ =        &impl_fixed_queue_allocate;
     memory.m_fnFixedQueueAllocateSize_ =    &impl_fixed_queue_allocate;
@@ -168,6 +191,7 @@ Duckvil::Memory::ftable* duckvil_memory_init()
     memory.m_fnLinearAllocateFixedVectorAllocator =     &impl_linear_allocate_fixed_vector_allocator;
     memory.m_fnLinearAllocateByteBufferAllocator =      &impl_linear_allocate_byte_buffer_allocator;
 
+    memory.m_fnFreeListAllocateQueueAllocator =         &impl_free_list_allocate_queue_allocator;
     memory.m_fnFreeListAllocateFixedQueueAllocator =    &impl_free_list_allocate_fixed_queue_allocator;
     memory.m_fnFreeListAllocateFreeListAllocator =      &impl_free_list_allocate_free_list_allocator;
     memory.m_fnFreeListAllocateFixedVectorAllocator =   &impl_free_list_allocate_fixed_vector_allocator;

@@ -213,6 +213,28 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
+    queue_allocator* impl_free_list_allocate_queue_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize)
+    {
+        queue_allocator* _allocator = static_cast<queue_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(queue_allocator) + _ullSize, alignof(queue_allocator)));
+
+        std::size_t _size = sizeof(queue_allocator);
+
+        _allocator->m_ullCapacity = _ullSize;
+        _allocator->m_ullUsed = 0;
+        _allocator->m_ullTail = 0;
+        _allocator->m_ullHead = 0;
+
+        memset(reinterpret_cast<uint8_t*>(_allocator) + sizeof(queue_allocator), 0, _ullSize);
+
+#ifdef DUCKVIL_MEMORY_DEBUGGER
+        _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
+        _allocator->m_fnOnDeallocate = _pAllocator->m_fnOnDeallocate;
+        _allocator->m_fnOnAllocate(_pAllocator, _allocator, duckvil_memory_allocator_type_queue);
+#endif
+
+        return _allocator;
+    }
+
     fixed_queue_allocator* impl_free_list_allocate_fixed_queue_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
         fixed_queue_allocator* _allocator = static_cast<fixed_queue_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(fixed_queue_allocator) + _ullSize, alignof(fixed_queue_allocator)));

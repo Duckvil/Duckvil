@@ -67,7 +67,7 @@ namespace Duckvil { namespace Memory {
             _header->m_ullSize = _total_size;
             _header->m_ucPadding = _padding;
 
-            _ASSERT(isAligned(_header));
+            _ASSERT(is_aligned(_header));
 
             _pAllocator->m_ullUsed += _total_size;
 
@@ -112,7 +112,7 @@ namespace Duckvil { namespace Memory {
         __free_list_node* _previous_node = nullptr;
         __free_list_node* _iterator = static_cast<__free_list_node*>(_pAllocator->m_pHead);
 
-        _ASSERT(isAligned(_header));
+        _ASSERT(is_aligned(_header));
 
         while(_iterator != nullptr)
         {
