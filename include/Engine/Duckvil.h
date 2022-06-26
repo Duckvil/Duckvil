@@ -122,6 +122,7 @@ namespace Duckvil {
 
         Event::Pool<Event::mode::immediate> m_eventPool;
         Event::Pool<Event::mode::buffered> m_windowEventPool;
+        Event::Pool<Event::mode::buffered> m_bufferedEventPool;
 
         Memory::Vector<Duckvil::system> m_aEngineSystems;
 

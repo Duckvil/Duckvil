@@ -1,3 +1,4 @@
+#define STB_IMAGE_IMPLEMENTATION
 #include <cstdio>
 #include <filesystem>
 
@@ -52,7 +53,7 @@ int main(int argc, char* argv[])
 
     Duckvil::Memory::linear_allocator* _mainMemoryAllocator;
 
-    _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024);
+    _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024 * 2);
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
     duckvil_memory_debug_info _memoryDebug = {};
@@ -90,7 +91,7 @@ int main(int argc, char* argv[])
     });
 #endif
 
-    Duckvil::Memory::free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(_mainMemoryAllocator, 1000 * 1024);
+    Duckvil::Memory::free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(_mainMemoryAllocator, 1000 * 1024 * 2);
 
     Duckvil::__ftable* _engine = duckvil_init();
     Duckvil::__data _engineData = { .m_ecs = flecs::world() };
@@ -100,6 +101,13 @@ int main(int argc, char* argv[])
 #ifdef DUCKVIL_MEMORY_DEBUGGER
     _engineData.m_pMemoryDebugger = &_memoryDebug;
 #endif
+
+    // load project if specified
+
+    if(_parser[Options::PROJECT].m_bIsSet)
+    {
+        _engineData.m_bufferedEventPool.Broadcast(Duckvil::ProjectManager::LoadProjectEvent{ _parser[Options::PROJECT].m_sResult });
+    }
 
     _engine->start(&_engineData, _engine);
 

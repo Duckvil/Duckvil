@@ -436,6 +436,7 @@ namespace Duckvil {
 
         _pData->m_eventPool = Event::Pool<Event::mode::immediate>(_pData->m_eventsHeap, _pData->m_pRuntimeReflection, _pData->m_pRuntimeReflectionData);
         _pData->m_windowEventPool = Event::Pool<Event::mode::buffered>(_pData->m_eventsHeap, _pData->m_pRuntimeReflectionData);
+        _pData->m_bufferedEventPool = Event::Pool<Event::mode::buffered>(_pData->m_eventsHeap, _pData->m_pRuntimeReflectionData);
 
         PlugNPlay::AutoLoader _autoLoader(DUCKVIL_OUTPUT);
 
@@ -651,7 +652,7 @@ namespace Duckvil {
             }
         }
 
-        _pData->m_eventPool.AddA<ProjectManager::LoadProjectEvent>([_pData](const ProjectManager::LoadProjectEvent& _event)
+        _pData->m_eventPool.AddA<ProjectManager::LoadProjectEvent>([_pData](ProjectManager::LoadProjectEvent& _event)
         {
             _pData->m_projectManager.m_fnLoadProject(&_pData->m_projectManagerData, _event.m_sProjectName, Utils::string(DUCKVIL_PROJECTS_PATH) / _event.m_sProjectName / "bin");
         });
@@ -680,6 +681,24 @@ namespace Duckvil {
         _pData->m_pEditorData->m_pEditorEvents.Broadcast(Editor::HexEditorWidgetInitEvent{ _pData->m_pMemoryDebugger });
 #endif
         _pData->m_bRunning = true;
+
+        _pData->m_bufferedEventPool.Reset();
+
+        while(_pData->m_bufferedEventPool.AnyEvents())
+        {
+            static ProjectManager::LoadProjectEvent _loadProjectEvent;
+
+            if(_pData->m_bufferedEventPool.GetMessage(&_loadProjectEvent))
+            {
+                _pData->m_eventPool.Broadcast(_loadProjectEvent);
+
+                _pData->m_bufferedEventPool.EventHandled<ProjectManager::LoadProjectEvent>();
+            }
+            else
+            {
+                _pData->m_bufferedEventPool.Skip();
+            }
+        }
 
         while(_pData->m_bRunning)
         {
