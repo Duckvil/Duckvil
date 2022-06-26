@@ -313,86 +313,6 @@ namespace Duckvil { namespace HotReloader {
 
         DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Hot reload started");
 
-        /*{
-            FrameMarkStart("Reflection");
-            DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Generating reflection");
-
-            std::filesystem::path _path = std::filesystem::relative(_sFile, _CWD / "source");
-            std::filesystem::path _generatePath = _CWD / "__generated_reflection__" / _path;
-            std::filesystem::path _source = _generatePath;
-            std::filesystem::path _header = _generatePath;
-
-        // TODO: Solve problem with reflection recorder count
-
-            _path = _path.replace_extension(".h");
-
-            std::string _toCmp = _path.string();
-            uint32_t _foundRecorderID = -1;
-            RuntimeReflection::__generator_data _generatorData;
-
-            _generatorData.m_uiRecorderIndex = -1;
-
-            std::replace(_toCmp.begin(), _toCmp.end(), '\\', '/');
-
-            for(size_t i = 0; i < m_aReflectedTypes->Size(); ++i)
-            {
-                const duckvil_recorderd_types& _types = m_aReflectedTypes->At(i);
-
-                if(strcmp(_types.m_sFile, _toCmp.c_str()) == 0)
-                {
-                    _generatorData.m_uiRecorderIndex = _types.m_uiRecorderID;
-
-                    break;
-                }
-            }
-
-            if(_path.string().size() < DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX)
-            {
-                strcpy(_generatorData.m_sInclude, _path.string().c_str());
-            }
-            else
-            {
-                assert(false && "Path is too long!");
-            }
-
-            Parser::__ast _astData;
-            Parser::__lexer_data _data;
-
-            m_path = _path;
-
-            _astData.m_sFile = _path;
-
-            _source.replace_extension(".generated.cpp");
-            _header.replace_extension(".generated.h");
-
-            _path = _CWD / "include" / _path;
-
-            m_pLexerFTable->load_file(&_data, _path.string().c_str());
-
-            _astData.m_aUserDefines.push_back(Parser::user_define{ "DUCKVIL_EXPORT", &Utils::user_define_behavior });
-            _astData.m_aUserDefines.push_back(Parser::user_define{ "slot", &Utils::user_define_behavior });
-            _astData.m_aUserDefines.push_back(Parser::user_define{ "DUCKVIL_RESOURCE_DECLARE", &Utils::user_define_behavior });
-            _astData.m_aUserDefines.push_back(Parser::user_define{ "DUCKVIL_GENERATED_BODY", &Utils::user_define_behavior });
-            _astData.m_aUserDefines.push_back(Parser::user_define{ "DUCKVIL_RESOURCE", &Utils::user_define_resource_behavior });
-
-            m_pAST_FTable->ast_generate(&_astData, m_pLexerFTable, _data);
-
-            for(auto& _reflectionModule : m_aModules)
-            {
-                Duckvil::RuntimeReflection::invoke_member<Duckvil::Parser::__ast*>(_reflectionModule.m_typeHandle, _reflectionModule.m_processAST_FunctionHandle, _reflectionModule.m_pObject, &_astData);
-            }
-
-            m_pReflectionGenerator->generate(&_generatorData, _source.string().c_str(), _header.string().c_str(), _astData, &generate, this);
-
-            for(auto& _module : m_aModules)
-            {
-                Duckvil::RuntimeReflection::invoke_member(_module.m_typeHandle, _module.m_clearFunctionHandle, _module.m_pObject);
-            }
-
-            DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Generating reflection finished");
-            FrameMarkEnd("Reflection");
-        }*/
-
         if(_bGenerateReflection)
         {
             FrameMarkStart("Reflection");
@@ -496,12 +416,6 @@ namespace Duckvil { namespace HotReloader {
 
             RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::vector<std::string>&, const RuntimeCompiler::Options&)>* _compile = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::vector<std::string>&, const RuntimeCompiler::Options&>(m_compilerTypeHandle, "Compile");
 
-            // HotReloadedEvent _beforeCompileEvent;
-
-            // _beforeCompileEvent.m_stage = HotReloadedEvent::stage_before_compile;
-
-            // m_pEventPool->Broadcast(_beforeCompileEvent);
-
             BeforeCompileEvent _beforeCompileEvent;
 
             m_pEventPool->Broadcast(_beforeCompileEvent);
@@ -517,12 +431,6 @@ namespace Duckvil { namespace HotReloader {
                     (_externalPath / "imgui/imgui_widgets.cpp").string(),
                 },
             _options);
-
-            // HotReloadedEvent _afterCompileEvent;
-
-            // _afterCompileEvent.m_stage = HotReloadedEvent::stage_after_compile;
-
-            // m_pEventPool->Broadcast(_afterCompileEvent);
 
             AfterCompileEvent _afterCompileEvent;
 
@@ -586,70 +494,6 @@ namespace Duckvil { namespace HotReloader {
         DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Swapping objects");
         FrameMarkStart("Swapping");
 
-        // PlugNPlay::__module_information* _moduleToRelease = nullptr;
-
-        // for(uint32_t i = 0; i < m_aHotObjects.Size(); ++i)
-        // {
-        //     hot_object& _hot = m_aHotObjects[i];
-
-        //     for(size_t j = 0; j < _types.m_ullCount; ++j)
-        //     {
-        //         const Duckvil::RuntimeReflection::__duckvil_resource_type_t& _type = _types.m_aTypes[j];
-
-        //         if(/*RuntimeReflection::get_meta(_type, ReflectionFlags_Hot).m_ullTypeID != -1 && */_hot.m_pObject->GetTypeHandle().m_ID == _type.m_ID)
-        //         {
-        //             RuntimeSerializer::Serializer _serializer;
-
-        //             void* _oldObject = DUCKVIL_TRACK_KEEPER_GET_OBJECT(_hot.m_pObject);
-
-        //             _serializer.SetLoading(false);
-        //             _serializer.Serialize(_oldObject, _hot.m_pSerializeFunction);
-
-        //             void* _newObject = RuntimeReflection::create(m_objectsHeap, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _type, false);
-
-        //             RuntimeReflection::__duckvil_resource_function_t _serializeFunctionHandle = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_type, "Serialize");
-        //             RuntimeReflection::__function_t _func = RuntimeReflection::get_function(_type, _serializeFunctionHandle);
-
-        //             _serializer.SetLoading(true);
-        //             _serializer.Serialize(_newObject, _func.m_pRawFunction);
-
-        //             _hot.m_pSerializeFunction = _func.m_pRawFunction;
-
-        //             // HotReloadedEvent _swapEvent = {};
-
-        //             // _swapEvent.m_stage = HotReloadedEvent::stage_after_swap;
-        //             // _swapEvent.m_pObject = _newObject;
-        //             // // _swapEvent._typeHandle = _trackKeeper->GetTypeHandle();
-        //             // _swapEvent.m_pTrackKeeper = _trackKeeper;
-        //             // _swapEvent.m_pOldObject = _oldObject;
-
-        //             _hot.m_pObject->SetObject(_newObject);
-
-        //             m_pEventPool->Broadcast(SwapEvent{ _oldObject, _hot.m_pObject });
-
-        //             m_objectsHeap.Free(_oldObject);
-
-        //             for(size_t k = 0; k < m_aReflectedTypes->Size(); ++k)
-        //             {
-        //                 const duckvil_recorderd_types& _types2 = m_aReflectedTypes->At(k);
-
-        //                 if(strcmp(_types2.m_sFile, _types.m_sFile) == 0)
-        //                 {
-        //                     m_heap.Free(_types2.m_aTypes);
-
-        //                     _moduleToRelease = _types2.m_pModule;
-
-        //                     m_aReflectedTypes->Erase(k);
-        //                     const duckvil_recorderd_types& aa = m_aReflectedTypes->At(k);
-        //                     m_aReflectedTypes->Allocate(_types);
-
-        //                     break;
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
         m_eventPool.Broadcast(InternalSwapEvent{ &m_aHotObjects, _types, _fnSwap });
 
         FrameMarkEnd("Swapping");
@@ -697,37 +541,6 @@ namespace Duckvil { namespace HotReloader {
 
                     if(/*RuntimeReflection::get_meta(_type, ReflectionFlags_Hot).m_ullTypeID != -1 && */_hot.m_pObject->GetTypeHandle().m_ID == _type.m_ID)
                     {
-                        // RuntimeSerializer::Serializer _serializer;
-
-                        // void* _oldObject = DUCKVIL_TRACK_KEEPER_GET_OBJECT(_hot.m_pObject);
-
-                        // _serializer.SetLoading(false);
-                        // _serializer.Serialize(_oldObject, _hot.m_pSerializeFunction);
-
-                        // void* _newObject = RuntimeReflection::create(m_objectsHeap, g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _type, false);
-
-                        // RuntimeReflection::__duckvil_resource_function_t _serializeFunctionHandle = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_type, "Serialize");
-                        // RuntimeReflection::__function_t _func = RuntimeReflection::get_function(_type, _serializeFunctionHandle);
-
-                        // _serializer.SetLoading(true);
-                        // _serializer.Serialize(_newObject, _func.m_pRawFunction);
-
-                        // _hot.m_pSerializeFunction = _func.m_pRawFunction;
-
-                        // // HotReloadedEvent _swapEvent = {};
-
-                        // // _swapEvent.m_stage = HotReloadedEvent::stage_after_swap;
-                        // // _swapEvent.m_pObject = _newObject;
-                        // // // _swapEvent._typeHandle = _trackKeeper->GetTypeHandle();
-                        // // _swapEvent.m_pTrackKeeper = _trackKeeper;
-                        // // _swapEvent.m_pOldObject = _oldObject;
-
-                        // _hot.m_pObject->SetObject(_newObject);
-
-                        // m_pEventPool->Broadcast(SwapEvent{ _oldObject, _hot.m_pObject });
-
-                        // m_objectsHeap.Free(_oldObject);
-
                         Swap(&_hot, _type);
 
                         for(size_t k = 0; k < m_aReflectedTypes->Size(); ++k)
