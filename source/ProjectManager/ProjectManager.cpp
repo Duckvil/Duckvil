@@ -101,7 +101,7 @@ namespace Duckvil { namespace ProjectManager {
             _options.m_aIncludes.push_back((_data->m_loadedProject.m_sPath / "include").m_sText);
             _options.m_aIncludes.push_back((_data->m_loadedProject.m_sPath / "__generated_reflection__").m_sText);
 
-            _data->m_fnCompile->Invoke(_data->m_pRCS, _data->m_loadedProject.m_sPath.m_sText, _file.string(), Utils::lambda([&](Memory::Vector<HotReloader::RuntimeCompilerSystem::hot_object>* _pHotObjects, duckvil_recorderd_types& _newTypes)
+            _data->m_fnCompile->Invoke(_data->m_pRCS, _data->m_loadedProject.m_sPath.m_sText, _file.string(), Utils::lambda([_data](Memory::Vector<HotReloader::RuntimeCompilerSystem::hot_object>* _pHotObjects, duckvil_recorderd_types& _newTypes)
             {
                 bool _found = false;
 
@@ -258,7 +258,7 @@ namespace Duckvil { namespace ProjectManager {
 
         const auto& _runtimeCompiler = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>();
 
-        _pData->m_fnCompile = RuntimeReflection::get_function_callback<HotReloader::RuntimeCompilerSystem, const std::filesystem::path&, const std::string&, void (*)(Memory::Vector<HotReloader::RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), bool, const RuntimeCompiler::Options&>(_runtimeCompiler, "Compile");
+        _pData->m_fnCompile = RuntimeReflection::get_function_callback<HotReloader::RuntimeCompilerSystem, const std::filesystem::path&, const std::string&, void (*)(Memory::Vector<HotReloader::RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), bool, const RuntimeCompiler::Options&>(_runtimeCompiler, "CompileT");
 
         _pData->m_bLoaded = false;
 
