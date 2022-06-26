@@ -23,7 +23,15 @@
 
 #include "Event/ImmediateChannel.h"
 
-Duckvil::Utils::CommandArgumentsParser::Descriptor* g_pDescriptors = { 0 };
+enum class Options
+{
+    PROJECT
+};
+
+Duckvil::Utils::CommandArgumentsParser::Descriptor g_pDescriptors[] =
+{
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::PROJECT, "project")
+};
 
 int main(int argc, char* argv[])
 {
