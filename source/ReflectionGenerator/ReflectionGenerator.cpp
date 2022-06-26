@@ -133,7 +133,7 @@ void generate_plugin_info(std::ofstream& _file, const uint32_t& _uiIndex, const 
     // _file << "DUCKVIL_EXPORT const char* DUCKVIL_MODULE_NAME = \"duckvil_" << _moduleName << "_module\";\n";
 }
 
-nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil::Parser::__lexer_ftable* _pLexerFTable, Duckvil::RuntimeReflection::__generator_ftable* _pGeneratorFTable, const std::filesystem::path& _cwd, const std::filesystem::path& _path, std::filesystem::path& _lastPath, uint32_t& _index, const std::function<void(nlohmann::json&)> _fnProcessJson, bool _bGenerate = false, bool _bOneFile = false)
+nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil::Parser::__lexer_ftable* _pLexerFTable, Duckvil::RuntimeReflection::__generator_ftable* _pGeneratorFTable, const std::filesystem::path& _cwd, const std::filesystem::path& _path, const std::filesystem::path& _currentModule, uint32_t _index, bool _bGenerate = false)
 {
     if(_path.extension() != ".h")
     {
@@ -179,36 +179,7 @@ nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil
         Duckvil::RuntimeReflection::invoke_member<Duckvil::Parser::__ast*>(_reflectionFTable, _runtimeReflectionData, _reflectionModule.m_typeHandle, _reflectionModule.m_processAST_FunctionHandle, _reflectionModule.m_pObject, &_astData);
     }
 
-    Duckvil::RuntimeReflection::__generator_data _generatorData;
-
-    std::filesystem::path _pluginDirectory = _relativePath;
-
-// At least it is working...
-    while(_pluginDirectory.has_parent_path())
-    {
-        _pluginDirectory = _pluginDirectory.parent_path();
-    }
-
-    if(!std::filesystem::is_directory(_cwd / "include" / _pluginDirectory))
-    {
-        _pluginDirectory = "";
-    }
-
-    if(_lastPath == "")
-    {
-        _lastPath = _pluginDirectory;
-    }
-
-    if(!_lastPath.has_extension())
-    {
-        _lastPath = _lastPath;
-    }
-    else
-    {
-        _lastPath = ".";
-    }
-
-    _jFile["name"] = _pluginDirectory;
+    _jFile["name"] = _currentModule;
 
     std::filesystem::path _jSource = _relativePath;
     std::filesystem::path _jHeader = _relativePath;
@@ -216,36 +187,21 @@ nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil
     _jSource.replace_extension(".generated.cpp");
     _jHeader.replace_extension(".generated.h");
 
-    _jFile["source"] = _relativePath;
     _jFile["generated_h"] = _jHeader;
     _jFile["generated_cpp"] = _jSource;
 
-    if(_fnProcessJson)
-    {
-        _fnProcessJson(_jFile);
+    // if(_fnProcessJson)
+    // {
+    //     _fnProcessJson(_jFile);
 
-        _index = _jFile["index"].get<uint32_t>();
-    }
-
-    if(_bOneFile || _lastPath != _pluginDirectory)
-    {
-        if(_bGenerate)
-        {
-            std::ofstream _file(_cwd / "__generated_reflection__" / _lastPath / "plugin_info.cpp");
-
-            generate_plugin_info(_file, _index, _lastPath);
-
-            _file.close();
-        }
-
-        if(!_bOneFile)
-        {
-            _index = 0;
-        }
-        _lastPath = _pluginDirectory;
-    }
+    //     _index = _jFile["index"].get<uint32_t>();
+    // }
 
     _jFile["index"] = _index;
+
+    Duckvil::RuntimeReflection::__generator_data _generatorData;
+
+    _generatorData.m_uiRecorderIndex = _index;
 
     if(_relativePath.string().size() < DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX)
     {
@@ -255,8 +211,6 @@ nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil
     {
         assert(false && "Path is too long!");
     }
-
-    _generatorData.m_uiRecorderIndex = _index++;
 
     printf("Processing: %s\n", _relativePath.string().c_str());
 
@@ -294,17 +248,24 @@ nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil
         Duckvil::RuntimeReflection::invoke_member(_reflectionFTable, _runtimeReflectionData, _module.m_typeHandle, _module.m_clearFunctionHandle, _module.m_pObject);
     }
 
-    // _j["files"].push_back(_jFile);
-
     return _jFile;
 }
 
 enum class Options
 {
-    CWD,
-    FILE,
-    IS_RELATIVE,
-    FORCE
+    CWD,            // Whole project path, all files will be checked, possibly project regeneration will be needed if file was added or removed
+                    // Needed for getting '__generated_reflection__' path
+    FILE,           // Only if one file has changed, when eg. hot-reloading, but NOT adding or removing files
+    IS_RELATIVE,    // If specified file above is relative
+    IS_ABSOLUTE,    // If specified file above is relative
+    FORCE           // Force regenerate all files in CWD
+
+                    // Maybe some option for specific module? eg. Duckvil/Editor
+                    // Then only files in this folder will be processed
+
+                    // Some option to specify purging/cleanup?
+
+                    // TODO: Fix one file processing
 };
 
 Duckvil::Utils::CommandArgumentsParser::Descriptor g_pDescriptors[] =
@@ -312,6 +273,7 @@ Duckvil::Utils::CommandArgumentsParser::Descriptor g_pDescriptors[] =
     Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::CWD, "CWD"),
     Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::FILE, "file"),
     Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::IS_RELATIVE, "is_relative"),
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::IS_ABSOLUTE, "is_absolute"),
     Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::FORCE, "force")
 };
 
@@ -376,7 +338,8 @@ int main(int argc, char* argv[])
     _runtimeReflectionData = _reflectionFTable->m_fnInit(_memoryInterface, _free_list, _reflectionFTable);
 
     Duckvil::RuntimeReflection::__generator_ftable* _generatorFtable = _runtime_reflection_generator();
-    std::filesystem::path _lastPath;
+    std::filesystem::path _lastModule;
+    std::filesystem::path _currentModule;
     uint32_t _index = 0;
     Duckvil::PlugNPlay::__module_information* _loadedModules;
     uint32_t _loadedModulesCount;
@@ -459,176 +422,278 @@ int main(int argc, char* argv[])
         }
     }
 
+    const auto& _dbPath = std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / "reflection_db.json";
+
     if(_argumentsParser[Options::FILE].m_bIsSet)
     {
-        std::filesystem::path _file = _argumentsParser[Options::FILE].m_sResult;
+        std::filesystem::path _file; // _argumentsParser[Options::FILE].m_sResult;
+        std::filesystem::path _cwd = _argumentsParser[Options::CWD].m_sResult;
 
         if(_argumentsParser[Options::IS_RELATIVE].m_bIsSet)
         {
-            _file = std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / _file;
+            _file = _argumentsParser[Options::FILE].m_sResult;
         }
-
-        nlohmann::json _j;
-        std::ifstream _iJson(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / "reflection_db.json");
-
-        _iJson >> _j;
-
-        _iJson.close();
-
-        nlohmann::json _last;
-        nlohmann::json _exists;
-        nlohmann::json::iterator _lastIt = _j["files"].end();
-
-        try
+        else if(_argumentsParser[Options::IS_ABSOLUTE].m_bIsSet)
         {
-            const nlohmann::json& _jFile = process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _file, _lastPath, _index, [&](nlohmann::json& _json)
-            {
-                for(nlohmann::json::iterator _it = _j["files"].begin(); _it != _j["files"].end(); ++_it)
-                {
-                    if((*_it)["name"].get<std::string>() == _json["name"].get<std::string>())
-                    {
-                        if(_last.empty() || _last["index"].get<uint32_t>() < (*_it)["index"])
-                        {
-                            _last = *_it;
-                            _lastIt = _it;
-
-                            if(_last["source"].get<std::string>() == _relativePath.string())
-                            {
-                                _json["index"] = _last["index"].get<uint32_t>();
-
-                                _exists = *_it;
-                            }
-                            else
-                            {
-                                _json["index"] = _last["index"].get<uint32_t>() + 1;
-                            }
-                        }
-                    }
-                }
-
-                if(_last.empty())
-                {
-                    _json["index"] = (*(_lastIt - 1))["index"].get<uint32_t>() + 1;
-                }
-            }, true, true);
-
-            if(_exists.empty())
-            {
-                if(_lastIt != _j["files"].end())
-                {
-                    _j["files"].insert(_lastIt + 1, _jFile);
-                }
-                else
-                {
-                    _j["files"].insert(_lastIt, _jFile);
-                }
-            }
+            auto _x = _argumentsParser[Options::FILE].m_sResult;
+            _file = std::filesystem::relative(_x, _cwd / "include");
         }
-        catch(const Duckvil::Parser::blank_file& _e)
+        else
         {
+            // Print message if file is relative or absolute
+
             return 0;
         }
 
-        std::ofstream _oJson(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / "reflection_db.json");
+        nlohmann::json _dbJ;
+        std::ifstream _iJson(_dbPath);
 
-        _oJson << std::setw(4) << _j << std::endl;
+        _iJson >> _dbJ;
+
+        _iJson.close();
+
+        // nlohmann::json _last;
+        // nlohmann::json _exists;
+        // nlohmann::json::iterator _lastIt = _j["files"].end();
+
+        // try
+        // {
+        //     const nlohmann::json& _jFile = process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _file, _lastModule, _currentModule, _index, [&](nlohmann::json& _json)
+        //     {
+        //         for(nlohmann::json::iterator _it = _j["files"].begin(); _it != _j["files"].end(); ++_it)
+        //         {
+        //             if((*_it)["name"].get<std::string>() == _json["name"].get<std::string>())
+        //             {
+        //                 if(_last.empty() || _last["index"].get<uint32_t>() < (*_it)["index"])
+        //                 {
+        //                     _last = *_it;
+        //                     _lastIt = _it;
+
+        //                     if(_last["source"].get<std::string>() == _relativePath.string())
+        //                     {
+        //                         _json["index"] = _last["index"].get<uint32_t>();
+
+        //                         _exists = *_it;
+        //                     }
+        //                     else
+        //                     {
+        //                         _json["index"] = _last["index"].get<uint32_t>() + 1;
+        //                     }
+        //                 }
+        //             }
+        //         }
+
+        //         if(_last.empty())
+        //         {
+        //             _json["index"] = (*(_lastIt - 1))["index"].get<uint32_t>() + 1;
+        //         }
+        //     }, true);
+
+        //     if(_exists.empty())
+        //     {
+        //         if(_lastIt != _j["files"].end())
+        //         {
+        //             _j["files"].insert(_lastIt + 1, _jFile);
+        //         }
+        //         else
+        //         {
+        //             _j["files"].insert(_lastIt, _jFile);
+        //         }
+        //     }
+        // }
+        // catch(const Duckvil::Parser::blank_file& _e)
+        // {
+        //     return 0;
+        // }
+
+        auto _f = _dbJ["files2"].find(_file.string());
+
+        if(_f == _dbJ["files2"].end())
+        {
+            // Print some message about file not exists
+
+            return 0;
+        }
+
+        const auto& _fileMD5 = md5(load_file_as_string((_cwd / "include" / _file).string()));
+        auto _jFile = process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _cwd / "include" / _file, _f->at("name").get<std::string>(), _f->at("index").get<uint32_t>(), _f->at("hash").get<std::string>() != _fileMD5 || _argumentsParser[Options::FORCE].m_bIsSet);
+
+        _jFile["hash"] = _fileMD5;
+
+        _f->update(_jFile);
+
+        std::ofstream _oJson(_dbPath);
+
+        _oJson << std::setw(4) << _dbJ << std::endl;
 
         _oJson.close();
     }
     else
     {
-        nlohmann::json _j;
-        const auto& _p = std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / "reflection_db.json";
+        nlohmann::json _dbJ;
 
-        if(std::filesystem::exists(_p))
+        if(std::filesystem::exists(_dbPath))
         {
-            std::ifstream _iJson(_p);
+            std::ifstream _iJson(_dbPath);
 
-            _iJson >> _j;
+            _iJson >> _dbJ;
 
             _iJson.close();
         }
         else
         {
-            std::ofstream _oJson(_p);
+            std::ofstream _oJson(_dbPath);
 
-            _oJson << _j;
+            _oJson << _dbJ;
 
             _oJson.close();
         }
 
+        nlohmann::json _dbNewJ;
+        bool _moduleChanged = false;
+
+        // Iterate over the json db to check if any file has been deleted
+
+        std::vector<std::string> _modulesChanged;
+
+        for(auto _it = _dbJ["files2"].begin(); _it != _dbJ["files2"].end(); ++_it)
+        {
+            auto _p = std::filesystem::path(_it.key());
+
+            while(_p.has_parent_path())
+            {
+                _p = _p.parent_path();
+            }
+
+        // Remove old files if exists
+            if(!std::filesystem::exists(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "include" / _it.key()))
+            {
+                _modulesChanged.push_back(_p.string());
+
+                const auto& _gfcpp = std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / _it->at("generated_cpp").get<std::string>();
+
+                if(std::filesystem::exists(_gfcpp))
+                {
+                    std::filesystem::remove(_gfcpp);
+                }
+
+                const auto& _gfh = std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / _it->at("generated_h").get<std::string>();
+
+                if(std::filesystem::exists(_gfh))
+                {
+                    std::filesystem::remove(_gfh);
+                }
+            }
+        }
+
         for(auto& _path : std::filesystem::recursive_directory_iterator(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "include"))
         {
-            if(!_path.path().has_extension())
+            if(!_path.path().has_extension() || _path.path().extension() != ".h")
             {
                 continue;
             }
 
-            bool _equal = false;
-            uint32_t _foundIndex = -1;
-            uint32_t _i = 0;
+            const auto& _a = std::filesystem::relative(_path.path(), std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "include");
+            const auto& _fileMD5 = md5(load_file_as_string(_path.path().string()));
+            auto _f = _dbJ["files2"].find(_a.string());
 
-            for(const auto& _e : _j["files"])
+            if(_a.has_parent_path())
             {
-                if(!_e.empty())
+                _currentModule = _a;
+
+                while(_currentModule.has_parent_path())
                 {
-                    const auto& _a = std::filesystem::relative(_path.path(), std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "include");
-
-                    if(_a == _e["source"].get<std::string>())
-                    {
-                        if(_e.contains("hash") && _e["hash"] == md5(load_file_as_string(_path.path().string())))
-                        {
-                            _equal = true;
-                        }
-
-                        _foundIndex = _i;
-
-                        break;
-                    }
-                }
-
-                ++_i;
-            }
-
-            try
-            {
-                auto _jFile = process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _path, _lastPath, _index, nullptr, _argumentsParser[Options::FORCE].m_bIsSet ? true : !_equal);
-
-                _jFile["hash"] = md5(load_file_as_string(_path.path().string()));
-
-                if(_foundIndex == -1)
-                {
-                    _j["files"].push_back(_jFile);
-                }
-                else
-                {
-                    _j["files"][_i] = _jFile;
+                    _currentModule = _currentModule.parent_path();
                 }
             }
-            catch(const Duckvil::Parser::blank_file& _e)
-            {
 
+            if(_lastModule == "")
+            {
+                _lastModule = _currentModule;
             }
+
+            if(_lastModule != _currentModule)
+            {
+                if(_moduleChanged)
+                {
+                    std::ofstream _file(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / _lastModule / "plugin_info.cpp");
+
+                    generate_plugin_info(_file, _index, _lastModule);
+
+                    _file.close();
+                }
+
+                _moduleChanged = false;
+
+                _lastModule = _currentModule;
+                _index = 0;
+            }
+
+            for(auto _it = _modulesChanged.begin(); _it != _modulesChanged.end(); ++_it)
+            {
+                if(_currentModule.string() == *_it)
+                {
+                    _moduleChanged = true;
+
+                    _modulesChanged.erase(_it);
+
+                    break;
+                }
+            }
+
+            if(_f == _dbJ["files2"].end())
+            {
+                // Not found
+                // Need to be generated and added
+
+                auto _jFile = process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _path, _currentModule, _index, true);
+
+                _jFile["hash"] = _fileMD5;
+
+                _dbNewJ.push_back(nlohmann::json::object_t::value_type(_a.string(), _jFile));
+
+                _moduleChanged = true;
+            }
+            else if(_argumentsParser[Options::FORCE].m_bIsSet || _f->at("hash").get<std::string>() != _fileMD5 || _moduleChanged)
+            {
+                // Found but need to be generated and updated or forced
+
+                auto _jFile = process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _path, _currentModule, _index, true);
+
+                _jFile["hash"] = _fileMD5;
+
+                _f->update(_jFile);
+
+                _dbNewJ.push_back(nlohmann::json::object_t::value_type(_f.key(), _f.value()));
+            }
+            else
+            {
+                _dbNewJ.push_back(nlohmann::json::object_t::value_type(_f.key(), _f.value()));
+            }
+
+            _index++;
         }
 
-        if(!_lastPath.has_extension())
+        _dbJ["files2"] = _dbNewJ;
+
+        if(!_lastModule.has_extension())
         {
-            _lastPath = _lastPath;
+            _lastModule = _lastModule;
         }
         else
         {
-            _lastPath = ".";
+            _lastModule = ".";
         }
 
-        std::ofstream _file(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / _lastPath / "plugin_info.cpp");
+        std::ofstream _file(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / _lastModule / "plugin_info.cpp");
 
-        generate_plugin_info(_file, _index, _lastPath);
+        generate_plugin_info(_file, _index, _lastModule);
 
         _file.close();
 
-        std::ofstream _oJson(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / "reflection_db.json");
+        std::ofstream _oJson(_dbPath);
 
-        _oJson << std::setw(4) << _j << std::endl;
+        _oJson << std::setw(4) << _dbJ << std::endl;
 
         _oJson.close();
     }
