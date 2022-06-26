@@ -7,3 +7,11 @@ build
 *.exp
 .clang-tidy
 *.log
+external/glew
+build_linux
+codeql
+.vscode
+test/Output
+.stignore
+*.lastcodeanalysissucceeded
+bin
