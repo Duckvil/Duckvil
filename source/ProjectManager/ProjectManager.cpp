@@ -172,7 +172,15 @@ namespace Duckvil { namespace ProjectManager {
             _process.m_fnInit(_data->m_heap.GetMemoryInterface(), _data->m_heap.GetAllocator(), &_processData);
             _process.m_fnSetup(&_processData);
 
-            _process.m_fnWrite(&_processData, std::string((std::filesystem::path(DUCKVIL_OUTPUT) / "ReflectionGenerator.exe -CWD ").string() + _data->m_loadedProject.m_sPath + " -file " + _file + "\n_COMPLETION_TOKEN_\n").c_str());
+            if(_status == HotReloader::FileWatcher::FileStatus_Modified)
+            {
+                _process.m_fnWrite(&_processData, std::string((std::filesystem::path(DUCKVIL_OUTPUT) / "ReflectionGenerator.exe -CWD ").string() + _data->m_loadedProject.m_sPath + " -is_absolute -file " + _file + "\n_COMPLETION_TOKEN_\n").c_str());
+            }
+            else if(_status == HotReloader::FileWatcher::FileStatus_Created)
+            {
+                _process.m_fnWrite(&_processData, std::string((std::filesystem::path(DUCKVIL_OUTPUT) / "ReflectionGenerator.exe -CWD ").string() + _data->m_loadedProject.m_sPath + "\n_COMPLETION_TOKEN_\n").c_str());
+            }
+
             _process.m_fnWait(&_processData);
             _process.m_fnStop(&_processData);
 
