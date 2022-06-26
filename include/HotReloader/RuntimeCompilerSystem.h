@@ -27,6 +27,7 @@
 #include "RuntimeCompiler/RuntimeCompiler.h"
 
 #include "Event/ImmediatePool.h"
+#include "Event/BufferedPool.h"
 
 #include "Thread/ThreadPool.h"
 
@@ -122,6 +123,8 @@ namespace Duckvil { namespace HotReloader {
         RuntimeReflection::__function<const std::vector<std::string>&(RuntimeCompiler::Compiler::*)()>* m_fnInternalCompilerGetLibrariesPaths;
         RuntimeReflection::__function<const std::vector<std::string>&(RuntimeCompiler::Compiler::*)()>* m_fnInternalCompilerGetLibraries;
 
+        Event::Pool<Event::mode::buffered> m_eventPool;
+
         static void Action(const std::filesystem::path& _file, FileWatcher::FileStatus _status, void* _pUserData)
         {
             user_data* _userData = (user_data*)_pUserData;
@@ -167,6 +170,9 @@ namespace Duckvil { namespace HotReloader {
 
         void Compile(const std::filesystem::path& _CWD, const std::string& _sFile, void (*_fnSwap)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), bool _bGenerateReflection = true, const RuntimeCompiler::Options& _compileOptions = { });
         void Compile(const std::string& _sFile, bool _bGenerateReflection = true, const RuntimeCompiler::Options& _compileOptions = { });
+
+        void CompileT(const std::filesystem::path& _CWD, const std::string& _sFile, void (*_fnSwap)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), bool _bGenerateReflection = true, const RuntimeCompiler::Options& _compileOptions = { });
+        void CompileT(const std::string& _sFile, bool _bGenerateReflection = true, const RuntimeCompiler::Options& _compileOptions = { });
 
         void Swap(RuntimeCompilerSystem::hot_object* _pHotObject, const RuntimeReflection::__duckvil_resource_type_t& _typeHandle);
 

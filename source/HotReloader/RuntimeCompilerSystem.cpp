@@ -17,7 +17,10 @@
 
 #include "RuntimeReflection/PrepareObjectEvent.h"
 
+#include "HotReloader/Events/InternalSwapEvent.h"
+
 #undef GetObject
+#undef GetMessage;
 
 namespace Duckvil { namespace HotReloader {
 
@@ -78,6 +81,8 @@ namespace Duckvil { namespace HotReloader {
     {
         _heap.Allocate(m_aHotObjects, 1);
         _heap.Allocate(m_aModules, 1);
+
+        m_eventPool = Event::Pool<Event::mode::buffered>(_heap, RuntimeReflection::get_current().m_pReflectionData);
 
         DUCKVIL_DEBUG_MEMORY(m_aHotObjects.GetAllocator(), "m_aHotObjects");
         DUCKVIL_DEBUG_MEMORY(m_aModules.GetAllocator(), "m_aModules");
@@ -256,6 +261,20 @@ namespace Duckvil { namespace HotReloader {
 
     void RuntimeCompilerSystem::Update(double _dDelta)
     {
+        m_eventPool.Reset();
+
+        while(m_eventPool.AnyEvents())
+        {
+            static InternalSwapEvent _swapEvent;
+
+            if(m_eventPool.GetMessage(&_swapEvent))
+            {
+                _swapEvent.m_fnSwap(_swapEvent.m_pHotObjects, _swapEvent.m_recordedTypes);
+
+                m_eventPool.EventHandled<InternalSwapEvent>();
+            }
+        }
+
         m_pFileWatcher->Update();
     }
 
@@ -278,6 +297,14 @@ namespace Duckvil { namespace HotReloader {
         }
 
         ImGui::End();
+    }
+
+    void RuntimeCompilerSystem::CompileT(const std::filesystem::path& _CWD, const std::string& _sFile, void (*_fnSwap)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), bool _bGenerateReflection, const RuntimeCompiler::Options& _compileOptions)
+    {
+        m_pThread->m_fnOrderTask(m_pThreadData, Utils::lambda([_CWD, _sFile, _fnSwap, _bGenerateReflection, _compileOptions, this](void* _pData)
+        {
+            Compile(_CWD, _sFile, _fnSwap, _bGenerateReflection, _compileOptions);
+        }));
     }
 
     void RuntimeCompilerSystem::Compile(const std::filesystem::path& _CWD, const std::string& _sFile, void (*_fnSwap)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), bool _bGenerateReflection, const RuntimeCompiler::Options& _compileOptions)
@@ -623,7 +650,7 @@ namespace Duckvil { namespace HotReloader {
         //     }
         // }
 
-        _fnSwap(&m_aHotObjects, _types);
+        m_eventPool.Broadcast(InternalSwapEvent{ &m_aHotObjects, _types, _fnSwap });
 
         FrameMarkEnd("Swapping");
         DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Swapping objects finished");
@@ -646,6 +673,14 @@ namespace Duckvil { namespace HotReloader {
         FrameMarkEnd("Releasing module");
 
         FrameMarkEnd("Compile");
+    }
+
+    void RuntimeCompilerSystem::CompileT(const std::string& _sFile, bool _bGenerateReflection, const RuntimeCompiler::Options& _compileOptions)
+    {
+        m_pThread->m_fnOrderTask(m_pThreadData, Utils::lambda([&](void* _pData)
+        {
+            Compile(_sFile, _bGenerateReflection, _compileOptions);
+        }));
     }
 
     void RuntimeCompilerSystem::Compile(const std::string& _sFile, bool _bGenerateReflection, const RuntimeCompiler::Options& _compileOptions)
