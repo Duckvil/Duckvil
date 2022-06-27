@@ -20,13 +20,13 @@ namespace {$projectName} {
     {
     private:
         Duckvil::Memory::FreeList m_heap;
-        const Duckvil::Memory::Vector<duckvil_recorderd_types>* m_pSystems;
+        const Duckvil::Memory::ThreadsafeVector<duckvil_recorderd_types>* m_pSystems;
         Duckvil::PlugNPlay::__module_information m_module;
 
         Duckvil::Memory::Vector<Duckvil::HotReloader::ITrackKeeper*> m_pScripts;
 
     public:
-        Project(const Duckvil::Memory::FreeList& _heap, const Duckvil::Memory::Vector<duckvil_recorderd_types>* _pSystems, const Duckvil::PlugNPlay::__module_information& _module);
+        Project(const Duckvil::Memory::FreeList& _heap, const Duckvil::Memory::ThreadsafeVector<duckvil_recorderd_types>* _pSystems, const Duckvil::PlugNPlay::__module_information& _module);
         ~Project();
 
         bool Init(Duckvil::Event::Pool<Duckvil::Event::mode::immediate>* _pPMEventPool);

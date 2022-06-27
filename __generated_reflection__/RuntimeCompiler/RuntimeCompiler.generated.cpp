@@ -34,6 +34,7 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeCompiler");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
+record_inheritance<ICompiler>(_data, _type, __protection::__protection_public);
 _constructor = record_constructor<Duckvil::RuntimeCompiler::Compiler, const Memory::FreeList&>(_data, _type);
 _destructor = record_destructor<Duckvil::RuntimeCompiler::Compiler>(_data, _type);
 _function = record_function<Duckvil::RuntimeCompiler::Compiler, bool>(_data, _type, &Duckvil::RuntimeCompiler::Compiler::Setup, "Setup");

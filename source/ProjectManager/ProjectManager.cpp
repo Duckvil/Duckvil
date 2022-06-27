@@ -90,7 +90,7 @@ namespace Duckvil { namespace ProjectManager {
     }
 #endif
 
-    void action(const std::filesystem::path& _file, HotReloader::FileWatcher::FileStatus _status, void* _pUserData)
+    /*void action(const std::filesystem::path& _file, HotReloader::FileWatcher::FileStatus _status, void* _pUserData)
     {
         data* _data = static_cast<data*>(_pUserData);
 
@@ -243,28 +243,20 @@ namespace Duckvil { namespace ProjectManager {
                 }
             }), false, _options);
         }
-    }
+    }*/
 
     bool init_project_manager(data* _pData, const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEngineEventPool)
     {
         _pData->m_heap = _heap;
         _pData->m_pEngineEventPool = _pEngineEventPool;
 
-        _pData->m_fileWatcherType = RuntimeReflection::get_type("FileWatcher", { "Duckvil", "HotReloader" });
-        _pData->m_watchHandle = RuntimeReflection::get_function_handle<const std::filesystem::path&>(_pData->m_fileWatcherType, "Watch");
-        _pData->m_updateHandle = RuntimeReflection::get_function_handle(_pData->m_fileWatcherType, "Update");
-
-        _pData->m_pFileWatcher = static_cast<HotReloader::FileWatcher*>(RuntimeReflection::create<HotReloader::FileWatcher::ActionCallback, void*>(_pData->m_heap, _pData->m_fileWatcherType, false, &action, _pData));
-
-        const auto& _runtimeCompiler = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>();
-
-        _pData->m_fnCompile = RuntimeReflection::get_function_callback<HotReloader::RuntimeCompilerSystem, const std::filesystem::path&, const std::string&, void (*)(Memory::Vector<HotReloader::RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), bool, const RuntimeCompiler::Options&>(_runtimeCompiler, "CompileT");
-
         _pData->m_bLoaded = false;
 
         _pData->m_dOneSecond = 0;
 
         _pData->m_projectManagerEventPool = Event::Pool<Event::mode::immediate>(_heap);
+
+        _pData->m_heap.Allocate(_pData->m_objectsHeap, 1024 * 4);
 
         return true;
     }
@@ -411,22 +403,19 @@ namespace Duckvil { namespace ProjectManager {
             _oJson.close();
         }
 
-        std::filesystem::path _pathToWatch = _sPath.m_sText;
-
-        RuntimeReflection::invoke_member<const std::filesystem::path&>(_pData->m_fileWatcherType, _pData->m_watchHandle, _pData->m_pFileWatcher, _pathToWatch.parent_path() / "source");
-        RuntimeReflection::invoke_member<const std::filesystem::path&>(_pData->m_fileWatcherType, _pData->m_watchHandle, _pData->m_pFileWatcher, _pathToWatch.parent_path() / "include");
-
         PlugNPlay::__module _module;
 
         PlugNPlay::module_init(&_module);
 
         uint32_t _recordersCount;
 
-        project _project = { .m_module = load_module(_module, _sFilename, _sPath, &_recordersCount) };
+    // TODO: Temporary fix
+        static project _project = { .m_module = load_module(_module, _sFilename, _sPath, &_recordersCount) };
 
         _project.m_sPath = Utils::string::parentPath(_sPath);
 
-        _pData->m_heap.Allocate(_project.m_aTypes, 1);
+        // _pData->m_heap.Allocate(_project.m_aTypes, 1);
+        _project.m_aTypes = Memory::ThreadsafeVector<duckvil_recorderd_types>(_pData->m_heap);
 
         duckvil_runtime_reflection_recorder_stuff _stuff =
         {
@@ -469,6 +458,61 @@ namespace Duckvil { namespace ProjectManager {
             }
         }
 
+        {
+            auto _runtimeCompilerType = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>();
+
+            RuntimeReflection::ReflectedType<HotReloader::RuntimeCompilerSystem> _type(_pData->m_heap);
+
+            HotReloader::RuntimeCompilerSystem::user_data* _actionData =
+                _pData->m_heap.Allocate<HotReloader::RuntimeCompilerSystem::user_data>();
+
+            _pData->m_pRuntimeCompilerSystem = (HotReloader::RuntimeCompilerSystem*)_type.Create<
+                const Memory::FreeList&,
+                Event::Pool<Event::mode::immediate>*,
+                Event::Pool<Event::mode::immediate>*,
+                HotReloader::FileWatcher::ActionCallback,
+                void*
+            >(
+                (const Memory::FreeList&)_pData->m_heap,
+                _pData->m_pEngineEventPool,
+                static_cast<Event::Pool<Event::mode::immediate>*>(RuntimeReflection::get_current().m_pReflectionData->m_pEvents),
+                HotReloader::RuntimeCompilerSystem::Action,
+                static_cast<void*>(_actionData)
+            );
+
+            _actionData->m_pRuntimeCompiler = _pData->m_pRuntimeCompilerSystem;
+
+            const auto& _setCWDHandle = RuntimeReflection::get_function_handle<const std::filesystem::path&>({ _runtimeCompilerType.m_ID }, "SetCWD");
+
+            RuntimeReflection::invoke_member<const std::filesystem::path&>({ _runtimeCompilerType.m_ID }, _setCWDHandle, _pData->m_pRuntimeCompilerSystem, std::filesystem::path(_projectCWD.m_sText));
+
+            const auto& _getCompilerHandle = RuntimeReflection::get_function_handle({ _runtimeCompilerType.m_ID }, "GetCompiler");
+
+            auto _c = RuntimeReflection::invoke_member_result<RuntimeCompiler::ICompiler*>({ _runtimeCompilerType.m_ID }, _getCompilerHandle, _pData->m_pRuntimeCompilerSystem);
+
+            _c->AddInclude((std::filesystem::path(DUCKVIL_CWD) / "include").string());
+            _c->AddInclude((std::filesystem::path(DUCKVIL_CWD) / "__generated_reflection__").string());
+
+            (static_cast<Event::Pool<Event::mode::immediate>*>(RuntimeReflection::get_current().m_pReflectionData->m_pEvents))->Add<RuntimeReflection::TrackedObjectCreatedEvent>(_pData->m_pRuntimeCompilerSystem);
+
+            _pData->m_fnRuntimeCompilerUpdate = _type.GetFunctionCallback<ISystem, double>("Update")->m_fnFunction;
+            _pData->m_fnRuntimeCompilerInit = _type.GetFunctionCallback<bool, ISystem, const std::vector<std::filesystem::path>&>("Init")->m_fnFunction;
+
+            _type.Invoke<const Memory::FreeList&>("SetObjectsHeap", _pData->m_pRuntimeCompilerSystem, _pData->m_objectsHeap);
+            // _type.Invoke<Memory::Vector<PlugNPlay::__module_information>*>("SetModules", _pData->m_pRuntimeCompilerSystem, &_pData->m_aLoadedModules);
+            _type.Invoke<Memory::ThreadsafeVector<duckvil_recorderd_types>*>("SetReflectedTypes", _pData->m_pRuntimeCompilerSystem, &_project.m_aTypes);
+
+            if(!(_pData->m_pRuntimeCompilerSystem->*_pData->m_fnRuntimeCompilerInit)(
+                {
+                    std::filesystem::path(_projectCWD.m_sText) / "source",
+                    std::filesystem::path(_projectCWD.m_sText) / "include"
+                }
+            ))
+            {
+                throw std::exception();
+            }
+        }
+
         for(const auto& _type : _project.m_aTypes)
         {
             for(uint32_t i = 0; i < _type.m_ullCount; ++i)
@@ -479,7 +523,7 @@ namespace Duckvil { namespace ProjectManager {
                 if(_variant.m_ullTypeID == typeid(bool).hash_code() && *(bool*)_variant.m_pData)
                 {
                     _project.m_uiTypeHandleID = _typeID;
-                    _project.m_pObject = RuntimeReflection::create<const Memory::FreeList&, const Memory::Vector<duckvil_recorderd_types>*, const Duckvil::PlugNPlay::__module_information&>(_pData->m_heap, _typeID, false, _pData->m_heap, &_project.m_aTypes, _project.m_module);
+                    _project.m_pObject = RuntimeReflection::create<const Memory::FreeList&, const Memory::ThreadsafeVector<duckvil_recorderd_types>*, const Duckvil::PlugNPlay::__module_information&>(_pData->m_heap, _typeID, false, _pData->m_heap, &_project.m_aTypes, _project.m_module);
 
                     _project.m_uiInitFunctionHandleID = RuntimeReflection::get_function_handle<Event::Pool<Event::mode::immediate>*>(_typeID, "Init");
                     _project.m_uiUpdateFunctionHandleID = RuntimeReflection::get_function_handle(_typeID, "Update");
@@ -581,7 +625,7 @@ namespace Duckvil { namespace ProjectManager {
     {
         if(_pData->m_dOneSecond >= 1)
         {
-            RuntimeReflection::invoke_member(_pData->m_fileWatcherType, _pData->m_updateHandle, _pData->m_pFileWatcher);
+            (_pData->m_pRuntimeCompilerSystem->*_pData->m_fnRuntimeCompilerUpdate)(_dDelta);
 
             _pData->m_dOneSecond = 0;
         }
@@ -594,11 +638,6 @@ namespace Duckvil { namespace ProjectManager {
         _pData->m_dOneSecond += _dDelta;
     }
 
-    void set_rcs(data* _pData, HotReloader::RuntimeCompilerSystem* _pRCS)
-    {
-        _pData->m_pRCS = _pRCS;
-    }
-
 }}
 
 void duckvil_project_manager_init(Duckvil::ProjectManager::ftable* _pFTable)
@@ -607,5 +646,4 @@ void duckvil_project_manager_init(Duckvil::ProjectManager::ftable* _pFTable)
     _pFTable->m_fnLoadProject = &Duckvil::ProjectManager::load_project;
     _pFTable->m_fnCreateProject = &Duckvil::ProjectManager::create_project;
     _pFTable->m_fnUpdate = &Duckvil::ProjectManager::update;
-    _pFTable->m_fnSetRuntimeCompiler = &Duckvil::ProjectManager::set_rcs;
 }

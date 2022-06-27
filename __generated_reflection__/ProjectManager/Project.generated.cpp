@@ -34,7 +34,7 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "ProjectManager");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
-_property = record_property<Memory::Vector<duckvil_recorderd_types>>(_data, _type, offsetof(Duckvil::ProjectManager::project, m_aTypes), "m_aTypes");
+_property = record_property<Memory::ThreadsafeVector<duckvil_recorderd_types>>(_data, _type, offsetof(Duckvil::ProjectManager::project, m_aTypes), "m_aTypes");
 _property = record_property<void*>(_data, _type, offsetof(Duckvil::ProjectManager::project, m_pObject), "m_pObject");
 _property = record_property<Utils::string>(_data, _type, offsetof(Duckvil::ProjectManager::project, m_sPath), "m_sPath");
 _property = record_property<PlugNPlay::__module_information>(_data, _type, offsetof(Duckvil::ProjectManager::project, m_module), "m_module");

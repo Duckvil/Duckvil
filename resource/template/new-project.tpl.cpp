@@ -2,7 +2,7 @@
 
 namespace {$projectName} {
 
-	Project::Project(const Duckvil::Memory::FreeList& _heap, const Duckvil::Memory::Vector<duckvil_recorderd_types>* _pSystems, const Duckvil::PlugNPlay::__module_information& _module) :
+	Project::Project(const Duckvil::Memory::FreeList& _heap, const Duckvil::Memory::ThreadsafeVector<duckvil_recorderd_types>* _pSystems, const Duckvil::PlugNPlay::__module_information& _module) :
 		m_heap(_heap),
 		m_pSystems(_pSystems),
 		m_module(_module)

@@ -529,17 +529,28 @@ namespace Duckvil {
 
                 RuntimeReflection::ReflectedType<HotReloader::RuntimeCompilerSystem> _type(_pData->m_heap);
 
+                HotReloader::RuntimeCompilerSystem::user_data* _actionData =
+                    _pData->m_heap.Allocate<HotReloader::RuntimeCompilerSystem::user_data>();
+
                 _pData->m_pRuntimeCompiler = (HotReloader::RuntimeCompilerSystem*)_type.Create<
                     const Memory::FreeList&,
                     Event::Pool<Event::mode::immediate>*,
-                    Event::Pool<Event::mode::immediate>*
+                    Event::Pool<Event::mode::immediate>*,
+                    HotReloader::FileWatcher::ActionCallback,
+                    void*
                 >(
                     (const Memory::FreeList&)_pData->m_heap,
                     &_pData->m_eventPool,
-                    static_cast<Event::Pool<Event::mode::immediate>*>(_pData->m_pRuntimeReflectionData->m_pEvents)
+                    static_cast<Event::Pool<Event::mode::immediate>*>(_pData->m_pRuntimeReflectionData->m_pEvents),
+                    HotReloader::RuntimeCompilerSystem::Action,
+                    static_cast<void*>(_actionData)
                 );
 
-                _pData->m_projectManager.m_fnSetRuntimeCompiler(&_pData->m_projectManagerData, _pData->m_pRuntimeCompiler);
+                _actionData->m_pRuntimeCompiler = _pData->m_pRuntimeCompiler;
+
+                const auto& _setCWDHandle = RuntimeReflection::get_function_handle<const std::filesystem::path&>({ _runtimeCompilerType.m_ID }, "SetCWD");
+
+                RuntimeReflection::invoke_member<const std::filesystem::path&>({ _runtimeCompilerType.m_ID }, _setCWDHandle, _pData->m_pRuntimeCompiler, DUCKVIL_CWD);
 
                 (static_cast<Event::Pool<Event::mode::immediate>*>(_pData->m_pRuntimeReflectionData->m_pEvents))->Add<RuntimeReflection::TrackedObjectCreatedEvent>(_pData->m_pRuntimeCompiler);
 

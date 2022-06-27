@@ -48,7 +48,6 @@ namespace Duckvil { namespace HotReloader {
         struct user_data
         {
             RuntimeCompilerSystem* m_pRuntimeCompiler;
-            std::filesystem::path m_file;
         };
 
         struct reflection_module
@@ -80,6 +79,67 @@ namespace Duckvil { namespace HotReloader {
 
             }
         };
+
+        static void Action(const std::filesystem::path& _file, FileWatcher::FileStatus _status, void* _pUserData)
+        {
+            user_data* _userData = (user_data*)_pUserData;
+
+            if(_status == FileWatcher::FileStatus::FileStatus_Modified)
+            {
+                printf("Modified: %s\n", _file.string().c_str());
+
+                if(_file.extension() == ".cpp")
+                {
+                    const auto& _typeHandle = RuntimeReflection::get_type<RuntimeCompilerSystem>();
+                    const auto& _funcHandle = RuntimeReflection::get_function_handle<
+                            const std::string&,
+                            const RuntimeCompiler::Options&
+                        >(
+                            _typeHandle,
+                            "CompileT"
+                        );
+
+                    RuntimeReflection::invoke_member<
+                        const std::string&,
+                        const RuntimeCompiler::Options&
+                    >(
+                        _typeHandle,
+                        _funcHandle,
+                        _userData->m_pRuntimeCompiler,
+                        _file.string(),
+                        RuntimeCompiler::Options()
+                    );
+                }
+                else if(_file.extension() == ".h")
+                {
+                    const auto& _typeHandle = RuntimeReflection::get_type<RuntimeCompilerSystem>();
+                    const auto& _funcHandle = RuntimeReflection::get_function_handle<
+                            const std::filesystem::path&,
+                            const std::filesystem::path&,
+                            bool
+                        >(
+                            _typeHandle,
+                            "GenerateReflection"
+                        );
+
+                    const auto& _getCWDHandle = RuntimeReflection::get_function_handle(_typeHandle, "GetCWD");
+                    const auto& _cwd = RuntimeReflection::invoke_member_result<const std::filesystem::path&>(_typeHandle, _getCWDHandle, _userData->m_pRuntimeCompiler);
+
+                    RuntimeReflection::invoke_member<
+                        const std::filesystem::path&,
+                        const std::filesystem::path&,
+                        bool
+                    >(
+                        _typeHandle,
+                        _funcHandle,
+                        _userData->m_pRuntimeCompiler,
+                        _cwd,
+                        _file,
+                        true
+                    );
+                }
+            }
+        }
 
     private:
         FileWatcher* m_pFileWatcher;
@@ -125,32 +185,12 @@ namespace Duckvil { namespace HotReloader {
 
         Event::Pool<Event::mode::buffered> m_eventPool;
 
-        static void Action(const std::filesystem::path& _file, FileWatcher::FileStatus _status, void* _pUserData)
-        {
-            user_data* _userData = (user_data*)_pUserData;
+        std::filesystem::path m_CWD;
 
-            if(_status == FileWatcher::FileStatus::FileStatus_Modified)
-            {
-                printf("Modified: %s\n", _file.string().c_str());
-
-                if(_file.extension() == ".cpp")
-                {
-                    // Thread::order_task(_userData->m_pRuntimeCompiler->m_pThread, _userData->m_pRuntimeCompiler->m_pThreadData, [](RuntimeCompilerSystem* _pData, const std::filesystem::path& _file)
-                    // {
-                    //     _pData->Compile(_file.string());
-                    // }, _userData->m_pRuntimeCompiler, _file);
-
-                    _userData->m_file = _file;
-
-                    _userData->m_pRuntimeCompiler->m_pThread->m_fnOrderTask(_userData->m_pRuntimeCompiler->m_pThreadData, Utils::lambda([_userData](void*)
-                    {
-                        _userData->m_pRuntimeCompiler->Compile(_userData->m_file.string(), true);
-                    }));
-                }
-            }
-        }
+        void Compile(const std::string& _sFile, void (*_fnSwap)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), const RuntimeCompiler::Options& _compileOptions = { });
 
     public:
+        RuntimeCompilerSystem(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEventPool, Event::Pool<Event::mode::immediate>* _pRuntimeReflectionEventPool, FileWatcher::ActionCallback _fnAction, void* _pActionData);
         RuntimeCompilerSystem(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEventPool, Event::Pool<Event::mode::immediate>* _pRuntimeReflectionEventPool);
         ~RuntimeCompilerSystem();
 
@@ -162,17 +202,18 @@ namespace Duckvil { namespace HotReloader {
         std::filesystem::path m_path;
 
         bool Init();
-        bool Init(const std::filesystem::path& _sDirectoryToWatch);
+        bool Init(const std::vector<std::filesystem::path>& _sDirectoriesToWatch);
         void Update(double _dDelta);
 
         void InitEditor(void* _pImguiContext);
         void OnDraw();
 
-        void Compile(const std::filesystem::path& _CWD, const std::string& _sFile, void (*_fnSwap)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), bool _bGenerateReflection = true, const RuntimeCompiler::Options& _compileOptions = { });
-        void Compile(const std::string& _sFile, bool _bGenerateReflection = true, const RuntimeCompiler::Options& _compileOptions = { });
+        void Compile(const std::string& _sFile, const RuntimeCompiler::Options& _compileOptions = { });
 
-        void CompileT(const std::filesystem::path& _CWD, const std::string& _sFile, void (*_fnSwap)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), bool _bGenerateReflection = true, const RuntimeCompiler::Options& _compileOptions = { });
-        void CompileT(const std::string& _sFile, bool _bGenerateReflection = true, const RuntimeCompiler::Options& _compileOptions = { });
+        // void CompileT(const std::filesystem::path& _CWD, const std::string& _sFile, void (*_fnSwap)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), const RuntimeCompiler::Options& _compileOptions = { });
+        void CompileT(const std::string& _sFile, const RuntimeCompiler::Options& _compileOptions = { });
+
+        void GenerateReflection(const std::filesystem::path& _CWD, const std::filesystem::path& _file = "", bool _bIsAbsolute = false);
 
         void Swap(RuntimeCompilerSystem::hot_object* _pHotObject, const RuntimeReflection::__duckvil_resource_type_t& _typeHandle);
 
@@ -181,6 +222,10 @@ namespace Duckvil { namespace HotReloader {
         void SetObjectsHeap(const Memory::FreeList& _heap);
         void SetModules(Memory::Vector<PlugNPlay::__module_information>* _aLoaded);
         void SetReflectedTypes(Memory::ThreadsafeVector<duckvil_recorderd_types>* _aReflected);
+        void SetCWD(const std::filesystem::path& _CWD);
+        const std::filesystem::path& GetCWD() const;
+
+        inline RuntimeCompiler::ICompiler* GetCompiler() const { return m_pCompiler; }
 
         void OnEvent(const RuntimeReflection::TrackedObjectCreatedEvent& _event);
     };

@@ -8,7 +8,7 @@
 
 namespace Duckvil { namespace RuntimeCompiler {
 
-    class Compiler
+    class Compiler : public ICompiler
     {
     private:
         ICompiler* m_pCompiler;
@@ -21,20 +21,20 @@ namespace Duckvil { namespace RuntimeCompiler {
         ~Compiler();
 
         bool Setup();
-        void Compile(const std::vector<std::string>& _aFiles, const Options& _compilerOptions);
+        void Compile(const std::vector<std::string>& _aFiles, const Options& _compilerOptions) override;
 
-        void AddDefine(const std::string& _sDefine);
-        void AddFlag(const std::string& _sFlag);
-        void AddFlag(Flag _flags);
-        void AddInclude(const std::string& _sInclude);
-        void AddLibraryPath(const std::string& _sLibraryPath);
-        void AddLibrary(const std::string& _sLibrary);
+        void AddDefine(const std::string& _sDefine) override;
+        void AddFlag(const std::string& _sFlag) override;
+        void AddFlag(Flag _flags) override;
+        void AddInclude(const std::string& _sInclude) override;
+        void AddLibraryPath(const std::string& _sLibraryPath) override;
+        void AddLibrary(const std::string& _sLibrary) override;
 
-        const std::vector<std::string>& GetDefines();
-        const std::vector<std::string>& GetFlags();
-        const std::vector<std::string>& GetIncludes();
-        const std::vector<std::string>& GetLibrariesPaths();
-        const std::vector<std::string>& GetLibraries();
+        const std::vector<std::string>& GetDefines() override;
+        const std::vector<std::string>& GetFlags() override;
+        const std::vector<std::string>& GetIncludes() override;
+        const std::vector<std::string>& GetLibrariesPaths() override;
+        const std::vector<std::string>& GetLibraries() override;
     };
 
 }}

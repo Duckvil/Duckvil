@@ -16,6 +16,8 @@
 
 #include "HotReloader/RuntimeCompilerSystem.h"
 
+#include "Engine/ISystem.h"
+
 namespace Duckvil { namespace ProjectManager {
 
     enum class project_type : uint8_t
@@ -28,16 +30,7 @@ namespace Duckvil { namespace ProjectManager {
     struct data
     {
         Memory::FreeList m_heap;
-        HotReloader::FileWatcher* m_pFileWatcher;
-        // RuntimeCompiler::ICompiler* m_pCompiler;
         HotReloader::RuntimeCompilerSystem* m_pRCS;
-
-        typedef void (HotReloader::RuntimeCompilerSystem::*CompileCallback)(const std::filesystem::path&, const std::string&, void (*_fnSwap)(Memory::Vector<HotReloader::RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), bool, const RuntimeCompiler::Options&);
-        RuntimeReflection::__function<data::CompileCallback>* m_fnCompile;
-
-        Duckvil::RuntimeReflection::__duckvil_resource_type_t m_fileWatcherType;
-        Duckvil::RuntimeReflection::__duckvil_resource_function_t m_watchHandle;
-        Duckvil::RuntimeReflection::__duckvil_resource_function_t m_updateHandle;
 
         RuntimeReflection::__proxy_member_function<void>* m_fnUpdateProject;
 
@@ -48,6 +41,14 @@ namespace Duckvil { namespace ProjectManager {
         bool m_bLoaded;
 
         double m_dOneSecond;
+
+        typedef void (ISystem::*UpdateCallback)(double _dDelta);
+        typedef bool (ISystem::*InitCallback)(const std::vector<std::filesystem::path>&);
+
+        HotReloader::RuntimeCompilerSystem* m_pRuntimeCompilerSystem;
+        data::InitCallback m_fnRuntimeCompilerInit;
+        data::UpdateCallback m_fnRuntimeCompilerUpdate;
+        Memory::FreeList m_objectsHeap;
     };
 
     struct ftable
@@ -56,7 +57,6 @@ namespace Duckvil { namespace ProjectManager {
         project (*m_fnLoadProject)(data* _pData, const Utils::string& _sFilename, const Utils::string& _sPath);
         bool (*m_fnCreateProject)(data* _pData, const Utils::string& _sName, const Utils::string& _sPath);
         void (*m_fnUpdate)(data* _pData, double _dDelta);
-        void (*m_fnSetRuntimeCompiler)(data* _pData, HotReloader::RuntimeCompilerSystem* _pRCS);
     };
 
 }}
