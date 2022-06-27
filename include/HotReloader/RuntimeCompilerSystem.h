@@ -41,7 +41,7 @@ namespace Duckvil { namespace HotReloader {
     //     RuntimeReflection::__duckvil_resource_type_t m_typeHandle;
     // };
 
-    DUCKVIL_CLASS(Duckvil::ReflectionFlags::ReflectionFlags_EngineSystem)
+    DUCKVIL_CLASS(Duckvil::ReflectionFlags::ReflectionFlags_EngineSystem, Duckvil::ReflectionFlags_AutoInstantiate = false)
     class RuntimeCompilerSystem : public ISystem, public Editor::Widget
     {
     public:

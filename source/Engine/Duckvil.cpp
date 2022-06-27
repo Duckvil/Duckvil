@@ -566,8 +566,10 @@ namespace Duckvil {
             {
                 const RuntimeReflection::__duckvil_resource_type_t& _typeHandle = _types[i];
                 const RuntimeReflection::ReflectedType<> _type(_pData->m_heap, _typeHandle);
+                auto _autoInstantiateMetaFlag = _type.GetMetaVariant(ReflectionFlags::ReflectionFlags_AutoInstantiate);
 
-                if((!_type.Inherits<Editor::Widget>() && !_type.Inherits<ISystem>()) || _type.GetTypeHandle().m_ID == RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>().m_ID)
+                if((!_type.Inherits<Editor::Widget>() && !_type.Inherits<ISystem>()) ||
+                    (_autoInstantiateMetaFlag.m_pData != nullptr && !*static_cast<bool*>(_autoInstantiateMetaFlag.m_pData)))
                 {
                     continue;
                 }

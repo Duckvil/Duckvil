@@ -26,6 +26,7 @@ _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::ReflectionFlag
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::ReflectionFlags::ReflectionFlags_UserSystem, "ReflectionFlags_UserSystem");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::ReflectionFlags::ReflectionFlags_ReflectionModule, "ReflectionFlags_ReflectionModule");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::ReflectionFlags::ReflectionFlags_AutoEventsAdding, "ReflectionFlags_AutoEventsAdding");
+_enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::ReflectionFlags::ReflectionFlags_AutoInstantiate, "ReflectionFlags_AutoInstantiate");
 _namespaces.pop_back();
 }
 return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/ReflectionFlags.h", 4);

@@ -35,6 +35,7 @@ record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "HotReloader");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
 record_meta(_data, _type, Duckvil::ReflectionFlags::ReflectionFlags_EngineSystem, true);
+record_meta(_data, _type, Duckvil::ReflectionFlags_AutoInstantiate, false);
 record_inheritance<ISystem>(_data, _type, __protection::__protection_public);
 record_inheritance<Editor::Widget>(_data, _type, __protection::__protection_public);
 _function = record_function<void, const std::filesystem::path&, FileWatcher::FileStatus, void*>(_data, _type, &Duckvil::HotReloader::RuntimeCompilerSystem::Action, "Action");
