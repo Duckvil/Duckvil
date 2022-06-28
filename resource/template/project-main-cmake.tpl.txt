@@ -1,7 +1,15 @@
 cmake_minimum_required(VERSION 3.16)
 project({$projectName})
+set(DUCKVIL_PATH CACHE PATH "Duckvil path")
 add_definitions(-DDUCKVIL_OUTPUT="F:/Projects/Duckvil/{$projectName}/bin" -DDUCKVIL_PLATFORM_WINDOWS -DDUCKVIL_HOT_RELOADING)
 message(STATUS "Generating reflection started!")
 execute_process(COMMAND {$duckvilWorkingDirectory}/bin/ReflectionGenerator.exe -CWD ${CMAKE_SOURCE_DIR})
 message(STATUS "Generating reflection done!")
+
+add_definitions(-DDUCKVIL_CWD="${DUCKVIL_PATH}")
+
 add_subdirectory(source)
+
+set_target_properties({$projectName} PROPERTIES
+	VS_DEBUGGER_COMMAND_ARGUMENTS "-project {$projectName}"
+    VS_DEBUGGER_COMMAND "${DUCKVIL_PATH}/bin/Duckvil.exe")

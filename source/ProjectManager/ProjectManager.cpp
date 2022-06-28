@@ -607,7 +607,7 @@ namespace Duckvil { namespace ProjectManager {
         }
 
 #ifdef DUCKVIL_PLATFORM_WINDOWS
-        if(!execute_command("CMake", (_projectPath + "/build").m_sText, ".."))
+        if(!execute_command("CMake", (_projectPath + "/build").m_sText, ("-DDUCKVIL_PATH=\"" + std::string(DUCKVIL_CWD) + "\" ..").c_str()))
         {
             return false;
         }
@@ -623,9 +623,9 @@ namespace Duckvil { namespace ProjectManager {
 
     void update(data* _pData, double _dDelta)
     {
-        if(_pData->m_dOneSecond >= 1)
-        {
-            (_pData->m_pRuntimeCompilerSystem->*_pData->m_fnRuntimeCompilerUpdate)(_dDelta);
+            if(_pData->m_dOneSecond >= 1)
+            {
+                (_pData->m_pRuntimeCompilerSystem->*_pData->m_fnRuntimeCompilerUpdate)(_dDelta);
 
             _pData->m_dOneSecond = 0;
         }
