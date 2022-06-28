@@ -407,7 +407,7 @@ namespace Duckvil { namespace ProjectManager {
 
         PlugNPlay::module_init(&_module);
 
-        uint32_t _recordersCount;
+        uint32_t _recordersCount = 0;
 
     // TODO: Temporary fix
         static project _project = { .m_module = load_module(_module, _sFilename, _sPath, &_recordersCount) };
@@ -623,16 +623,19 @@ namespace Duckvil { namespace ProjectManager {
 
     void update(data* _pData, double _dDelta)
     {
+        if(_pData->m_bLoaded)
+        {
             if(_pData->m_dOneSecond >= 1)
             {
                 (_pData->m_pRuntimeCompilerSystem->*_pData->m_fnRuntimeCompilerUpdate)(_dDelta);
+            }
 
-            _pData->m_dOneSecond = 0;
+            _pData->m_fnUpdateProject->Invoke(_pData->m_loadedProject.m_pObject);
         }
 
-        if(_pData->m_bLoaded)
+        if(_pData->m_dOneSecond >= 1)
         {
-            _pData->m_fnUpdateProject->Invoke(_pData->m_loadedProject.m_pObject);
+            _pData->m_dOneSecond = 0;
         }
 
         _pData->m_dOneSecond += _dDelta;
