@@ -22,6 +22,7 @@ namespace Duckvil { namespace Editor {
         bool m_bCreateDirectoryPopup;
 
         Utils::string m_sSelectedPath;
+        Utils::string m_sProjectName;
 
     public:
         ContentExplorerWidget();

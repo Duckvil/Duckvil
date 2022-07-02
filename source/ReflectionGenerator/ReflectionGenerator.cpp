@@ -288,6 +288,20 @@ int main(int argc, char* argv[])
 
     printf("CWD: %s\n", _argumentsParser[Options::CWD].m_sResult);
 
+    if(_argumentsParser[Options::IS_ABSOLUTE].m_bIsSet)
+    {
+        printf("Is absolute\n");
+    }
+    else if(_argumentsParser[Options::IS_RELATIVE].m_bIsSet)
+    {
+        printf("Is relative\n");
+    }
+
+    if(_argumentsParser[Options::FILE].m_bIsSet)
+    {
+        printf("File: %s\n", _argumentsParser[Options::FILE].m_sResult);
+    }
+
     Duckvil::PlugNPlay::__module _module;
     Duckvil::PlugNPlay::__module_information _reflectionModule("RuntimeReflection");
     Duckvil::PlugNPlay::__module_information _memoryModule("Memory");

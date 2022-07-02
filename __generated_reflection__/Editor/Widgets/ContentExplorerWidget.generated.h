@@ -15,6 +15,7 @@ _pSerializer->SerializeProperty("m_sPath", m_sPath); \
 _pSerializer->SerializeProperty("m_bLoaded", m_bLoaded); \
 _pSerializer->SerializeProperty("m_bCreateDirectoryPopup", m_bCreateDirectoryPopup); \
 _pSerializer->SerializeProperty("m_sSelectedPath", m_sSelectedPath); \
+_pSerializer->SerializeProperty("m_sProjectName", m_sProjectName); \
 }
 #define Editor_Widgets_ContentExplorerWidget_h_15_GENERATED_BODY \
 Editor_Widgets_ContentExplorerWidget_h_15_REFLECTION_MODULE_DUMMY \

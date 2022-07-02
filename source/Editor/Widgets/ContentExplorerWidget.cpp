@@ -4,7 +4,38 @@
 
 #include "ProjectManager/Events/OnLoadEvent.h"
 
+#include <fstream>
+#include <map>
+
 namespace Duckvil { namespace Editor {
+
+    void generate_from_template(const Utils::string& _sTemplatePath, const Utils::string& _sOutputPath, const std::map<Utils::string, Utils::string>& _aParameters)
+    {
+        std::ifstream _tplFile(_sTemplatePath);
+        std::ofstream _oFile(_sOutputPath);
+        std::string _line;
+
+        while(getline(_tplFile, _line))
+        {
+            for(const auto& _parameter : _aParameters)
+            {
+                _line = Utils::replace_all(_line, ("{$" + _parameter.first + "}").m_sText, _parameter.second.m_sText);
+            }
+
+            _oFile << _line << "\n";
+        }
+
+        _oFile.close();
+        _tplFile.close();
+    }
+
+    void generate_from_template(const std::map<Utils::string, Utils::string>& _aPaths, const std::map<Utils::string, Utils::string>& _aParameters)
+    {
+        for(const auto& _path : _aPaths)
+        {
+            generate_from_template(_path.first, _path.second, _aParameters);
+        }
+    }
 
     ContentExplorerWidget::ContentExplorerWidget()
     {
@@ -22,6 +53,7 @@ namespace Duckvil { namespace Editor {
         {
             m_sPath = _event.m_project.m_sPath;
             m_bLoaded = true;
+            m_sProjectName = std::filesystem::path(_event.m_project.m_sPath.m_sText).filename();
         });
     }
 
@@ -206,41 +238,23 @@ namespace Duckvil { namespace Editor {
                 if(ImGui::BeginPopupModal("##content_browser_create_class_popup", &_createClassModalOpen))
                 {
                     static char _className[32] = { 0 };
-                    static const char* _currentItem = nullptr;
+                    static char _fileName[32] = { 0 };
                     static const char* _systems[] = { "Widget", "System" };
 
                     ImGui::InputText("Class name", _className, 32);
-
-                    // if(ImGui::BeginCombo("Systems", _currentItem))
-                    // {
-                    //     for(const auto& _item : _systems)
-                    //     {
-                    //         bool _isSelected = _currentItem == _item;
-
-                    //         if(ImGui::Selectable(_item, _isSelected))
-                    //         {
-                    //             _currentItem = _item;
-                    //         }
-
-                    //         if(_isSelected)
-                    //         {
-                    //             ImGui::SetItemDefaultFocus();
-                    //         }
-                    //     }
-
-                    //     ImGui::EndCombo();
-                    // }
+                    ImGui::InputText("File name", _fileName, 32);
 
                     if(ImGui::TreeNode("Selection State: Multiple Selection"))
                     {
-                        static bool selection[] = { false, false, false, false, false };
+                        static bool selection[] = { false, false };
 
-                        for(int n = 0; n < 5; n++)
+                        for(int n = 0; n < sizeof(selection) / sizeof(selection[0]); n++)
                         {
                             char buf[32];
-                            sprintf(buf, "Object %d", n);
 
-                            if(ImGui::Selectable(buf, selection[n]))
+                            sprintf(buf, "%s", _systems[n]);
+
+                            if(ImGui::Selectable(buf, selection[n], ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
                             {
                                 if(!ImGui::GetIO().KeyCtrl)
                                 {
@@ -255,7 +269,32 @@ namespace Duckvil { namespace Editor {
 
                     if(ImGui::Button("Create"))
                     {
+                        // Process module name
 
+                        Utils::string _cwd = DUCKVIL_CWD;
+                        Utils::string _iFileName(strcmp(_fileName, "") != 0 ? _fileName : _className);
+
+                        generate_from_template(
+                            {
+                                { _cwd / "resource/template/project/new-project-script.tpl.h", m_sPath / "include" / _iFileName + ".h" },
+                                { _cwd / "resource/template/project/new-project-script.tpl.cpp", m_sPath / "source" / _iFileName + ".cpp" },
+                            },
+                            {
+                                { "projectName", m_sProjectName },
+                                { "scriptName", _iFileName },
+                                { "inheritance", " : public Duckvil::Editor::Widget, public Duckvil::Project::Script" }
+                            }
+                        );
+
+                        // Utils::string _iFileName(strcmp(_fileName, "") != 0 ? _fileName : _className);
+
+                        // std::ofstream _fS(m_sPath / "source" / _iFileName + ".cpp");
+
+                        // _fS.close();
+
+                        // std::ofstream _fH(m_sPath / "include" / _iFileName + ".h");
+
+                        // _fH.close();
                     }
 
                     ImGui::EndPopup();
