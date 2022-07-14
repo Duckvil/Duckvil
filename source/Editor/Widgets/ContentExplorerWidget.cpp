@@ -240,36 +240,41 @@ namespace Duckvil { namespace Editor {
                 {
                     static char _className[32] = { 0 };
                     static char _fileName[32] = { 0 };
-                    static const char* _systems[] = { "Widget", "System" };
+                    static bool _selection[] = { false, false };
+                    static const char* _systems[] =
+                    {
+                        "Duckvil::Editor::Widget",
+                        "Duckvil::Project::Script"
+                    };
 
                     ImGui::InputText("Class name", _className, 32);
                     ImGui::InputText("File name", _fileName, 32);
 
-                    if(ImGui::TreeNode("Selection State: Multiple Selection"))
+                    if(ImGui::TreeNode("Inheritance"))
                     {
-                        static bool selection[] = { false, false };
-
-                        for(int n = 0; n < sizeof(selection) / sizeof(selection[0]); n++)
+                        for(int n = 0; n < sizeof(_selection) / sizeof(_selection[0]); n++)
                         {
                             char buf[32];
 
                             sprintf(buf, "%s", _systems[n]);
 
-                            if(ImGui::Selectable(buf, selection[n], ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
+                            if(ImGui::Selectable(buf, _selection[n], ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
                             {
                                 if(!ImGui::GetIO().KeyCtrl)
                                 {
-                                    memset(selection, 0, sizeof(selection));
+                                    memset(_selection, 0, sizeof(_selection));
                                 }
 
-                                selection[n] ^= 1;
+                                _selection[n] ^= 1;
                             }
                         }
+
                         ImGui::TreePop();
                     }
 
                     if(ImGui::Button("Create"))
                     {
+                        std::string _inheritance;
                         Utils::string _cwd = DUCKVIL_CWD;
                         Utils::string _iFileName(strcmp(_fileName, "") != 0 ? _fileName : _className);
 
@@ -288,6 +293,37 @@ namespace Duckvil { namespace Editor {
                         std::filesystem::create_directories((m_sProjectPath / "source" / _rModulePath).m_sText);
                         std::filesystem::create_directories((m_sProjectPath / "include" / _rModulePath).m_sText);
 
+                        bool _anySelection = false;
+
+                        for(int n = 0; n < sizeof(_selection) / sizeof(_selection[0]); n++)
+                        {
+                            if(_selection[n])
+                            {
+                                _anySelection = true;
+
+                                break;
+                            }
+                        }
+
+                        if(_anySelection)
+                        {
+                            _inheritance = " : ";
+
+                            for(int n = 0; n < sizeof(_selection) / sizeof(_selection[0]); n++)
+                            {
+                                if(_selection[n])
+                                {
+                                    _inheritance += "public ";
+                                    _inheritance += _systems[n];
+                                }
+
+                                if(n < sizeof(_selection) / sizeof(_selection[0]) - 1)
+                                {
+                                    _inheritance += ", ";
+                                }
+                            }
+                        }
+
                         generate_from_template(
                             {
                                 { _cwd / "resource/template/project/new-project-script.tpl.h", m_sProjectPath / "include" / _rModulePath / _iFileName + ".h" },
@@ -296,7 +332,7 @@ namespace Duckvil { namespace Editor {
                             {
                                 { "projectName", m_sProjectName },
                                 { "scriptName", _iFileName },
-                                { "inheritance", " : public Duckvil::Editor::Widget, public Duckvil::Project::Script" },
+                                { "inheritance", _inheritance },
                                 { "headerFile", _rModulePath + "/" + _iFileName }
                             }
                         );
