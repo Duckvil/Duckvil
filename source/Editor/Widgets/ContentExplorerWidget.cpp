@@ -336,6 +336,8 @@ namespace Duckvil { namespace Editor {
                                 { "headerFile", _rModulePath + "/" + _iFileName }
                             }
                         );
+
+                        _close = true;
                     }
 
                     ImGui::EndPopup();
