@@ -52,6 +52,7 @@ namespace Duckvil { namespace Editor {
         _pEngineEventPool->AddA<ProjectManager::OnLoadEvent>([&](const ProjectManager::OnLoadEvent& _event)
         {
             m_sPath = _event.m_project.m_sPath;
+            m_sProjectPath = m_sPath;
             m_bLoaded = true;
             m_sProjectName = std::filesystem::path(_event.m_project.m_sPath.m_sText).filename();
         });
@@ -269,32 +270,36 @@ namespace Duckvil { namespace Editor {
 
                     if(ImGui::Button("Create"))
                     {
-                        // Process module name
-
                         Utils::string _cwd = DUCKVIL_CWD;
                         Utils::string _iFileName(strcmp(_fileName, "") != 0 ? _fileName : _className);
 
+                        std::string _rModulePath = std::filesystem::relative(m_sPath.m_sText, m_sProjectPath.m_sText).string();
+                        std::string::iterator _rModulePathIt = _rModulePath.begin();
+
+                        while(*_rModulePathIt != '\\')
+                        {
+                            _rModulePathIt++;
+                        }
+
+                        _rModulePathIt++;
+
+                        _rModulePath = std::string(_rModulePathIt, _rModulePath.end());
+
+                        std::filesystem::create_directories((m_sProjectPath / "source" / _rModulePath).m_sText);
+                        std::filesystem::create_directories((m_sProjectPath / "include" / _rModulePath).m_sText);
+
                         generate_from_template(
                             {
-                                { _cwd / "resource/template/project/new-project-script.tpl.h", m_sPath / "include" / _iFileName + ".h" },
-                                { _cwd / "resource/template/project/new-project-script.tpl.cpp", m_sPath / "source" / _iFileName + ".cpp" },
+                                { _cwd / "resource/template/project/new-project-script.tpl.h", m_sProjectPath / "include" / _rModulePath / _iFileName + ".h" },
+                                { _cwd / "resource/template/project/new-project-script.tpl.cpp", m_sProjectPath / "source" / _rModulePath / _iFileName + ".cpp" },
                             },
                             {
                                 { "projectName", m_sProjectName },
                                 { "scriptName", _iFileName },
-                                { "inheritance", " : public Duckvil::Editor::Widget, public Duckvil::Project::Script" }
+                                { "inheritance", " : public Duckvil::Editor::Widget, public Duckvil::Project::Script" },
+                                { "headerFile", _rModulePath + "/" + _iFileName }
                             }
                         );
-
-                        // Utils::string _iFileName(strcmp(_fileName, "") != 0 ? _fileName : _className);
-
-                        // std::ofstream _fS(m_sPath / "source" / _iFileName + ".cpp");
-
-                        // _fS.close();
-
-                        // std::ofstream _fH(m_sPath / "include" / _iFileName + ".h");
-
-                        // _fH.close();
                     }
 
                     ImGui::EndPopup();

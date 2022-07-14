@@ -23,6 +23,7 @@ namespace Duckvil { namespace Editor {
 
         Utils::string m_sSelectedPath;
         Utils::string m_sProjectName;
+        Utils::string m_sProjectPath;
 
     public:
         ContentExplorerWidget();

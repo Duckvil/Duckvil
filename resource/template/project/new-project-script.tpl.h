@@ -7,7 +7,7 @@
 
 #include "ProjectManager/Script.h"
 
-#include "{$scriptName}.generated.h"
+#include "{$headerFile}.generated.h"
 
 namespace {$projectName} {
 

@@ -1,4 +1,4 @@
-#include "{$scriptName}.h"
+#include "{$headerFile}.h"
 
 #include "imgui/imgui.h"
 
