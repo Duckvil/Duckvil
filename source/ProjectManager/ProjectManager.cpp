@@ -15,6 +15,7 @@
 
 #include "Utils/AST.h"
 #include "Utils/md5.h"
+#include "Utils/TemplateEngine.h"
 
 #include "json/single_include/nlohmann/json.hpp"
 
@@ -32,34 +33,6 @@ namespace Duckvil { namespace ProjectManager {
         _f.close();
 
         return _str;
-    }
-
-    void generate_from_template(const Utils::string& _sTemplatePath, const Utils::string& _sOutputPath, const std::map<Utils::string, Utils::string>& _aParameters)
-    {
-        std::ifstream _tplFile(_sTemplatePath);
-        std::ofstream _oFile(_sOutputPath);
-        std::string _line;
-
-        while(getline(_tplFile, _line))
-        {
-            for(const auto& _parameter : _aParameters)
-            {
-                _line = Utils::replace_all(_line, ("{$" + _parameter.first + "}").m_sText, _parameter.second.m_sText);
-            }
-
-            _oFile << _line << "\n";
-        }
-
-        _oFile.close();
-        _tplFile.close();
-    }
-
-    void generate_from_template(const std::map<Utils::string, Utils::string>& _aPaths, const std::map<Utils::string, Utils::string>& _aParameters)
-    {
-        for(const auto& _path : _aPaths)
-        {
-            generate_from_template(_path.first, _path.second, _aParameters);
-        }
     }
 
 #ifdef DUCKVIL_PLATFORM_WINDOWS
@@ -555,7 +528,7 @@ namespace Duckvil { namespace ProjectManager {
 
         Utils::string _cwd = DUCKVIL_CWD;
 
-        generate_from_template(
+        TemplateEngine::generate(
             {
                 { _cwd / "resource/template/new-project.tpl.h", _projectPath / "include/Project.h" },
                 { _cwd / "resource/template/new-project.tpl.cpp", _projectPath / "source/Project.cpp" },
@@ -568,7 +541,7 @@ namespace Duckvil { namespace ProjectManager {
             }
         );
 
-        generate_from_template(
+        TemplateEngine::generate(
             {
                 { _cwd / "resource/template/project-config.tpl.json", _projectPath / "config.json" }
             },
