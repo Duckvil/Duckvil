@@ -14,15 +14,70 @@ namespace Duckvil { namespace Editor {
         std::ifstream _tplFile(_sTemplatePath);
         std::ofstream _oFile(_sOutputPath);
         std::string _line;
+        bool _skip = false;
 
         while(getline(_tplFile, _line))
         {
-            for(const auto& _parameter : _aParameters)
+            if(_skip)
             {
-                _line = Utils::replace_all(_line, ("{$" + _parameter.first + "}").m_sText, _parameter.second.m_sText);
+                if(_line == "{{endif}}")
+                {
+                    _skip = false;
+                }
+
+                continue;
             }
 
-            _oFile << _line << "\n";
+            size_t _pos = _line.find("{{");
+            bool _isStatement = false;
+
+            if(_pos != std::string::npos)
+            {
+                std::string _expression(_line.begin() + _pos + 2, _line.end());
+                size_t _spacePos = _expression.find(" ");
+
+                _isStatement = true;
+
+                if(_spacePos != std::string::npos)
+                {
+                    std::string _statement(_expression.begin(), _expression.begin() + _spacePos);
+
+                    if(_statement == "if")
+                    {
+                        size_t _endPos = _expression.find("}}");
+                        bool _found = false;
+
+                        _statement = std::string(_expression.begin() + _spacePos + 1, _expression.begin() + _endPos);
+
+                        for(const auto& _parameter : _aParameters)
+                        {
+                            if(_parameter.first == _statement)
+                            {
+                                _found = true;
+
+                                break;
+                            }
+                        }
+
+                        if(!_found)
+                        {
+                            _skip = true;
+
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            if(!_isStatement)
+            {
+                for(const auto& _parameter : _aParameters)
+                {
+                    _line = Utils::replace_all(_line, ("{$" + _parameter.first + "}").m_sText, _parameter.second.m_sText);
+                }
+
+                _oFile << _line << "\n";
+            }
         }
 
         _oFile.close();
