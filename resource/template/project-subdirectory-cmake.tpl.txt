@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.16)
+
+target_sources(
+{$projectName} PRIVATE
+# BEGIN FILES
+{{if file}}
+"{$file}"
+{{endif}}
+# END FILES
+)
+
+# BEGIN SUBDIRECTORIES
+{{if subdirectory}}
+add_subdirectory({$subdirectory})
+{{endif}}
+# END SUBDIRECTORIES

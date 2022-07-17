@@ -6,6 +6,9 @@
 
 #include <fstream>
 #include <map>
+#ifdef DUCKVIL_PLATFORM_WINDOWS
+#include <Windows.h>
+#endif
 
 namespace Duckvil { namespace Editor {
 
@@ -91,6 +94,34 @@ namespace Duckvil { namespace Editor {
             generate_from_template(_path.first, _path.second, _aParameters);
         }
     }
+
+#ifdef DUCKVIL_PLATFORM_WINDOWS
+    bool execute_command(const char* _sProgram, const char* _sCurrentDirectory, const char* args)
+    {
+        STARTUPINFOA startupInfo;
+        PROCESS_INFORMATION procInfo;
+
+        memset(&startupInfo, 0, sizeof(startupInfo));
+        memset(&procInfo, 0, sizeof(procInfo));
+
+        std::string cmdLine(_sProgram);
+
+        cmdLine.append(" ") += args;
+
+        if(!CreateProcessA(0, const_cast<char*>(cmdLine.c_str()), 0, 0, FALSE, 0, 0, _sCurrentDirectory, &startupInfo, &procInfo))
+        {
+            return false;
+        }
+
+        WaitForSingleObject(procInfo.hProcess, INFINITE);
+        DWORD dwExitCode;
+        GetExitCodeProcess(procInfo.hProcess, &dwExitCode);
+        CloseHandle(procInfo.hProcess);
+        CloseHandle(procInfo.hThread);
+
+        return dwExitCode == 0;
+    }
+#endif
 
     ContentExplorerWidget::ContentExplorerWidget()
     {
@@ -271,6 +302,54 @@ namespace Duckvil { namespace Editor {
                     if(ImGui::Button("Create"))
                     {
                         std::filesystem::create_directory((m_sPath + "/" + _name).m_sText);
+                        std::filesystem::path _parentPath = std::filesystem::path((m_sPath / _name).m_sText).parent_path();
+
+                        if(std::filesystem::exists(_parentPath / "CmakeLists.txt"))
+                        {
+                            std::vector<std::string> _lines;
+
+                            {
+                                std::ifstream _cmakeFile(_parentPath / "CMakeLists.txt");
+                                std::string _line;
+
+                                while(getline(_cmakeFile, _line))
+                                {
+                                    if(_line == "# END SUBDIRECTORIES")
+                                    {
+                                        _lines.push_back("add_subdirectory(" + std::string(_name) + ")");
+                                    }
+
+                                    _lines.push_back(_line);
+                                }
+
+                                _cmakeFile.close();
+                            }
+
+                            {
+                                std::ofstream _cmakeFile(_parentPath / "CMakeLists.txt", std::ofstream::trunc);
+
+                                for(const std::string& _line : _lines)
+                                {
+                                    _cmakeFile << _line << "\n";
+                                }
+
+                                _cmakeFile.close();
+                            }
+                        }
+                        else
+                        {
+                            Utils::string _cwd = DUCKVIL_CWD;
+
+                            generate_from_template(
+                                {
+                                    { _cwd / "resource/template/project-subdirectory-cmake.tpl.txt", _parentPath / "CMakeLists.txt" }
+                                },
+                                {
+                                    { "subdirectory", _name },
+                                    { "projectName", m_sProjectName }
+                                }
+                            );
+                        }
 
                         memset(_name, 0, 32);
 
@@ -345,6 +424,8 @@ namespace Duckvil { namespace Editor {
 
                         _rModulePath = std::string(_rModulePathIt, _rModulePath.end());
 
+                        _rModulePath = Utils::replace_all(_rModulePath, "\\", "/");
+
                         std::filesystem::create_directories((m_sProjectPath / "source" / _rModulePath).m_sText);
                         std::filesystem::create_directories((m_sProjectPath / "include" / _rModulePath).m_sText);
 
@@ -391,6 +472,56 @@ namespace Duckvil { namespace Editor {
                                 { "headerFile", _rModulePath + "/" + _iFileName }
                             }
                         );
+
+                        if(std::filesystem::exists((m_sProjectPath / "source" / _rModulePath / "CMakeLists.txt").m_sText))
+                        {
+                            std::vector<std::string> _lines;
+
+                            {
+                                std::ifstream _cmakeFile((m_sProjectPath / "source" / _rModulePath / "CMakeLists.txt").m_sText);
+                                std::string _line;
+
+                                while(getline(_cmakeFile, _line))
+                                {
+                                    if(_line == "# END FILES")
+                                    {
+                                        _lines.push_back(("\"" + _iFileName + ".cpp\"").m_sText);
+                                        _lines.push_back(("\"${CMAKE_SOURCE_DIR}/__generated_reflection__/" + _rModulePath + "/" + _iFileName + ".generated.cpp\"").m_sText);
+                                    }
+
+                                    _lines.push_back(_line);
+                                }
+
+                                _cmakeFile.close();
+                            }
+
+                            {
+                                std::ofstream _cmakeFile((m_sProjectPath / "source" / _rModulePath / "CMakeLists.txt").m_sText, std::ofstream::trunc);
+
+                                for(const std::string& _line : _lines)
+                                {
+                                    _cmakeFile << _line << "\n";
+                                }
+
+                                _cmakeFile.close();
+                            }
+                        }
+                        else
+                        {
+                            Utils::string _cwd = DUCKVIL_CWD;
+
+                            generate_from_template(
+                                {
+                                    { _cwd / "resource/template/project-subdirectory-cmake.tpl.txt", (m_sProjectPath / "source" / _rModulePath / "CMakeLists.txt").m_sText }
+                                },
+                                {
+                                    { "file", _iFileName + ".cpp\"\n\"${CMAKE_SOURCE_DIR}/__generated_reflection__/" + _rModulePath + "/" + _iFileName + ".generated.cpp" },
+                                    { "projectName", m_sProjectName }
+                                }
+                            );
+                        }
+
+                        execute_command("CMake", (m_sProjectPath / "build").m_sText, "..");
 
                         _close = true;
                     }
