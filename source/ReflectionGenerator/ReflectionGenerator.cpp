@@ -258,7 +258,7 @@ enum class Options
     FILE,           // Only if one file has changed, when eg. hot-reloading, but NOT adding or removing files
     IS_RELATIVE,    // If specified file above is relative
     IS_ABSOLUTE,    // If specified file above is relative
-    FORCE           // Force regenerate all files in CWD
+    FORCE,          // Force regenerate all files in CWD
 
                     // Maybe some option for specific module? eg. Duckvil/Editor
                     // Then only files in this folder will be processed
@@ -266,6 +266,7 @@ enum class Options
                     // Some option to specify purging/cleanup?
 
                     // TODO: Fix one file processing
+    SINGLE_MODULE
 };
 
 Duckvil::Utils::CommandArgumentsParser::Descriptor g_pDescriptors[] =
@@ -274,7 +275,8 @@ Duckvil::Utils::CommandArgumentsParser::Descriptor g_pDescriptors[] =
     Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::FILE, "file"),
     Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::IS_RELATIVE, "is_relative"),
     Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::IS_ABSOLUTE, "is_absolute"),
-    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::FORCE, "force")
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::FORCE, "force"),
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::SINGLE_MODULE, "single")
 };
 
 int main(int argc, char* argv[])
@@ -285,6 +287,8 @@ int main(int argc, char* argv[])
     {
         return 1;
     }
+
+    bool _isSingleModule = _argumentsParser[Options::SINGLE_MODULE].m_bIsSet;
 
     printf("CWD: %s\n", _argumentsParser[Options::CWD].m_sResult);
 
@@ -626,7 +630,7 @@ int main(int argc, char* argv[])
                 _lastModule = _currentModule;
             }
 
-            if(_lastModule != _currentModule)
+            if(_lastModule != _currentModule && !_isSingleModule)
             {
                 if(_moduleChanged)
                 {
@@ -690,7 +694,7 @@ int main(int argc, char* argv[])
 
         _dbJ["files2"] = _dbNewJ;
 
-        if(!_lastModule.has_extension())
+        if(!_lastModule.has_extension() && !_isSingleModule)
         {
             _lastModule = _lastModule;
         }
