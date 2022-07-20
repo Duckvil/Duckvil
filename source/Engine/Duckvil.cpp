@@ -457,6 +457,23 @@ namespace Duckvil {
         init_editor(_pData, &_module);
         init_project_manager(_pData, &_module);
 
+        if(_pData->m_bIsServer)
+        {
+            const auto& _serverTypeHandle = RuntimeReflection::get_type("Server", { "Duckvil", "Network" });
+
+            _pData->m_pServer = static_cast<Network::IServer*>(RuntimeReflection::create<const Memory::FreeList&, uint16_t>(_pData->m_heap, _serverTypeHandle, false, _pData->m_heap, 9994));
+
+            _pData->m_pServer->Start();
+        }
+        else if(_pData->m_bIsClient)
+        {
+            const auto& _clientTypeHandle = RuntimeReflection::get_type("Client", { "Duckvil", "Network" });
+
+            _pData->m_pClient = static_cast<Network::IClient*>(RuntimeReflection::create<const Memory::FreeList&>(_pData->m_heap, _clientTypeHandle, false, _pData->m_heap));
+
+            _pData->m_pClient->Connect("127.0.0.1", 9994);
+        }
+
         _pData->m_eventPool.AddA<RequestSystemEvent>([_pData](RequestSystemEvent& _event)
         {
             if(_event.m_typeHandle.m_ID == RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>().m_ID)
@@ -621,6 +638,14 @@ namespace Duckvil {
                         {
                             _fap.Push(_pData->m_projectManagerData);
                         }
+                        else if(typeid(Network::IClient*).hash_code() == _argument.m_ullTypeID)
+                        {
+                            _fap.Push(_pData->m_pClient);
+                        }
+                        else if(typeid(Network::IServer*).hash_code() == _argument.m_ullTypeID)
+                        {
+                            _fap.Push(_pData->m_pServer);
+                        }
                         else if(!argument_event_pool_inject(_pData, _typeHandle, _constructorHandle, _argument, i, _fap))
                         {
                             // Call other events to incject
@@ -716,6 +741,19 @@ namespace Duckvil {
         while(_pData->m_bRunning)
         {
             _pFTable->update(_pData, _pFTable);
+        }
+
+        if(_pData->m_bIsServer)
+        {
+            _pData->m_pServer->Stop();
+
+            _pData->m_heap.Free(_pData->m_pServer);
+        }
+        else if(_pData->m_bIsClient)
+        {
+            _pData->m_pClient->Disconnect();
+
+            _pData->m_heap.Free(_pData->m_pClient);
         }
 
         return true;
@@ -893,6 +931,11 @@ namespace Duckvil {
                     _pData->m_windowEventPool.Skip();
                 }
             }
+        }
+
+        if(_pData->m_bIsServer)
+        {
+            _pData->m_pServer->Update();
         }
 
         _pData->m_pWindow->Refresh();
