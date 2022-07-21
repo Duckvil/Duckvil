@@ -2,6 +2,11 @@
 
 #include <memory>
 
+#include "Network/Message.h"
+
+#define DUCKVIL_RUNTIME_REFLECTION_PAUSE
+#define DUCKVIL_RUNTIME_REFLECTION_RESUME
+
 namespace Duckvil { namespace Network {
 
     enum BasicCommands
@@ -16,7 +21,11 @@ namespace Duckvil { namespace Network {
         Client_RegisterWithServer
     };
 
+DUCKVIL_RUNTIME_REFLECTION_PAUSE
+
     struct IConnection;
+
+DUCKVIL_RUNTIME_REFLECTION_RESUME
 
     struct IServer
     {
@@ -28,6 +37,8 @@ namespace Duckvil { namespace Network {
         virtual bool Start() = 0;
         virtual void Stop() = 0;
         virtual void Update(size_t _ullMaxMessages = -1, bool _bWait = false) = 0;
+
+        virtual void MessageAllClients(const Message& _message, std::shared_ptr<IConnection> _pIgnoreClient = nullptr) = 0;
 
         virtual void OnClientValidated(std::shared_ptr<IConnection> _pClient) = 0;
     };

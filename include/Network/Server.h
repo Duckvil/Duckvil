@@ -40,7 +40,7 @@ namespace Duckvil { namespace Network {
 
         void WaitForConnection();
         void MessageClient(std::shared_ptr<IConnection> _pClient, const Message& _message);
-        void MessageAllClients(const Message& _message, std::shared_ptr<IConnection> _pIgnoreClient = nullptr);
+        void MessageAllClients(const Message& _message, std::shared_ptr<IConnection> _pIgnoreClient = nullptr) override;
 
         bool OnClientConnect(std::shared_ptr<IConnection> _pClient);
         void OnClientDisconnect(std::shared_ptr<IConnection> _pClient);
