@@ -4,6 +4,9 @@
 #include <vector>
 #include <memory>
 
+#define DUCKVIL_RUNTIME_REFLECTION_PAUSE
+#define DUCKVIL_RUNTIME_REFLECTION_RESUME
+
 namespace Duckvil { namespace Network {
 
     struct MessageType
@@ -63,7 +66,7 @@ namespace Duckvil { namespace Network {
     };
 
     template <typename DataType>
-    Message& operator << (Message& _message, const DataType& _data)
+    static Message& operator << (Message& _message, const DataType& _data)
     {
         static_assert(std::is_standard_layout<DataType>::value, "Data is too complex to be pushed into vector");
 
@@ -80,7 +83,7 @@ namespace Duckvil { namespace Network {
     }
 
     template <typename DataType>
-    Message& operator >> (Message& _message, DataType& _data)
+    static Message& operator >> (Message& _message, DataType& _data)
     {
         static_assert(std::is_standard_layout<DataType>::value, "Data is too complex to be pushed into vector");
 
@@ -96,7 +99,43 @@ namespace Duckvil { namespace Network {
         return _message;
     }
 
+    static Message& operator << (Message& _message, const std::vector<char>& _data)
+    {
+        size_t _s = _message.m_aBody.size();
+
+        _message.m_aBody.resize(_s + _data.size());
+
+        std::memcpy(_message.m_aBody.data() + _s, _data.data(), _data.size());
+
+        _message.m_header.m_ullSize = _message.m_aBody.size();
+
+        return _message << _data.size();
+    }
+
+    static Message& operator >> (Message& _message, std::vector<char>& _data)
+    {
+        size_t _vectorSize = 0;
+
+        _message >> _vectorSize;
+
+        _data.resize(_vectorSize);
+
+        size_t _s = _message.m_aBody.size() - _data.size();
+
+        std::memcpy(_data.data(), _message.m_aBody.data() + _s, _data.size());
+
+        _message.m_aBody.resize(_s);
+
+        _message.m_header.m_ullSize = _message.m_aBody.size();
+
+        return _message;
+    }
+
+DUCKVIL_RUNTIME_REFLECTION_PAUSE
+
     struct IConnection;
+
+DUCKVIL_RUNTIME_REFLECTION_RESUME
 
     struct OwnedMessage
     {
