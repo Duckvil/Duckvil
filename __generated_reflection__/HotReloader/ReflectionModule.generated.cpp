@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(9)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(10)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -33,7 +33,7 @@ _type = record_type<Duckvil::HotReloader::RuntimeCompilerReflectionModule>(_data
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "HotReloader");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 9);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
 _namespaces.pop_back();
 _namespaces.push_back("RuntimeCompilerReflectionModule");
 _ntype = record_type(_data, _namespaces);
@@ -42,7 +42,7 @@ _type = record_type<Duckvil::HotReloader::RuntimeCompilerReflectionModule>(_data
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "HotReloader");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 9);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
 record_meta(_data, _type, Duckvil::ReflectionFlags::ReflectionFlags_ReflectionModule, true);
 _property = record_property<const char*>(_data, _type, offsetof(Duckvil::HotReloader::RuntimeCompilerReflectionModule, m_sReflectionModuleName), "m_sReflectionModuleName");
 _constructor = record_constructor<Duckvil::HotReloader::RuntimeCompilerReflectionModule, const Memory::FreeList&, RuntimeReflection::__ftable*, RuntimeReflection::__data*>(_data, _type);
@@ -65,7 +65,7 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "HotReloader");
 record_namespace(_data, _type, "RuntimeCompilerReflectionModule");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 9);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::HotReloader::RuntimeCompilerReflectionModule::Context, m_uiGeneratedBodyLine), "m_uiGeneratedBodyLine");
 _property = record_property<std::vector<std::string>>(_data, _type, offsetof(Duckvil::HotReloader::RuntimeCompilerReflectionModule::Context, m_aVars), "m_aVars");
 _property = record_property<std::vector<std::string>>(_data, _type, offsetof(Duckvil::HotReloader::RuntimeCompilerReflectionModule::Context, m_aChildSerializers), "m_aChildSerializers");
@@ -76,11 +76,11 @@ _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "HotReloader/ReflectionModule.h", 9);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "HotReloader/ReflectionModule.h", 10);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 9;
+return 10;
 }
 #endif
