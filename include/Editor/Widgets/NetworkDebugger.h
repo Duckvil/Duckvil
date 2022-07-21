@@ -7,13 +7,14 @@
 
 #include "Network/IClient.h"
 #include "Network/IServer.h"
+#include "Network/NetworkSystem.h"
 
 #include "Editor/Widgets/NetworkDebugger.generated.h"
 
 namespace Duckvil { namespace Editor {
 
     DUCKVIL_CLASS(Duckvil::ReflectionFlags::ReflectionFlags_UserSystem)
-    class NetworkDebugger : public Widget, public ISystem
+    class NetworkDebugger : public Widget, public ISystem, public Network::NetworkSystem
     {
         DUCKVIL_GENERATED_BODY
     private:
@@ -31,6 +32,9 @@ namespace Duckvil { namespace Editor {
 
         void InitEditor(void* _pImguiContext);
         void OnDraw();
+
+        void SetOwner(Network::IConnection::Owner _owner) override;
+        bool OnMessage(const Duckvil::Network::Message& _message) override;
     };
 
 }}

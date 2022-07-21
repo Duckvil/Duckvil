@@ -1,6 +1,7 @@
 #include "Network/Client.h"
 
 #include <iostream>
+#include <stack>
 
 #include "Network/Connection.h"
 
@@ -73,6 +74,47 @@ namespace Duckvil { namespace Network {
         {
             return false;
         }
+    }
+
+    void Client::Update()
+    {
+        if(!IsConnected())
+        {
+            return;
+        }
+
+        std::stack<OwnedMessage> _notHandledMessages;
+
+        while(!m_qMessagesIn.empty())
+        {
+            auto _serverMessage = m_qMessagesIn.pop_front();
+            bool _wasHandled = false;
+
+            for(NetworkSystem* _system : m_aSystems)
+            {
+                if(_system->OnMessage(_serverMessage.m_message))
+                {
+                    _wasHandled = true;
+                }
+            }
+
+            if(!_wasHandled)
+            {
+                _notHandledMessages.push(_serverMessage);
+            }
+        }
+
+        while(!_notHandledMessages.empty())
+        {
+            m_qMessagesIn.push_back(_notHandledMessages.top());
+
+            _notHandledMessages.pop();
+        }
+    }
+
+    void Client::AddSystem(NetworkSystem* _pSystem)
+    {
+        m_aSystems.push_back(_pSystem);
     }
 
     tsqueue<OwnedMessage>& Client::Incoming()

@@ -3,6 +3,7 @@
 #include "Network/IClient.h"
 #include "Network/Message.h"
 #include "Network/IConnection.h"
+#include "Network/NetworkSystem.h"
 
 #include "asio.hpp"
 
@@ -25,6 +26,8 @@ namespace Duckvil { namespace Network {
 
         IConnection* m_pConnection;
 
+        std::vector<NetworkSystem*> m_aSystems;
+
     public:
         Client(const Memory::FreeList& _heap);
         ~Client();
@@ -32,6 +35,10 @@ namespace Duckvil { namespace Network {
         bool Connect(const std::string& _sHost, const uint16_t _u16Port) override;
         void Disconnect() override;
         bool IsConnected() const override;
+
+        void Update() override;
+
+        inline void AddSystem(NetworkSystem* _pSystem) override;
 
         inline tsqueue<OwnedMessage>& Incoming() override;
 

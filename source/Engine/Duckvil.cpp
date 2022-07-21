@@ -41,6 +41,8 @@
 
 #include "Graphics/ModelLoader.h"
 
+#include "Network/NetworkSystem.h"
+
 namespace Duckvil {
 
     bool init_runtime_reflection_module(__data* _pData, PlugNPlay::__module* _pModule)
@@ -461,7 +463,7 @@ namespace Duckvil {
         {
             const auto& _serverTypeHandle = RuntimeReflection::get_type("Server", { "Duckvil", "Network" });
 
-            _pData->m_pServer = static_cast<Network::IServer*>(RuntimeReflection::create<const Memory::FreeList&, uint16_t>(_pData->m_heap, _serverTypeHandle, false, _pData->m_heap, 9994));
+            _pData->m_pServer = static_cast<Network::IServer*>(RuntimeReflection::create<const Memory::FreeList&, uint16_t>(_pData->m_heap, _serverTypeHandle, false, _pData->m_heap, 1118));
 
             _pData->m_pServer->Start();
         }
@@ -471,7 +473,7 @@ namespace Duckvil {
 
             _pData->m_pClient = static_cast<Network::IClient*>(RuntimeReflection::create<const Memory::FreeList&>(_pData->m_heap, _clientTypeHandle, false, _pData->m_heap));
 
-            _pData->m_pClient->Connect("127.0.0.1", 9994);
+            _pData->m_pClient->Connect("127.0.0.1", 1118);
         }
 
         _pData->m_eventPool.AddA<RequestSystemEvent>([_pData](RequestSystemEvent& _event)
@@ -499,6 +501,14 @@ namespace Duckvil {
             if(!_type.Inherits<ISystem>())
             {
                 return;
+            }
+
+            if(_pData->m_pClient)
+            {
+                if(_type.Inherits<Network::NetworkSystem>())
+                {
+                    _pData->m_pClient->AddSystem(static_cast<Network::NetworkSystem*>(_event.m_pTrackKeeper->GetObject()));
+                }
             }
 
             system _system = {};
@@ -844,6 +854,11 @@ namespace Duckvil {
 
                 (static_cast<ISystem*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pTrackKeeper))->*_system.m_fnUpdateCallback)(_delta);
             }
+        }
+
+        if(_pData->m_bIsClient)
+        {
+            _pData->m_pClient->Update();
         }
 
         _pData->m_projectManager.m_fnUpdate(&_pData->m_projectManagerData, _delta);

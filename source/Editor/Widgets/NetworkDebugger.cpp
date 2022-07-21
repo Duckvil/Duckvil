@@ -41,44 +41,6 @@ namespace Duckvil { namespace Editor {
 
         if(m_pClient && m_pClient->IsConnected())
         {
-            if(!m_pClient->Incoming().empty())
-            {
-                auto _serverMessage = m_pClient->Incoming().pop_front().m_message;
-                const auto& _h = _serverMessage.m_header;
-
-                if(_h.m_id.m_ullTypeID == typeid(Network::BasicCommands).hash_code())
-                {
-                    if(_h.m_id.m_ullValue == Network::BasicCommands::Ping)
-                    {
-                        std::chrono::system_clock::time_point _timeNow = std::chrono::system_clock::now();
-                        std::chrono::system_clock::time_point _timeThen;
-
-                        _serverMessage >> _timeThen;
-
-                        std::cout << "Ping: " << std::chrono::duration<double>(_timeNow - _timeThen).count() << "\n";
-                    }
-                }
-                else if(_h.m_id.m_ullTypeID == typeid(Network::CommonCommands).hash_code())
-                {
-                    if(_h.m_id.m_ullValue == Network::CommonCommands::Client_Accepted)
-                    {
-                        std::cout << "Client was accepted!\n";
-
-                        Network::Message _message(Network::CommonCommands::Client_RegisterWithServer);
-
-                        m_pClient->Send(_message);
-                    }
-                    else if(_h.m_id.m_ullValue == Network::CommonCommands::Client_AssignID)
-                    {
-                        uint32_t _clientID = -1;
-
-                        _serverMessage >> _clientID;
-
-                        std::cout << "Assigned client ID: " << _clientID << "\n";
-                    }
-                }
-            }
-
             if(ImGui::Button("Ping"))
             {
                 Network::Message _message(Network::BasicCommands::Ping);
@@ -90,6 +52,56 @@ namespace Duckvil { namespace Editor {
         }
 
         ImGui::End();
+    }
+
+    void NetworkDebugger::SetOwner(Network::IConnection::Owner _owner)
+    {
+
+    }
+
+    bool NetworkDebugger::OnMessage(const Duckvil::Network::Message& _message)
+    {
+        Duckvil::Network::Message _msg = _message;
+
+        if(_message.m_header.m_id.m_ullTypeID == typeid(Duckvil::Network::CommonCommands).hash_code())
+        {
+            if(_message.m_header.m_id.m_ullValue == Duckvil::Network::CommonCommands::Client_Accepted)
+            {
+                std::cout << "Client was accepted!\n";
+
+                Duckvil::Network::Message _message(Duckvil::Network::CommonCommands::Client_RegisterWithServer);
+
+                m_pClient->Send(_message);
+
+                return true;
+            }
+            else if(_message.m_header.m_id.m_ullValue == Duckvil::Network::CommonCommands::Client_AssignID)
+            {
+                uint32_t _clientID = -1;
+
+                _msg >> _clientID;
+
+                std::cout << "Assigned client ID: " << _clientID << "\n";
+
+                return true;
+            }
+        }
+        else if(_message.m_header.m_id.m_ullTypeID == typeid(Duckvil::Network::BasicCommands).hash_code())
+        {
+            if(_message.m_header.m_id.m_ullValue == Duckvil::Network::BasicCommands::Ping)
+            {
+                std::chrono::system_clock::time_point _timeNow = std::chrono::system_clock::now();
+                std::chrono::system_clock::time_point _timeThen;
+
+                _msg >> _timeThen;
+
+                std::cout << "Ping: " << std::chrono::duration<double>(_timeNow - _timeThen).count() << "\n";
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }}
