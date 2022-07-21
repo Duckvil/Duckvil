@@ -2017,6 +2017,8 @@ namespace Duckvil { namespace Parser {
                     break;
                 case __behavior::__behavior_Pause:
                     _paused = true;
+
+                    continue;
                     break;
                 case __behavior::__behavior_Proceed:
                     continue;
