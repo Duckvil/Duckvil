@@ -748,7 +748,7 @@ namespace Duckvil { namespace HotReloader {
 
         _pHotObject->m_pObject->SetObject(_newObject);
 
-        m_pEventPool->Broadcast(SwapEvent{ _oldObject, _pHotObject->m_pObject });
+        m_pEventPool->Broadcast(SwapEvent{ _oldObject, _pHotObject->m_pObject, m_sModuleName });
 
         m_objectsHeap.Free(_oldObject);
     }
