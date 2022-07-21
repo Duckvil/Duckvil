@@ -10,6 +10,7 @@ namespace Duckvil { namespace HotReloader {
     {
         void* m_pOldObject;
         HotReloader::ITrackKeeper* m_pTrackKeeper;
+        Utils::string m_sModuleName;
     };
 
 }}

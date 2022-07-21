@@ -1,8 +1,8 @@
-#include "HotReloader/ReflectionFlags.h"
+#include "Network/TSQueue.h"
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(9)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(8)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -22,19 +22,22 @@ _namespaces.push_back("Duckvil");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
 {
-_namespaces.push_back("HotReloader");
+_namespaces.push_back("Network");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
-_enum = record_enum<Duckvil::HotReloader::ReflectionFlags>(_data, _ntype, "ReflectionFlags");
+_namespaces.push_back("tsqueue");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+_namespaces.pop_back();
 _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "HotReloader/ReflectionFlags.h", 9);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Network/TSQueue.h", 8);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 9;
+return 8;
 }
 #endif

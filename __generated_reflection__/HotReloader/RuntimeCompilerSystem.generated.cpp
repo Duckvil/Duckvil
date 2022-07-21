@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(10)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(11)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -33,7 +33,7 @@ _type = record_type<Duckvil::HotReloader::RuntimeCompilerSystem>(_data, "Runtime
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "HotReloader");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 11);
 record_meta(_data, _type, Duckvil::ReflectionFlags::ReflectionFlags_EngineSystem, true);
 record_meta(_data, _type, Duckvil::ReflectionFlags_AutoInstantiate, false);
 record_inheritance<ISystem>(_data, _type, __protection::__protection_public);
@@ -71,7 +71,7 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "HotReloader");
 record_namespace(_data, _type, "RuntimeCompilerSystem");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 11);
 _property = record_property<RuntimeCompilerSystem*>(_data, _type, offsetof(Duckvil::HotReloader::RuntimeCompilerSystem::user_data, m_pRuntimeCompiler), "m_pRuntimeCompiler");
 _namespaces.pop_back();
 _namespaces.push_back("reflection_module");
@@ -82,7 +82,7 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "HotReloader");
 record_namespace(_data, _type, "RuntimeCompilerSystem");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 11);
 _property = record_property<void*>(_data, _type, offsetof(Duckvil::HotReloader::RuntimeCompilerSystem::reflection_module, m_pObject), "m_pObject");
 _property = record_property<RuntimeReflection::__duckvil_resource_type_t>(_data, _type, offsetof(Duckvil::HotReloader::RuntimeCompilerSystem::reflection_module, m_typeHandle), "m_typeHandle");
 _property = record_property<RuntimeReflection::__duckvil_resource_function_t>(_data, _type, offsetof(Duckvil::HotReloader::RuntimeCompilerSystem::reflection_module, m_generateCustomFunctionHandle), "m_generateCustomFunctionHandle");
@@ -97,7 +97,7 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "HotReloader");
 record_namespace(_data, _type, "RuntimeCompilerSystem");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 11);
 _property = record_property<ITrackKeeper*>(_data, _type, offsetof(Duckvil::HotReloader::RuntimeCompilerSystem::hot_object, m_pObject), "m_pObject");
 _property = record_property<void*>(_data, _type, offsetof(Duckvil::HotReloader::RuntimeCompilerSystem::hot_object, m_pSerializeFunction), "m_pSerializeFunction");
 _constructor = record_constructor<Duckvil::HotReloader::RuntimeCompilerSystem::hot_object, ITrackKeeper*, void*>(_data, _type);
@@ -106,11 +106,11 @@ _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "HotReloader/RuntimeCompilerSystem.h", 10);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "HotReloader/RuntimeCompilerSystem.h", 11);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 10;
+return 11;
 }
 #endif

@@ -36,6 +36,7 @@ record_namespace(_data, _type, "HotReloader");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 4);
 _property = record_property<void*>(_data, _type, offsetof(Duckvil::HotReloader::SwapEvent, m_pOldObject), "m_pOldObject");
 _property = record_property<HotReloader::ITrackKeeper*>(_data, _type, offsetof(Duckvil::HotReloader::SwapEvent, m_pTrackKeeper), "m_pTrackKeeper");
+_property = record_property<Utils::string>(_data, _type, offsetof(Duckvil::HotReloader::SwapEvent, m_sModuleName), "m_sModuleName");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

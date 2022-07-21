@@ -1,8 +1,8 @@
-#include "HotReloader/TrackKeeper.h"
+#include "Network/NetworkSystem.h"
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(12)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(6)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -22,33 +22,30 @@ _namespaces.push_back("Duckvil");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
 {
-_namespaces.push_back("HotReloader");
+_namespaces.push_back("Network");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
-_namespaces.push_back("TrackKeeper");
+_namespaces.push_back("NetworkSystem");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
-using namespace Duckvil::HotReloader;
-_type = record_type<Duckvil::HotReloader::TrackKeeper>(_data, "TrackKeeper");
+using namespace Duckvil::Network;
+_type = record_type<Duckvil::Network::NetworkSystem>(_data, "NetworkSystem");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
-record_namespace(_data, _type, "HotReloader");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
-record_inheritance<ITrackKeeper>(_data, _type, __protection::__protection_public);
-_constructor = record_constructor<Duckvil::HotReloader::TrackKeeper, void*, RuntimeReflection::__duckvil_resource_type_t>(_data, _type);
-_destructor = record_destructor<Duckvil::HotReloader::TrackKeeper>(_data, _type);
-_function = record_function<Duckvil::HotReloader::TrackKeeper, void*>(_data, _type, &Duckvil::HotReloader::TrackKeeper::GetObject, "GetObject");
-_function = record_function<Duckvil::HotReloader::TrackKeeper, RuntimeReflection::__duckvil_resource_type_t>(_data, _type, &Duckvil::HotReloader::TrackKeeper::GetTypeHandle, "GetTypeHandle");
+record_namespace(_data, _type, "Network");
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 6);
+_function = record_function<Duckvil::Network::NetworkSystem, void, IConnection::Owner>(_data, _type, &Duckvil::Network::NetworkSystem::SetOwner, "SetOwner");
+_function = record_function<Duckvil::Network::NetworkSystem, bool, const Duckvil::Network::Message&>(_data, _type, &Duckvil::Network::NetworkSystem::OnMessage, "OnMessage");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "HotReloader/TrackKeeper.h", 12);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Network/NetworkSystem.h", 6);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 12;
+return 6;
 }
 #endif

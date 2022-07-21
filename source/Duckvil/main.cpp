@@ -25,12 +25,16 @@
 
 enum class Options
 {
-    PROJECT
+    PROJECT,
+    SERVER,
+    CLIENT
 };
 
 Duckvil::Utils::CommandArgumentsParser::Descriptor g_pDescriptors[] =
 {
-    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::PROJECT, "project")
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::PROJECT, "project"),
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::SERVER, "server"),
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::CLIENT, "client")
 };
 
 int main(int argc, char* argv[])
@@ -103,6 +107,15 @@ int main(int argc, char* argv[])
 
     Duckvil::__ftable* _engine = duckvil_init();
     Duckvil::__data _engineData = { .m_ecs = flecs::world() };
+
+    if(_parser[Options::SERVER].m_bIsSet)
+    {
+        _engineData.m_bIsServer = true;
+    }
+    else if(_parser[Options::CLIENT].m_bIsSet)
+    {
+        _engineData.m_bIsClient = true;
+    }
 
     _engine->init(&_engineData, _memoryInterface, _free_list);
 

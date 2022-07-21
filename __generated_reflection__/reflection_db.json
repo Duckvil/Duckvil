@@ -91,31 +91,38 @@
             "index": 12,
             "name": "Editor"
         },
+        "Editor\\Widgets\\NetworkDebugger.h": {
+            "generated_cpp": "Editor\\Widgets\\NetworkDebugger.generated.cpp",
+            "generated_h": "Editor\\Widgets\\NetworkDebugger.generated.h",
+            "hash": "e507610e5b6c4f573756d4f6d3c164b1",
+            "index": 13,
+            "name": "Editor"
+        },
         "Editor\\Widgets\\NewProjectWidget.h": {
             "generated_cpp": "Editor\\Widgets\\NewProjectWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\NewProjectWidget.generated.h",
             "hash": "833c6a5f116d54278273c9cfb9d17ca1",
-            "index": 13,
+            "index": 14,
             "name": "Editor"
         },
         "Editor\\Widgets\\RuntimeReflectionWidget.h": {
             "generated_cpp": "Editor\\Widgets\\RuntimeReflectionWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\RuntimeReflectionWidget.generated.h",
             "hash": "4118d810ad79786e4cfb9fb170a439ef",
-            "index": 14,
+            "index": 15,
             "name": "Editor"
         },
         "Editor\\Widgets\\ViewportWidget.h": {
             "generated_cpp": "Editor\\Widgets\\ViewportWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\ViewportWidget.generated.h",
             "hash": "49cd0445883deec34398f37c01d0c7a8",
-            "index": 15,
+            "index": 16,
             "name": "Editor"
         },
         "Engine\\Duckvil.h": {
             "generated_cpp": "Engine\\Duckvil.generated.cpp",
             "generated_h": "Engine\\Duckvil.generated.h",
-            "hash": "ccf9ff777ccaa029039f5a6cd2435f6a",
+            "hash": "9c5905a68c1639886e501b4db40da005",
             "index": 0,
             "name": "Engine"
         },
@@ -269,7 +276,7 @@
         "HotReloader\\Events\\SwapEvent.h": {
             "generated_cpp": "HotReloader\\Events\\SwapEvent.generated.cpp",
             "generated_h": "HotReloader\\Events\\SwapEvent.generated.h",
-            "hash": "bc204a7fc4aec14cb4a50b8115d471ac",
+            "hash": "3ab1575d0014afe4fa73fb7bf87aafd6",
             "index": 4,
             "name": "HotReloader"
         },
@@ -294,32 +301,39 @@
             "index": 7,
             "name": "HotReloader"
         },
+        "HotReloader\\Network\\HotObjectSync.h": {
+            "generated_cpp": "HotReloader\\Network\\HotObjectSync.generated.cpp",
+            "generated_h": "HotReloader\\Network\\HotObjectSync.generated.h",
+            "hash": "2b705adb2408bfe86c972a3d970847f7",
+            "index": 8,
+            "name": "HotReloader"
+        },
         "HotReloader\\ReflectionFlags.h": {
             "generated_cpp": "HotReloader\\ReflectionFlags.generated.cpp",
             "generated_h": "HotReloader\\ReflectionFlags.generated.h",
             "hash": "3c2cb7276f80cc62462d05434d926238",
-            "index": 8,
+            "index": 9,
             "name": "HotReloader"
         },
         "HotReloader\\ReflectionModule.h": {
             "generated_cpp": "HotReloader\\ReflectionModule.generated.cpp",
             "generated_h": "HotReloader\\ReflectionModule.generated.h",
             "hash": "16f12a144d8d6290cd117b03d849404d",
-            "index": 9,
+            "index": 10,
             "name": "HotReloader"
         },
         "HotReloader\\RuntimeCompilerSystem.h": {
             "generated_cpp": "HotReloader\\RuntimeCompilerSystem.generated.cpp",
             "generated_h": "HotReloader\\RuntimeCompilerSystem.generated.h",
-            "hash": "4a604599f85dc1e60e3abc2f98397883",
-            "index": 10,
+            "hash": "673a9cb310f08c92a052848f9ff6271e",
+            "index": 11,
             "name": "HotReloader"
         },
         "HotReloader\\TrackKeeper.h": {
             "generated_cpp": "HotReloader\\TrackKeeper.generated.cpp",
             "generated_h": "HotReloader\\TrackKeeper.generated.h",
             "hash": "c36b27528fd8cb8777e72a70992a8019",
-            "index": 11,
+            "index": 12,
             "name": "HotReloader"
         },
         "Logger\\Logger.h": {
@@ -587,6 +601,69 @@
             "hash": "d895931040a1dfff37ba19aa71b6c1a3",
             "index": 35,
             "name": "Memory"
+        },
+        "Network\\Client.h": {
+            "generated_cpp": "Network\\Client.generated.cpp",
+            "generated_h": "Network\\Client.generated.h",
+            "hash": "ea11001529d08b336cc769646f8393b7",
+            "index": 0,
+            "name": "Network"
+        },
+        "Network\\Connection.h": {
+            "generated_cpp": "Network\\Connection.generated.cpp",
+            "generated_h": "Network\\Connection.generated.h",
+            "hash": "0f3de0ce9e875ce7b4110ac82d1d6324",
+            "index": 1,
+            "name": "Network"
+        },
+        "Network\\IClient.h": {
+            "generated_cpp": "Network\\IClient.generated.cpp",
+            "generated_h": "Network\\IClient.generated.h",
+            "hash": "c093d753a3c8836e1255cb02287e57c5",
+            "index": 2,
+            "name": "Network"
+        },
+        "Network\\IConnection.h": {
+            "generated_cpp": "Network\\IConnection.generated.cpp",
+            "generated_h": "Network\\IConnection.generated.h",
+            "hash": "45bd00a423a5978fb3f2d4743b566024",
+            "index": 3,
+            "name": "Network"
+        },
+        "Network\\IServer.h": {
+            "generated_cpp": "Network\\IServer.generated.cpp",
+            "generated_h": "Network\\IServer.generated.h",
+            "hash": "30f41d4f08f88bbd7e5b1779ecf217a8",
+            "index": 4,
+            "name": "Network"
+        },
+        "Network\\Message.h": {
+            "generated_cpp": "Network\\Message.generated.cpp",
+            "generated_h": "Network\\Message.generated.h",
+            "hash": "8ec3096c00754445d876cf4ac9733b83",
+            "index": 5,
+            "name": "Network"
+        },
+        "Network\\NetworkSystem.h": {
+            "generated_cpp": "Network\\NetworkSystem.generated.cpp",
+            "generated_h": "Network\\NetworkSystem.generated.h",
+            "hash": "3a71e2f28b333a0d1309e63894225f3e",
+            "index": 6,
+            "name": "Network"
+        },
+        "Network\\Server.h": {
+            "generated_cpp": "Network\\Server.generated.cpp",
+            "generated_h": "Network\\Server.generated.h",
+            "hash": "cb079da4a80e286b5cd48497ea8bd358",
+            "index": 7,
+            "name": "Network"
+        },
+        "Network\\TSQueue.h": {
+            "generated_cpp": "Network\\TSQueue.generated.cpp",
+            "generated_h": "Network\\TSQueue.generated.h",
+            "hash": "3ef76711776356e3ad14d5e235eb7e0f",
+            "index": 8,
+            "name": "Network"
         },
         "Parser\\AST.h": {
             "generated_cpp": "Parser\\AST.generated.cpp",

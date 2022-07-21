@@ -56,6 +56,9 @@
 
 #include "ProjectManager/Events/LoadProjectEvent.h"
 
+#include "Network/IServer.h"
+#include "Network/IClient.h"
+
 namespace Duckvil {
 
     struct system
@@ -140,6 +143,12 @@ namespace Duckvil {
 
         ProjectManager::ftable m_projectManager;
         ProjectManager::data m_projectManagerData;
+
+        Network::IServer* m_pServer;
+        bool m_bIsServer;
+
+        Network::IClient* m_pClient;
+        bool m_bIsClient;
 
         Memory::FreeList m_globalHeap;
     };
