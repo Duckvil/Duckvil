@@ -33,6 +33,9 @@
 
 #include "Editor/Widget.h"
 
+#define DUCKVIL_RUNTIME_REFLECTION_PAUSE
+#define DUCKVIL_RUNTIME_REFLECTION_RESUME
+
 namespace Duckvil { namespace HotReloader {
 
     // struct hot_object
@@ -41,9 +44,20 @@ namespace Duckvil { namespace HotReloader {
     //     RuntimeReflection::__duckvil_resource_type_t m_typeHandle;
     // };
 
+DUCKVIL_RUNTIME_REFLECTION_PAUSE
+
+    namespace Network {
+
+        class HotObjectSync;
+
+    }
+
+DUCKVIL_RUNTIME_REFLECTION_RESUME
+
     DUCKVIL_CLASS(Duckvil::ReflectionFlags::ReflectionFlags_EngineSystem, Duckvil::ReflectionFlags_AutoInstantiate = false)
     class RuntimeCompilerSystem : public ISystem, public Editor::Widget
     {
+        friend class Network::HotObjectSync;
     public:
         struct user_data
         {
