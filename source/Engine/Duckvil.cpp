@@ -470,7 +470,7 @@ namespace Duckvil {
         {
             const auto& _serverTypeHandle = RuntimeReflection::get_type("Server", { "Duckvil", "Network" });
 
-            _pData->m_pServer = static_cast<Network::IServer*>(RuntimeReflection::create<const Memory::FreeList&, uint16_t>(_pData->m_heap, _serverTypeHandle, false, _pData->m_heap, 1110));
+            _pData->m_pServer = static_cast<Network::IServer*>(RuntimeReflection::create<const Memory::FreeList&, uint16_t>(_pData->m_heap, _serverTypeHandle, false, _pData->m_heap, 1107));
 
             _pData->m_pServer->Start();
         }
@@ -480,7 +480,7 @@ namespace Duckvil {
 
             _pData->m_pClient = static_cast<Network::IClient*>(RuntimeReflection::create<const Memory::FreeList&>(_pData->m_heap, _clientTypeHandle, false, _pData->m_heap));
 
-            _pData->m_pClient->Connect("192.168.254.134", 1110);
+            _pData->m_pClient->Connect("127.0.0.1", 1107);
         }
 #else
         {
@@ -525,6 +525,13 @@ namespace Duckvil {
                 if(_type.Inherits<Network::NetworkSystem>())
                 {
                     _pData->m_pClient->AddSystem(static_cast<Network::NetworkSystem*>(_event.m_pTrackKeeper->GetObject()));
+                }
+            }
+            else if(_pData->m_pServer)
+            {
+                if(_type.Inherits<Network::NetworkSystem>())
+                {
+                    _pData->m_pServer->AddSystem(static_cast<Network::NetworkSystem*>(_event.m_pTrackKeeper->GetObject()));
                 }
             }
 

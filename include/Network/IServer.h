@@ -24,6 +24,7 @@ namespace Duckvil { namespace Network {
 DUCKVIL_RUNTIME_REFLECTION_PAUSE
 
     struct IConnection;
+    struct NetworkSystem;
 
 DUCKVIL_RUNTIME_REFLECTION_RESUME
 
@@ -38,6 +39,9 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
         virtual void Stop() = 0;
         virtual void Update(size_t _ullMaxMessages = -1, bool _bWait = false) = 0;
 
+        virtual void AddSystem(NetworkSystem* _pSystem) = 0;
+
+        virtual void MessageClient(std::shared_ptr<IConnection> _pClient, const Message& _message) = 0;
         virtual void MessageAllClients(const Message& _message, std::shared_ptr<IConnection> _pIgnoreClient = nullptr) = 0;
 
         virtual void OnClientValidated(std::shared_ptr<IConnection> _pClient) = 0;

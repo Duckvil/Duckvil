@@ -9,7 +9,7 @@ namespace Duckvil { namespace Network {
     {
         virtual void SetOwner(IConnection::Owner _owner) = 0;
 
-        virtual bool OnMessage(const Duckvil::Network::Message& _message)
+        virtual bool OnMessage(const Duckvil::Network::Message& _message, std::shared_ptr<IConnection> _pClient)
         {
             return false;
         }

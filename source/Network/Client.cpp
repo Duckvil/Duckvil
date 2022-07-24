@@ -92,7 +92,7 @@ namespace Duckvil { namespace Network {
 
             for(NetworkSystem* _system : m_aSystems)
             {
-                if(_system->OnMessage(_serverMessage.m_message))
+                if(_system->OnMessage(_serverMessage.m_message, nullptr))
                 {
                     _wasHandled = true;
                 }
@@ -114,6 +114,8 @@ namespace Duckvil { namespace Network {
 
     void Client::AddSystem(NetworkSystem* _pSystem)
     {
+        _pSystem->SetOwner(IConnection::Owner::CLIENT);
+
         m_aSystems.push_back(_pSystem);
     }
 

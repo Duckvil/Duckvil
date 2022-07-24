@@ -23,6 +23,8 @@ namespace Duckvil { namespace Editor {
 
         Memory::FreeList m_heap;
 
+        Network::IConnection::Owner m_owner;
+
     public:
         NetworkDebugger(const Memory::FreeList& _heap, Network::IClient* _pClient, Network::IServer* _pServer);
         ~NetworkDebugger();
@@ -34,7 +36,7 @@ namespace Duckvil { namespace Editor {
         void OnDraw();
 
         void SetOwner(Network::IConnection::Owner _owner) override;
-        bool OnMessage(const Duckvil::Network::Message& _message) override;
+        bool OnMessage(const Duckvil::Network::Message& _message, std::shared_ptr<Duckvil::Network::IConnection> _pClient) override;
     };
 
 }}
