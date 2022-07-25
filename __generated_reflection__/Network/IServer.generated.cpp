@@ -44,6 +44,8 @@ _destructor = record_destructor<Duckvil::Network::IServer>(_data, _type);
 _function = record_function<Duckvil::Network::IServer, bool>(_data, _type, &Duckvil::Network::IServer::Start, "Start");
 _function = record_function<Duckvil::Network::IServer, void>(_data, _type, &Duckvil::Network::IServer::Stop, "Stop");
 _function = record_function<Duckvil::Network::IServer, void, size_t, bool>(_data, _type, &Duckvil::Network::IServer::Update, "Update");
+_function = record_function<Duckvil::Network::IServer, void, NetworkSystem*>(_data, _type, &Duckvil::Network::IServer::AddSystem, "AddSystem");
+_function = record_function<Duckvil::Network::IServer, void, std::shared_ptr<IConnection>, const Message&>(_data, _type, &Duckvil::Network::IServer::MessageClient, "MessageClient");
 _function = record_function<Duckvil::Network::IServer, void, const Message&, std::shared_ptr<IConnection>>(_data, _type, &Duckvil::Network::IServer::MessageAllClients, "MessageAllClients");
 _function = record_function<Duckvil::Network::IServer, void, std::shared_ptr<IConnection>>(_data, _type, &Duckvil::Network::IServer::OnClientValidated, "OnClientValidated");
 _namespaces.pop_back();

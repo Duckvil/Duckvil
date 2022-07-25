@@ -43,6 +43,7 @@ _function = record_function<Duckvil::Network::Server, void, size_t, bool>(_data,
 _function = record_function<Duckvil::Network::Server, void>(_data, _type, &Duckvil::Network::Server::WaitForConnection, "WaitForConnection");
 _function = record_function<Duckvil::Network::Server, void, std::shared_ptr<IConnection>, const Message&>(_data, _type, &Duckvil::Network::Server::MessageClient, "MessageClient");
 _function = record_function<Duckvil::Network::Server, void, const Message&, std::shared_ptr<IConnection>>(_data, _type, &Duckvil::Network::Server::MessageAllClients, "MessageAllClients");
+_function = record_function<Duckvil::Network::Server, void, NetworkSystem*>(_data, _type, &Duckvil::Network::Server::AddSystem, "AddSystem");
 _function = record_function<Duckvil::Network::Server, bool, std::shared_ptr<IConnection>>(_data, _type, &Duckvil::Network::Server::OnClientConnect, "OnClientConnect");
 _function = record_function<Duckvil::Network::Server, void, std::shared_ptr<IConnection>>(_data, _type, &Duckvil::Network::Server::OnClientDisconnect, "OnClientDisconnect");
 _function = record_function<Duckvil::Network::Server, void, std::shared_ptr<IConnection>, Message&>(_data, _type, &Duckvil::Network::Server::OnMessage, "OnMessage");
