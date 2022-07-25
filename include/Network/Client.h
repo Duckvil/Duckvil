@@ -28,6 +28,11 @@ namespace Duckvil { namespace Network {
 
         std::vector<NetworkSystem*> m_aSystems;
 
+        inline IConnection* GetConnection() const override
+        {
+            return m_pConnection;
+        }
+
     public:
         Client(const Memory::FreeList& _heap);
         ~Client();

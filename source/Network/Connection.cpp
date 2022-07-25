@@ -196,6 +196,11 @@ namespace Duckvil { namespace Network {
         return _out ^ 0xC0DEFACE12345678;
     }
 
+    void Connection::SetID(uint32_t _uiID)
+    {
+        m_uiID = _uiID;
+    }
+
     Connection::Connection(IConnection::Owner _owner, asio::io_context& _context, asio::ip::tcp::socket _socket, tsqueue<OwnedMessage>& _qIn) :
         m_context(_context),
         m_socket(std::move(_socket)),

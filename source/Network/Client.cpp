@@ -90,6 +90,15 @@ namespace Duckvil { namespace Network {
             auto _serverMessage = m_qMessagesIn.pop_front();
             bool _wasHandled = false;
 
+            if(_serverMessage.m_message == CommonCommands::Client_AssignID)
+            {
+                uint32_t _clientID = -1;
+
+                _serverMessage.m_message >> _clientID;
+
+                SetID(_clientID);
+            }
+
             for(NetworkSystem* _system : m_aSystems)
             {
                 if(_system->OnMessage(_serverMessage.m_message, nullptr))

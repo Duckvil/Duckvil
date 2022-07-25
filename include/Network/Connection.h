@@ -43,6 +43,8 @@ namespace Duckvil { namespace Network {
 
         uint64_t Scramble(uint64_t _ullData);
 
+        inline void SetID(uint32_t _uiID) override;
+
     public:
 DUCKVIL_RUNTIME_REFLECTION_PAUSE
         Connection(IConnection::Owner _owner, asio::io_context& _context, asio::ip::tcp::socket _socket, tsqueue<OwnedMessage>& _qIn);
