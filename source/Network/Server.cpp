@@ -11,7 +11,7 @@ namespace Duckvil { namespace Network {
         m_heap(_heap),
         m_asioAcceptor(m_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), _u16Port))
     {
-
+        m_uiIDs = 0;
     }
 
     Server::~Server()
