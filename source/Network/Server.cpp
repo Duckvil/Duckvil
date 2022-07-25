@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "Network/Connection.h"
+#include "Network/NetworkSystem.h"
 
 namespace Duckvil { namespace Network {
 
@@ -10,7 +11,7 @@ namespace Duckvil { namespace Network {
         m_heap(_heap),
         m_asioAcceptor(m_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), _u16Port))
     {
-
+        m_uiIDs = 0;
     }
 
     Server::~Server()
@@ -158,6 +159,13 @@ namespace Duckvil { namespace Network {
         }
     }
 
+    void Server::AddSystem(NetworkSystem* _pSystem)
+    {
+        _pSystem->SetOwner(IConnection::Owner::SERVER);
+
+        m_aSystems.push_back(_pSystem);
+    }
+
     bool Server::OnClientConnect(std::shared_ptr<IConnection> _pClient)
     {
         return true;
@@ -170,26 +178,11 @@ namespace Duckvil { namespace Network {
 
     void Server::OnMessage(std::shared_ptr<IConnection> _pClient, Message& _message)
     {
-        const auto& _id = _message.m_header.m_id;
-
-        if(_id.m_ullTypeID == typeid(BasicCommands).hash_code())
+        for(NetworkSystem* _system : m_aSystems)
         {
-            if(_id.m_ullValue == BasicCommands::Ping)
+            if(_system->OnMessage(_message, _pClient))
             {
-                std::cout << "[" << _pClient->GetID() << "] Ping!\n";
-
-                _pClient->Send(_message);
-            }
-        }
-        else if(_id.m_ullTypeID == typeid(CommonCommands).hash_code())
-        {
-            if(_id.m_ullValue == CommonCommands::Client_RegisterWithServer)
-            {
-                Message _message(CommonCommands::Client_AssignID);
-
-                _message << _pClient->GetID();
-
-                MessageClient(_pClient, _message);
+                break;
             }
         }
     }

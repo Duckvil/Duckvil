@@ -9,6 +9,11 @@ namespace Duckvil { namespace Network {
 
     struct IConnection
     {
+        friend class IClient;
+    protected:
+        virtual void SetID(uint32_t _uiID) = 0;
+
+    public:
         enum class Owner
         {
             SERVER,

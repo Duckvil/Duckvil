@@ -35,7 +35,7 @@ record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Network");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 6);
 _function = record_function<Duckvil::Network::NetworkSystem, void, IConnection::Owner>(_data, _type, &Duckvil::Network::NetworkSystem::SetOwner, "SetOwner");
-_function = record_function<Duckvil::Network::NetworkSystem, bool, const Duckvil::Network::Message&>(_data, _type, &Duckvil::Network::NetworkSystem::OnMessage, "OnMessage");
+_function = record_function<Duckvil::Network::NetworkSystem, bool, const Duckvil::Network::Message&, std::shared_ptr<IConnection>>(_data, _type, &Duckvil::Network::NetworkSystem::OnMessage, "OnMessage");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

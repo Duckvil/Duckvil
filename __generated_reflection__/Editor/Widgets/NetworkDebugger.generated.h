@@ -13,6 +13,7 @@ void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 _pSerializer->SerializeProperty("m_pClient", m_pClient); \
 _pSerializer->SerializeProperty("m_pServer", m_pServer); \
 _pSerializer->SerializeProperty("m_heap", m_heap); \
+_pSerializer->SerializeProperty("m_owner", m_owner); \
 ISystem::Serialize(_pSerializer); \
 }
 #define Editor_Widgets_NetworkDebugger_h_19_GENERATED_BODY \

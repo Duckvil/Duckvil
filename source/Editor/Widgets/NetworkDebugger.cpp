@@ -56,16 +56,16 @@ namespace Duckvil { namespace Editor {
 
     void NetworkDebugger::SetOwner(Network::IConnection::Owner _owner)
     {
-
+        m_owner = _owner;
     }
 
-    bool NetworkDebugger::OnMessage(const Duckvil::Network::Message& _message)
+    bool NetworkDebugger::OnMessage(const Duckvil::Network::Message& _message, std::shared_ptr<Duckvil::Network::IConnection> _pClient)
     {
         Duckvil::Network::Message _msg = _message;
 
-        if(_message.m_header.m_id.m_ullTypeID == typeid(Duckvil::Network::CommonCommands).hash_code())
+        if(_message == Duckvil::Network::CommonCommands::Client_Accepted)
         {
-            if(_message.m_header.m_id.m_ullValue == Duckvil::Network::CommonCommands::Client_Accepted)
+            if(m_owner == Network::IConnection::Owner::CLIENT)
             {
                 std::cout << "Client was accepted!\n";
 
@@ -75,20 +75,10 @@ namespace Duckvil { namespace Editor {
 
                 return true;
             }
-            else if(_message.m_header.m_id.m_ullValue == Duckvil::Network::CommonCommands::Client_AssignID)
-            {
-                uint32_t _clientID = -1;
-
-                _msg >> _clientID;
-
-                std::cout << "Assigned client ID: " << _clientID << "\n";
-
-                return true;
-            }
         }
-        else if(_message.m_header.m_id.m_ullTypeID == typeid(Duckvil::Network::BasicCommands).hash_code())
+        else if(_message == Duckvil::Network::BasicCommands::Ping)
         {
-            if(_message.m_header.m_id.m_ullValue == Duckvil::Network::BasicCommands::Ping)
+            if(m_owner == Network::IConnection::Owner::CLIENT)
             {
                 std::chrono::system_clock::time_point _timeNow = std::chrono::system_clock::now();
                 std::chrono::system_clock::time_point _timeThen;
@@ -96,6 +86,14 @@ namespace Duckvil { namespace Editor {
                 _msg >> _timeThen;
 
                 std::cout << "Ping: " << std::chrono::duration<double>(_timeNow - _timeThen).count() << "\n";
+
+                return true;
+            }
+            else
+            {
+                std::cout << "[" << _pClient->GetID() << "] Ping!\n";
+
+                _pClient->Send(_message);
 
                 return true;
             }

@@ -13,6 +13,7 @@ void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 _pSerializer->SerializeProperty("m_pClient", m_pClient); \
 _pSerializer->SerializeProperty("m_pServer", m_pServer); \
 _pSerializer->SerializeProperty("m_pRCS", m_pRCS); \
+_pSerializer->SerializeProperty("m_owner", m_owner); \
 ISystem::Serialize(_pSerializer); \
 }
 #define HotReloader_Network_HotObjectSync_h_23_GENERATED_BODY \

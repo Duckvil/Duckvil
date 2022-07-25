@@ -33,6 +33,8 @@ namespace Duckvil { namespace HotReloader { namespace Network {
 
         HotReloader::RuntimeCompilerSystem* m_pRCS;
 
+        Duckvil::Network::IConnection::Owner m_owner;
+
     public:
         HotObjectSync(const Memory::FreeList& _heap, Duckvil::Network::IClient* _pClient, Duckvil::Network::IServer* _pServer, HotReloader::RuntimeCompilerSystem* _pRCS);
         ~HotObjectSync();
@@ -44,7 +46,7 @@ namespace Duckvil { namespace HotReloader { namespace Network {
 
         void SetOwner(Duckvil::Network::IConnection::Owner _owner) override;
 
-        bool OnMessage(const Duckvil::Network::Message& _message) override;
+        bool OnMessage(const Duckvil::Network::Message& _message, std::shared_ptr<Duckvil::Network::IConnection> _pClient) override;
     };
 
 }}}

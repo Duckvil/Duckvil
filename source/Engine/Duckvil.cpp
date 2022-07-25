@@ -227,6 +227,7 @@ namespace Duckvil {
         return true;
     }
 
+#ifndef DUCKVIL_HEADLESS_SERVER
     bool init_renderer(__data* _pData, PlugNPlay::__module* _pModule)
     {
         PlugNPlay::__module_information _rendererModule("Graphics");
@@ -329,6 +330,7 @@ namespace Duckvil {
 
         return true;
     }
+#endif
 
     bool init_project_manager(__data* _pData, PlugNPlay::__module* _pModule)
     {
@@ -383,6 +385,7 @@ namespace Duckvil {
         return false;
     }
 
+#ifndef DUCKVIL_HEADLESS_SERVER
     void create_window(__data* _pData)
     {
         RuntimeReflection::ReflectedType<> _windowType(_pData->m_heap, RuntimeReflection::get_type(_pData->m_pRuntimeReflectionData, "WindowSDL", "Duckvil", "Window"));
@@ -391,6 +394,7 @@ namespace Duckvil {
 
         _pData->m_pWindow->Create("Duckvil", 1920, 1080);
     }
+#endif
 
     void init_memory(__data* _pData)
     {
@@ -454,16 +458,19 @@ namespace Duckvil {
 
         init_logger(_pData, &_module);
         init_threading(_pData, &_module);
+#ifndef DUCKVIL_HEADLESS_SERVER
         create_window(_pData);
         init_renderer(_pData, &_module);
         init_editor(_pData, &_module);
+#endif
         init_project_manager(_pData, &_module);
 
+#ifndef DUCKVIL_HEADLESS_SERVER
         if(_pData->m_bIsServer)
         {
             const auto& _serverTypeHandle = RuntimeReflection::get_type("Server", { "Duckvil", "Network" });
 
-            _pData->m_pServer = static_cast<Network::IServer*>(RuntimeReflection::create<const Memory::FreeList&, uint16_t>(_pData->m_heap, _serverTypeHandle, false, _pData->m_heap, 1118));
+            _pData->m_pServer = static_cast<Network::IServer*>(RuntimeReflection::create<const Memory::FreeList&, uint16_t>(_pData->m_heap, _serverTypeHandle, false, _pData->m_heap, 1107));
 
             _pData->m_pServer->Start();
         }
@@ -473,8 +480,18 @@ namespace Duckvil {
 
             _pData->m_pClient = static_cast<Network::IClient*>(RuntimeReflection::create<const Memory::FreeList&>(_pData->m_heap, _clientTypeHandle, false, _pData->m_heap));
 
-            _pData->m_pClient->Connect("127.0.0.1", 1118);
+            _pData->m_pClient->Connect("127.0.0.1", 1107);
         }
+#else
+        {
+            const auto& _serverTypeHandle = RuntimeReflection::get_type("Server", { "Duckvil", "Network" });
+
+            _pData->m_pServer = static_cast<Network::IServer*>(RuntimeReflection::create<const Memory::FreeList&, uint16_t>(_pData->m_heap, _serverTypeHandle, false, _pData->m_heap, 1110));
+            _pData->m_bIsServer = true;
+
+            _pData->m_pServer->Start();
+        }
+#endif
 
         _pData->m_eventPool.AddA<RequestSystemEvent>([_pData](RequestSystemEvent& _event)
         {
@@ -508,6 +525,13 @@ namespace Duckvil {
                 if(_type.Inherits<Network::NetworkSystem>())
                 {
                     _pData->m_pClient->AddSystem(static_cast<Network::NetworkSystem*>(_event.m_pTrackKeeper->GetObject()));
+                }
+            }
+            else if(_pData->m_pServer)
+            {
+                if(_type.Inherits<Network::NetworkSystem>())
+                {
+                    _pData->m_pServer->AddSystem(static_cast<Network::NetworkSystem*>(_event.m_pTrackKeeper->GetObject()));
                 }
             }
 
@@ -692,7 +716,9 @@ namespace Duckvil {
                 }
             });
 
+#ifndef DUCKVIL_HEADLESS_SERVER
             _pData->m_pEditor->m_fnPostInit(_pData->m_pEditorData, _pData->m_pEditor, &_pData->m_eventPool, _pData->m_pRuntimeCompiler);
+#endif
 
             if(!(_pData->m_pRuntimeCompiler->*_pData->m_fnRuntimeCompilerInit)())
             {
@@ -726,7 +752,9 @@ namespace Duckvil {
         }
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
+#ifndef DUCKVIL_HEADLESS_SERVER
         _pData->m_pEditorData->m_pEditorEvents.Broadcast(Editor::HexEditorWidgetInitEvent{ _pData->m_pMemoryDebugger });
+#endif
 #endif
         _pData->m_bRunning = true;
 
@@ -837,7 +865,9 @@ namespace Duckvil {
 
     void update(__data* _pData, __ftable* _pFTable)
     {
+#ifndef DUCKVIL_HEADLESS_SERVER
         _pData->m_pWindow->PopulateEvents();
+#endif
 
         ZoneScopedN("Update");
 
@@ -856,10 +886,12 @@ namespace Duckvil {
             }
         }
 
+#ifndef DUCKVIL_HEADLESS_SERVER
         if(_pData->m_bIsClient)
         {
             _pData->m_pClient->Update();
         }
+#endif
 
         _pData->m_projectManager.m_fnUpdate(&_pData->m_projectManagerData, _delta);
 
@@ -892,6 +924,8 @@ namespace Duckvil {
 
             _pData->m_dOneSecond = 0.0;
         }
+
+#ifndef DUCKVIL_HEADLESS_SERVER
 
         {
             ZoneScopedN("Update ECS transforms");
@@ -948,15 +982,25 @@ namespace Duckvil {
             }
         }
 
+#endif
+
+#ifndef DUCKVIL_HEADLESS_SERVER
         if(_pData->m_bIsServer)
         {
             _pData->m_pServer->Update();
         }
+#else
+        _pData->m_pServer->Update();
+#endif
 
+#ifndef DUCKVIL_HEADLESS_SERVER
         _pData->m_pWindow->Refresh();
+#endif
         _pData->m_time.update(&_pData->m_timeData);
 
+#ifndef DUCKVIL_HEADLESS_SERVER
         _pData->m_windowEventPool.Clear();
+#endif
 
 //         {
 //             ZoneScopedN("Sleeping, zzz...");

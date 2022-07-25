@@ -9,8 +9,23 @@
 
 namespace Duckvil { namespace Network {
 
+DUCKVIL_RUNTIME_REFLECTION_PAUSE
+
+    struct IConnection;
+
+DUCKVIL_RUNTIME_REFLECTION_RESUME
+
     struct IClient
     {
+    protected:
+        void SetID(uint32_t _uiID)
+        {
+            GetConnection()->SetID(_uiID);
+        }
+
+        virtual IConnection* GetConnection() const = 0;
+
+    public:
         virtual ~IClient()
         {
 

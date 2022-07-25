@@ -26,6 +26,12 @@ namespace Duckvil { namespace Network {
             m_ullTypeID = typeid(T).hash_code();
             m_ullValue = static_cast<size_t>(_command);
         }
+
+        template <typename Type>
+        bool operator == (const Type& _t) const
+        {
+            return m_ullTypeID == typeid(Type).hash_code() && m_ullValue == static_cast<size_t>(_t);
+        }
     };
 
     struct MessageHeader
@@ -43,6 +49,12 @@ namespace Duckvil { namespace Network {
             m_id(_command)
         {
             m_ullSize = 0;
+        }
+
+        template <typename Type>
+        bool operator == (const Type& _t) const
+        {
+            return m_id == _t;
         }
     };
 
@@ -62,6 +74,12 @@ namespace Duckvil { namespace Network {
             m_header(_command)
         {
 
+        }
+
+        template <typename Type>
+        bool operator == (const Type& _t) const
+        {
+            return m_header == _t;
         }
     };
 

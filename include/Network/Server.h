@@ -29,6 +29,7 @@ namespace Duckvil { namespace Network {
 
         // Memory::Vector<IConnection*> m_aConnections;
         std::deque<std::shared_ptr<IConnection>> m_aConnections;
+        std::vector<NetworkSystem*> m_aSystems;
 
     public:
         Server(const Memory::FreeList& _heap, uint16_t _u16Port);
@@ -39,8 +40,10 @@ namespace Duckvil { namespace Network {
         void Update(size_t _ullMaxMessages = -1, bool _bWait = false) override;
 
         void WaitForConnection();
-        void MessageClient(std::shared_ptr<IConnection> _pClient, const Message& _message);
+        void MessageClient(std::shared_ptr<IConnection> _pClient, const Message& _message) override;
         void MessageAllClients(const Message& _message, std::shared_ptr<IConnection> _pIgnoreClient = nullptr) override;
+
+        inline void AddSystem(NetworkSystem* _pSystem) override;
 
         bool OnClientConnect(std::shared_ptr<IConnection> _pClient);
         void OnClientDisconnect(std::shared_ptr<IConnection> _pClient);
