@@ -23,14 +23,31 @@
 #include "Engine/ISystem.h"
 #include "Engine/ReflectionFlags.h"
 
+#include "Network/NetworkSystem.h"
+#include "Network/IConnection.h"
+#include "Network/IClient.h"
+#include "Network/IServer.h"
+
 #include "Editor/Widgets/ViewportWidget.generated.h"
 
 namespace Duckvil { namespace Editor {
 
     DUCKVIL_CLASS(Duckvil::ReflectionFlags::ReflectionFlags_UserSystem)
-    class ViewportWidget : public Widget, public ISystem
+    class ViewportWidget : public Widget, public ISystem, public Network::NetworkSystem
     {
         DUCKVIL_GENERATED_BODY
+    public:
+        enum NetworkCommands
+        {
+            PlayerMovement,
+            AddPlayer
+        };
+
+        struct NetworkComponent
+        {
+            uint32_t m_uiID;
+        };
+
     private:
         Memory::FreeList m_heap;
 
@@ -53,9 +70,18 @@ namespace Duckvil { namespace Editor {
 
         flecs::world* m_pECS;
 
+        Network::IConnection::Owner m_owner;
+
+        Network::IServer* m_pServer;
+        Network::IClient* m_pClient;
+
+        flecs::query<ViewportWidget::NetworkComponent, Graphics::TransformComponent> m_networkQuery;
+
+        void SpwanPlayer(uint32_t _uiID);
+
     public:
         ViewportWidget();
-        ViewportWidget(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Window") Event::Pool<Event::mode::buffered>* _pWindowEventPool);
+        ViewportWidget(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Window") Event::Pool<Event::mode::buffered>* _pWindowEventPool, Network::IServer* _pServer, Network::IClient* _pClient);
         ~ViewportWidget();
 
         bool Init();
@@ -66,6 +92,10 @@ namespace Duckvil { namespace Editor {
 
         void SetRenderer(Graphics::Renderer::renderer_ftable* _pRenderer, Graphics::Renderer::renderer_data* _pRendererData);
         void SetECS(flecs::world* _pECS);
+
+        void SetOwner(Duckvil::Network::IConnection::Owner _owner) override;
+
+        bool OnMessage(const Duckvil::Network::Message& _message, std::shared_ptr<Duckvil::Network::IConnection> _pClient) override;
     };
 
 }}

@@ -76,32 +76,6 @@ namespace Duckvil { namespace Editor {
                 return true;
             }
         }
-        else if(_message == Duckvil::Network::CommonCommands::Client_AssignID)
-        {
-            if(m_owner == Network::IConnection::Owner::CLIENT)
-            {
-                uint32_t _clientID = -1;
-
-                _msg >> _clientID;
-
-                std::cout << "Assigned client ID: " << _clientID << "\n";
-
-                return true;
-            }
-        }
-        else if(_message == Duckvil::Network::CommonCommands::Client_RegisterWithServer)
-        {
-            if(m_owner == Network::IConnection::Owner::SERVER)
-            {
-                Network::Message _message(Network::CommonCommands::Client_AssignID);
-
-                _message << _pClient->GetID();
-
-                m_pServer->MessageClient(_pClient, _message);
-
-                return true;
-            }
-        }
         else if(_message == Duckvil::Network::BasicCommands::Ping)
         {
             if(m_owner == Network::IConnection::Owner::CLIENT)
