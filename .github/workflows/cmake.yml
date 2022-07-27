@@ -11,6 +11,7 @@ on:
       - '**/CMakeLists.txt'
   schedule:
     - cron: '00 8 * * 4'
+  workflow_dispatch:
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -35,6 +36,8 @@ jobs:
       run: sudo apt-get update -y | sudo apt-get install -y lcov
 
     - uses: actions/checkout@v2
+      with:
+        submodules: recursive
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
