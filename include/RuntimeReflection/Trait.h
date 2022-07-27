@@ -2,11 +2,15 @@
 
 #include <type_traits>
 
-#define DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(type, kind, trait) (Duckvil::RuntimeReflection::traits::kind::trait<type>::value ? static_cast<kind ## _traits>(static_cast<uint8_t>(_traits) | static_cast<uint8_t>(kind ## _traits::trait)) : _traits)
+#define DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(type, kind, trait) (Duckvil::RuntimeReflection::traits::kind::trait<type>::value ? static_cast<kind ## _traits>(_traits | kind ## _traits::trait) : _traits)
 
 namespace Duckvil { namespace RuntimeReflection {
 
+#ifdef DUCKVIL_PLATFORM_WINDOWS
     enum class property_traits : uint16_t
+#elif DUCKVIL_PLATFORM_LINUX
+    enum class property_traits
+#endif
     {
         is_pointer          = 1 << 0,
         is_reference        = 1 << 1,
@@ -19,11 +23,37 @@ namespace Duckvil { namespace RuntimeReflection {
         is_const            = 1 << 8
     };
 
+#ifdef DUCKVIL_PLATFORM_WINDOWS
     enum class function_traits : uint8_t
+#elif DUCKVIL_PLATFORM_LINUX
+    enum class function_traits
+#endif
     {
         is_static   = 1 << 0,
         is_const    = 1 << 1
     };
+
+#ifdef DUCKVIL_PLATFORM_LINUX
+    inline property_traits operator|(property_traits a, property_traits b)
+    {
+        return static_cast<property_traits>(static_cast<int>(a) | static_cast<int>(b));
+    }
+
+    inline function_traits operator|(function_traits a, function_traits b)
+    {
+        return static_cast<function_traits>(static_cast<int>(a) | static_cast<int>(b));
+    }
+#elif DUCKVIL_PLATFORM_WINDOWS
+    inline property_traits operator|(property_traits a, property_traits b)
+    {
+        return static_cast<property_traits>(static_cast<uint16_t>(a) | static_cast<uint16_t>(b));
+    }
+
+    inline function_traits operator|(function_traits a, function_traits b)
+    {
+        return static_cast<function_traits>(static_cast<uint8_t>(a) | static_cast<uint8_t>(b));
+    }
+#endif
 
     namespace traits {
 
