@@ -922,16 +922,12 @@ namespace Duckvil { namespace RuntimeReflection {
 
     DUCKVIL_RESOURCE(meta_t) add_object_meta(__data* _pData, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, void* _pObject, std::size_t _ullKeyTypeID, std::size_t _ullKeySize, uint8_t _ucKeyAlignment, property_traits _keyTraits, const void* _pKeyData, std::size_t _ullValueTypeID, std::size_t _ullValueSize, uint8_t _ucValueAlignment, property_traits _valueTraits, const void* _pValueData)
     {
-        bool _found = false;
-
         for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aObjects.m_data); ++i)
         {
             const __object_t& _object = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aObjects, i);
 
             if(_object.m_pObject == _pObject)
             {
-                _found = true;
-
                 return add_object_meta(
                     _pMemory,
                     _pAllocator,
@@ -951,36 +947,33 @@ namespace Duckvil { namespace RuntimeReflection {
             }
         }
 
-        if(!_found)
-        {
-            __object_t _object = {};
+        __object_t _object = {};
 
-            _object.m_pObject = _pObject;
-            _object.m_metas = DUCKVIL_SLOT_ARRAY_NEW(_pMemory, _pAllocator, __meta_t);
-            _object.m_variantKeys = DUCKVIL_SLOT_ARRAY_NEW(_pMemory, _pAllocator, __variant_t);
-            _object.m_variantValues = DUCKVIL_SLOT_ARRAY_NEW(_pMemory, _pAllocator, __variant_t);
+        _object.m_pObject = _pObject;
+        _object.m_metas = DUCKVIL_SLOT_ARRAY_NEW(_pMemory, _pAllocator, __meta_t);
+        _object.m_variantKeys = DUCKVIL_SLOT_ARRAY_NEW(_pMemory, _pAllocator, __variant_t);
+        _object.m_variantValues = DUCKVIL_SLOT_ARRAY_NEW(_pMemory, _pAllocator, __variant_t);
 
-            uint32_t _objectHandle = duckvil_slot_array_insert(_pMemory, _pAllocator, _pData->m_aObjects, _object);
+        uint32_t _objectHandle = duckvil_slot_array_insert(_pMemory, _pAllocator, _pData->m_aObjects, _object);
 
-            const auto* _objectPointer = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aObjects, _objectHandle);
+        const auto* _objectPointer = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_aObjects, _objectHandle);
 
-            return add_object_meta(
-                _pMemory,
-                _pAllocator,
-                _objectPointer,
-                _objectHandle,
-                _ullKeyTypeID,
-                _ullKeySize,
-                _ucKeyAlignment,
-                _keyTraits,
-                _pKeyData,
-                _ullValueTypeID,
-                _ullValueSize,
-                _ucValueAlignment,
-                _valueTraits,
-                _pValueData
-            );
-        }
+        return add_object_meta(
+            _pMemory,
+            _pAllocator,
+            _objectPointer,
+            _objectHandle,
+            _ullKeyTypeID,
+            _ullKeySize,
+            _ucKeyAlignment,
+            _keyTraits,
+            _pKeyData,
+            _ullValueTypeID,
+            _ullValueSize,
+            _ucValueAlignment,
+            _valueTraits,
+            _pValueData
+        );
     }
 
     const __variant_t& get_object_meta(__data* _pData, void* _pObject, std::size_t _ullKeyTypeID, std::size_t _ullKeySize, const void* _pKeyData)

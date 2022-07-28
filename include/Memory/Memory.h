@@ -84,15 +84,15 @@ namespace Duckvil { namespace Memory {
         std::size_t m_ullPosition;
     };
 
-    inline uintptr_t calculate_aligned_pointer(const uintptr_t& _ullAddress, uint8_t _ucAlignment);
-    inline uintptr_t calculate_aligned_pointer(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
-    inline uint8_t calculate_padding(const uintptr_t& _ullAddress, uint8_t _ucAlignment);
-    inline uint8_t calculate_padding(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t _ucHeaderSize);
+    uintptr_t calculate_aligned_pointer(const uintptr_t& _ullAddress, uint8_t _ucAlignment);
+    uintptr_t calculate_aligned_pointer(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
+    uint8_t calculate_padding(const uintptr_t& _ullAddress, uint8_t _ucAlignment);
+    uint8_t calculate_padding(const uintptr_t& _ullAddress, uint8_t _ucAlignment, uint8_t _ucHeaderSize);
 
-    inline void* calculate_aligned_pointer(const void* _p, uint8_t _ucAlignment);
-    inline void* calculate_aligned_pointer(const void* _p, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
-    inline uint8_t calculate_padding(const void* _p, uint8_t _ucAlignment);
-    inline uint8_t calculate_padding(const void* _p, uint8_t _ucAlignment, uint8_t _ucHeaderSize);
+    void* calculate_aligned_pointer(const void* _p, uint8_t _ucAlignment);
+    void* calculate_aligned_pointer(const void* _p, uint8_t _ucAlignment, uint8_t& _ucPaddedOffset);
+    uint8_t calculate_padding(const void* _p, uint8_t _ucAlignment);
+    uint8_t calculate_padding(const void* _p, uint8_t _ucAlignment, uint8_t _ucHeaderSize);
 
     template <typename Type>
     inline static uint8_t calculate_padding(const void* _ullAddress, uint8_t _ucAlignment)
