@@ -83,15 +83,24 @@ DUCKVIL_TEST(RuntimeReflection)
 
             DUCKVIL_TEST_NOT_EQUAL(_count, (uint32_t)0, "Recorders count is 0");
 
+            duckvil_runtime_reflection_recorder_stuff _stuff =
+            {
+                ._pMemoryInterface = _memoryInterface,
+                ._pAllocator = _free_list,
+                ._pFunctions = _rr_recorder,
+                ._pData = _rr_data
+            };
+
             for(uint32_t i = 0; i < _count; i++)
             {
-                duckvil_recorderd_types (*test_type)(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData);
+                //duckvil_recorderd_types (*test_type)(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, Duckvil::RuntimeReflection::__recorder_ftable* _pRecorder, Duckvil::RuntimeReflection::__ftable* _pRuntimeReflection, Duckvil::RuntimeReflection::__data* _pData);
+                Duckvil::RuntimeReflection::RecordFunction record = nullptr;
 
-                _module.get(_test_type_module, (std::string("duckvil_runtime_reflection_record_") + std::to_string(i)).c_str(), (void**)&test_type);
+                _module.get(_test_type_module, (std::string("duckvil_runtime_reflection_record_") + std::to_string(i)).c_str(), (void**)&record);
 
                 DUCKVIL_TEST_IS_NOT_NULL((void*)get_recorder_count, ("Could not get 'duckvil_runtime_reflection_record_" + std::to_string(i) + "'").c_str());
 
-                test_type(_memoryInterface, _free_list, _rr_recorder, _rr_ftable, _rr_data);
+                record(_stuff);
             }
         }
 
