@@ -188,6 +188,11 @@ DUCKVIL_TEST(VectorCopyConstructor)
                 m_iV = new int(*_.m_iV);
                 m_bCopyConstructorCalled = true;
             }
+
+            ~test_struct()
+            {
+                delete m_iV;
+            }
         };
 
         struct test_struct2
