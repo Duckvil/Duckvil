@@ -69,6 +69,11 @@ namespace Duckvil { namespace Memory {
 
     void* impl_queue_begin(queue_allocator* _pAllocator)
     {
+        if (_pAllocator->m_ullTail + sizeof(queue_header) >= _pAllocator->m_ullCapacity)
+        {
+            _pAllocator->m_ullTail = 0;
+        }
+
         uint8_t _p = 0;
         queue_header* _header = static_cast<queue_header*>(calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(queue_allocator) + _pAllocator->m_ullTail, alignof(queue_header), _p));
         void* _memory = static_cast<void*>(reinterpret_cast<uint8_t*>(_header) + sizeof(queue_header) + _header->m_ucPadding);
@@ -85,9 +90,15 @@ namespace Duckvil { namespace Memory {
             return;
         }
 
-        if(_pAllocator->m_ullTail + sizeof(queue_header) >= _pAllocator->m_ullCapacity)
+        uint8_t _hPadding = 0;
+        queue_header* _header = static_cast<queue_header*>(calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(queue_allocator) + _pAllocator->m_ullTail, alignof(queue_header), _hPadding));
+
+        if(_pAllocator->m_ullTail + sizeof(queue_header) + _hPadding + _header->m_ullElementSize >= _pAllocator->m_ullCapacity)
         {
             _pAllocator->m_ullTail = 0;
+
+            _header = reinterpret_cast<queue_header*>(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(queue_allocator) + _pAllocator->m_ullTail);
+            _header = static_cast<queue_header*>(calculate_aligned_pointer(_header, alignof(queue_header), _hPadding));
 
             // queue_header* _header = static_cast<queue_header*>(calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(queue_allocator) + _pAllocator->m_ullTail, alignof(queue_header), _hPadding));
             // std::size_t _blockSize = _header->m_ullElementSize;
@@ -98,8 +109,6 @@ namespace Duckvil { namespace Memory {
             // _pAllocator->m_ullTail += _padding;
         }
 
-        uint8_t _hPadding = 0;
-        queue_header* _header = static_cast<queue_header*>(calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(queue_allocator) + _pAllocator->m_ullTail, alignof(queue_header), _hPadding));
         std::size_t _blockSize = _header->m_ullElementSize;
         uint8_t _padding = _header->m_ucPadding;
 
