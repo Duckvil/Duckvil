@@ -694,11 +694,7 @@ int main(int argc, char* argv[])
 
         _dbJ["files2"] = _dbNewJ;
 
-        if(!_lastModule.has_extension() && !_isSingleModule)
-        {
-            _lastModule = _lastModule;
-        }
-        else
+        if(_lastModule.has_extension() || _isSingleModule)
         {
             _lastModule = ".";
         }
