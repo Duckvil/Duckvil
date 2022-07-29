@@ -307,11 +307,11 @@ namespace Duckvil { namespace Editor {
                     {
                         for(int n = 0; n < sizeof(_selection) / sizeof(_selection[0]); n++)
                         {
-                            char buf[32];
+                            char _buf[32];
 
-                            sprintf(buf, "%s", _systems[n]);
+                            snprintf(_buf, sizeof(_buf), "%s", _systems[n]);
 
-                            if(ImGui::Selectable(buf, _selection[n], ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
+                            if(ImGui::Selectable(_buf, _selection[n], ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
                             {
                                 if(!ImGui::GetIO().KeyCtrl)
                                 {

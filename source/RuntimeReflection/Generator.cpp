@@ -474,7 +474,7 @@ namespace Duckvil { namespace RuntimeReflection {
             const Parser::__ast_entity_namespace* _casted = static_cast<const Parser::__ast_entity_namespace*>(_entity);
             __generator_namespace _namespace = {};
 
-            strcpy(_namespace.m_sName, _casted->m_sName.c_str());
+            snprintf(_namespace.m_sName, 32, "%s", _casted->m_sName.c_str());
 
             for(Parser::__ast_meta _meta : _entity->m_aMeta)
             {

@@ -127,7 +127,7 @@ namespace Duckvil {
     {
         __logger_channel_data* (*init)(const Memory::FreeList& _heap);
         void (*log)(__logger_channel_ftable* _pFTable, __logger_channel_data* _pData, const __logger_channel_log_info& _logInfo);
-        void (*format)(__logger_channel_data* _pData, const __logger_channel_log_info& _logInfo, char* _ppBuffer);
+        void (*format)(__logger_channel_data* _pData, const __logger_channel_log_info& _logInfo, char* _ppBuffer, const size_t _uiBufferSize);
         void (*dispatch_logs)(__logger_channel_ftable* _pFTable, __logger_channel_data* _pData);
     };
 
@@ -143,7 +143,7 @@ namespace Duckvil {
 
         if(_ullFileLength < DUCKVIL_LOGGER_PATH_LENGTH_MAX)
         {
-            strcpy(_log.m_sFile, _sFile);
+            snprintf(_log.m_sFile, DUCKVIL_LOGGER_PATH_LENGTH_MAX, "%s", _sFile);
         }
         else
         {

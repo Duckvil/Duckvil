@@ -205,7 +205,7 @@ nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil
 
     if(_relativePath.string().size() < DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX)
     {
-        strcpy(_generatorData.m_sInclude, _relativePath.string().c_str());
+        snprintf(_generatorData.m_sInclude, DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX, "%s", _relativePath.string().c_str());
     }
     else
     {

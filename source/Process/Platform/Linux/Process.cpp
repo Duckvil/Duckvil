@@ -30,7 +30,7 @@ namespace Duckvil { namespace Process {
 
     void linux_write(data* _pData, const char* _csMessage)
     {
-        linux_data* _data = (linux_data*)_pData->m_pImplementationData;
+        linux_data* _data = static_cast<linux_data*>(_pData->m_pImplementationData);
 
         _data->m_pid = fork();
 

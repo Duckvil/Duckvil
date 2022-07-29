@@ -25,7 +25,7 @@ namespace Duckvil { namespace Utils {
 
             m_spArgv[i] = new char[strlen(_current)];
 
-            strcpy(m_spArgv[i], _current);
+            snprintf(m_spArgv[i], 32, "%s", _current);
         }
     }
 

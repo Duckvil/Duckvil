@@ -45,7 +45,7 @@ namespace Duckvil {
         {
             if(_logInfo.m_flags & __logger_channel_log_flags::__flags_immediate_log)
             {
-                _pFTable->format(_pData, _logInfo, _pData->m_buffer);
+                _pFTable->format(_pData, _logInfo, _pData->m_buffer, DUCKVIL_LOGGER_BUFFER_MAX);
 
                 printf("%s\n", _pData->m_buffer);
             }
@@ -77,7 +77,7 @@ namespace Duckvil {
         }
     }
 
-    void format(__logger_channel_data* _pData, const __logger_channel_log_info& _logInfo, char* _ppBuffer)
+    void format(__logger_channel_data* _pData, const __logger_channel_log_info& _logInfo, char* _ppBuffer, const size_t _uiBufferSize)
     {
         long long _upTime = std::chrono::high_resolution_clock::now().time_since_epoch().count() - _pData->m_llInitTime;
         const time_t& _time = _logInfo.m_time;
@@ -99,16 +99,16 @@ namespace Duckvil {
             switch(_logInfo.m_verbosity)
             {
             case __logger_channel_verbosity::__verbosity_info:
-                sprintf(_ppBuffer, "%s %f{ INFO }: %s", _timeStr, _upTime * 0.000000001, _logInfo.m_sMessage);
+                snprintf(_ppBuffer, _uiBufferSize, "%s %f{ INFO }: %s", _timeStr, _upTime * 0.000000001, _logInfo.m_sMessage);
                 break;
             case __logger_channel_verbosity::__verbosity_warning:
-                sprintf(_ppBuffer, "%s %f{ WARN }: %s", _timeStr, _upTime * 0.000000001, _logInfo.m_sMessage);
+                snprintf(_ppBuffer, _uiBufferSize, "%s %f{ WARN }: %s", _timeStr, _upTime * 0.000000001, _logInfo.m_sMessage);
                 break;
             case __logger_channel_verbosity::__verbosity_error:
-                sprintf(_ppBuffer, "%s %f{ ERROR }: %s", _timeStr, _upTime * 0.000000001, _logInfo.m_sMessage);
+                snprintf(_ppBuffer, _uiBufferSize, "%s %f{ ERROR }: %s", _timeStr, _upTime * 0.000000001, _logInfo.m_sMessage);
                 break;
             case __logger_channel_verbosity::__verbosity_fatal:
-                sprintf(_ppBuffer, "%s %f{ FATAL }: %s", _timeStr, _upTime * 0.000000001, _logInfo.m_sMessage);
+                snprintf(_ppBuffer, _uiBufferSize, "%s %f{ FATAL }: %s", _timeStr, _upTime * 0.000000001, _logInfo.m_sMessage);
                 break;
             }
 
@@ -147,7 +147,7 @@ namespace Duckvil {
         {
             const __logger_channel_log_info& _log = _pData->m_logs.Begin();
 
-            _pFTable->format(_pData, _log, _pData->m_buffer);
+            _pFTable->format(_pData, _log, _pData->m_buffer, DUCKVIL_LOGGER_BUFFER_MAX);
 
             if(_pData->m_flags & __logger_channel_flags::__logger_flags_console_output)
             {
