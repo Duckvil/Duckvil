@@ -123,20 +123,6 @@ namespace Duckvil { namespace RuntimeReflection {
     void generate_destructor(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
         const Parser::__ast_entity_destructor* _castedDestructor = static_cast<const Parser::__ast_entity_destructor*>(_pEntity);
-        bool _skip = false;
-
-        if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_class && _castedDestructor->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
-        {
-            _skip = true;
-        }
-        else if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_struct && _castedDestructor->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
-        {
-            _skip = false;
-        }
-        else if(_castedDestructor->m_accessLevel != Parser::__ast_access::__ast_access_public)
-        {
-            _skip = true;
-        }
 
         _file << "_destructor = record_destructor<" + _sNamespace + _pParentEntity->m_sName;
         _file << ">(_data, _type);\n";

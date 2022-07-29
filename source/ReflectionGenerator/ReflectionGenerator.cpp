@@ -358,7 +358,6 @@ int main(int argc, char* argv[])
     Duckvil::RuntimeReflection::__generator_ftable* _generatorFtable = _runtime_reflection_generator();
     std::filesystem::path _lastModule;
     std::filesystem::path _currentModule;
-    uint32_t _index = 0;
     Duckvil::PlugNPlay::__module_information* _loadedModules;
     uint32_t _loadedModulesCount;
 
@@ -470,60 +469,6 @@ int main(int argc, char* argv[])
 
         _iJson.close();
 
-        // nlohmann::json _last;
-        // nlohmann::json _exists;
-        // nlohmann::json::iterator _lastIt = _j["files"].end();
-
-        // try
-        // {
-        //     const nlohmann::json& _jFile = process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _file, _lastModule, _currentModule, _index, [&](nlohmann::json& _json)
-        //     {
-        //         for(nlohmann::json::iterator _it = _j["files"].begin(); _it != _j["files"].end(); ++_it)
-        //         {
-        //             if((*_it)["name"].get<std::string>() == _json["name"].get<std::string>())
-        //             {
-        //                 if(_last.empty() || _last["index"].get<uint32_t>() < (*_it)["index"])
-        //                 {
-        //                     _last = *_it;
-        //                     _lastIt = _it;
-
-        //                     if(_last["source"].get<std::string>() == _relativePath.string())
-        //                     {
-        //                         _json["index"] = _last["index"].get<uint32_t>();
-
-        //                         _exists = *_it;
-        //                     }
-        //                     else
-        //                     {
-        //                         _json["index"] = _last["index"].get<uint32_t>() + 1;
-        //                     }
-        //                 }
-        //             }
-        //         }
-
-        //         if(_last.empty())
-        //         {
-        //             _json["index"] = (*(_lastIt - 1))["index"].get<uint32_t>() + 1;
-        //         }
-        //     }, true);
-
-        //     if(_exists.empty())
-        //     {
-        //         if(_lastIt != _j["files"].end())
-        //         {
-        //             _j["files"].insert(_lastIt + 1, _jFile);
-        //         }
-        //         else
-        //         {
-        //             _j["files"].insert(_lastIt, _jFile);
-        //         }
-        //     }
-        // }
-        // catch(const Duckvil::Parser::blank_file& _e)
-        // {
-        //     return 0;
-        // }
-
         auto _f = _dbJ["files2"].find(_file.string());
 
         if(_f == _dbJ["files2"].end())
@@ -548,6 +493,8 @@ int main(int argc, char* argv[])
     }
     else
     {
+        uint32_t _index = 0;
+
         nlohmann::json _dbJ;
 
         if(std::filesystem::exists(_dbPath))

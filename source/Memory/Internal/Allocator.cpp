@@ -50,15 +50,15 @@ namespace Duckvil { namespace Memory {
         }
 
         uint8_t _padding = 0;
-        linear_allocator* _memory = static_cast<linear_allocator*>(calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(linear_allocator) + _pAllocator->m_ullUsed, alignof(linear_allocator), _padding));
-        std::size_t _size = sizeof(linear_allocator);
+        constexpr std::size_t ALLOCATOR_SIZE = sizeof(linear_allocator);
+        linear_allocator* _memory = static_cast<linear_allocator*>(calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + ALLOCATOR_SIZE + _pAllocator->m_ullUsed, alignof(linear_allocator), _padding));
 
         _memory->m_ullCapacity = _ullSize;
         _memory->m_ullUsed = 0;
 
-        memset(reinterpret_cast<uint8_t*>(_memory) + sizeof(linear_allocator), 0, _ullSize);
+        memset(reinterpret_cast<uint8_t*>(_memory) + ALLOCATOR_SIZE, 0, _ullSize);
 
-        _pAllocator->m_ullUsed += _size + _ullSize;
+        _pAllocator->m_ullUsed += ALLOCATOR_SIZE + _ullSize;
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _memory->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
@@ -78,15 +78,15 @@ namespace Duckvil { namespace Memory {
 
         uint8_t _padding = 0;
         fixed_stack_allocator* _memory = static_cast<fixed_stack_allocator*>(calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(linear_allocator) + _pAllocator->m_ullUsed, alignof(fixed_stack_allocator), _padding));
-        std::size_t _size = sizeof(fixed_stack_allocator);
+        constexpr std::size_t ALLOCATOR_SIZE = sizeof(fixed_stack_allocator);
 
         _memory->m_ullCapacity = _ullSize;
         _memory->m_ullUsed = 0;
         _memory->m_ullBlockSize = _ullTypeSize;
 
-        memset(reinterpret_cast<uint8_t*>(_memory) + sizeof(fixed_stack_allocator), 0, _ullSize);
+        memset(reinterpret_cast<uint8_t*>(_memory) + ALLOCATOR_SIZE, 0, _ullSize);
 
-        _pAllocator->m_ullUsed += _size + _ullSize;
+        _pAllocator->m_ullUsed += ALLOCATOR_SIZE + _ullSize;
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _memory->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
@@ -106,15 +106,15 @@ namespace Duckvil { namespace Memory {
 
         uint8_t _padding = 0;
         fixed_array_allocator* _memory = static_cast<fixed_array_allocator*>(calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(linear_allocator) + _pAllocator->m_ullUsed, alignof(fixed_array_allocator), _padding));
-        std::size_t _size = sizeof(fixed_array_allocator);
+        constexpr std::size_t ALLOCATOR_SIZE = sizeof(fixed_array_allocator);
 
         _memory->m_ullCapacity = _ullSize;
         _memory->m_ullUsed = 0;
         _memory->m_ullBlockSize = _ullTypeSize;
 
-        memset(reinterpret_cast<uint8_t*>(_memory) + sizeof(fixed_array_allocator), 0, _ullSize);
+        memset(reinterpret_cast<uint8_t*>(_memory) + ALLOCATOR_SIZE, 0, _ullSize);
 
-        _pAllocator->m_ullUsed += _size + _ullSize;
+        _pAllocator->m_ullUsed += ALLOCATOR_SIZE + _ullSize;
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _memory->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
@@ -134,20 +134,21 @@ namespace Duckvil { namespace Memory {
 
         uint8_t _padding = 0;
         free_list_allocator* _allocator = static_cast<free_list_allocator*>(calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(linear_allocator) + _pAllocator->m_ullUsed, alignof(free_list_allocator), _padding));
+        constexpr std::size_t ALLOCATOR_SIZE = sizeof(fixed_array_allocator);
 
         _allocator->m_ullCapacity = _ullSize;
         _allocator->m_ullUsed = 0;
 
-        _allocator->m_pHead = reinterpret_cast<__free_list_node*>((reinterpret_cast<uint8_t*>(_allocator) + sizeof(free_list_allocator)));
+        _allocator->m_pHead = reinterpret_cast<__free_list_node*>((reinterpret_cast<uint8_t*>(_allocator) + ALLOCATOR_SIZE));
 
-        memset(reinterpret_cast<uint8_t*>(_allocator) + sizeof(free_list_allocator), 0, _ullSize);
+        memset(reinterpret_cast<uint8_t*>(_allocator) + ALLOCATOR_SIZE, 0, _ullSize);
 
         __free_list_node* _node = static_cast<__free_list_node*>(_allocator->m_pHead);
 
         _node->m_ullSize = _ullSize;
         _node->m_pNext = nullptr;
 
-        _pAllocator->m_ullUsed += _ullSize + sizeof(free_list_allocator);
+        _pAllocator->m_ullUsed += _ullSize + ALLOCATOR_SIZE;
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
@@ -167,15 +168,15 @@ namespace Duckvil { namespace Memory {
 
         uint8_t _padding = 0;
         fixed_vector_allocator* _memory = static_cast<fixed_vector_allocator*>(calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(linear_allocator) + _pAllocator->m_ullUsed, alignof(fixed_vector_allocator), _padding));
-        std::size_t _size = sizeof(fixed_vector_allocator);
+        constexpr std::size_t ALLOCATOR_SIZE = sizeof(fixed_vector_allocator);
 
         _memory->m_ullCapacity = _ullSize;
         _memory->m_ullUsed = 0;
         _memory->m_ullBlockSize = _ullTypeSize;
 
-        memset(reinterpret_cast<uint8_t*>(_memory) + sizeof(fixed_vector_allocator), 0, _ullSize);
+        memset(reinterpret_cast<uint8_t*>(_memory) + ALLOCATOR_SIZE, 0, _ullSize);
 
-        _pAllocator->m_ullUsed += _size + _ullSize;
+        _pAllocator->m_ullUsed += ALLOCATOR_SIZE + _ullSize;
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _memory->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
@@ -195,14 +196,14 @@ namespace Duckvil { namespace Memory {
 
         uint8_t _padding = 0;
         byte_buffer_allocator* _memory = static_cast<byte_buffer_allocator*>(calculate_aligned_pointer(reinterpret_cast<uint8_t*>(_pAllocator) + sizeof(linear_allocator) + _pAllocator->m_ullUsed, alignof(byte_buffer_allocator), _padding));
-        std::size_t _size = sizeof(byte_buffer_allocator);
+        constexpr std::size_t ALLOCATOR_SIZE = sizeof(byte_buffer_allocator);
 
         _memory->m_ullCapacity = _ullSize;
         _memory->m_ullUsed = 0;
 
-        memset(reinterpret_cast<uint8_t*>(_memory) + sizeof(byte_buffer_allocator), 0, _ullSize);
+        memset(reinterpret_cast<uint8_t*>(_memory) + ALLOCATOR_SIZE, 0, _ullSize);
 
-        _pAllocator->m_ullUsed += _size + _ullSize;
+        _pAllocator->m_ullUsed += ALLOCATOR_SIZE + _ullSize;
 
 // #ifdef DUCKVIL_MEMORY_DEBUGGER
 //         _memory->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
@@ -215,16 +216,16 @@ namespace Duckvil { namespace Memory {
 
     queue_allocator* impl_free_list_allocate_queue_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize)
     {
-        queue_allocator* _allocator = static_cast<queue_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(queue_allocator) + _ullSize, alignof(queue_allocator)));
+        constexpr std::size_t ALLOCATOR_SIZE = sizeof(queue_allocator);
 
-        std::size_t _size = sizeof(queue_allocator);
+        queue_allocator* _allocator = static_cast<queue_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, ALLOCATOR_SIZE + _ullSize, alignof(queue_allocator)));
 
         _allocator->m_ullCapacity = _ullSize;
         _allocator->m_ullUsed = 0;
         _allocator->m_ullTail = 0;
         _allocator->m_ullHead = 0;
 
-        memset(reinterpret_cast<uint8_t*>(_allocator) + sizeof(queue_allocator), 0, _ullSize);
+        memset(reinterpret_cast<uint8_t*>(_allocator) + ALLOCATOR_SIZE, 0, _ullSize);
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
@@ -237,9 +238,8 @@ namespace Duckvil { namespace Memory {
 
     fixed_queue_allocator* impl_free_list_allocate_fixed_queue_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
-        fixed_queue_allocator* _allocator = static_cast<fixed_queue_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(fixed_queue_allocator) + _ullSize, alignof(fixed_queue_allocator)));
-
-        std::size_t _size = sizeof(fixed_queue_allocator);
+        constexpr std::size_t ALLOCATOR_SIZE = sizeof(fixed_queue_allocator);
+        fixed_queue_allocator* _allocator = static_cast<fixed_queue_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, ALLOCATOR_SIZE + _ullSize, alignof(fixed_queue_allocator)));
 
         _allocator->m_ullCapacity = _ullSize;
         _allocator->m_ullUsed = 0;
@@ -247,7 +247,7 @@ namespace Duckvil { namespace Memory {
         _allocator->m_ullTail = 0;
         _allocator->m_ullHead = 0;
 
-        memset(reinterpret_cast<uint8_t*>(_allocator) + sizeof(fixed_queue_allocator), 0, _ullSize);
+        memset(reinterpret_cast<uint8_t*>(_allocator) + ALLOCATOR_SIZE, 0, _ullSize);
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
@@ -260,16 +260,15 @@ namespace Duckvil { namespace Memory {
 
     free_list_allocator* impl_free_list_allocate_free_list_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize)
     {
-        free_list_allocator* _allocator = static_cast<free_list_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(free_list_allocator) + _ullSize, alignof(free_list_allocator)));
-
-        std::size_t _size = sizeof(free_list_allocator);
+        constexpr std::size_t ALLOCATOR_SIZE = sizeof(free_list_allocator);
+        free_list_allocator* _allocator = static_cast<free_list_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, ALLOCATOR_SIZE + _ullSize, alignof(free_list_allocator)));
 
         _allocator->m_ullCapacity = _ullSize;
         _allocator->m_ullUsed = 0;
 
-        _allocator->m_pHead = reinterpret_cast<__free_list_node*>((reinterpret_cast<uint8_t*>(_allocator) + sizeof(free_list_allocator)));
+        _allocator->m_pHead = reinterpret_cast<__free_list_node*>((reinterpret_cast<uint8_t*>(_allocator) + ALLOCATOR_SIZE));
 
-        memset(reinterpret_cast<uint8_t*>(_allocator) + sizeof(free_list_allocator), 0, _ullSize);
+        memset(reinterpret_cast<uint8_t*>(_allocator) + ALLOCATOR_SIZE, 0, _ullSize);
 
         __free_list_node* _node = static_cast<__free_list_node*>(_allocator->m_pHead);
 
@@ -287,14 +286,14 @@ namespace Duckvil { namespace Memory {
 
     fixed_vector_allocator* impl_free_list_allocate_fixed_vector_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
-        fixed_vector_allocator* _allocator = static_cast<fixed_vector_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(fixed_vector_allocator) + _ullSize, alignof(fixed_vector_allocator)));
-        std::size_t _size = sizeof(fixed_vector_allocator);
+        constexpr std::size_t ALLOCATOR_SIZE = sizeof(fixed_vector_allocator);
+        fixed_vector_allocator* _allocator = static_cast<fixed_vector_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, ALLOCATOR_SIZE + _ullSize, alignof(fixed_vector_allocator)));
 
         _allocator->m_ullCapacity = _ullSize;
         _allocator->m_ullUsed = 0;
         _allocator->m_ullBlockSize = _ullTypeSize;
 
-        memset(reinterpret_cast<uint8_t*>(_allocator) + sizeof(fixed_vector_allocator), 0, _ullSize);
+        memset(reinterpret_cast<uint8_t*>(_allocator) + ALLOCATOR_SIZE, 0, _ullSize);
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
@@ -307,14 +306,14 @@ namespace Duckvil { namespace Memory {
 
     fixed_stack_allocator* impl_free_list_allocate_fixed_stack_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
-        fixed_stack_allocator* _allocator = static_cast<fixed_stack_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(fixed_stack_allocator) + _ullSize, alignof(fixed_stack_allocator)));
-        std::size_t _size = sizeof(fixed_stack_allocator);
+        constexpr std::size_t ALLOCATOR_SIZE = sizeof(fixed_stack_allocator);
+        fixed_stack_allocator* _allocator = static_cast<fixed_stack_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, ALLOCATOR_SIZE + _ullSize, alignof(fixed_stack_allocator)));
 
         _allocator->m_ullCapacity = _ullSize;
         _allocator->m_ullUsed = 0;
         _allocator->m_ullBlockSize = _ullTypeSize;
 
-        memset(reinterpret_cast<uint8_t*>(_allocator) + sizeof(fixed_stack_allocator), 0, _ullSize);
+        memset(reinterpret_cast<uint8_t*>(_allocator) + ALLOCATOR_SIZE, 0, _ullSize);
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
@@ -327,14 +326,14 @@ namespace Duckvil { namespace Memory {
 
     fixed_array_allocator* impl_free_list_allocate_fixed_array_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
-        fixed_array_allocator* _allocator = static_cast<fixed_array_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(fixed_array_allocator) + _ullSize, alignof(fixed_array_allocator)));
-        std::size_t _size = sizeof(fixed_array_allocator);
+        constexpr std::size_t ALLOCATOR_SIZE = sizeof(fixed_array_allocator);
+        fixed_array_allocator* _allocator = static_cast<fixed_array_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, ALLOCATOR_SIZE + _ullSize, alignof(fixed_array_allocator)));
 
         _allocator->m_ullCapacity = _ullSize;
         _allocator->m_ullUsed = 0;
         _allocator->m_ullBlockSize = _ullTypeSize;
 
-        memset(reinterpret_cast<uint8_t*>(_allocator) + sizeof(fixed_array_allocator), 0, _ullSize);
+        memset(reinterpret_cast<uint8_t*>(_allocator) + ALLOCATOR_SIZE, 0, _ullSize);
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
@@ -347,14 +346,14 @@ namespace Duckvil { namespace Memory {
 
     byte_buffer_allocator* impl_free_list_allocate_byte_buffer_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize)
     {
-        byte_buffer_allocator* _allocator = static_cast<byte_buffer_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(byte_buffer_allocator) + _ullSize, alignof(byte_buffer_allocator)));
-        std::size_t _size = sizeof(byte_buffer_allocator);
+        constexpr std::size_t ALLOCATOR_SIZE = sizeof(byte_buffer_allocator);
+        byte_buffer_allocator* _allocator = static_cast<byte_buffer_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, ALLOCATOR_SIZE + _ullSize, alignof(byte_buffer_allocator)));
 
         _allocator->m_ullCapacity = _ullSize;
         _allocator->m_ullUsed = 0;
         _allocator->m_ullPosition = 0;
 
-        memset(reinterpret_cast<uint8_t*>(_allocator) + sizeof(byte_buffer_allocator), 0, _ullSize);
+        memset(reinterpret_cast<uint8_t*>(_allocator) + ALLOCATOR_SIZE, 0, _ullSize);
 
 // TODO:
 // #ifdef DUCKVIL_MEMORY_DEBUGGER
