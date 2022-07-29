@@ -119,16 +119,16 @@ namespace Duckvil {
             switch(_logInfo.m_verbosity)
             {
             case __logger_channel_verbosity::__verbosity_info:
-                sprintf(_ppBuffer, " %f{ INFO }: %s", _upTime * 0.000000001, _logInfo.m_sMessage);
+                snprintf(_ppBuffer, _uiBufferSize, " %f{ INFO }: %s", _upTime * 0.000000001, _logInfo.m_sMessage);
                 break;
             case __logger_channel_verbosity::__verbosity_warning:
-                sprintf(_ppBuffer, " %f{ WARN }: %s", _upTime * 0.000000001, _logInfo.m_sMessage);
+                snprintf(_ppBuffer, _uiBufferSize, " %f{ WARN }: %s", _upTime * 0.000000001, _logInfo.m_sMessage);
                 break;
             case __logger_channel_verbosity::__verbosity_error:
-                sprintf(_ppBuffer, " %f{ ERROR }: %s", _upTime * 0.000000001, _logInfo.m_sMessage);
+                snprintf(_ppBuffer, _uiBufferSize, " %f{ ERROR }: %s", _upTime * 0.000000001, _logInfo.m_sMessage);
                 break;
             case __logger_channel_verbosity::__verbosity_fatal:
-                sprintf(_ppBuffer, " %f{ FATAL }: %s", _upTime * 0.000000001, _logInfo.m_sMessage);
+                snprintf(_ppBuffer, _uiBufferSize, " %f{ FATAL }: %s", _upTime * 0.000000001, _logInfo.m_sMessage);
                 break;
             }
         }

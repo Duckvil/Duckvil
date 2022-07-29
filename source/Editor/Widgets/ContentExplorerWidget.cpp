@@ -336,7 +336,7 @@ namespace Duckvil { namespace Editor {
 
                         while(*_rModulePathIt != '\\')
                         {
-                            _rModulePathIt++;
+                            ++_rModulePathIt;
                         }
 
                         _rModulePathIt++;
