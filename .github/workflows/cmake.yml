@@ -40,7 +40,7 @@ jobs:
         submodules: recursive
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v1
+      uses: github/codeql-action/init@v2
       with:
         languages: cpp
         queries: +security-extended, security-and-quality
@@ -70,7 +70,7 @@ jobs:
       run: cmake --build . --config $BUILD_TYPE
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v1      
+      uses: github/codeql-action/analyze@v2      
 
     - name: Coverage init
       working-directory: ${{runner.workspace}}/build
