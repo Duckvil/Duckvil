@@ -80,7 +80,7 @@ record_namespace(_data, _type, "Duckvil");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
 _property = record_property<__logger_channel_data*(*)(const Memory::FreeList&)>(_data, _type, offsetof(Duckvil::__logger_channel_ftable, init), "init");
 _property = record_property<void(*)(__logger_channel_ftable*, __logger_channel_data*, const __logger_channel_log_info&)>(_data, _type, offsetof(Duckvil::__logger_channel_ftable, log), "log");
-_property = record_property<void(*)(__logger_channel_data*, const __logger_channel_log_info&, char*)>(_data, _type, offsetof(Duckvil::__logger_channel_ftable, format), "format");
+_property = record_property<void(*)(__logger_channel_data*, const __logger_channel_log_info&, char*, const size_t)>(_data, _type, offsetof(Duckvil::__logger_channel_ftable, format), "format");
 _property = record_property<void(*)(__logger_channel_ftable*, __logger_channel_data*)>(_data, _type, offsetof(Duckvil::__logger_channel_ftable, dispatch_logs), "dispatch_logs");
 _namespaces.pop_back();
 _namespaces.pop_back();
