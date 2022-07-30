@@ -994,6 +994,13 @@
             "index": 7,
             "name": "Utils"
         },
+        "Utils\\UUID.h": {
+            "generated_cpp": "Utils\\UUID.generated.cpp",
+            "generated_h": "Utils\\UUID.generated.h",
+            "hash": "ee233229e03a6c528a2e4091604c2e8e",
+            "index": 9,
+            "name": "Utils"
+        },
         "Utils\\Utils.h": {
             "generated_cpp": "Utils\\Utils.generated.cpp",
             "generated_h": "Utils\\Utils.generated.h",

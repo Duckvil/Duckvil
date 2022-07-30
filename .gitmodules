@@ -32,3 +32,6 @@
 [submodule "external/asio"]
 	path = external/asio
 	url = https://github.com/chriskohlhoff/asio.git
+[submodule "external/uuid_v4"]
+	path = external/uuid_v4
+	url = https://github.com/crashoz/uuid_v4.git
