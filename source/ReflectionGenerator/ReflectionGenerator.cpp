@@ -324,7 +324,7 @@ int main(int argc, char* argv[])
     Duckvil::Memory::linear_allocator* _mainMemoryAllocator;
 
     _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024);
-    Duckvil::Memory::free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(_mainMemoryAllocator, 512 * 1024);
+    Duckvil::Memory::free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(_mainMemoryAllocator, 1000 * 1024);
     Duckvil::Memory::FreeList _heap(_memoryInterface, _free_list);
 
     _heap.Allocate(_aModules, 1);
