@@ -122,57 +122,85 @@
         "Engine\\Duckvil.h": {
             "generated_cpp": "Engine\\Duckvil.generated.cpp",
             "generated_h": "Engine\\Duckvil.generated.h",
-            "hash": "9c5905a68c1639886e501b4db40da005",
+            "hash": "dfaf8f8e456e49f5ef3d9c905aa1821b",
             "index": 0,
+            "name": "Engine"
+        },
+        "Engine\\Entity.h": {
+            "generated_cpp": "Engine\\Entity.generated.cpp",
+            "generated_h": "Engine\\Entity.generated.h",
+            "hash": "9a231f66ee3002bad9f362265221a09c",
+            "index": 1,
+            "name": "Engine"
+        },
+        "Engine\\EntityFactory.h": {
+            "generated_cpp": "Engine\\EntityFactory.generated.cpp",
+            "generated_h": "Engine\\EntityFactory.generated.h",
+            "hash": "13a9ffee2f15be8380310a35dd5a1339",
+            "index": 2,
+            "name": "Engine"
+        },
+        "Engine\\Events\\EntityCreatedEvent.h": {
+            "generated_cpp": "Engine\\Events\\EntityCreatedEvent.generated.cpp",
+            "generated_h": "Engine\\Events\\EntityCreatedEvent.generated.h",
+            "hash": "a7ac79dd7ad665d3400ffd58e3a47732",
+            "index": 3,
             "name": "Engine"
         },
         "Engine\\Events\\InjectConstructorArgumentEvent.h": {
             "generated_cpp": "Engine\\Events\\InjectConstructorArgumentEvent.generated.cpp",
             "generated_h": "Engine\\Events\\InjectConstructorArgumentEvent.generated.h",
             "hash": "99c95e84811dc9a3d8f6b33cb0d30e55",
-            "index": 1,
+            "index": 4,
             "name": "Engine"
         },
         "Engine\\Events\\RequestSystemEvent.h": {
             "generated_cpp": "Engine\\Events\\RequestSystemEvent.generated.cpp",
             "generated_h": "Engine\\Events\\RequestSystemEvent.generated.h",
             "hash": "e3d69bfade78391aad21f662709531ad",
-            "index": 2,
+            "index": 5,
             "name": "Engine"
         },
         "Engine\\ISystem.h": {
             "generated_cpp": "Engine\\ISystem.generated.cpp",
             "generated_h": "Engine\\ISystem.generated.h",
             "hash": "28a524e65a9d96d88787eee471828873",
-            "index": 3,
+            "index": 6,
             "name": "Engine"
         },
         "Engine\\ReflectionFlags.h": {
             "generated_cpp": "Engine\\ReflectionFlags.generated.cpp",
             "generated_h": "Engine\\ReflectionFlags.generated.h",
             "hash": "7ff9348074fe37cb7b8c54d026bbd145",
-            "index": 4,
+            "index": 7,
             "name": "Engine"
         },
         "Engine\\ReflectionModules\\DummyReflectionModule.h": {
             "generated_cpp": "Engine\\ReflectionModules\\DummyReflectionModule.generated.cpp",
             "generated_h": "Engine\\ReflectionModules\\DummyReflectionModule.generated.h",
             "hash": "e42999f940b2a49d22840605c171778c",
-            "index": 5,
+            "index": 8,
             "name": "Engine"
         },
         "Engine\\ReflectionModules\\NamedArgumentsReflectionModule.h": {
             "generated_cpp": "Engine\\ReflectionModules\\NamedArgumentsReflectionModule.generated.cpp",
             "generated_h": "Engine\\ReflectionModules\\NamedArgumentsReflectionModule.generated.h",
             "hash": "421ad5df5b3d2575674a9afa5c8e5435",
-            "index": 6,
+            "index": 9,
             "name": "Engine"
         },
         "Engine\\Time.h": {
             "generated_cpp": "Engine\\Time.generated.cpp",
             "generated_h": "Engine\\Time.generated.h",
             "hash": "965b90ba6999acc6c503fd302932179f",
-            "index": 7,
+            "index": 10,
+            "name": "Engine"
+        },
+        "Engine\\UUIDComponent.h": {
+            "generated_cpp": "Engine\\UUIDComponent.generated.cpp",
+            "generated_h": "Engine\\UUIDComponent.generated.h",
+            "hash": "3143a88100567c8fdaaeb801c2a35f57",
+            "index": 11,
             "name": "Engine"
         },
         "Event\\BufferedPool.h": {
@@ -241,7 +269,7 @@
         "Graphics\\TransformComponent.h": {
             "generated_cpp": "Graphics\\TransformComponent.generated.cpp",
             "generated_h": "Graphics\\TransformComponent.generated.h",
-            "hash": "dd65d283352ede8312b84ef67189ed39",
+            "hash": "87ad146f005a384218d945cb7a7745cf",
             "index": 4,
             "name": "Graphics"
         },
@@ -885,7 +913,7 @@
         "RuntimeReflection\\RuntimeReflection.h": {
             "generated_cpp": "RuntimeReflection\\RuntimeReflection.generated.cpp",
             "generated_h": "RuntimeReflection\\RuntimeReflection.generated.h",
-            "hash": "e1c3516516093c6c98d8fb9f7b7761eb",
+            "hash": "9bebe1bb87268c4e86aedd7f8534a8a9",
             "index": 9,
             "name": "RuntimeReflection"
         },
@@ -903,32 +931,46 @@
             "index": 11,
             "name": "RuntimeReflection"
         },
+        "Serializer\\EntitySerializerSystem.h": {
+            "generated_cpp": "Serializer\\EntitySerializerSystem.generated.cpp",
+            "generated_h": "Serializer\\EntitySerializerSystem.generated.h",
+            "hash": "3b132c4ae66c140000a39d2b0f50dc75",
+            "index": 0,
+            "name": "Serializer"
+        },
+        "Serializer\\ReflectionModule\\Component.h": {
+            "generated_cpp": "Serializer\\ReflectionModule\\Component.generated.cpp",
+            "generated_h": "Serializer\\ReflectionModule\\Component.generated.h",
+            "hash": "dcceff142da924dbefec81f9635c0683",
+            "index": 1,
+            "name": "Serializer"
+        },
         "Serializer\\Runtime\\ISerializedValue.h": {
             "generated_cpp": "Serializer\\Runtime\\ISerializedValue.generated.cpp",
             "generated_h": "Serializer\\Runtime\\ISerializedValue.generated.h",
             "hash": "ecfa03e1f6ff40b835155202ef063b1e",
-            "index": 0,
+            "index": 2,
             "name": "Serializer"
         },
         "Serializer\\Runtime\\ISerializer.h": {
             "generated_cpp": "Serializer\\Runtime\\ISerializer.generated.cpp",
             "generated_h": "Serializer\\Runtime\\ISerializer.generated.h",
             "hash": "276fa3d3eaf414b06adbfc49f148dc8f",
-            "index": 1,
+            "index": 3,
             "name": "Serializer"
         },
         "Serializer\\Runtime\\SerializedValue.h": {
             "generated_cpp": "Serializer\\Runtime\\SerializedValue.generated.cpp",
             "generated_h": "Serializer\\Runtime\\SerializedValue.generated.h",
             "hash": "c0d5a79d187c94dbc0842850ae5417de",
-            "index": 2,
+            "index": 4,
             "name": "Serializer"
         },
         "Serializer\\Runtime\\Serializer.h": {
             "generated_cpp": "Serializer\\Runtime\\Serializer.generated.cpp",
             "generated_h": "Serializer\\Runtime\\Serializer.generated.h",
-            "hash": "c08b712df69d3f89b098076684c90e0a",
-            "index": 3,
+            "hash": "b4539e1bfd85ee997201e700e5c3a1f2",
+            "index": 5,
             "name": "Serializer"
         },
         "Thread\\ThreadPool.h": {
@@ -966,53 +1008,67 @@
             "index": 2,
             "name": "Utils"
         },
+        "Utils\\ECS.h": {
+            "generated_cpp": "Utils\\ECS.generated.cpp",
+            "generated_h": "Utils\\ECS.generated.h",
+            "hash": "155445ffcba6ccb34b3bc3199dd02f10",
+            "index": 3,
+            "name": "Utils"
+        },
+        "Utils\\EntitySerializer.h": {
+            "generated_cpp": "Utils\\EntitySerializer.generated.cpp",
+            "generated_h": "Utils\\EntitySerializer.generated.h",
+            "hash": "4ade1bf2789a188d692f73a26f6d470c",
+            "index": 4,
+            "name": "Utils"
+        },
         "Utils\\Function.h": {
             "generated_cpp": "Utils\\Function.generated.cpp",
             "generated_h": "Utils\\Function.generated.h",
             "hash": "bb70468e09a4e1362c80d265df1906ac",
-            "index": 3,
+            "index": 5,
             "name": "Utils"
         },
         "Utils\\FunctionArgumentsPusher.h": {
             "generated_cpp": "Utils\\FunctionArgumentsPusher.generated.cpp",
             "generated_h": "Utils\\FunctionArgumentsPusher.generated.h",
             "hash": "63941359255c0ad0d0104e49f1f89b7b",
-            "index": 4,
+            "index": 6,
             "name": "Utils"
         },
         "Utils\\Macro.h": {
             "generated_cpp": "Utils\\Macro.generated.cpp",
             "generated_h": "Utils\\Macro.generated.h",
             "hash": "90bcc450c1e5bd7159a61d94777d1eb7",
-            "index": 5,
+            "index": 7,
             "name": "Utils"
         },
         "Utils\\TemplateEngine.h": {
             "generated_cpp": "Utils\\TemplateEngine.generated.cpp",
             "generated_h": "Utils\\TemplateEngine.generated.h",
             "hash": "bdf09b024ee81f6b055ed72e4e43987b",
-            "index": 7,
+            "index": 9,
             "name": "Utils"
         },
         "Utils\\UUID.h": {
             "generated_cpp": "Utils\\UUID.generated.cpp",
             "generated_h": "Utils\\UUID.generated.h",
-            "hash": "ee233229e03a6c528a2e4091604c2e8e",
-            "index": 9,
+            "hash": "344d8865479da6cbeaaf4c1cdc8449d1",
+            "index": 11,
             "name": "Utils"
         },
         "Utils\\Utils.h": {
             "generated_cpp": "Utils\\Utils.generated.cpp",
             "generated_h": "Utils\\Utils.generated.h",
             "hash": "6e8e60f5095c70e0383d9020b05d17a8",
-            "index": 8,
+            "index": 10,
             "name": "Utils"
         },
         "Utils\\md5.h": {
             "generated_cpp": "Utils\\md5.generated.cpp",
             "generated_h": "Utils\\md5.generated.h",
             "hash": "8d0ddd56d0e005195f01cd5e2a548c05",
-            "index": 6,
+            "index": 8,
             "name": "Utils"
         },
         "Window\\Events\\CloseEvent.h": {

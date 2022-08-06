@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(2)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(5)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -28,17 +28,17 @@ using namespace Duckvil;
 _type = record_type<Duckvil::RequestSystemEvent>(_data, "RequestSystemEvent");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 5);
 _property = record_property<RuntimeReflection::__duckvil_resource_type_t>(_data, _type, offsetof(Duckvil::RequestSystemEvent, m_typeHandle), "m_typeHandle");
 _property = record_property<void*>(_data, _type, offsetof(Duckvil::RequestSystemEvent, m_pRequestedSystem), "m_pRequestedSystem");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/Events/RequestSystemEvent.h", 2);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/Events/RequestSystemEvent.h", 5);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 2;
+return 5;
 }
 #endif

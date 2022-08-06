@@ -79,6 +79,8 @@ _property = record_property<Editor::ImGuiEditorData*>(_data, _type, offsetof(Duc
 _property = record_property<Graphics::Renderer::renderer_ftable*>(_data, _type, offsetof(Duckvil::__data, m_pRenderer), "m_pRenderer");
 _property = record_property<Graphics::Renderer::renderer_data>(_data, _type, offsetof(Duckvil::__data, m_pRendererData), "m_pRendererData");
 _property = record_property<flecs::world>(_data, _type, offsetof(Duckvil::__data, m_ecs), "m_ecs");
+_property = record_property<EntityFactory>(_data, _type, offsetof(Duckvil::__data, m_entityFactory), "m_entityFactory");
+_property = record_property<Serializer::EntitySerializerSystem*>(_data, _type, offsetof(Duckvil::__data, m_pSerializer), "m_pSerializer");
 _property = record_property<flecs::query<Graphics::TransformComponent>>(_data, _type, offsetof(Duckvil::__data, m_rendererQuery), "m_rendererQuery");
 _property = record_property<ProjectManager::ftable>(_data, _type, offsetof(Duckvil::__data, m_projectManager), "m_projectManager");
 _property = record_property<ProjectManager::data>(_data, _type, offsetof(Duckvil::__data, m_projectManagerData), "m_projectManagerData");
@@ -87,6 +89,7 @@ _property = record_property<bool>(_data, _type, offsetof(Duckvil::__data, m_bIsS
 _property = record_property<Network::IClient*>(_data, _type, offsetof(Duckvil::__data, m_pClient), "m_pClient");
 _property = record_property<bool>(_data, _type, offsetof(Duckvil::__data, m_bIsClient), "m_bIsClient");
 _property = record_property<Memory::FreeList>(_data, _type, offsetof(Duckvil::__data, m_globalHeap), "m_globalHeap");
+_constructor = record_constructor<Duckvil::__data>(_data, _type);
 _namespaces.pop_back();
 _namespaces.push_back("__ftable");
 _ntype = record_type(_data, _namespaces);

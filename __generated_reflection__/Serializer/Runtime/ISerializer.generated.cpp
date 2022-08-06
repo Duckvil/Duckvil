@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(1)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(3)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -33,7 +33,7 @@ _type = record_type<Duckvil::RuntimeSerializer::ISerializer>(_data, "ISerializer
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeSerializer");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
 _destructor = record_destructor<Duckvil::RuntimeSerializer::ISerializer>(_data, _type);
 _function = record_function<Duckvil::RuntimeSerializer::ISerializer, void>(_data, _type, &Duckvil::RuntimeSerializer::ISerializer::Clear, "Clear");
 _function = record_function<Duckvil::RuntimeSerializer::ISerializer, void, uint32_t>(_data, _type, &Duckvil::RuntimeSerializer::ISerializer::Clear, "Clear");
@@ -44,11 +44,11 @@ _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Serializer/Runtime/ISerializer.h", 1);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Serializer/Runtime/ISerializer.h", 3);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 1;
+return 3;
 }
 #endif

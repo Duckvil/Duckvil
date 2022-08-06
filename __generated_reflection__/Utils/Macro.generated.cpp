@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(5)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(7)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -17,11 +17,11 @@ DUCKVIL_RESOURCE(ntype_t) _ntype;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_ntype_t> _recordedNTypes;
 std::vector<const char*> _namespaces;
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Utils/Macro.h", 5);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Utils/Macro.h", 7);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 5;
+return 7;
 }
 #endif

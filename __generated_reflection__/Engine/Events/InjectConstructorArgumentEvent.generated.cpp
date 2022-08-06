@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(1)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(4)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -28,7 +28,7 @@ using namespace Duckvil;
 _type = record_type<Duckvil::InjectConstructorArgumentEvent>(_data, "InjectConstructorArgumentEvent");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 4);
 _property = record_property<bool>(_data, _type, offsetof(Duckvil::InjectConstructorArgumentEvent, m_bSuccess), "m_bSuccess");
 _property = record_property<FunctionArgumentsPusher*>(_data, _type, offsetof(Duckvil::InjectConstructorArgumentEvent, m_pFAP), "m_pFAP");
 _property = record_property<InjectConstructorArgumentEvent::Info>(_data, _type, offsetof(Duckvil::InjectConstructorArgumentEvent, m_info), "m_info");
@@ -42,18 +42,18 @@ _type = record_type<Duckvil::InjectConstructorArgumentEvent::Info>(_data, "Info"
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "InjectConstructorArgumentEvent");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 4);
 _property = record_property<RuntimeReflection::__duckvil_resource_type_t>(_data, _type, offsetof(Duckvil::InjectConstructorArgumentEvent::Info, m_typeHandle), "m_typeHandle");
 _property = record_property<RuntimeReflection::__duckvil_resource_constructor_t>(_data, _type, offsetof(Duckvil::InjectConstructorArgumentEvent::Info, m_constructorHandle), "m_constructorHandle");
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::InjectConstructorArgumentEvent::Info, m_uiArgumentIndex), "m_uiArgumentIndex");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/Events/InjectConstructorArgumentEvent.h", 1);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/Events/InjectConstructorArgumentEvent.h", 4);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 1;
+return 4;
 }
 #endif

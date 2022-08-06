@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(9)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(11)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -28,19 +28,20 @@ using namespace Duckvil;
 _type = record_type<Duckvil::UUID>(_data, "UUID");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 9);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 11);
 _constructor = record_constructor<Duckvil::UUID>(_data, _type);
+_constructor = record_constructor<Duckvil::UUID, const char*>(_data, _type);
 _destructor = record_destructor<Duckvil::UUID>(_data, _type);
 _function = record_function<Duckvil::UUID, void, char*>(_data, _type, &Duckvil::UUID::GetBytes, "GetBytes");
 _function = record_function<Duckvil::UUID, size_t>(_data, _type, &Duckvil::UUID::Hash, "Hash");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Utils/UUID.h", 9);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Utils/UUID.h", 11);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 9;
+return 11;
 }
 #endif

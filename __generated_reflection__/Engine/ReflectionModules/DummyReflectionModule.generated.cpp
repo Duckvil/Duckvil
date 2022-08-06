@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(5)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(8)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -28,7 +28,7 @@ using namespace Duckvil;
 _type = record_type<Duckvil::DummyReflectionModule>(_data, "DummyReflectionModule");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 5);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 8);
 _namespaces.pop_back();
 _namespaces.push_back("DummyReflectionModule");
 _ntype = record_type(_data, _namespaces);
@@ -36,7 +36,7 @@ _recordedNTypes.push_back(_ntype);
 _type = record_type<Duckvil::DummyReflectionModule>(_data, "DummyReflectionModule");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 5);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 8);
 record_meta(_data, _type, ReflectionFlags::ReflectionFlags_ReflectionModule, true);
 _property = record_property<const char*>(_data, _type, offsetof(Duckvil::DummyReflectionModule, m_sReflectionModuleName), "m_sReflectionModuleName");
 _constructor = record_constructor<Duckvil::DummyReflectionModule, const Memory::FreeList&, RuntimeReflection::__ftable*, RuntimeReflection::__data*>(_data, _type);
@@ -58,7 +58,7 @@ _type = record_type<Duckvil::DummyReflectionModule::Context>(_data, "Context");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "DummyReflectionModule");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 5);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 8);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::DummyReflectionModule::Context, m_uiGeneratedBodyLine), "m_uiGeneratedBodyLine");
 _property = record_property<bool>(_data, _type, offsetof(Duckvil::DummyReflectionModule::Context, m_bIsStruct), "m_bIsStruct");
 _property = record_property<std::string>(_data, _type, offsetof(Duckvil::DummyReflectionModule::Context, m_sTypeName), "m_sTypeName");
@@ -67,11 +67,11 @@ _property = record_property<DummyReflectionModule::Context*>(_data, _type, offse
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/ReflectionModules/DummyReflectionModule.h", 5);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/ReflectionModules/DummyReflectionModule.h", 8);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 5;
+return 8;
 }
 #endif

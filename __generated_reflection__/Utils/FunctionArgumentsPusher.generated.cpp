@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(4)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(6)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -28,7 +28,7 @@ using namespace Duckvil;
 _type = record_type<Duckvil::FunctionArgumentsPusher>(_data, "FunctionArgumentsPusher");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 4);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 6);
 record_inheritance<Xbyak::CodeGenerator>(_data, _type, _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::FunctionArgumentsPusher, m_uiIndex), "m_uiIndex");
 _property = record_property<bool>(_data, _type, offsetof(Duckvil::FunctionArgumentsPusher, m_aFloats), "m_aFloats");
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::FunctionArgumentsPusher, m_uiCount), "m_uiCount");
@@ -43,11 +43,11 @@ _function = record_function<Duckvil::FunctionArgumentsPusher, void, void*>(_data
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Utils/FunctionArgumentsPusher.h", 4);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Utils/FunctionArgumentsPusher.h", 6);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 4;
+return 6;
 }
 #endif

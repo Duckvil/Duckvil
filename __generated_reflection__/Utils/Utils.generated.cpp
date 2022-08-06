@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(8)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(10)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -33,7 +33,7 @@ _type = record_type<Duckvil::Utils::string>(_data, "string");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Utils");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 8);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
 _namespaces.pop_back();
 _namespaces.push_back("string");
 _ntype = record_type(_data, _namespaces);
@@ -42,7 +42,7 @@ _type = record_type<Duckvil::Utils::string>(_data, "string");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Utils");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 8);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
 _constructor = record_constructor<Duckvil::Utils::string>(_data, _type);
 _constructor = record_constructor<Duckvil::Utils::string, const string&, Memory::ftable*, Memory::free_list_allocator*>(_data, _type);
 _constructor = record_constructor<Duckvil::Utils::string, string&&>(_data, _type);
@@ -70,11 +70,11 @@ _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Utils/Utils.h", 8);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Utils/Utils.h", 10);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 8;
+return 10;
 }
 #endif

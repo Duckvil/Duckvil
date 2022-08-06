@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(7)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(10)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -28,7 +28,7 @@ using namespace Duckvil;
 _type = record_type<Duckvil::__time_data>(_data, "__time_data");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 7);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
 _property = record_property<__time_data::long_long>(_data, _type, offsetof(Duckvil::__time_data, m_llPreviousTime), "m_llPreviousTime");
 _property = record_property<double>(_data, _type, offsetof(Duckvil::__time_data, m_dDelta), "m_dDelta");
 _namespaces.pop_back();
@@ -38,17 +38,17 @@ _recordedNTypes.push_back(_ntype);
 _type = record_type<Duckvil::__time_ftable>(_data, "__time_ftable");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 7);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
 _property = record_property<bool(*)(__time_data*)>(_data, _type, offsetof(Duckvil::__time_ftable, init), "init");
 _property = record_property<void(*)(__time_data*)>(_data, _type, offsetof(Duckvil::__time_ftable, update), "update");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/Time.h", 7);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/Time.h", 10);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 7;
+return 10;
 }
 #endif

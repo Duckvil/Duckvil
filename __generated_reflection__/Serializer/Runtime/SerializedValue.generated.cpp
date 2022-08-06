@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(2)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(4)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -37,11 +37,11 @@ _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Serializer/Runtime/SerializedValue.h", 2);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Serializer/Runtime/SerializedValue.h", 4);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 2;
+return 4;
 }
 #endif
