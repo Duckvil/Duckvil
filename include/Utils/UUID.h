@@ -1,5 +1,8 @@
 #pragma once
 
+#undef max
+#undef min
+
 #include "uuid_v4/uuid_v4.h"
 
 namespace Duckvil {
@@ -14,6 +17,12 @@ namespace Duckvil {
     public:
         UUID() :
             m_uuid(g_GeneratorUUID.getUUID())
+        {
+
+        }
+
+        UUID(const char* _aBytes) :
+            m_uuid(_aBytes)
         {
 
         }
@@ -68,6 +77,20 @@ namespace Duckvil {
             _stream >> _s;
 
             _uuid.m_uuid = UUIDv4::UUID::fromStrFactory(_s);
+
+            return _stream;
+        }
+
+        friend UUID& operator<<(UUID& _stream, const std::string& _uuid)
+        {
+            _stream.m_uuid = UUIDv4::UUID(_uuid);
+
+            return _stream;
+        }
+
+        friend const UUID& operator>>(const UUID& _stream, std::string& _uuid)
+        {
+            _uuid = _stream.m_uuid.bytes();
 
             return _stream;
         }

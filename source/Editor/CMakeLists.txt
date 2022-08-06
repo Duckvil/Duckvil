@@ -14,6 +14,7 @@ SET(includeFiles
     ${CMAKE_SOURCE_DIR}/external/SDL2/include
     ${CMAKE_SOURCE_DIR}/external/glew/include
     ${CMAKE_SOURCE_DIR}/external/hex_editor
+    ${CMAKE_SOURCE_DIR}/external/json/include
 )
 SET(libraries
     glew

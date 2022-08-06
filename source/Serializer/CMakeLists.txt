@@ -10,4 +10,4 @@ SET(libraries
     nlohmann_json
 )
 
-DUCKVIL_MODULE("Duckvil" "exe" "${externalFiles}" "${includeFiles}" "${libraries}")
+DUCKVIL_MODULE("Serializer" "SHARED" "${externalFiles}" "${includeFiles}" "${libraries}")

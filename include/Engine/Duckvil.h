@@ -16,6 +16,7 @@
 #include "Engine/Time.h"
 #include "Engine/ReflectionFlags.h"
 #include "Engine/ISystem.h"
+#include "Engine/Entity.h"
 
 #include "HotReloader/RuntimeCompilerSystem.h"
 
@@ -58,6 +59,10 @@
 
 #include "Network/IServer.h"
 #include "Network/IClient.h"
+
+#include "Engine/EntityFactory.h"
+
+#include "Serializer/EntitySerializerSystem.h"
 
 namespace Duckvil {
 
@@ -138,6 +143,9 @@ namespace Duckvil {
         Graphics::Renderer::renderer_data m_pRendererData;
 
         flecs::world m_ecs;
+        EntityFactory m_entityFactory;
+
+        Serializer::EntitySerializerSystem* m_pSerializer;
 
         flecs::query<Graphics::TransformComponent> m_rendererQuery;
 
@@ -151,6 +159,16 @@ namespace Duckvil {
         bool m_bIsClient;
 
         Memory::FreeList m_globalHeap;
+
+        __data() :
+            m_ecs(flecs::world()),
+            m_entityFactory(m_heap, &m_eventPool, m_ecs)
+        {
+            m_pClient = nullptr;
+            m_pServer = nullptr;
+            m_bIsServer = false;
+            m_bIsClient = false;
+        }
     };
 
     struct __ftable

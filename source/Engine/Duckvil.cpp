@@ -43,6 +43,8 @@
 
 #include "Network/NetworkSystem.h"
 
+#include "Engine/UUIDComponent.h"
+
 namespace Duckvil {
 
     bool init_runtime_reflection_module(__data* _pData, PlugNPlay::__module* _pModule)
@@ -84,6 +86,7 @@ namespace Duckvil {
             RuntimeReflection::GetRecordersCountFunction get_recorder_count = nullptr;
             void (*make_current_runtime_reflection_context)(const duckvil_frontend_reflection_context&);
             void (*make_current_heap_context)(const Memory::free_list_context&);
+            void (*make_current_ecs_context)();
 
             make_current_runtime_reflection_context = nullptr;
             make_current_heap_context = nullptr;
@@ -91,6 +94,7 @@ namespace Duckvil {
             _module.get(_loadedModule, "duckvil_get_runtime_reflection_recorder_count", reinterpret_cast<void**>(&get_recorder_count));
             _module.get(_loadedModule, "duckvil_plugin_make_current_runtime_reflection_context", reinterpret_cast<void**>(&make_current_runtime_reflection_context));
             _module.get(_loadedModule, "duckvil_plugin_make_current_heap_context", reinterpret_cast<void**>(&make_current_heap_context));
+            _module.get(_loadedModule, "duckvil_plugin_make_current_ecs_context", reinterpret_cast<void**>(&make_current_ecs_context));
 
             if(get_recorder_count == nullptr)
             {
@@ -136,6 +140,11 @@ namespace Duckvil {
             if(make_current_heap_context != nullptr)
             {
                 make_current_heap_context(Memory::heap_get_current());
+            }
+
+            if(make_current_ecs_context != nullptr)
+            {
+                make_current_ecs_context();
             }
         }
 
@@ -243,69 +252,6 @@ namespace Duckvil {
         _pData->m_pRendererData.m_ecs = &_pData->m_ecs;
 
         _pData->m_pRenderer->m_fnInit(_pData->m_pMemory, _pData->m_pHeap, _pData->m_pWindow, &_pData->m_pRendererData);
-
-        const auto& _modelLoaderHandle = RuntimeReflection::get_type("ModelLoader", { "Duckvil", "Graphics" });
-        
-        std::filesystem::path _cwd = DUCKVIL_CWD;
-
-        void* _modelLoader = RuntimeReflection::create<const char*>(_pData->m_heap, _modelLoaderHandle, false, (_cwd / "resource/object/test.obj").string().c_str());
-
-        const auto& _modelLoaderGetRawHandle = RuntimeReflection::get_function_handle(_modelLoaderHandle, "GetRaw");
-        const Graphics::ModelLoader::Raw& _raw = RuntimeReflection::invoke_member_result<const Graphics::ModelLoader::Raw&>(_modelLoaderHandle, _modelLoaderGetRawHandle, _modelLoader);
-
-        // glm::vec3 _vertices[] =
-        // {
-        //     glm::vec3(-0.5, -0.5, 0),
-        //     glm::vec3(0, 0.5, 0),
-        //     glm::vec3(0.5, -0.5, 0)
-        // };
-
-        // glm::vec2 _texCoords[] =
-        // {
-        //     glm::vec2(0, 0),
-        //     glm::vec2(0.5, 1),
-        //     glm::vec2(1, 0)
-        // };
-
-        // uint32_t _indices[] =
-        // {
-        //     0, 1, 2
-        // };
-
-        Graphics::Renderer::vertex_buffer_object_descriptor _desc[] =
-        {
-            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aVertices, _raw.m_aVertices.size(), 4), // size of vertices should be specified here
-            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aTexCoords, _raw.m_aTexCoords.size(), 2),
-            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ELEMENT_ARRAY_BUFFER, _raw.m_aIndices, _raw.m_aIndices.size(), 1)
-        };
-
-        ecs_os_set_api_defaults();
-
-        for(uint32_t i = 0; i < 100; ++i)
-        {
-            for(uint32_t j = 0; j < 1; ++j)
-            {
-                _pData->m_ecs.entity().set([_pData, &_desc, i, j, _raw](Graphics::MeshComponent& _mesh, Graphics::TransformComponent& _transform)
-                {
-                    _mesh.m_uiID = _pData->m_pRenderer->m_fnCreateVAO(
-                        _pData->m_pMemory,
-                        _pData->m_pHeap,
-                        &_pData->m_pRendererData,
-                        Graphics::Renderer::vertex_array_object_descriptor
-                        {
-                            sizeof(_desc) / sizeof(_desc[0]),
-                            _desc
-                        }
-                    );
-
-                    _transform.m_position = glm::vec3(0, j * 2, i * 2);
-                    _transform.m_rotation = glm::quat(0, 0, 0, 1);
-                    _transform.m_scale = glm::vec3(1, 1, 1);
-                });
-            }
-        }
-
-        _pData->m_rendererQuery = _pData->m_ecs.query<Graphics::TransformComponent>();
 
         return true;
     }
@@ -444,6 +390,8 @@ namespace Duckvil {
         _pData->m_windowEventPool = Event::Pool<Event::mode::buffered>(_pData->m_eventsHeap, _pData->m_pRuntimeReflectionData);
         _pData->m_bufferedEventPool = Event::Pool<Event::mode::buffered>(_pData->m_eventsHeap, _pData->m_pRuntimeReflectionData);
 
+        _pData->m_entityFactory.Init();
+
         PlugNPlay::AutoLoader _autoLoader(DUCKVIL_OUTPUT);
 
         FrameMarkStart("Loading engine modules");
@@ -464,6 +412,12 @@ namespace Duckvil {
         init_editor(_pData, &_module);
 #endif
         init_project_manager(_pData, &_module);
+
+        {
+            const auto& _handle = RuntimeReflection::get_type("EntitySerializerSystem", { "Duckvil", "Serializer" });
+
+            _pData->m_pSerializer = static_cast<Serializer::EntitySerializerSystem*>(RuntimeReflection::create<const Memory::FreeList&, Event::Pool<Event::mode::immediate>*, Event::Pool<Event::mode::immediate>*, EntityFactory*>(_pData->m_heap, _handle, false, _pData->m_heap, &_pData->m_eventPool, _pData->m_entityFactory.GetEventPool(), &_pData->m_entityFactory));
+        }
 
 #ifndef DUCKVIL_HEADLESS_SERVER
         if(_pData->m_bIsServer)
@@ -741,6 +695,95 @@ namespace Duckvil {
 
         TracyMessageL("Initializing engine finished");
 
+        {
+            const auto& _modelLoaderHandle = RuntimeReflection::get_type("ModelLoader", { "Duckvil", "Graphics" });
+        
+            std::filesystem::path _cwd = DUCKVIL_CWD;
+
+            void* _modelLoader = RuntimeReflection::create<const char*>(_pData->m_heap, _modelLoaderHandle, false, (_cwd / "resource/object/test.obj").string().c_str());
+
+            const auto& _modelLoaderGetRawHandle = RuntimeReflection::get_function_handle(_modelLoaderHandle, "GetRaw");
+            const Graphics::ModelLoader::Raw& _raw = RuntimeReflection::invoke_member_result<const Graphics::ModelLoader::Raw&>(_modelLoaderHandle, _modelLoaderGetRawHandle, _modelLoader);
+
+            Graphics::Renderer::vertex_buffer_object_descriptor _desc[] =
+            {
+                Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aVertices, _raw.m_aVertices.size(), 4), // size of vertices should be specified here
+                Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aTexCoords, _raw.m_aTexCoords.size(), 2),
+                Graphics::Renderer::vertex_buffer_object_descriptor(GL_ELEMENT_ARRAY_BUFFER, _raw.m_aIndices, _raw.m_aIndices.size(), 1)
+            };
+
+            ecs_os_set_api_defaults();
+
+            try
+            {
+                RuntimeReflection::invoke<
+                    void,
+                    Serializer::EntitySerializerSystem,
+                    const std::filesystem::path&,
+                    void (*)(Entity&)
+                >(
+                    "Load",
+                    _pData->m_pSerializer,
+                    "E:/Projects/C++/Duckvil/bin/Proj.json",
+                    Utils::lambda(
+                        [&](Entity& _entity)
+                        {
+                            _entity.Add(
+                                Graphics::MeshComponent
+                                {
+                                    _pData->m_pRenderer->m_fnCreateVAO(
+                                        _pData->m_pMemory,
+                                        _pData->m_pHeap,
+                                        &_pData->m_pRendererData,
+                                        Graphics::Renderer::vertex_array_object_descriptor
+                                        {
+                                            sizeof(_desc) / sizeof(_desc[0]),
+                                            _desc
+                                        }
+                                    )
+                                }
+                            );
+                        }
+                    )
+                );
+            }
+            catch(const std::exception& _e)
+            {
+                for(uint32_t i = 0; i < 100; ++i)
+                {
+                    for(uint32_t j = 0; j < 1; ++j)
+                    {
+                        Entity _e = _pData->m_entityFactory.Make();
+
+                        _e.Add(
+                            Graphics::MeshComponent
+                            {
+                                _pData->m_pRenderer->m_fnCreateVAO(
+                                    _pData->m_pMemory,
+                                    _pData->m_pHeap,
+                                    &_pData->m_pRendererData,
+                                    Graphics::Renderer::vertex_array_object_descriptor
+                                    {
+                                        sizeof(_desc) / sizeof(_desc[0]),
+                                        _desc
+                                    }
+                                )
+                            }
+                        ).Add(
+                            Graphics::TransformComponent
+                            {
+                                glm::vec3(0, j * 2, i * 2),
+                                glm::quat(0, 0, 0, 1),
+                                glm::vec3(1, 1, 1)
+                            }
+                        ).Add<UUIDComponent>();
+                    }
+                }
+            }
+
+            _pData->m_rendererQuery = _pData->m_ecs.query<Graphics::TransformComponent>();
+        }
+
         return true;
     }
 
@@ -780,6 +823,8 @@ namespace Duckvil {
         {
             _pFTable->update(_pData, _pFTable);
         }
+
+        RuntimeReflection::invoke<void, Serializer::EntitySerializerSystem, const std::filesystem::path&>("Save", _pData->m_pSerializer, "E:/Projects/C++/Duckvil/bin/Proj.json");
 
         if(_pData->m_bIsServer)
         {

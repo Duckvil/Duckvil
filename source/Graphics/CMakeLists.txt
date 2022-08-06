@@ -10,7 +10,7 @@ SET(externalFiles
     
 )
 SET(includeFiles
-    
+    ${CMAKE_SOURCE_DIR}/external/json/include
 )
 SET(libraries
     glew

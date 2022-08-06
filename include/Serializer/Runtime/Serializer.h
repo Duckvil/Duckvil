@@ -10,6 +10,10 @@
 
 #include "Utils/FunctionArgumentsPusher.h"
 
+#define DUCKVIL_RUNTIME_REFLECTION_SKIP
+
+DUCKVIL_RUNTIME_REFLECTION_SKIP
+
 namespace Duckvil { namespace RuntimeSerializer {
 
     class Serializer : public ISerializer
