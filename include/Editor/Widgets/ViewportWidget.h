@@ -28,6 +28,8 @@
 #include "Network/IClient.h"
 #include "Network/IServer.h"
 
+#include "Engine/UUIDComponent.h"
+
 #include "Editor/Widgets/ViewportWidget.generated.h"
 
 namespace Duckvil { namespace Editor {
@@ -57,6 +59,7 @@ namespace Duckvil { namespace Editor {
         ImVec2 m_oldSize;
 
         Event::Pool<Event::mode::buffered>* m_pWindowEventPool;
+        Event::Pool<Event::mode::immediate>* m_pEditorEventPool;
 
         viewport m_viewport;
 
@@ -76,12 +79,16 @@ namespace Duckvil { namespace Editor {
         Network::IClient* m_pClient;
 
         flecs::query<ViewportWidget::NetworkComponent, Graphics::TransformComponent> m_networkQuery;
+        flecs::query<UUIDComponent, Graphics::TransformComponent> m_selectQuery;
+
+        Entity m_selectedEntity;
+        
 
         void SpwanPlayer(uint32_t _uiID);
 
     public:
         ViewportWidget();
-        ViewportWidget(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Window") Event::Pool<Event::mode::buffered>* _pWindowEventPool, Network::IServer* _pServer, Network::IClient* _pClient);
+        ViewportWidget(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Window") Event::Pool<Event::mode::buffered>* _pWindowEventPool, Network::IServer* _pServer, Network::IClient* _pClient, DUCKVIL_ARGUMENT("Editor") Event::Pool<Event::mode::immediate>* _pEditorEventPool, flecs::world* _pECS);
         ~ViewportWidget();
 
         bool Init();

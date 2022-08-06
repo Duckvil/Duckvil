@@ -15,10 +15,12 @@ SET(includeFiles
     ${CMAKE_SOURCE_DIR}/external/glew/include
     ${CMAKE_SOURCE_DIR}/external/hex_editor
     ${CMAKE_SOURCE_DIR}/external/json/include
+    ${CMAKE_SOURCE_DIR}/external/ImGuizmo
 )
 SET(libraries
     glew
     SDL2
+    ImGuizmo
 )
 
 DUCKVIL_MODULE("Editor" "SHARED" "${externalFiles}" "${includeFiles}" "${libraries}")

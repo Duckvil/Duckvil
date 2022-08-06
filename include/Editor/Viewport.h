@@ -173,14 +173,16 @@ namespace Duckvil { namespace Editor {
                 const glm::vec3& _position = _pViewport->m_position;
                 const glm::quat& _rotation = _pViewport->m_rotation;
 
+                _pViewport->m_view = glm::lookAt(
+                        _position,
+                        _position + (_rotation * glm::vec3(0, 0, 1)),
+                        (_rotation * glm::vec3(0, 1, 0)));
+
                 Graphics::Renderer::set_uniform(
                     _pMemory,
                     _pRendererData,
                     _pViewport->m_transformID,
-                    _pViewport->m_projection * glm::lookAt(
-                        _position,
-                        _position + (_rotation * glm::vec3(0, 0, 1)),
-                        (_rotation * glm::vec3(0, 1, 0))) * _model
+                    _pViewport->m_projection * _pViewport->m_view * _model
                 );
 
                 Graphics::Renderer::draw(_pMemory, _pRendererData, _mesh.m_uiID);

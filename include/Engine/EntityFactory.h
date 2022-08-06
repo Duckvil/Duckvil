@@ -81,6 +81,11 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
             return _entity;
         }
 
+        static Entity Clone(const flecs::entity& _entity)
+        {
+            return Entity(_entity);
+        }
+
         inline Event::Pool<Event::mode::immediate>* GetEventPool() { return &m_eventPool; }
     };
 

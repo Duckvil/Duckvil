@@ -634,6 +634,10 @@ namespace Duckvil {
                         {
                             _fap.Push(_pData->m_pServer);
                         }
+                        else if(typeid(flecs::world*).hash_code() == _argument.m_ullTypeID)
+                        {
+                            _fap.Push(&_pData->m_ecs);
+                        }
                         else if(!argument_event_pool_inject(_pData, _typeHandle, _constructorHandle, _argument, i, _fap))
                         {
                             // Call other events to incject

@@ -167,6 +167,33 @@ if(NOT DUCKVIL_CICD)
     if(TARGET UpdateAssimpLibsDebugSymbolsAndDLLs)
         set_target_properties(UpdateAssimpLibsDebugSymbolsAndDLLs PROPERTIES FOLDER external)
     endif()
+
+    add_library(
+        ImGuizmo
+        "STATIC"
+        "${CMAKE_SOURCE_DIR}/external/ImGuizmo/ImGuizmo.cpp"
+    )
+
+    target_include_directories(
+        ImGuizmo
+        PRIVATE
+        "${CMAKE_SOURCE_DIR}/external/ImGuizmo"
+        "${CMAKE_SOURCE_DIR}/external/imgui"
+    )
+
+    set_target_properties(ImGuizmo PROPERTIES
+        CXX_STANDARD 20
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+        LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/bin"
+        ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/bin"
+        RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/bin"
+        LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin"
+        ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin"
+        RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin"
+        FOLDER external
+    )
 endif()
 
 add_subdirectory(flecs)

@@ -11,22 +11,28 @@ namespace Duckvil {
     {
         friend class EntityFactory;
     private:
-        flecs::entity m_entity;
+        
 
         Entity(const flecs::entity& _entity) :
             m_entity(_entity)
         {
-
+            m_bIsValid = true;;
         }
 
     public:
-DUCKVIL_RUNTIME_REFLECTION_PAUSE
-        Entity() = delete;
-DUCKVIL_RUNTIME_REFLECTION_RESUME
+        Entity()
+        {
+            m_bIsValid = false;
+        }
+
         ~Entity()
         {
 
         }
+
+        flecs::entity m_entity;
+
+        bool m_bIsValid;
 
         template <typename Type>
         inline Entity& Add(const Type& _component)
@@ -62,6 +68,12 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
         inline const Type& Get() const
         {
             return *m_entity.get<Type>();
+        }
+
+        template <typename Func>
+        void Each(const Func _fn) const
+        {
+            m_entity.each(_fn);
         }
     };
 

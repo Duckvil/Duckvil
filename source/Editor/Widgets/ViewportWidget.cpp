@@ -9,25 +9,55 @@
 #include "Window/Events/MouseMotionEvent.h"
 
 #include "glm/gtx/rotate_vector.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtx/matrix_decompose.hpp"
 
 #include "tracy/Tracy.hpp"
 
 #include "Graphics/ModelLoader.h"
 
+#include "ImGuizmo/ImGuizmo.h"
+
+#include "Editor/Events/EntitySelectedEvent.h"
+
 namespace Duckvil { namespace Editor {
+
+    void decompose(const glm::mat4& m, glm::vec3& pos, glm::quat& rot, glm::vec3& scale)
+    {
+        pos = m[3];
+
+        for(int i = 0; i < 3; i++)
+            scale[i] = glm::length(glm::vec3(m[i]));
+
+        const glm::mat3 rotMtx(
+            glm::vec3(m[0]) / scale[0],
+            glm::vec3(m[1]) / scale[1],
+            glm::vec3(m[2]) / scale[2]);
+
+        rot = glm::quat_cast(rotMtx);
+    }
 
     ViewportWidget::ViewportWidget()
     {
 
     }
 
-    ViewportWidget::ViewportWidget(const Memory::FreeList& _heap, Event::Pool<Event::mode::buffered>* _pWindowEventPool, Network::IServer* _pServer, Network::IClient* _pClient) :
+    ViewportWidget::ViewportWidget(const Memory::FreeList& _heap, Event::Pool<Event::mode::buffered>* _pWindowEventPool, Network::IServer* _pServer, Network::IClient* _pClient, Event::Pool<Event::mode::immediate>* _pEditorEventPool, flecs::world* _pECS) :
         m_heap(_heap),
         m_pWindowEventPool(_pWindowEventPool),
         m_pClient(_pClient),
-        m_pServer(_pServer)
+        m_pServer(_pServer),
+        m_pEditorEventPool(_pEditorEventPool),
+        m_pECS(_pECS)
     {
-
+        _pEditorEventPool->Add(
+            Utils::lambda(
+                [this](const EntitySelectedEvent& _event)
+                {
+                    m_selectedEntity = _event.m_entity;
+                }
+            )
+        );
     }
 
     ViewportWidget::~ViewportWidget()
@@ -201,6 +231,45 @@ namespace Duckvil { namespace Editor {
 
         ImGui::Image((void*)(intptr_t)*_texture, _size, ImVec2(0, 1), ImVec2(1, 0));
 
+        ImGuizmo::SetOrthographic(false);
+        ImGuizmo::SetDrawlist();
+        ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, _size.x, _size.y);
+
+        const auto& _view = m_viewport.m_view;
+        const auto& _projection = m_viewport.m_projection;
+
+        if(m_selectedEntity.m_bIsValid)
+        {
+            // TODO: Change that...
+            m_selectQuery.each(
+                [&](const UUIDComponent& _uuid, Graphics::TransformComponent& _transform)
+                {
+                    if(m_selectedEntity.Get<UUIDComponent>().m_uuid != _uuid.m_uuid)
+                    {
+                        return;
+                    }
+
+                    glm::mat4 _model = glm::translate(_transform.m_position) * glm::toMat4(_transform.m_rotation) * glm::scale(_transform.m_scale);
+
+                    ImGuizmo::Manipulate(glm::value_ptr(_view), glm::value_ptr(_projection), ImGuizmo::OPERATION::UNIVERSAL, ImGuizmo::LOCAL, glm::value_ptr(_model));
+
+                    if(ImGuizmo::IsUsing())
+                    {
+                        glm::vec3 _position;
+                        glm::quat _rotation;
+                        glm::vec3 _scale;
+
+                        decompose(_model, _position, _rotation, _scale);
+                        
+                        _transform.m_position = _position;
+                        _transform.m_rotation = _rotation;
+                        _transform.m_scale = _scale;
+                        
+                    }
+                }
+            );
+        }
+
         m_bIsWindowFocused = ImGui::IsWindowFocused();
 
         ImGui::End();
@@ -219,6 +288,7 @@ namespace Duckvil { namespace Editor {
         ecs_os_set_api_defaults();
 
         m_networkQuery = m_pECS->query<NetworkComponent, Graphics::TransformComponent>();
+        m_selectQuery = m_pECS->query<UUIDComponent, Graphics::TransformComponent>();
     }
 
     void ViewportWidget::SetOwner(Duckvil::Network::IConnection::Owner _owner)
