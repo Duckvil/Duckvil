@@ -21,102 +21,116 @@
             "index": 2,
             "name": "Editor"
         },
+        "Editor\\Events\\EntitySelectedEvent.h": {
+            "generated_cpp": "Editor\\Events\\EntitySelectedEvent.generated.cpp",
+            "generated_h": "Editor\\Events\\EntitySelectedEvent.generated.h",
+            "hash": "12f227a9207e681c43af47fa2ab430ce",
+            "index": 3,
+            "name": "Editor"
+        },
         "Editor\\Events\\SpwanWidgetEvent.h": {
             "generated_cpp": "Editor\\Events\\SpwanWidgetEvent.generated.cpp",
             "generated_h": "Editor\\Events\\SpwanWidgetEvent.generated.h",
             "hash": "3667d178f5ba19d1e1390f6661469cf5",
-            "index": 3,
+            "index": 4,
             "name": "Editor"
         },
         "Editor\\ReflectionFlag.h": {
             "generated_cpp": "Editor\\ReflectionFlag.generated.cpp",
             "generated_h": "Editor\\ReflectionFlag.generated.h",
             "hash": "e92ecef6350c410f844517a0cf4e25c1",
-            "index": 4,
+            "index": 5,
             "name": "Editor"
         },
         "Editor\\Viewport.h": {
             "generated_cpp": "Editor\\Viewport.generated.cpp",
             "generated_h": "Editor\\Viewport.generated.h",
-            "hash": "9753f75b0c97f792532950fe0fa1a379",
-            "index": 5,
+            "hash": "cba968fb2974a409c72f943115f9d300",
+            "index": 6,
             "name": "Editor"
         },
         "Editor\\Widget.h": {
             "generated_cpp": "Editor\\Widget.generated.cpp",
             "generated_h": "Editor\\Widget.generated.h",
             "hash": "b614da7409f717552404a60135c565ae",
-            "index": 6,
+            "index": 7,
             "name": "Editor"
         },
         "Editor\\Widgets\\ConsoleWidget.h": {
             "generated_cpp": "Editor\\Widgets\\ConsoleWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\ConsoleWidget.generated.h",
             "hash": "34c517c724d856fc99ed9fe88e56fd5d",
-            "index": 7,
+            "index": 8,
             "name": "Editor"
         },
         "Editor\\Widgets\\ContentExplorerWidget.h": {
             "generated_cpp": "Editor\\Widgets\\ContentExplorerWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\ContentExplorerWidget.generated.h",
             "hash": "edbceaeff6a41b47ec97a3aa64397fc7",
-            "index": 8,
+            "index": 9,
             "name": "Editor"
         },
         "Editor\\Widgets\\EngineInfoWidget.h": {
             "generated_cpp": "Editor\\Widgets\\EngineInfoWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\EngineInfoWidget.generated.h",
             "hash": "c10e2beb06f99a6559ec95c384b2c895",
-            "index": 9,
+            "index": 10,
             "name": "Editor"
         },
         "Editor\\Widgets\\HexEditorWidget.h": {
             "generated_cpp": "Editor\\Widgets\\HexEditorWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\HexEditorWidget.generated.h",
             "hash": "49a15d2746f311a568108829205bc1d4",
-            "index": 10,
+            "index": 11,
             "name": "Editor"
         },
         "Editor\\Widgets\\HexEditorWidgetEvent.h": {
             "generated_cpp": "Editor\\Widgets\\HexEditorWidgetEvent.generated.cpp",
             "generated_h": "Editor\\Widgets\\HexEditorWidgetEvent.generated.h",
             "hash": "3e38b75cd9a89e2c5ea97588019e274d",
-            "index": 11,
+            "index": 12,
             "name": "Editor"
         },
         "Editor\\Widgets\\LoadProjectWidget.h": {
             "generated_cpp": "Editor\\Widgets\\LoadProjectWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\LoadProjectWidget.generated.h",
             "hash": "17934c68a955ebf7e29cec834de2d230",
-            "index": 12,
+            "index": 13,
             "name": "Editor"
         },
         "Editor\\Widgets\\NetworkDebugger.h": {
             "generated_cpp": "Editor\\Widgets\\NetworkDebugger.generated.cpp",
             "generated_h": "Editor\\Widgets\\NetworkDebugger.generated.h",
             "hash": "7e35f72344e427eec045f09138f5e178",
-            "index": 13,
+            "index": 14,
             "name": "Editor"
         },
         "Editor\\Widgets\\NewProjectWidget.h": {
             "generated_cpp": "Editor\\Widgets\\NewProjectWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\NewProjectWidget.generated.h",
             "hash": "833c6a5f116d54278273c9cfb9d17ca1",
-            "index": 14,
+            "index": 15,
             "name": "Editor"
         },
         "Editor\\Widgets\\RuntimeReflectionWidget.h": {
             "generated_cpp": "Editor\\Widgets\\RuntimeReflectionWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\RuntimeReflectionWidget.generated.h",
             "hash": "4118d810ad79786e4cfb9fb170a439ef",
-            "index": 15,
+            "index": 16,
+            "name": "Editor"
+        },
+        "Editor\\Widgets\\SceneHierarchyWidget.h": {
+            "generated_cpp": "Editor\\Widgets\\SceneHierarchyWidget.generated.cpp",
+            "generated_h": "Editor\\Widgets\\SceneHierarchyWidget.generated.h",
+            "hash": "1e10dac6dd87c028c662bca3c600d201",
+            "index": 17,
             "name": "Editor"
         },
         "Editor\\Widgets\\ViewportWidget.h": {
             "generated_cpp": "Editor\\Widgets\\ViewportWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\ViewportWidget.generated.h",
-            "hash": "d8272e07c1d09ba03b05231f312900f2",
-            "index": 16,
+            "hash": "d9c74e74aadcbf46bfe1cd125a9a9970",
+            "index": 18,
             "name": "Editor"
         },
         "Engine\\Duckvil.h": {
@@ -129,14 +143,14 @@
         "Engine\\Entity.h": {
             "generated_cpp": "Engine\\Entity.generated.cpp",
             "generated_h": "Engine\\Entity.generated.h",
-            "hash": "9a231f66ee3002bad9f362265221a09c",
+            "hash": "a103f19135e76cbc0cd97f9a25b94777",
             "index": 1,
             "name": "Engine"
         },
         "Engine\\EntityFactory.h": {
             "generated_cpp": "Engine\\EntityFactory.generated.cpp",
             "generated_h": "Engine\\EntityFactory.generated.h",
-            "hash": "13a9ffee2f15be8380310a35dd5a1339",
+            "hash": "06f5b397ab8c048fe3b499532861293f",
             "index": 2,
             "name": "Engine"
         },

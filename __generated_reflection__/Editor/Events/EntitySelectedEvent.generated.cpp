@@ -1,8 +1,8 @@
-#include "Engine/Entity.h"
+#include "Editor/Events/EntitySelectedEvent.h"
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(1)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(3)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -21,26 +21,30 @@ std::vector<const char*> _namespaces;
 _namespaces.push_back("Duckvil");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
-_namespaces.push_back("Entity");
+{
+_namespaces.push_back("Editor");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
-using namespace Duckvil;
-_type = record_type<Duckvil::Entity>(_data, "Entity");
+_namespaces.push_back("EntitySelectedEvent");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+using namespace Duckvil::Editor;
+_type = record_type<Duckvil::Editor::EntitySelectedEvent>(_data, "EntitySelectedEvent");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
-_constructor = record_constructor<Duckvil::Entity>(_data, _type);
-_destructor = record_destructor<Duckvil::Entity>(_data, _type);
-_property = record_property<flecs::entity>(_data, _type, offsetof(Duckvil::Entity, m_entity), "m_entity");
-_property = record_property<bool>(_data, _type, offsetof(Duckvil::Entity, m_bIsValid), "m_bIsValid");
+record_namespace(_data, _type, "Editor");
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
+_property = record_property<Entity>(_data, _type, offsetof(Duckvil::Editor::EntitySelectedEvent, m_entity), "m_entity");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/Entity.h", 1);
+_namespaces.pop_back();
+}
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Editor/Events/EntitySelectedEvent.h", 3);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 1;
+return 3;
 }
 #endif

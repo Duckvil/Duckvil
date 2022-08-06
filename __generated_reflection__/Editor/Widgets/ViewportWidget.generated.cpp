@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(16)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(18)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -33,14 +33,15 @@ _type = record_type<Duckvil::Editor::ViewportWidget>(_data, "ViewportWidget");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Editor");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 16);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 18);
 record_meta(_data, _type, Duckvil::ReflectionFlags::ReflectionFlags_UserSystem, true);
 record_inheritance<Widget>(_data, _type, __protection::__protection_public);
 record_inheritance<ISystem>(_data, _type, __protection::__protection_public);
 record_inheritance<Network::NetworkSystem>(_data, _type, __protection::__protection_public);
 _constructor = record_constructor<Duckvil::Editor::ViewportWidget>(_data, _type);
-_constructor = record_constructor<Duckvil::Editor::ViewportWidget, const Memory::FreeList&, Event::Pool<Event::mode::buffered>*, Network::IServer*, Network::IClient*>(_data, _type);
+_constructor = record_constructor<Duckvil::Editor::ViewportWidget, const Memory::FreeList&, Event::Pool<Event::mode::buffered>*, Network::IServer*, Network::IClient*, Event::Pool<Event::mode::immediate>*, flecs::world*>(_data, _type);
 record_meta(_data, _type, _constructor, 1, "Window", true);
+record_meta(_data, _type, _constructor, 4, "Editor", true);
 _destructor = record_destructor<Duckvil::Editor::ViewportWidget>(_data, _type);
 _function = record_function<Duckvil::Editor::ViewportWidget, bool>(_data, _type, &Duckvil::Editor::ViewportWidget::Init, "Init");
 _function = record_function<Duckvil::Editor::ViewportWidget, void, double>(_data, _type, &Duckvil::Editor::ViewportWidget::Update, "Update");
@@ -66,18 +67,18 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Editor");
 record_namespace(_data, _type, "ViewportWidget");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 16);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 18);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Editor::ViewportWidget::NetworkComponent, m_uiID), "m_uiID");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Editor/Widgets/ViewportWidget.h", 16);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Editor/Widgets/ViewportWidget.h", 18);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 16;
+return 18;
 }
 #endif

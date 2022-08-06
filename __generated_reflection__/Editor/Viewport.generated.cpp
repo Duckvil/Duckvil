@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(5)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(6)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -33,7 +33,7 @@ _type = record_type<Duckvil::Editor::viewport>(_data, "viewport");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Editor");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 5);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 6);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Editor::viewport, m_shaderID), "m_shaderID");
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Editor::viewport, m_fbo), "m_fbo");
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Editor::viewport, m_fboTextureObject), "m_fboTextureObject");
@@ -52,11 +52,11 @@ _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Editor/Viewport.h", 5);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Editor/Viewport.h", 6);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 5;
+return 6;
 }
 #endif
