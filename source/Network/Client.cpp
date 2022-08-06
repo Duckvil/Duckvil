@@ -62,6 +62,7 @@ namespace Duckvil { namespace Network {
         }
 
         delete m_pConnection;
+        m_pConnection = nullptr;
     }
 
     bool Client::IsConnected() const

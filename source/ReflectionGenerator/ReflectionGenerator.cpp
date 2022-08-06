@@ -118,7 +118,7 @@ void generate_plugin_info(std::ofstream& _file, const uint32_t& _uiIndex, const 
     _file << "{\n";
     _file << "Duckvil::logger_make_current(_loggerContext);\n";
     _file << "}\n\n";
-    _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_heap_context(const Duckvil::Memory::free_list_context& _heapContext)";
+    _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_heap_context(const Duckvil::Memory::free_list_context& _heapContext)\n";
     _file << "{\n";
     _file << "Duckvil::Memory::heap_make_current(_heapContext);\n";
     _file << "}\n\n";
