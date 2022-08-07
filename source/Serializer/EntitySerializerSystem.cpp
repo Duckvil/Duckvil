@@ -169,6 +169,8 @@ namespace Duckvil { namespace Serializer {
                 _fn(_entity);
             }
         }
+
+        m_j.clear();
     }
 
     void EntitySerializerSystem::Save(const std::filesystem::path& _sFile)
@@ -186,6 +188,8 @@ namespace Duckvil { namespace Serializer {
         _jFile << m_j;
 
         _jFile.close();
+
+        m_j.clear();
     }
 
     void EntitySerializerSystem::OnEvent(EntityCreatedEvent& _event)
