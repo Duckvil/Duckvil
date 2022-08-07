@@ -122,24 +122,15 @@ namespace Duckvil { namespace Serializer {
         }
     }
 
-    EntitySerializerSystem::EntitySerializerSystem(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEngineEventPool, Event::Pool<Event::mode::immediate>* _pEntityFactoryEventPool, EntityFactory* _pEntityFactory) :
+    EntitySerializerSystem::EntitySerializerSystem(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEngineEventPool, EntityFactory* _pEntityFactory) :
         m_pEngineEventPool(_pEngineEventPool),
-        m_pEntityFactoryEventPool(_pEntityFactoryEventPool),
         m_pEntityFactory(_pEntityFactory)
     {
         _heap.Allocate(m_entities, 1);
 
-        _pEntityFactoryEventPool->AddA<EntityCreatedEvent>(
-            [this](const EntityCreatedEvent& _event)
-            {
-                if(m_entities.Full())
-                {
-                    m_entities.Resize(m_entities.Size() * 2);
-                }
+        m_pEntityFactoryEventPool = _pEntityFactory->GetEventPool();
 
-                m_entities.Allocate(_event.m_entity);
-            }
-        );
+        m_pEntityFactoryEventPool->Add<EntityCreatedEvent>(this, &EntitySerializerSystem::OnEvent);
 
         ecs_os_set_api_defaults();
     }
@@ -195,6 +186,16 @@ namespace Duckvil { namespace Serializer {
         _jFile << m_j;
 
         _jFile.close();
+    }
+
+    void EntitySerializerSystem::OnEvent(EntityCreatedEvent& _event)
+    {
+        if(m_entities.Full())
+        {
+            m_entities.Resize(m_entities.Size() * 2);
+        }
+
+        m_entities.Allocate(_event.m_entity);
     }
 
 }}

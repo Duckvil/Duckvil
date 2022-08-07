@@ -11,7 +11,7 @@
 
 namespace Duckvil { namespace Serializer {
 
-    DUCKVIL_CLASS(ReflectionFlags_AutoEventsAdding, Duckvil::ReflectionFlags_AutoInstantiate = false)
+    DUCKVIL_CLASS(ReflectionFlags_AutoEventsAdding, Duckvil::ReflectionFlags_AutoInstantiate = false, ReflectionFlags_AutoEventsAdding)
     class EntitySerializerSystem : public ISystem
     {
     private:
@@ -28,7 +28,7 @@ namespace Duckvil { namespace Serializer {
         void Deserialize(const nlohmann::json& _jEntity, Entity& _entity);
 
     public:
-        EntitySerializerSystem(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Engine") Event::Pool<Event::mode::immediate>* _pEngineEventPool, DUCKVIL_ARGUMENT("EntityFactory") Event::Pool<Event::mode::immediate>* _pEntityFactoryEventPool, EntityFactory* _pEntityFactory);
+        EntitySerializerSystem(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Engine") Event::Pool<Event::mode::immediate>* _pEngineEventPool, EntityFactory* _pEntityFactory);
         ~EntitySerializerSystem();
 
         bool Init();
@@ -36,6 +36,8 @@ namespace Duckvil { namespace Serializer {
 
         void Load(const std::filesystem::path& _sFile, void (*_fn)(Entity& _entity) = nullptr);
         void Save(const std::filesystem::path& _sFile);
+
+        void OnEvent(EntityCreatedEvent& _event);
     };
 
 }}
