@@ -19,6 +19,10 @@
 
 #include "json/single_include/nlohmann/json.hpp"
 
+#include "Engine/EntityFactory.h"
+
+#include "Engine/Events/RequestSystemEvent.h"
+
 #undef GetObject
 #undef max
 
@@ -495,8 +499,14 @@ namespace Duckvil { namespace ProjectManager {
 
                 if(_variant.m_ullTypeID == typeid(bool).hash_code() && *(bool*)_variant.m_pData)
                 {
+                    RequestSystemEvent _rEvent;
+
+                    _rEvent.m_typeHandle = RuntimeReflection::get_type("EntityFactory", { "Duckvil" });
+
+                    _pData->m_pEngineEventPool->Broadcast(_rEvent);
+
                     _project.m_uiTypeHandleID = _typeID;
-                    _project.m_pObject = RuntimeReflection::create<const Memory::FreeList&, const Memory::ThreadsafeVector<duckvil_recorderd_types>*, const Duckvil::PlugNPlay::__module_information&>(_pData->m_heap, _typeID, false, _pData->m_heap, &_project.m_aTypes, _project.m_module);
+                    _project.m_pObject = RuntimeReflection::create<const Memory::FreeList&, const Memory::ThreadsafeVector<duckvil_recorderd_types>*, const Duckvil::PlugNPlay::__module_information&, EntityFactory*>(_pData->m_heap, _typeID, false, _pData->m_heap, &_project.m_aTypes, _project.m_module, static_cast<EntityFactory*>(_rEvent.m_pRequestedSystem));
 
                     _project.m_uiInitFunctionHandleID = RuntimeReflection::get_function_handle<Event::Pool<Event::mode::immediate>*>(_typeID, "Init");
                     _project.m_uiUpdateFunctionHandleID = RuntimeReflection::get_function_handle(_typeID, "Update");
@@ -537,7 +547,8 @@ namespace Duckvil { namespace ProjectManager {
             },
             {
                 { "projectName", _sName },
-                { "duckvilWorkingDirectory", _cwd }
+                { "duckvilWorkingDirectory", _cwd },
+                { "projectPath", _projectPath }
             }
         );
 

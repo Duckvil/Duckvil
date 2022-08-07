@@ -413,12 +413,6 @@ namespace Duckvil {
 #endif
         init_project_manager(_pData, &_module);
 
-        {
-            const auto& _handle = RuntimeReflection::get_type("EntitySerializerSystem", { "Duckvil", "Serializer" });
-
-            _pData->m_pSerializer = static_cast<Serializer::EntitySerializerSystem*>(RuntimeReflection::create<const Memory::FreeList&, Event::Pool<Event::mode::immediate>*, Event::Pool<Event::mode::immediate>*, EntityFactory*>(_pData->m_heap, _handle, false, _pData->m_heap, &_pData->m_eventPool, _pData->m_entityFactory.GetEventPool(), &_pData->m_entityFactory));
-        }
-
 #ifndef DUCKVIL_HEADLESS_SERVER
         if(_pData->m_bIsServer)
         {
@@ -462,6 +456,11 @@ namespace Duckvil {
             if(_event.m_typeHandle.m_ID == RuntimeReflection::get_type<ProjectManager::data>().m_ID)
             {
                 _event.m_pRequestedSystem = &_pData->m_projectManagerData;
+            }
+
+            if(_event.m_typeHandle.m_ID == RuntimeReflection::get_type<EntityFactory>().m_ID)
+            {
+                _event.m_pRequestedSystem = &_pData->m_entityFactory;
             }
         });
 
@@ -715,63 +714,11 @@ namespace Duckvil {
 
             ecs_os_set_api_defaults();
 
-            try
-            {
-                RuntimeReflection::invoke<
-                    void,
-                    Serializer::EntitySerializerSystem,
-                    const std::filesystem::path&,
-                    void (*)(Entity&)
-                >(
-                    "Load",
-                    _pData->m_pSerializer,
-                    "E:/Projects/C++/Duckvil/bin/Proj.json",
-                    Utils::lambda(
-                        [&](Entity& _entity)
-                        {
-                            std::vector<int> _id(_raw.m_aVertices.size(), _entity.ID());
-
-                            Graphics::Renderer::vertex_buffer_object_descriptor _desc[] =
-                            {
-                                Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aVertices, 4), // size of vertices should be specified here
-                                Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aTexCoords, 2),
-                                Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _id, 1),
-                                Graphics::Renderer::vertex_buffer_object_descriptor(GL_ELEMENT_ARRAY_BUFFER, _raw.m_aIndices, 1)
-                            };
-
-                            _desc[0].m_type = GL_FLOAT;
-                            _desc[1].m_type = GL_FLOAT;
-                            _desc[2].m_type = GL_UNSIGNED_INT;
-                            _desc[3].m_type = GL_FLOAT;
-
-                            _entity.Add(
-                                Graphics::MeshComponent
-                                {
-                                    _pData->m_pRenderer->m_fnCreateVAO(
-                                        _pData->m_pMemory,
-                                        _pData->m_pHeap,
-                                        &_pData->m_pRendererData,
-                                        Graphics::Renderer::vertex_array_object_descriptor
-                                        {
-                                            sizeof(_desc) / sizeof(_desc[0]),
-                                            _desc
-                                        }
-                                    )
-                                }
-                            );
-                        }
-                    )
-                );
-            }
-            catch(const std::exception& _e)
-            {
-                for(uint32_t i = 0; i < 100; ++i)
-                {
-                    for(uint32_t j = 0; j < 1; ++j)
+            _pData->m_entityFactory.GetEventPool()->Add(
+                Utils::lambda(
+                    [&](EntityCreatedEvent& _e)
                     {
-                        Entity _e = _pData->m_entityFactory.Make();
-
-                        std::vector<int> _id(_raw.m_aVertices.size(), _e.ID());
+                        std::vector<int> _id(_raw.m_aVertices.size(), _e.m_entity.ID());
 
                         Graphics::Renderer::vertex_buffer_object_descriptor _desc[] =
                         {
@@ -786,7 +733,7 @@ namespace Duckvil {
                         _desc[2].m_type = GL_UNSIGNED_INT;
                         _desc[3].m_type = GL_FLOAT;
 
-                        _e.Add(
+                        _e.m_entity.Add(
                             Graphics::MeshComponent
                             {
                                 _pData->m_pRenderer->m_fnCreateVAO(
@@ -800,17 +747,10 @@ namespace Duckvil {
                                     }
                                 )
                             }
-                        ).Add(
-                            Graphics::TransformComponent
-                            {
-                                glm::vec3(0, j * 2, i * 2),
-                                glm::quat(0, 0, 0, 1),
-                                glm::vec3(1, 1, 1)
-                            }
-                        ).Add<UUIDComponent>();
+                        );
                     }
-                }
-            }
+                )
+            );
 
             _pData->m_rendererQuery = _pData->m_ecs.query<Graphics::TransformComponent>();
         }
@@ -854,8 +794,6 @@ namespace Duckvil {
         {
             _pFTable->update(_pData, _pFTable);
         }
-
-        RuntimeReflection::invoke<void, Serializer::EntitySerializerSystem, const std::filesystem::path&>("Save", _pData->m_pSerializer, "E:/Projects/C++/Duckvil/bin/Proj.json");
 
         if(_pData->m_bIsServer)
         {

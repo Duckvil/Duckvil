@@ -1,11 +1,20 @@
 #include "Project.h"
 
+#include "imgui/imgui.h"
+
+#include "RuntimeReflection/RuntimeReflection.h"
+
+#include "Engine/Entity.h"
+
+#include "Utils/Function.h"
+
 namespace {$projectName} {
 
-	Project::Project(const Duckvil::Memory::FreeList& _heap, const Duckvil::Memory::ThreadsafeVector<duckvil_recorderd_types>* _pSystems, const Duckvil::PlugNPlay::__module_information& _module) :
+	Project::Project(const Duckvil::Memory::FreeList& _heap, const Duckvil::Memory::ThreadsafeVector<duckvil_recorderd_types>* _pSystems, const Duckvil::PlugNPlay::__module_information& _module, Duckvil::EntityFactory* _pEntityFactory) :
 		m_heap(_heap),
 		m_pSystems(_pSystems),
-		m_module(_module)
+		m_module(_module),
+		m_pEntityFactory(_pEntityFactory)
 	{
 		// m_heap.Allocate(m_aSystems, 1);
 
@@ -62,6 +71,45 @@ namespace {$projectName} {
 
 		printf("Hello from {$projectName}!");
 
+		const auto& _handle = Duckvil::RuntimeReflection::get_type("EntitySerializerSystem", { "Duckvil", "Serializer" });
+
+		m_pSerializer =
+			static_cast<Duckvil::Serializer::EntitySerializerSystem*>(
+				Duckvil::RuntimeReflection::create<
+					const Duckvil::Memory::FreeList&,
+					Duckvil::Event::Pool<Duckvil::Event::mode::immediate>*,
+					Duckvil::EntityFactory*
+				>(
+					m_heap, _handle, false, m_heap, &m_eventPool, m_pEntityFactory
+				)
+			);
+
+		ecs_os_set_api_defaults();
+
+		try
+		{
+			Duckvil::RuntimeReflection::invoke<
+				void,
+				Duckvil::Serializer::EntitySerializerSystem,
+				const std::filesystem::path&,
+				void (*)(Duckvil::Entity&)
+			>(
+				"Load",
+				m_pSerializer,
+				"{$projectPath}/{$projectName}.json",
+				Duckvil::Utils::lambda(
+					[&](Duckvil::Entity& _entity)
+					{
+						
+					}
+				)
+			);
+		}
+		catch(const std::exception& _e)
+		{
+			return false;
+		}
+
 		// for(const duckvil_recorderd_types& _system : m_aSystems)
 		// {
 		// 	for(uint32_t i = 0; i < _system.m_ullCount; ++i)
@@ -84,6 +132,44 @@ namespace {$projectName} {
 		for(const auto& _script : m_pScripts)
 		{
 			static_cast<Duckvil::Project::Script*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_script))->Update();
+		}
+	}
+
+	void Project::InitEditor(void* _pImguiContext)
+	{
+		ImGui::SetCurrentContext((ImGuiContext*)_pImguiContext);
+	}
+
+	void Project::OnDraw()
+	{
+
+	}
+
+	void Project::OnMainMenuDraw()
+	{
+		if(ImGui::BeginMenu("Project"))
+		{
+			if(ImGui::MenuItem("Save"))
+			{
+				try
+				{
+					Duckvil::RuntimeReflection::invoke<
+						void,
+						Duckvil::Serializer::EntitySerializerSystem,
+						const std::filesystem::path&
+					>(
+						"Save",
+						m_pSerializer,
+						"{$projectPath}/{$projectName}.json"
+					);
+				}
+				catch(const std::exception& _e)
+				{
+
+				}
+			}
+
+			ImGui::EndMenu();
 		}
 	}
 

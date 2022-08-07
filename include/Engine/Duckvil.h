@@ -145,8 +145,6 @@ namespace Duckvil {
         flecs::world m_ecs;
         EntityFactory m_entityFactory;
 
-        Serializer::EntitySerializerSystem* m_pSerializer;
-
         flecs::query<Graphics::TransformComponent> m_rendererQuery;
 
         ProjectManager::ftable m_projectManager;

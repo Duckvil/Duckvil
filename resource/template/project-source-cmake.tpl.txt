@@ -6,12 +6,12 @@ FILE(GLOB SOURCE_FILES *.cpp)
 add_library({$projectName} SHARED
     ${SOURCE_FILES}
     ${GENERATED_SRC_FILES}
-    E:/Projects/C++/Duckvil/external/imgui/imgui.cpp
-    E:/Projects/C++/Duckvil/external/imgui/imgui_draw.cpp
-    E:/Projects/C++/Duckvil/external/imgui/imgui_tables.cpp
-    E:/Projects/C++/Duckvil/external/imgui/imgui_widgets.cpp
-    E:/Projects/C++/Duckvil/external/imgui/backends/imgui_impl_opengl3.cpp
-    E:/Projects/C++/Duckvil/external/imgui/backends/imgui_impl_sdl.cpp
+    {$duckvilWorkingDirectory}/external/imgui/imgui.cpp
+    {$duckvilWorkingDirectory}/external/imgui/imgui_draw.cpp
+    {$duckvilWorkingDirectory}/external/imgui/imgui_tables.cpp
+    {$duckvilWorkingDirectory}/external/imgui/imgui_widgets.cpp
+    {$duckvilWorkingDirectory}/external/imgui/backends/imgui_impl_opengl3.cpp
+    {$duckvilWorkingDirectory}/external/imgui/backends/imgui_impl_sdl.cpp
 )
 list(APPEND INCLUDES
     ${CMAKE_SOURCE_DIR}/include
@@ -19,17 +19,27 @@ list(APPEND INCLUDES
     {$duckvilWorkingDirectory}/include
     {$duckvilWorkingDirectory}/external
     {$duckvilWorkingDirectory}/__generated_reflection__
-    E:/Projects/C++/Duckvil/include
-    E:/Projects/C++/Duckvil/external
-    E:/Projects/C++/Duckvil/__generated_reflection__
-    E:/Projects/C++/Duckvil/external/imgui
-    E:/Projects/C++/Duckvil/external/imgui/backends
-    E:/Projects/C++/Duckvil/external/SDL2/include
-    E:/Projects/C++/Duckvil/external/glew/include
-    E:/Projects/C++/Duckvil/external/hex_editor
+    {$duckvilWorkingDirectory}/include
+    {$duckvilWorkingDirectory}/external
+    {$duckvilWorkingDirectory}/external/imgui
+    {$duckvilWorkingDirectory}/external/imgui/backends
+    {$duckvilWorkingDirectory}/external/SDL2/include
+    {$duckvilWorkingDirectory}/external/glew/include
+    {$duckvilWorkingDirectory}/external/hex_editor
+    {$duckvilWorkingDirectory}/external/xbyak
+    {$duckvilWorkingDirectory}/external/json/include
+    {$duckvilWorkingDirectory}/external/glm
+    {$duckvilWorkingDirectory}/external/assimp/include
 )
 target_include_directories({$projectName} PRIVATE ${INCLUDES})
-target_link_libraries({$projectName} {$duckvilWorkingDirectory}/bin/Window.lib {$duckvilWorkingDirectory}/bin/Utils.lib E:/Projects/C++/Duckvil/bin/glew32.lib E:/Projects/C++/Duckvil/bin/SDL2.lib)
+target_link_libraries(
+    {$projectName}
+    {$duckvilWorkingDirectory}/bin/Window.lib
+    {$duckvilWorkingDirectory}/bin/Utils.lib
+    {$duckvilWorkingDirectory}/bin/glew32.lib
+    {$duckvilWorkingDirectory}/bin/SDL2.lib
+    {$duckvilWorkingDirectory}/bin/flecs_static.lib
+)
 set_target_properties({$projectName} PROPERTIES
     CXX_STANDARD 20
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin
