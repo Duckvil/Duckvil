@@ -2,11 +2,11 @@
 
 #include "RuntimeReflection/Markers.h"
 
-#define Editor_Widgets_ViewportWidget_h_40_REFLECTION_MODULE_DUMMY 
-#define Editor_Widgets_ViewportWidget_h_40_REFLECTION_MODULE_CASTER \
+#define Editor_Widgets_ViewportWidget_h_44_REFLECTION_MODULE_DUMMY 
+#define Editor_Widgets_ViewportWidget_h_44_REFLECTION_MODULE_CASTER \
 public: \
 static void* Cast(void* _pObject) { return static_cast<ViewportWidget*>(_pObject); }
-#define Editor_Widgets_ViewportWidget_h_40_REFLECTION_MODULE_RUNTIME_COMPILER \
+#define Editor_Widgets_ViewportWidget_h_44_REFLECTION_MODULE_RUNTIME_COMPILER \
 public: \
 void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\
@@ -23,18 +23,20 @@ _pSerializer->SerializeProperty("m_bIsWindowFocused", m_bIsWindowFocused); \
 _pSerializer->SerializeProperty("m_setMousePosition", m_setMousePosition); \
 _pSerializer->SerializeProperty("m_bSkip", m_bSkip); \
 _pSerializer->SerializeProperty("m_pECS", m_pECS); \
+_pSerializer->SerializeProperty("m_pEntityFactory", m_pEntityFactory); \
 _pSerializer->SerializeProperty("m_owner", m_owner); \
 _pSerializer->SerializeProperty("m_pServer", m_pServer); \
 _pSerializer->SerializeProperty("m_pClient", m_pClient); \
 _pSerializer->SerializeProperty("m_networkQuery", m_networkQuery); \
 _pSerializer->SerializeProperty("m_selectQuery", m_selectQuery); \
 _pSerializer->SerializeProperty("m_selectedEntity", m_selectedEntity); \
+_pSerializer->SerializeProperty("m_viewportBounds", m_viewportBounds); \
 ISystem::Serialize(_pSerializer); \
 }
-#define Editor_Widgets_ViewportWidget_h_40_GENERATED_BODY \
-Editor_Widgets_ViewportWidget_h_40_REFLECTION_MODULE_DUMMY \
-Editor_Widgets_ViewportWidget_h_40_REFLECTION_MODULE_CASTER \
-Editor_Widgets_ViewportWidget_h_40_REFLECTION_MODULE_RUNTIME_COMPILER
+#define Editor_Widgets_ViewportWidget_h_44_GENERATED_BODY \
+Editor_Widgets_ViewportWidget_h_44_REFLECTION_MODULE_DUMMY \
+Editor_Widgets_ViewportWidget_h_44_REFLECTION_MODULE_CASTER \
+Editor_Widgets_ViewportWidget_h_44_REFLECTION_MODULE_RUNTIME_COMPILER
 
 #undef DUCKVIL_CURRENT_FILE_ID
 #define DUCKVIL_CURRENT_FILE_ID Editor_Widgets_ViewportWidget_h

@@ -37,6 +37,7 @@ record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMe
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Editor::viewport, m_shaderID), "m_shaderID");
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Editor::viewport, m_fbo), "m_fbo");
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Editor::viewport, m_fboTextureObject), "m_fboTextureObject");
+_property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Editor::viewport, m_entityIdTextureObject), "m_entityIdTextureObject");
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Editor::viewport, m_textureID), "m_textureID");
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Editor::viewport, m_transformID), "m_transformID");
 _property = record_property<glm::mat4>(_data, _type, offsetof(Duckvil::Editor::viewport, m_projection), "m_projection");
@@ -47,6 +48,7 @@ _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Editor::vi
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Editor::viewport, m_uiHeight), "m_uiHeight");
 _property = record_property<flecs::world*>(_data, _type, offsetof(Duckvil::Editor::viewport, m_ecs), "m_ecs");
 _property = record_property<flecs::query<Graphics::MeshComponent,Graphics::TransformComponent>>(_data, _type, offsetof(Duckvil::Editor::viewport, m_rendererQuery), "m_rendererQuery");
+_property = record_property<int>(_data, _type, offsetof(Duckvil::Editor::viewport, m_iBackgroundValue), "m_iBackgroundValue");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

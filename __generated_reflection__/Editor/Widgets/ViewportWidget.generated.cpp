@@ -39,7 +39,7 @@ record_inheritance<Widget>(_data, _type, __protection::__protection_public);
 record_inheritance<ISystem>(_data, _type, __protection::__protection_public);
 record_inheritance<Network::NetworkSystem>(_data, _type, __protection::__protection_public);
 _constructor = record_constructor<Duckvil::Editor::ViewportWidget>(_data, _type);
-_constructor = record_constructor<Duckvil::Editor::ViewportWidget, const Memory::FreeList&, Event::Pool<Event::mode::buffered>*, Network::IServer*, Network::IClient*, Event::Pool<Event::mode::immediate>*, flecs::world*>(_data, _type);
+_constructor = record_constructor<Duckvil::Editor::ViewportWidget, const Memory::FreeList&, Event::Pool<Event::mode::buffered>*, Network::IServer*, Network::IClient*, Event::Pool<Event::mode::immediate>*, flecs::world*, EntityFactory*>(_data, _type);
 record_meta(_data, _type, _constructor, 1, "Window", true);
 record_meta(_data, _type, _constructor, 4, "Editor", true);
 _destructor = record_destructor<Duckvil::Editor::ViewportWidget>(_data, _type);
