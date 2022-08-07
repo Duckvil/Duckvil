@@ -67,11 +67,8 @@ namespace Duckvil { namespace Editor {
 
         viewport m_viewport;
 
-        bool m_bWrapCamera = false;
         bool m_aKeys[Window::key_size];
         bool m_bIsWindowFocused = false;
-
-        Window::SetMousePositionEvent m_setMousePosition;
 
         bool m_bSkip = false;
 

@@ -103,21 +103,7 @@ namespace Duckvil { namespace Editor {
             }
             else if(m_pWindowEventPool->GetMessage(&_mouseMotionEvent))
             {
-                if(!m_bWrapCamera || !m_bIsWindowFocused)
-                {
-                    m_pWindowEventPool->EventHandled<Window::MouseMotionEvent>();
-
-                    continue;
-                }
-
-                int _x = (1920 / 2) - _mouseMotionEvent.m_iX;
-                int _y = (1080 / 2) - _mouseMotionEvent.m_iY;
-
-                m_viewport.m_rotation = glm::normalize(glm::angleAxis(_y * (float)_dDelta, m_viewport.m_rotation * glm::vec3(-1, 0, 0)) * m_viewport.m_rotation);
-                m_viewport.m_rotation = glm::normalize(glm::angleAxis(_x * (float)_dDelta, glm::vec3(0, -1, 0)) * m_viewport.m_rotation);
-
-                m_pWindowEventPool->EventHandled(_mouseMotionEvent);
-                m_pWindowEventPool->Broadcast(m_setMousePosition);
+                m_pWindowEventPool->EventHandled<Window::MouseMotionEvent>();
             }
             else
             {
@@ -153,11 +139,6 @@ namespace Duckvil { namespace Editor {
             m_viewport.m_position -= glm::normalize(m_viewport.m_rotation * glm::vec3(0, 0, 1)) * (float)_dDelta * 2.f;
 
             _anyMovement = true;
-        }
-
-        if(m_aKeys[Window::key_k])
-        {
-            m_bWrapCamera = !m_bWrapCamera;
         }
 
         if(_anyMovement)
@@ -201,13 +182,30 @@ namespace Duckvil { namespace Editor {
 
             m_bSkip = true;
         }
-
-        m_setMousePosition.m_iX = 1920 / 2;
-        m_setMousePosition.m_iY = 1080 / 2;
     }
 
     void ViewportWidget::OnDraw()
     {
+        static ImVec2 _mousePos;
+
+        if(ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Right))
+        {
+            _mousePos = ImGui::GetMousePos();
+        }
+
+        if(ImGui::IsMouseDown(ImGuiMouseButton_::ImGuiMouseButton_Right))
+        {
+            auto _newMousePos = ImGui::GetMousePos();
+
+            if(_mousePos.x != _newMousePos.x || _mousePos.y != _newMousePos.y)
+            {
+                m_viewport.m_rotation = glm::normalize(glm::angleAxis((_newMousePos.y - _mousePos.y) * ImGui::GetIO().DeltaTime, m_viewport.m_rotation * glm::vec3(-1, 0, 0)) *
+                    glm::angleAxis((_newMousePos.x - _mousePos.x) * ImGui::GetIO().DeltaTime, glm::vec3(0, -1, 0))) * m_viewport.m_rotation;
+            }
+
+            _mousePos = _newMousePos;
+        }
+
         ZoneScopedN("Viewport draw");
 
         render_viewport(&m_viewport, m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_pRenderer, m_pRendererData);
