@@ -29,6 +29,10 @@
 #include "Network/IServer.h"
 
 #include "Engine/UUIDComponent.h"
+#include "Engine/EntityFactory.h"
+
+#undef GetMessage
+#undef min
 
 #include "Editor/Widgets/ViewportWidget.generated.h"
 
@@ -72,6 +76,7 @@ namespace Duckvil { namespace Editor {
         bool m_bSkip = false;
 
         flecs::world* m_pECS;
+        EntityFactory* m_pEntityFactory;
 
         Network::IConnection::Owner m_owner;
 
@@ -82,13 +87,14 @@ namespace Duckvil { namespace Editor {
         flecs::query<UUIDComponent, Graphics::TransformComponent> m_selectQuery;
 
         Entity m_selectedEntity;
-        
+
+        glm::vec2 m_viewportBounds[2];
 
         void SpwanPlayer(uint32_t _uiID);
 
     public:
         ViewportWidget();
-        ViewportWidget(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Window") Event::Pool<Event::mode::buffered>* _pWindowEventPool, Network::IServer* _pServer, Network::IClient* _pClient, DUCKVIL_ARGUMENT("Editor") Event::Pool<Event::mode::immediate>* _pEditorEventPool, flecs::world* _pECS);
+        ViewportWidget(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Window") Event::Pool<Event::mode::buffered>* _pWindowEventPool, Network::IServer* _pServer, Network::IClient* _pClient, DUCKVIL_ARGUMENT("Editor") Event::Pool<Event::mode::immediate>* _pEditorEventPool, flecs::world* _pECS, EntityFactory* _pEntityFactory);
         ~ViewportWidget();
 
         bool Init();

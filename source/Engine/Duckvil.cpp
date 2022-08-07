@@ -638,6 +638,10 @@ namespace Duckvil {
                         {
                             _fap.Push(&_pData->m_ecs);
                         }
+                        else if(typeid(EntityFactory*).hash_code() == _argument.m_ullTypeID)
+                        {
+                            _fap.Push(&_pData->m_entityFactory);
+                        }
                         else if(!argument_event_pool_inject(_pData, _typeHandle, _constructorHandle, _argument, i, _fap))
                         {
                             // Call other events to incject
@@ -709,13 +713,6 @@ namespace Duckvil {
             const auto& _modelLoaderGetRawHandle = RuntimeReflection::get_function_handle(_modelLoaderHandle, "GetRaw");
             const Graphics::ModelLoader::Raw& _raw = RuntimeReflection::invoke_member_result<const Graphics::ModelLoader::Raw&>(_modelLoaderHandle, _modelLoaderGetRawHandle, _modelLoader);
 
-            Graphics::Renderer::vertex_buffer_object_descriptor _desc[] =
-            {
-                Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aVertices, _raw.m_aVertices.size(), 4), // size of vertices should be specified here
-                Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aTexCoords, _raw.m_aTexCoords.size(), 2),
-                Graphics::Renderer::vertex_buffer_object_descriptor(GL_ELEMENT_ARRAY_BUFFER, _raw.m_aIndices, _raw.m_aIndices.size(), 1)
-            };
-
             ecs_os_set_api_defaults();
 
             try
@@ -732,6 +729,21 @@ namespace Duckvil {
                     Utils::lambda(
                         [&](Entity& _entity)
                         {
+                            std::vector<int> _id(_raw.m_aVertices.size(), _entity.ID());
+
+                            Graphics::Renderer::vertex_buffer_object_descriptor _desc[] =
+                            {
+                                Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aVertices, 4), // size of vertices should be specified here
+                                Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aTexCoords, 2),
+                                Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _id, 1),
+                                Graphics::Renderer::vertex_buffer_object_descriptor(GL_ELEMENT_ARRAY_BUFFER, _raw.m_aIndices, 1)
+                            };
+
+                            _desc[0].m_type = GL_FLOAT;
+                            _desc[1].m_type = GL_FLOAT;
+                            _desc[2].m_type = GL_UNSIGNED_INT;
+                            _desc[3].m_type = GL_FLOAT;
+
                             _entity.Add(
                                 Graphics::MeshComponent
                                 {
@@ -758,6 +770,21 @@ namespace Duckvil {
                     for(uint32_t j = 0; j < 1; ++j)
                     {
                         Entity _e = _pData->m_entityFactory.Make();
+
+                        std::vector<int> _id(_raw.m_aVertices.size(), _e.ID());
+
+                        Graphics::Renderer::vertex_buffer_object_descriptor _desc[] =
+                        {
+                            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aVertices, 4), // size of vertices should be specified here
+                            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aTexCoords, 2),
+                            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _id, 1),
+                            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ELEMENT_ARRAY_BUFFER, _raw.m_aIndices, 1)
+                        };
+
+                        _desc[0].m_type = GL_FLOAT;
+                        _desc[1].m_type = GL_FLOAT;
+                        _desc[2].m_type = GL_UNSIGNED_INT;
+                        _desc[3].m_type = GL_FLOAT;
 
                         _e.Add(
                             Graphics::MeshComponent

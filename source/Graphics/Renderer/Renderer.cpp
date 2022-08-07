@@ -134,7 +134,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
     {
         GLuint* _texture = static_cast<GLuint*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(GLuint) * _descriptor.m_uiCount, 8));
 
-        glGenTextures(_descriptor.m_uiCount, _texture);
+        glCreateTextures(_descriptor.m_target, _descriptor.m_uiCount, _texture);
 
         for(uint32_t i = 0; i < _descriptor.m_uiCount; ++i)
         {
@@ -143,7 +143,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
             glTexParameterf(_descriptor.m_target, GL_TEXTURE_MIN_FILTER, _descriptor.m_filter[i]);
             glTexParameterf(_descriptor.m_target, GL_TEXTURE_MAG_FILTER, _descriptor.m_filter[i]);
 
-            glTexImage2D(_descriptor.m_target, 0, GL_RGBA, _descriptor.m_width, _descriptor.m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, _descriptor.m_pData[i]);
+            glTexImage2D(_descriptor.m_target, 0, _descriptor.m_internalFormats[i], _descriptor.m_width, _descriptor.m_height, 0, _descriptor.m_formats[i], _descriptor.m_types[i], _descriptor.m_pData[i]);
         }
 
         return duckvil_slot_array_insert(
@@ -159,7 +159,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         GLuint _framebuffer = -1;
         GLuint _renderbuffer = -1;
 
-        glGenFramebuffers(1, &_framebuffer);
+        glCreateFramebuffers(1, &_framebuffer);
         glBindFramebuffer(_descriptor.m_target, _framebuffer);
 
         GLenum* _drawBuffers = static_cast<GLenum*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(GLenum) * _descriptor.m_uiCount, 8));
@@ -190,7 +190,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         {
             glGenRenderbuffers(1, &_renderbuffer);
             glBindRenderbuffer(GL_RENDERBUFFER, _renderbuffer);
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1920, 1080);
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, _descriptor.m_width, _descriptor.m_height);
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _renderbuffer);
         }
 
@@ -226,12 +226,19 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         {
             const vertex_buffer_object_descriptor& _vboDesc = _descriptor.m_aVBO[i];
 
-            if(_vboDesc.m_target == GL_ARRAY_BUFFER)
+            if(_vboDesc.m_target == GL_ARRAY_BUFFER && _vboDesc.m_type == GL_UNSIGNED_INT)
             {
                 glBindBuffer(_vboDesc.m_target, _vbo[i]);
                 glBufferData(_vboDesc.m_target, _vboDesc.m_uiTypeSize * _vboDesc.m_usNumber * _vboDesc.m_uiCount, _vboDesc.m_pData, GL_STATIC_DRAW);
                 glEnableVertexAttribArray(i);
-                glVertexAttribPointer(i, _vboDesc.m_usNumber, GL_FLOAT, GL_FALSE, 0, 0);
+                glVertexAttribIPointer(i, _vboDesc.m_usNumber, _vboDesc.m_type, 0, 0);
+            }
+            else if(_vboDesc.m_target == GL_ARRAY_BUFFER)
+            {
+                glBindBuffer(_vboDesc.m_target, _vbo[i]);
+                glBufferData(_vboDesc.m_target, _vboDesc.m_uiTypeSize * _vboDesc.m_usNumber * _vboDesc.m_uiCount, _vboDesc.m_pData, GL_STATIC_DRAW);
+                glEnableVertexAttribArray(i);
+                glVertexAttribPointer(i, _vboDesc.m_usNumber, _vboDesc.m_type, GL_FALSE, 0, 0);
             }
             else if(_vboDesc.m_target == GL_ELEMENT_ARRAY_BUFFER)
             {
@@ -275,6 +282,16 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         const auto& _textureObject = DUCKVIL_SLOT_ARRAY_GET_POINTER(_pData->m_textureObject, _uiID);
 
         return _textureObject->m_pTexture;
+    }
+
+    void impl_renderer_destroy_texture(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiID)
+    {
+        glDeleteTextures(1, &_uiID);
+    }
+
+    void impl_renderer_destroy_framebuffer(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiID)
+    {
+        glDeleteFramebuffers(1, &_uiID);
     }
 
 
@@ -371,6 +388,26 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _fbo.m_FBO);
             }
                 break;
+            case renderer_op_code_read_pixels:
+            {
+                uint32_t _attachmentIndex;
+                int _x;
+                int _y;
+                void (*_fnCallback)(int);
+                int _value;
+
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_attachmentIndex);
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_x);
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_y);
+                
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_fnCallback);
+
+                glReadBuffer(GL_COLOR_ATTACHMENT0 + _attachmentIndex);
+                glReadPixels(_x, _y, 1, 1, GL_RED_INTEGER, GL_INT, &_value);
+
+                _fnCallback(_value);
+            }
+                break;
             case renderer_op_code_draw:
             {
                 uint32_t _vaoID = -1;
@@ -400,6 +437,21 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_mask);
 
                 glClear(_mask);
+            }
+                break;
+            case renderer_op_code_clear_attachment:
+            {
+                uint32_t _textureID = -1;
+                GLenum _format;
+                GLenum _type;
+                void* _value;
+
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_textureID);
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_format);
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_type);
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_value);
+
+                glClearTexImage(_textureID, 0, _format, _type, _value);
             }
                 break;
             case renderer_op_code_viewport:
@@ -523,6 +575,9 @@ Duckvil::Graphics::Renderer::renderer_ftable* duckvil_graphics_renderer_init()
     _result.m_fnCreateTextureObject = &Duckvil::Graphics::Renderer::impl_renderer_create_texture_object;
     _result.m_fnCreateFramebuffer = &Duckvil::Graphics::Renderer::impl_renderer_create_framebuffer;
     _result.m_fnCreateVAO = &Duckvil::Graphics::Renderer::impl_renderer_create_vao;
+
+    _result.m_fnDestroyTexture = &Duckvil::Graphics::Renderer::impl_renderer_destroy_texture;
+    _result.m_fnDestroyFramebuffer = &Duckvil::Graphics::Renderer::impl_renderer_destroy_framebuffer;
 
     _result.m_fnGetUniformLocation = &Duckvil::Graphics::Renderer::impl_renderer_get_uniform_location;
 

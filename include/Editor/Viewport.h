@@ -25,6 +25,7 @@ namespace Duckvil { namespace Editor {
         uint32_t m_shaderID;
         uint32_t m_fbo;
         uint32_t m_fboTextureObject;
+        uint32_t m_entityIdTextureObject;
         uint32_t m_textureID;
         uint32_t m_transformID;
         glm::mat4 m_projection;
@@ -37,11 +38,109 @@ namespace Duckvil { namespace Editor {
 
         flecs::world* m_ecs;
         flecs::query<Graphics::MeshComponent, Graphics::TransformComponent> m_rendererQuery;
+
+        int m_iBackgroundValue = -1;
+        bool m_bFirstTime = true;
     };
 
     static inline void reset(viewport* _pViewport)
     {
         _pViewport->m_projection = glm::perspective(70.f, static_cast<float>(_pViewport->m_uiWidth) / static_cast<float>(_pViewport->m_uiHeight), 0.1f, 1000.f);
+    }
+
+    static void recreate_viewport(
+        viewport* _pViewport,
+        Memory::ftable* _pMemory,
+        Memory::free_list_allocator* _pAllocator,
+        Graphics::Renderer::renderer_ftable* _pRenderer,
+        Graphics::Renderer::renderer_data* _pRendererData,
+        int _uiWidth,
+        int _uiHeight
+    )
+    {
+        if(!_pViewport->m_bFirstTime)
+        {
+            _pRenderer->m_fnDestroyTexture(_pMemory, _pAllocator, _pRendererData, _pRenderer->m_fnGetTextures(_pRendererData, _pViewport->m_fboTextureObject)[0]);
+            _pRenderer->m_fnDestroyTexture(_pMemory, _pAllocator, _pRendererData, _pRenderer->m_fnGetTextures(_pRendererData, _pViewport->m_entityIdTextureObject)[0]);
+            _pRenderer->m_fnDestroyFramebuffer(_pMemory, _pAllocator, _pRendererData, _pViewport->m_fbo);
+        }
+
+        _pViewport->m_bFirstTime = false;
+
+        {
+            GLfloat _filtes[] = {GL_LINEAR};
+            void* _data[] = { 0 };
+            GLint _internalFormats[] = { GL_RGBA };
+            GLenum _formats[] = { GL_RGBA };
+            GLenum _types[] = { GL_UNSIGNED_BYTE };
+
+            _pViewport->m_fboTextureObject =
+                _pRenderer->m_fnCreateTextureObject(
+                    _pMemory,
+                    _pAllocator,
+                    _pRendererData,
+                    Graphics::Renderer::texture_object_descriptor
+                    {
+                        GL_TEXTURE_2D,
+                        _filtes,
+                        _uiWidth, _uiHeight,
+                        _data,
+                        1,
+                        _internalFormats,
+                        _formats,
+                        _types
+                    }
+                );
+        }
+
+        {
+            GLfloat _filtes[] = { GL_LINEAR };
+            void* _data[] = { 0 };
+            GLint _internalFormats[] = { GL_R32I };
+            GLenum _formats[] = { GL_RED_INTEGER };
+            GLenum _types[] = { GL_INT };
+
+            _pViewport->m_entityIdTextureObject =
+                _pRenderer->m_fnCreateTextureObject(
+                    _pMemory,
+                    _pAllocator,
+                    _pRendererData,
+                    Graphics::Renderer::texture_object_descriptor
+                    {
+                        GL_TEXTURE_2D,
+                        _filtes,
+                        _uiWidth, _uiHeight,
+                        _data,
+                        1,
+                        _internalFormats,
+                        _formats,
+                        _types
+                    }
+                );
+        }
+
+        GLenum _attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+        GLuint _textures[2] =
+        {
+            _pRenderer->m_fnGetTextures(_pRendererData, _pViewport->m_fboTextureObject)[0],
+            _pRenderer->m_fnGetTextures(_pRendererData, _pViewport->m_entityIdTextureObject)[0]
+        };
+
+        _pViewport->m_fbo =
+            _pRenderer->m_fnCreateFramebuffer(
+                _pMemory,
+                _pAllocator,
+                _pRendererData,
+                Graphics::Renderer::framebuffer_descriptor
+                {
+                    GL_FRAMEBUFFER,
+                    _attachments,
+                    2,
+                    _textures,
+                    GL_TEXTURE_2D,
+                    _uiWidth, _uiHeight
+                }
+        );
     }
 
     static void setup_viewport(
@@ -69,38 +168,13 @@ namespace Duckvil { namespace Editor {
 
         _pViewport->m_rendererQuery = _pECS->query<Graphics::MeshComponent, Graphics::TransformComponent>();
 
-        GLfloat _filtes[1] = { GL_LINEAR };
-        void* _data[1] = { 0 };
-
-        _pViewport->m_fboTextureObject =
-            _pRenderer->m_fnCreateTextureObject(
-                _pMemory,
-                _pAllocator,
-                _pRendererData,
-                Graphics::Renderer::texture_object_descriptor
-            {
-                GL_TEXTURE_2D,
-                _filtes,
-                1920, 1080,
-                _data,
-                1
-            });
-
-        GLenum _attachments[] = { GL_COLOR_ATTACHMENT0 };
-
-        _pViewport->m_fbo =
-            _pRenderer->m_fnCreateFramebuffer(
-                _pMemory,
-                _pAllocator,
-                _pRendererData,
-                Graphics::Renderer::framebuffer_descriptor
-                {
-                    GL_DRAW_FRAMEBUFFER,
-                    _attachments,
-                    1,
-                    _pRenderer->m_fnGetTextures(_pRendererData, _pViewport->m_fboTextureObject),
-                    GL_TEXTURE_2D
-                }
+        recreate_viewport(
+            _pViewport,
+            _pMemory,
+            _pAllocator,
+            _pRenderer,
+            _pRendererData,
+            1920, 1080
         );
 
         int _x, _y, _bytesPerPixels;
@@ -148,12 +222,15 @@ namespace Duckvil { namespace Editor {
         {
             ZoneScopedN("BindFramebuffer");
 
+            glActiveTexture( GL_TEXTURE0 + 0 );
+            glActiveTexture( GL_TEXTURE0 + 1 );
             Graphics::Renderer::bind_framebuffer(_pMemory, _pRendererData, _pViewport->m_fbo);
         }
 
-        Graphics::Renderer::viewport(_pMemory, _pRendererData, 1920, 1080);
+        Graphics::Renderer::viewport(_pMemory, _pRendererData, _pViewport->m_uiWidth, _pViewport->m_uiHeight);
         Graphics::Renderer::clear_color(_pMemory, _pRendererData, glm::vec4(0.1f, 0.1f, 0.1f, 1));
         Graphics::Renderer::clear(_pMemory, _pRendererData, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        Graphics::Renderer::clear_attachment(_pMemory, _pRendererData, _pRenderer->m_fnGetTextures(_pRendererData, _pViewport->m_entityIdTextureObject)[0], GL_RED_INTEGER, GL_INT, &_pViewport->m_iBackgroundValue);
 
         {
             ZoneScopedN("BindShader");

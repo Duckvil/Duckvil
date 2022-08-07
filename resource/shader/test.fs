@@ -1,10 +1,15 @@
-#version 130
+#version 450
 
-varying vec2 texCoord0;
+out vec4 color;
+out int entityID;
+
+in vec2 texCoord0;
+in flat int entityID0;
 
 uniform sampler2D tex;
 
 void main()
 {
-    gl_FragColor = texture2D(tex, texCoord0);
+    color = texture2D(tex, texCoord0);
+    entityID = entityID0;
 }

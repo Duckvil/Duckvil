@@ -86,6 +86,11 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
             return Entity(_entity);
         }
 
+        Entity FromID(size_t _ullID)
+        {
+            return Entity(_ullID, m_ecs);
+        }
+
         inline Event::Pool<Event::mode::immediate>* GetEventPool() { return &m_eventPool; }
     };
 

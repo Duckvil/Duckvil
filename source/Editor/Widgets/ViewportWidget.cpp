@@ -42,13 +42,14 @@ namespace Duckvil { namespace Editor {
 
     }
 
-    ViewportWidget::ViewportWidget(const Memory::FreeList& _heap, Event::Pool<Event::mode::buffered>* _pWindowEventPool, Network::IServer* _pServer, Network::IClient* _pClient, Event::Pool<Event::mode::immediate>* _pEditorEventPool, flecs::world* _pECS) :
+    ViewportWidget::ViewportWidget(const Memory::FreeList& _heap, Event::Pool<Event::mode::buffered>* _pWindowEventPool, Network::IServer* _pServer, Network::IClient* _pClient, Event::Pool<Event::mode::immediate>* _pEditorEventPool, flecs::world* _pECS, EntityFactory* _pEntityFactory) :
         m_heap(_heap),
         m_pWindowEventPool(_pWindowEventPool),
         m_pClient(_pClient),
         m_pServer(_pServer),
         m_pEditorEventPool(_pEditorEventPool),
-        m_pECS(_pECS)
+        m_pECS(_pECS),
+        m_pEntityFactory(_pEntityFactory)
     {
         _pEditorEventPool->Add(
             Utils::lambda(
@@ -211,7 +212,50 @@ namespace Duckvil { namespace Editor {
 
         render_viewport(&m_viewport, m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_pRenderer, m_pRendererData);
 
+        auto[_mx, _my] = ImGui::GetMousePos();
+
+        _mx -= m_viewportBounds[0].x;
+        _my -= m_viewportBounds[0].y;
+
+        glm::vec2 _viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
+
+        _my = _viewportSize.y - _my;
+
+        if(_mx >= 0 && _my >= 0 && _mx < _viewportSize.x && _my < _viewportSize.y && ImGui::IsMouseReleased(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing())
+        {
+            Graphics::Renderer::read_pixel_colors(
+                m_heap.GetMemoryInterface(),
+                m_pRendererData,
+                1,
+                (int)_mx,
+                (int)_my,
+                Utils::lambda([this](int _iValue)
+                {
+                    if(_iValue == -1)
+                    {
+                        m_selectedEntity.m_bIsValid = false;
+
+                        return;
+                    }
+
+                    if(_iValue == 0)
+                    {
+                        return;
+                    }
+
+                    m_selectedEntity = m_pEntityFactory->FromID(_iValue);
+                })
+            );
+        }
+
         ImGui::Begin("Viewport");
+
+        auto _viewportMinRegion = ImGui::GetWindowContentRegionMin();
+        auto _viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+        auto _viewportOffset = ImGui::GetWindowPos();
+
+        m_viewportBounds[0] = glm::vec2(_viewportMinRegion.x + _viewportOffset.x, _viewportMinRegion.y + _viewportOffset.y);
+        m_viewportBounds[1] = glm::vec2(_viewportMaxRegion.x + _viewportOffset.x, _viewportMaxRegion.y + _viewportOffset.y);
 
         ImVec2 _size = ImGui::GetContentRegionAvail();
 
@@ -222,6 +266,7 @@ namespace Duckvil { namespace Editor {
             m_viewport.m_uiWidth = _size.x;
             m_viewport.m_uiHeight = _size.y;
 
+            recreate_viewport(&m_viewport, m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_pRenderer, m_pRendererData, _size.x, _size.y);
             reset(&m_viewport);
 
             m_oldSize = _size;
@@ -231,9 +276,15 @@ namespace Duckvil { namespace Editor {
 
         ImGui::Image((void*)(intptr_t)*_texture, _size, ImVec2(0, 1), ImVec2(1, 0));
 
+        ImGuizmo::BeginFrame();
         ImGuizmo::SetOrthographic(false);
         ImGuizmo::SetDrawlist();
-        ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, _size.x, _size.y);
+        ImGuizmo::SetRect(
+            m_viewportBounds[0].x,
+            m_viewportBounds[0].y,
+            m_viewportBounds[1].x - m_viewportBounds[0].x,
+            m_viewportBounds[1].y - m_viewportBounds[0].y
+        );
 
         const auto& _view = m_viewport.m_view;
         const auto& _projection = m_viewport.m_projection;
@@ -244,7 +295,7 @@ namespace Duckvil { namespace Editor {
             m_selectQuery.each(
                 [&](const UUIDComponent& _uuid, Graphics::TransformComponent& _transform)
                 {
-                    if(m_selectedEntity.Get<UUIDComponent>().m_uuid != _uuid.m_uuid)
+                    if(!m_selectedEntity.Has<UUIDComponent>() || m_selectedEntity.Get<UUIDComponent>().m_uuid != _uuid.m_uuid)
                     {
                         return;
                     }
@@ -309,9 +360,9 @@ namespace Duckvil { namespace Editor {
 
         Graphics::Renderer::vertex_buffer_object_descriptor _desc[] =
         {
-            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aVertices, _raw.m_aVertices.size(), 4), // size of vertices should be specified here
-            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aTexCoords, _raw.m_aTexCoords.size(), 2),
-            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ELEMENT_ARRAY_BUFFER, _raw.m_aIndices, _raw.m_aIndices.size(), 1)
+            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aVertices, 4), // size of vertices should be specified here
+            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aTexCoords, 2),
+            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ELEMENT_ARRAY_BUFFER, _raw.m_aIndices, 1)
         };
 
         m_pECS->entity().set([&](Graphics::MeshComponent& _mesh, Graphics::TransformComponent& _transform, NetworkComponent& _netComponent)

@@ -1,9 +1,11 @@
-#version 130
+#version 450
 
-attribute vec3 position;
-attribute vec2 texCoord;
+in vec3 position;
+in vec2 texCoord;
+in int entityID;
 
-varying vec2 texCoord0;
+out vec2 texCoord0;
+out flat int entityID0;
 
 uniform mat4 transform;
 
@@ -11,4 +13,5 @@ void main()
 {
     gl_Position = transform * vec4(position, 1.0);
     texCoord0 = texCoord;
+    entityID0 = entityID;
 }

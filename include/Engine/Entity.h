@@ -16,7 +16,13 @@ namespace Duckvil {
         Entity(const flecs::entity& _entity) :
             m_entity(_entity)
         {
-            m_bIsValid = true;;
+            m_bIsValid = true;
+        }
+
+        Entity(size_t _ullID, flecs::world_t* _pWorld) :
+            m_entity(_pWorld, _ullID)
+        {
+            m_bIsValid = true;
         }
 
     public:
@@ -74,6 +80,11 @@ namespace Duckvil {
         void Each(const Func _fn) const
         {
             m_entity.each(_fn);
+        }
+
+        size_t ID() const
+        {
+            return m_entity.id();
         }
     };
 
