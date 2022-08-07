@@ -75,8 +75,9 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
         Entity Make()
         {
             Entity _entity = m_ecs.entity();
+            EntityCreatedEvent e{ _entity };
 
-            m_eventPool.Broadcast(EntityCreatedEvent{ _entity });
+            m_eventPool.Broadcast(e);
 
             return _entity;
         }
