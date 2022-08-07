@@ -152,14 +152,17 @@ namespace Duckvil { namespace Editor {
                 _mainMenuDrawCallback = _mainMenuDraw->m_fnFunction;
             }
 
-            _data->m_aHotDraws.Allocate(
+            const auto& _draw =
                 Editor::HotDraw
                 {
                     _type.GetFunctionCallback<Widget>("OnDraw")->m_fnFunction,
                     _mainMenuDrawCallback,
                     _type.GetFunctionCallback<Widget, void*>("InitEditor")->m_fnFunction,
                     _event.m_pTrackKeeper, _event.m_pTrackKeeper->GetTypeHandle()
-                }
+                };
+
+            _data->m_aHotDraws.Allocate(
+                _draw
             );
 
             if(_type.GetFunctionHandle<const HexEditorWidgetInitEvent&>("OnEvent").m_ID != -1)
@@ -171,6 +174,17 @@ namespace Duckvil { namespace Editor {
             {
                 (static_cast<Widget*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_event.m_pTrackKeeper))->*_type.GetFunctionCallback<Widget, void*>("InitEditor")->m_fnFunction)(_data->_ctx);
             }
+
+            if(RuntimeReflection::get_type(_draw.m_typeHandle).m_ullTypeID == RuntimeReflection::get_type(RuntimeReflection::get_type("ViewportWidget", { "Duckvil", "Editor" })).m_ullTypeID)
+            {
+                const auto& _func = RuntimeReflection::get_function_handle<Graphics::Renderer::renderer_ftable*, Graphics::Renderer::renderer_data*>(_draw.m_typeHandle, "SetRenderer");
+                const auto& _func3 = RuntimeReflection::get_function_handle<flecs::world*>(_draw.m_typeHandle, "SetECS");
+
+                RuntimeReflection::invoke_member(_draw.m_typeHandle, _func, static_cast<Widget*>(_event.m_pTrackKeeper->GetObject()), _data->m_pRenderer, _data->m_pRendererData);
+                RuntimeReflection::invoke_member(_draw.m_typeHandle, _func3, static_cast<Widget*>(_event.m_pTrackKeeper->GetObject()), _data->m_pECS);
+            }
+
+            (static_cast<Widget*>(_event.m_pTrackKeeper->GetObject())->*_type.GetFunctionCallback<Widget, void*>("InitEditor")->m_fnFunction)(_data->_ctx);
 
             // _pEngineEventPool->AddA<HotReloader::SwapEvent>([_data, _pEditor](const HotReloader::SwapEvent& _event)
             // {
@@ -209,25 +223,39 @@ namespace Duckvil { namespace Editor {
 
             _mainMenuDrawCallback = nullptr;
 
-            if (_mainMenuDraw != nullptr)
+            if(_mainMenuDraw != nullptr)
             {
                 _mainMenuDrawCallback = _mainMenuDraw->m_fnFunction;
             }
 
-            _data->m_aDraws.Allocate(
+            const auto& _draw =
                 Editor::Draw
                 {
                     _type.GetFunctionCallback<Widget>("OnDraw")->m_fnFunction,
                     _mainMenuDrawCallback,
                     _type.GetFunctionCallback<Widget, void*>("InitEditor")->m_fnFunction,
                     _event.m_pObject, _type.GetTypeHandle()
-                }
+                };
+
+            _data->m_aDraws.Allocate(
+                _draw
             );
 
             if(_type.GetFunctionHandle<const HexEditorWidgetInitEvent&>("OnEvent").m_ID != -1)
             {
                 _data->m_pEditorEvents.Add<HexEditorWidgetInitEvent>(_event.m_pObject, _type.GetTypeHandle());
             }
+
+            if(RuntimeReflection::get_type(_draw.m_typeHandle).m_ullTypeID == RuntimeReflection::get_type(RuntimeReflection::get_type("ViewportWidget", { "Duckvil", "Editor" })).m_ullTypeID)
+            {
+                const auto& _func = RuntimeReflection::get_function_handle<Graphics::Renderer::renderer_ftable*, Graphics::Renderer::renderer_data*>(_draw.m_typeHandle, "SetRenderer");
+                const auto& _func3 = RuntimeReflection::get_function_handle<flecs::world*>(_draw.m_typeHandle, "SetECS");
+
+                RuntimeReflection::invoke_member(_draw.m_typeHandle, _func, static_cast<Widget*>(_event.m_pObject), _data->m_pRenderer, _data->m_pRendererData);
+                RuntimeReflection::invoke_member(_draw.m_typeHandle, _func3, static_cast<Widget*>(_event.m_pObject), _data->m_pECS);
+            }
+
+            (static_cast<Widget*>(_event.m_pObject)->*_type.GetFunctionCallback<Widget, void*>("InitEditor")->m_fnFunction)(_data->_ctx);
         }));
 
         _pEngineEventPool->AddA<HotReloader::SwapEvent>([_data, _pEditor](const HotReloader::SwapEvent& _event)
@@ -305,42 +333,6 @@ namespace Duckvil { namespace Editor {
 //                 });
 //             }
 //         }
-
-#ifdef DUCKVIL_HOT_RELOADING
-        for(uint32_t i = 0; i < _data->m_aHotDraws.Size(); ++i)
-        {
-            const HotDraw& _widget = _data->m_aHotDraws[i];
-            Widget* _pWidget = (Widget*)DUCKVIL_TRACK_KEEPER_GET_OBJECT(_widget.m_pTrackKeeper);
-
-            if(RuntimeReflection::get_type(_widget.m_typeHandle).m_ullTypeID == RuntimeReflection::get_type(RuntimeReflection::get_type("ViewportWidget", { "Duckvil", "Editor" })).m_ullTypeID)
-            {
-                const auto& _func = RuntimeReflection::get_function_handle<Graphics::Renderer::renderer_ftable*, Graphics::Renderer::renderer_data*>(_widget.m_typeHandle, "SetRenderer");
-                const auto& _func3 = RuntimeReflection::get_function_handle<flecs::world*>(_widget.m_typeHandle, "SetECS");
-
-                RuntimeReflection::invoke_member(_widget.m_typeHandle, _func, _pWidget, _data->m_pRenderer, _data->m_pRendererData);
-                RuntimeReflection::invoke_member(_widget.m_typeHandle, _func3, _pWidget, _data->m_pECS);
-            }
-
-            (_pWidget->*_widget.m_fnInit)(_data->_ctx);
-        }
-#endif
-
-        for(uint32_t i = 0; i < _data->m_aDraws.Size(); ++i)
-        {
-            const Draw& _widget = _data->m_aDraws[i];
-            Widget* _pWidget = static_cast<Widget*>(_widget.m_pObject);
-
-            if(RuntimeReflection::get_type(_widget.m_typeHandle).m_ullTypeID == RuntimeReflection::get_type(RuntimeReflection::get_type("ViewportWidget", { "Duckvil", "Editor" })).m_ullTypeID)
-            {
-                const auto& _func = RuntimeReflection::get_function_handle<Graphics::Renderer::renderer_ftable*, Graphics::Renderer::renderer_data*>(_widget.m_typeHandle, "SetRenderer");
-                const auto& _func3 = RuntimeReflection::get_function_handle<flecs::world*>(_widget.m_typeHandle, "SetECS");
-
-                RuntimeReflection::invoke_member(_widget.m_typeHandle, _func, _pWidget, _data->m_pRenderer, _data->m_pRendererData);
-                RuntimeReflection::invoke_member(_widget.m_typeHandle, _func3, _pWidget, _data->m_pECS);
-            }
-
-            (_pWidget->*_widget.m_fnInit)(_data->_ctx);
-        }
 
         _data->m_pEditorEvents.AddA<SpwanWidgetEvent>([_data, _pEventPool](const SpwanWidgetEvent& _event)
         {
