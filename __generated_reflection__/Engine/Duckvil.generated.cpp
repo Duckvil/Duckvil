@@ -80,7 +80,6 @@ _property = record_property<Graphics::Renderer::renderer_ftable*>(_data, _type, 
 _property = record_property<Graphics::Renderer::renderer_data>(_data, _type, offsetof(Duckvil::__data, m_pRendererData), "m_pRendererData");
 _property = record_property<flecs::world>(_data, _type, offsetof(Duckvil::__data, m_ecs), "m_ecs");
 _property = record_property<EntityFactory>(_data, _type, offsetof(Duckvil::__data, m_entityFactory), "m_entityFactory");
-_property = record_property<Serializer::EntitySerializerSystem*>(_data, _type, offsetof(Duckvil::__data, m_pSerializer), "m_pSerializer");
 _property = record_property<flecs::query<Graphics::TransformComponent>>(_data, _type, offsetof(Duckvil::__data, m_rendererQuery), "m_rendererQuery");
 _property = record_property<ProjectManager::ftable>(_data, _type, offsetof(Duckvil::__data, m_projectManager), "m_projectManager");
 _property = record_property<ProjectManager::data>(_data, _type, offsetof(Duckvil::__data, m_projectManagerData), "m_projectManagerData");

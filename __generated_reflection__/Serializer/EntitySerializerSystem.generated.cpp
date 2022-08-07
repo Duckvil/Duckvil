@@ -36,15 +36,16 @@ record_namespace(_data, _type, "Serializer");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 0);
 record_meta(_data, _type, ReflectionFlags_AutoEventsAdding, true);
 record_meta(_data, _type, Duckvil::ReflectionFlags_AutoInstantiate, false);
+record_meta(_data, _type, ReflectionFlags_AutoEventsAdding, true);
 record_inheritance<ISystem>(_data, _type, __protection::__protection_public);
-_constructor = record_constructor<Duckvil::Serializer::EntitySerializerSystem, const Memory::FreeList&, Event::Pool<Event::mode::immediate>*, Event::Pool<Event::mode::immediate>*, EntityFactory*>(_data, _type);
+_constructor = record_constructor<Duckvil::Serializer::EntitySerializerSystem, const Memory::FreeList&, Event::Pool<Event::mode::immediate>*, EntityFactory*>(_data, _type);
 record_meta(_data, _type, _constructor, 1, "Engine", true);
-record_meta(_data, _type, _constructor, 2, "EntityFactory", true);
 _destructor = record_destructor<Duckvil::Serializer::EntitySerializerSystem>(_data, _type);
 _function = record_function<Duckvil::Serializer::EntitySerializerSystem, bool>(_data, _type, &Duckvil::Serializer::EntitySerializerSystem::Init, "Init");
 _function = record_function<Duckvil::Serializer::EntitySerializerSystem, void, double>(_data, _type, &Duckvil::Serializer::EntitySerializerSystem::Update, "Update");
 _function = record_function<Duckvil::Serializer::EntitySerializerSystem, void, const std::filesystem::path&>(_data, _type, &Duckvil::Serializer::EntitySerializerSystem::Load, "Load");
 _function = record_function<Duckvil::Serializer::EntitySerializerSystem, void, const std::filesystem::path&>(_data, _type, &Duckvil::Serializer::EntitySerializerSystem::Save, "Save");
+_function = record_function<Duckvil::Serializer::EntitySerializerSystem, void, EntityCreatedEvent&>(_data, _type, &Duckvil::Serializer::EntitySerializerSystem::OnEvent, "OnEvent");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

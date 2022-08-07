@@ -49,6 +49,7 @@ _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Editor::vi
 _property = record_property<flecs::world*>(_data, _type, offsetof(Duckvil::Editor::viewport, m_ecs), "m_ecs");
 _property = record_property<flecs::query<Graphics::MeshComponent,Graphics::TransformComponent>>(_data, _type, offsetof(Duckvil::Editor::viewport, m_rendererQuery), "m_rendererQuery");
 _property = record_property<int>(_data, _type, offsetof(Duckvil::Editor::viewport, m_iBackgroundValue), "m_iBackgroundValue");
+_property = record_property<bool>(_data, _type, offsetof(Duckvil::Editor::viewport, m_bFirstTime), "m_bFirstTime");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
