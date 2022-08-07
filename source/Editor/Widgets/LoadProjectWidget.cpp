@@ -81,7 +81,9 @@ namespace Duckvil { namespace Editor {
 
             // ProjectManager::project _loadedProject = _projectManager.m_fnLoadProject(&_projectManagerData, m_aProjects[m_iSelectedProject], "F:/Projects/Duckvil/" + m_aProjects[m_iSelectedProject] + "/bin");
 
-            m_pEngineEventPool->Broadcast(ProjectManager::LoadProjectEvent{ m_aProjects[m_iSelectedProject] });
+            auto _event = ProjectManager::LoadProjectEvent{ m_aProjects[m_iSelectedProject] };
+
+            m_pEngineEventPool->Broadcast(_event);
 
             m_pEditorEventPool->Broadcast(CloseWidgetEvent(this));
         }
