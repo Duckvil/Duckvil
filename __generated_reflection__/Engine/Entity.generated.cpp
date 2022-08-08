@@ -32,7 +32,6 @@ record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMe
 _constructor = record_constructor<Duckvil::Entity>(_data, _type);
 _destructor = record_destructor<Duckvil::Entity>(_data, _type);
 _property = record_property<flecs::entity>(_data, _type, offsetof(Duckvil::Entity, m_entity), "m_entity");
-_property = record_property<bool>(_data, _type, offsetof(Duckvil::Entity, m_bIsValid), "m_bIsValid");
 _function = record_function<Duckvil::Entity, size_t>(_data, _type, &Duckvil::Entity::ID, "ID");
 _namespaces.pop_back();
 _namespaces.pop_back();

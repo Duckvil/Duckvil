@@ -2,11 +2,11 @@
 
 #include "RuntimeReflection/Markers.h"
 
-#define Editor_Widgets_ViewportWidget_h_44_REFLECTION_MODULE_DUMMY 
-#define Editor_Widgets_ViewportWidget_h_44_REFLECTION_MODULE_CASTER \
+#define Editor_Widgets_ViewportWidget_h_47_REFLECTION_MODULE_DUMMY 
+#define Editor_Widgets_ViewportWidget_h_47_REFLECTION_MODULE_CASTER \
 public: \
 static void* Cast(void* _pObject) { return static_cast<ViewportWidget*>(_pObject); }
-#define Editor_Widgets_ViewportWidget_h_44_REFLECTION_MODULE_RUNTIME_COMPILER \
+#define Editor_Widgets_ViewportWidget_h_47_REFLECTION_MODULE_RUNTIME_COMPILER \
 public: \
 void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\
@@ -31,10 +31,10 @@ _pSerializer->SerializeProperty("m_selectedEntity", m_selectedEntity); \
 _pSerializer->SerializeProperty("m_viewportBounds", m_viewportBounds); \
 ISystem::Serialize(_pSerializer); \
 }
-#define Editor_Widgets_ViewportWidget_h_44_GENERATED_BODY \
-Editor_Widgets_ViewportWidget_h_44_REFLECTION_MODULE_DUMMY \
-Editor_Widgets_ViewportWidget_h_44_REFLECTION_MODULE_CASTER \
-Editor_Widgets_ViewportWidget_h_44_REFLECTION_MODULE_RUNTIME_COMPILER
+#define Editor_Widgets_ViewportWidget_h_47_GENERATED_BODY \
+Editor_Widgets_ViewportWidget_h_47_REFLECTION_MODULE_DUMMY \
+Editor_Widgets_ViewportWidget_h_47_REFLECTION_MODULE_CASTER \
+Editor_Widgets_ViewportWidget_h_47_REFLECTION_MODULE_RUNTIME_COMPILER
 
 #undef DUCKVIL_CURRENT_FILE_ID
 #define DUCKVIL_CURRENT_FILE_ID Editor_Widgets_ViewportWidget_h

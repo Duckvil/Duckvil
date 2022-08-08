@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(11)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(12)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -28,16 +28,16 @@ using namespace Duckvil;
 _type = record_type<Duckvil::UUIDComponent>(_data, "UUIDComponent");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 11);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<UUID>(_data, _type, offsetof(Duckvil::UUIDComponent, m_uuid), "m_uuid");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/UUIDComponent.h", 11);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/UUIDComponent.h", 12);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 11;
+return 12;
 }
 #endif

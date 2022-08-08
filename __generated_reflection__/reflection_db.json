@@ -45,7 +45,7 @@
         "Editor\\Viewport.h": {
             "generated_cpp": "Editor\\Viewport.generated.cpp",
             "generated_h": "Editor\\Viewport.generated.h",
-            "hash": "5a0a5a842642fcdeed6c5e9349f4907f",
+            "hash": "3c61eb55e9b91faca51fea642fbd1571",
             "index": 6,
             "name": "Editor"
         },
@@ -122,14 +122,14 @@
         "Editor\\Widgets\\SceneHierarchyWidget.h": {
             "generated_cpp": "Editor\\Widgets\\SceneHierarchyWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\SceneHierarchyWidget.generated.h",
-            "hash": "1e10dac6dd87c028c662bca3c600d201",
+            "hash": "1fec60c67fb1506a922d41288ceb1367",
             "index": 17,
             "name": "Editor"
         },
         "Editor\\Widgets\\ViewportWidget.h": {
             "generated_cpp": "Editor\\Widgets\\ViewportWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\ViewportWidget.generated.h",
-            "hash": "af955b3f3f17c693d99f8135fd3c1065",
+            "hash": "00ddb806f5164db1b0eeb7fe0d67a840",
             "index": 18,
             "name": "Editor"
         },
@@ -143,14 +143,14 @@
         "Engine\\Entity.h": {
             "generated_cpp": "Engine\\Entity.generated.cpp",
             "generated_h": "Engine\\Entity.generated.h",
-            "hash": "7fa76e1889ba1301e61d2f9efa36439d",
+            "hash": "a2e4fb885bbc3ac1c2338005f256c4f2",
             "index": 1,
             "name": "Engine"
         },
         "Engine\\EntityFactory.h": {
             "generated_cpp": "Engine\\EntityFactory.generated.cpp",
             "generated_h": "Engine\\EntityFactory.generated.h",
-            "hash": "a936abe20860e6873608f010cae9f455",
+            "hash": "e92c06d626c0587a4813a3a5d0fc6eff",
             "index": 2,
             "name": "Engine"
         },
@@ -161,60 +161,67 @@
             "index": 3,
             "name": "Engine"
         },
+        "Engine\\Events\\EntityDestroyedEvent.h": {
+            "generated_cpp": "Engine\\Events\\EntityDestroyedEvent.generated.cpp",
+            "generated_h": "Engine\\Events\\EntityDestroyedEvent.generated.h",
+            "hash": "1fdb7362a1358f982e0b3af168336047",
+            "index": 4,
+            "name": "Engine"
+        },
         "Engine\\Events\\InjectConstructorArgumentEvent.h": {
             "generated_cpp": "Engine\\Events\\InjectConstructorArgumentEvent.generated.cpp",
             "generated_h": "Engine\\Events\\InjectConstructorArgumentEvent.generated.h",
             "hash": "99c95e84811dc9a3d8f6b33cb0d30e55",
-            "index": 4,
+            "index": 5,
             "name": "Engine"
         },
         "Engine\\Events\\RequestSystemEvent.h": {
             "generated_cpp": "Engine\\Events\\RequestSystemEvent.generated.cpp",
             "generated_h": "Engine\\Events\\RequestSystemEvent.generated.h",
             "hash": "e3d69bfade78391aad21f662709531ad",
-            "index": 5,
+            "index": 6,
             "name": "Engine"
         },
         "Engine\\ISystem.h": {
             "generated_cpp": "Engine\\ISystem.generated.cpp",
             "generated_h": "Engine\\ISystem.generated.h",
             "hash": "28a524e65a9d96d88787eee471828873",
-            "index": 6,
+            "index": 7,
             "name": "Engine"
         },
         "Engine\\ReflectionFlags.h": {
             "generated_cpp": "Engine\\ReflectionFlags.generated.cpp",
             "generated_h": "Engine\\ReflectionFlags.generated.h",
             "hash": "7ff9348074fe37cb7b8c54d026bbd145",
-            "index": 7,
+            "index": 8,
             "name": "Engine"
         },
         "Engine\\ReflectionModules\\DummyReflectionModule.h": {
             "generated_cpp": "Engine\\ReflectionModules\\DummyReflectionModule.generated.cpp",
             "generated_h": "Engine\\ReflectionModules\\DummyReflectionModule.generated.h",
             "hash": "e42999f940b2a49d22840605c171778c",
-            "index": 8,
+            "index": 9,
             "name": "Engine"
         },
         "Engine\\ReflectionModules\\NamedArgumentsReflectionModule.h": {
             "generated_cpp": "Engine\\ReflectionModules\\NamedArgumentsReflectionModule.generated.cpp",
             "generated_h": "Engine\\ReflectionModules\\NamedArgumentsReflectionModule.generated.h",
             "hash": "421ad5df5b3d2575674a9afa5c8e5435",
-            "index": 9,
+            "index": 10,
             "name": "Engine"
         },
         "Engine\\Time.h": {
             "generated_cpp": "Engine\\Time.generated.cpp",
             "generated_h": "Engine\\Time.generated.h",
             "hash": "965b90ba6999acc6c503fd302932179f",
-            "index": 10,
+            "index": 11,
             "name": "Engine"
         },
         "Engine\\UUIDComponent.h": {
             "generated_cpp": "Engine\\UUIDComponent.generated.cpp",
             "generated_h": "Engine\\UUIDComponent.generated.h",
             "hash": "3143a88100567c8fdaaeb801c2a35f57",
-            "index": 11,
+            "index": 12,
             "name": "Engine"
         },
         "Event\\BufferedPool.h": {
@@ -276,7 +283,7 @@
         "Graphics\\Renderer\\Renderer.h": {
             "generated_cpp": "Graphics\\Renderer\\Renderer.generated.cpp",
             "generated_h": "Graphics\\Renderer\\Renderer.generated.h",
-            "hash": "b195277e2d4d189eb5b2e4f47427232d",
+            "hash": "110fc9bcc6bc22772cf60da68c6448d9",
             "index": 3,
             "name": "Graphics"
         },
