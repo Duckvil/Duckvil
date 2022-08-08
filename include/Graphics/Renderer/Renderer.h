@@ -242,7 +242,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         );
     }
 
-    static inline void read_pixel_colors(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t m_uiAttachmentIndex, int _iX, int _iY, void (*_fnCallback)(int _iValue))
+    static inline void read_pixel_colors(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t m_uiAttachmentIndex, int _iX, int _iY, void (*_fnCallback)(uint32_t _uiValue))
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_read_pixels,
             {

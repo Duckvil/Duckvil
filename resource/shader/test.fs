@@ -1,10 +1,10 @@
 #version 450
 
 out vec4 color;
-out int entityID;
+out unsigned int entityID;
 
 in vec2 texCoord0;
-in flat int entityID0;
+in flat unsigned int entityID0;
 
 uniform sampler2D tex;
 

@@ -39,7 +39,7 @@ namespace Duckvil { namespace Editor {
         flecs::world* m_ecs;
         flecs::query<Graphics::MeshComponent, Graphics::TransformComponent> m_rendererQuery;
 
-        int m_iBackgroundValue = -1;
+        int m_iBackgroundValue = 0;
         bool m_bFirstTime = true;
     };
 
@@ -96,9 +96,9 @@ namespace Duckvil { namespace Editor {
         {
             GLfloat _filtes[] = { GL_LINEAR };
             void* _data[] = { 0 };
-            GLint _internalFormats[] = { GL_R32I };
+            GLint _internalFormats[] = { GL_R32UI };
             GLenum _formats[] = { GL_RED_INTEGER };
-            GLenum _types[] = { GL_INT };
+            GLenum _types[] = { GL_UNSIGNED_INT };
 
             _pViewport->m_entityIdTextureObject =
                 _pRenderer->m_fnCreateTextureObject(

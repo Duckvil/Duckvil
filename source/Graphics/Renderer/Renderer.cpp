@@ -393,8 +393,8 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 uint32_t _attachmentIndex;
                 int _x;
                 int _y;
-                void (*_fnCallback)(int);
-                int _value;
+                void (*_fnCallback)(uint32_t);
+                uint32_t _value;
 
                 Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_attachmentIndex);
                 Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_x);
@@ -403,7 +403,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_fnCallback);
 
                 glReadBuffer(GL_COLOR_ATTACHMENT0 + _attachmentIndex);
-                glReadPixels(_x, _y, 1, 1, GL_RED_INTEGER, GL_INT, &_value);
+                glReadPixels(_x, _y, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &_value);
 
                 _fnCallback(_value);
             }

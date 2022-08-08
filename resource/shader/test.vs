@@ -2,10 +2,10 @@
 
 in vec3 position;
 in vec2 texCoord;
-in int entityID;
+in unsigned int entityID;
 
 out vec2 texCoord0;
-out flat int entityID0;
+out flat unsigned int entityID0;
 
 uniform mat4 transform;
 
