@@ -18,8 +18,6 @@
 
 #include "ImGuizmo/ImGuizmo.h"
 
-#include "Editor/Events/EntitySelectedEvent.h"
-
 namespace Duckvil { namespace Editor {
 
     void decompose(const glm::mat4& m, glm::vec3& pos, glm::quat& rot, glm::vec3& scale)
@@ -51,14 +49,8 @@ namespace Duckvil { namespace Editor {
         m_pECS(_pECS),
         m_pEntityFactory(_pEntityFactory)
     {
-        _pEditorEventPool->Add(
-            Utils::lambda(
-                [this](const EntitySelectedEvent& _event)
-                {
-                    m_selectedEntity = _event.m_entity;
-                }
-            )
-        );
+        _pEditorEventPool->Add<EntitySelectedEvent>(this, &ViewportWidget::OnEvent);
+        _pEditorEventPool->Add<EntityDestroyedEvent>(this, &ViewportWidget::OnEvent);
     }
 
     ViewportWidget::~ViewportWidget()
@@ -227,21 +219,18 @@ namespace Duckvil { namespace Editor {
                 1,
                 (int)_mx,
                 (int)_my,
-                Utils::lambda([this](int _iValue)
+                Utils::lambda([&](uint32_t _uiValue)
                 {
-                    if(_iValue == -1)
+                    if(_uiValue == 0)
                     {
-                        m_selectedEntity.m_bIsValid = false;
+                        m_selectedEntity = Entity();
+
+                        m_pEditorEventPool->Broadcast(EntitySelectedEvent{ m_selectedEntity });
 
                         return;
                     }
 
-                    if(_iValue == 0)
-                    {
-                        return;
-                    }
-
-                    m_selectedEntity = m_pEntityFactory->FromID(_iValue);
+                    m_pEditorEventPool->Broadcast(EntitySelectedEvent{ m_pEntityFactory->FromID(_uiValue) });
                 })
             );
         }
@@ -287,36 +276,27 @@ namespace Duckvil { namespace Editor {
         const auto& _view = m_viewport.m_view;
         const auto& _projection = m_viewport.m_projection;
 
-        if(m_selectedEntity.m_bIsValid)
+        if (m_pEntityFactory->IsValid(m_selectedEntity) && m_selectedEntity.Has<Graphics::TransformComponent>())
         {
-            // TODO: Change that...
-            m_selectQuery.each(
-                [&](const UUIDComponent& _uuid, Graphics::TransformComponent& _transform)
-                {
-                    if(!m_selectedEntity.Has<UUIDComponent>() || m_selectedEntity.Get<UUIDComponent>().m_uuid != _uuid.m_uuid)
-                    {
-                        return;
-                    }
+            auto _t = m_selectedEntity.m_entity.get_mut<Graphics::TransformComponent>();
 
-                    glm::mat4 _model = glm::translate(_transform.m_position) * glm::toMat4(_transform.m_rotation) * glm::scale(_transform.m_scale);
+            glm::mat4 _model = glm::translate(_t->m_position) * glm::toMat4(_t->m_rotation) * glm::scale(_t->m_scale);
 
-                    ImGuizmo::Manipulate(glm::value_ptr(_view), glm::value_ptr(_projection), ImGuizmo::OPERATION::UNIVERSAL, ImGuizmo::LOCAL, glm::value_ptr(_model));
+            ImGuizmo::Manipulate(glm::value_ptr(_view), glm::value_ptr(_projection), ImGuizmo::OPERATION::UNIVERSAL, ImGuizmo::LOCAL, glm::value_ptr(_model));
 
-                    if(ImGuizmo::IsUsing())
-                    {
-                        glm::vec3 _position;
-                        glm::quat _rotation;
-                        glm::vec3 _scale;
+            if (ImGuizmo::IsUsing())
+            {
+                glm::vec3 _position;
+                glm::quat _rotation;
+                glm::vec3 _scale;
 
-                        decompose(_model, _position, _rotation, _scale);
-                        
-                        _transform.m_position = _position;
-                        _transform.m_rotation = _rotation;
-                        _transform.m_scale = _scale;
-                        
-                    }
-                }
-            );
+                decompose(_model, _position, _rotation, _scale);
+
+                _t->m_position = _position;
+                _t->m_rotation = _rotation;
+                _t->m_scale = _scale;
+
+            }
         }
 
         m_bIsWindowFocused = ImGui::IsWindowFocused();
@@ -481,6 +461,16 @@ namespace Duckvil { namespace Editor {
         }
 
         return false;
+    }
+
+    void ViewportWidget::OnEvent(const EntitySelectedEvent& _event)
+    {
+        m_selectedEntity = _event.m_entity;
+    }
+
+    void ViewportWidget::OnEvent(const EntityDestroyedEvent& _event)
+    {
+        m_selectedEntity = Entity();
     }
 
 }}

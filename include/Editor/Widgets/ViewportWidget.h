@@ -31,6 +31,9 @@
 #include "Engine/UUIDComponent.h"
 #include "Engine/EntityFactory.h"
 
+#include "Editor/Events/EntitySelectedEvent.h"
+#include "Engine/Events/EntityDestroyedEvent.h"
+
 #undef GetMessage
 #undef min
 
@@ -106,6 +109,9 @@ namespace Duckvil { namespace Editor {
         void SetOwner(Duckvil::Network::IConnection::Owner _owner) override;
 
         bool OnMessage(const Duckvil::Network::Message& _message, std::shared_ptr<Duckvil::Network::IConnection> _pClient) override;
+
+        void OnEvent(const EntitySelectedEvent& _event);
+        void OnEvent(const EntityDestroyedEvent& _event);
     };
 
 }}

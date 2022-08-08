@@ -10,7 +10,13 @@
 
 #include "Event/ImmediatePool.h"
 
+#include "Engine/EntityFactory.h"
+
+#include "Editor/Events/EntitySelectedEvent.h"
+
 #include "Editor/Widgets/SceneHierarchyWidget.generated.h"
+
+#undef GetObject
 
 namespace Duckvil { namespace Editor {
 
@@ -24,12 +30,18 @@ namespace Duckvil { namespace Editor {
 
         const Event::Pool<Event::mode::immediate>* m_pEditorEventPool;
 
+        EntityFactory* m_pEntityFactory;
+
+        Entity m_selectedEntity;
+
     public:
-        SceneHierarchyWidget(const Memory::FreeList& _heap, flecs::world* _pECS, DUCKVIL_ARGUMENT("Editor") const Event::Pool<Event::mode::immediate>* _pEditorEventPool);
+        SceneHierarchyWidget(const Memory::FreeList& _heap, flecs::world* _pECS, DUCKVIL_ARGUMENT("Editor") Event::Pool<Event::mode::immediate>* _pEditorEventPool, EntityFactory* _pEntityFactory);
         ~SceneHierarchyWidget();
 
         void InitEditor(void* _pImguiContext);
         void OnDraw();
+
+        void OnEvent(const EntitySelectedEvent& _event);
     };
 
 }}

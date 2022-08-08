@@ -82,6 +82,11 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
             return _entity;
         }
 
+        void Destroy(Entity& _entity)
+        {
+            ecs_delete(m_ecs, _entity.m_entity);
+        }
+
         static Entity Clone(const flecs::entity& _entity)
         {
             return Entity(_entity);
@@ -90,6 +95,11 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
         Entity FromID(size_t _ullID)
         {
             return Entity(_ullID, m_ecs);
+        }
+
+        bool IsValid(const Entity& _entity)
+        {
+            return _entity.m_entity.is_alive();
         }
 
         inline Event::Pool<Event::mode::immediate>* GetEventPool() { return &m_eventPool; }

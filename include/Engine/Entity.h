@@ -16,19 +16,19 @@ namespace Duckvil {
         Entity(const flecs::entity& _entity) :
             m_entity(_entity)
         {
-            m_bIsValid = true;
+
         }
 
         Entity(size_t _ullID, flecs::world_t* _pWorld) :
             m_entity(_pWorld, _ullID)
         {
-            m_bIsValid = true;
+
         }
 
     public:
         Entity()
         {
-            m_bIsValid = false;
+
         }
 
         ~Entity()
@@ -37,8 +37,6 @@ namespace Duckvil {
         }
 
         flecs::entity m_entity;
-
-        bool m_bIsValid;
 
         template <typename Type>
         inline Entity& Add(const Type& _component)
@@ -84,7 +82,7 @@ namespace Duckvil {
 
         size_t ID() const
         {
-            return m_entity.id();
+            return m_entity;
         }
     };
 
