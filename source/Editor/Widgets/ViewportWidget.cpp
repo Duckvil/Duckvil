@@ -180,7 +180,7 @@ namespace Duckvil { namespace Editor {
     {
         static ImVec2 _mousePos;
 
-        if(ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Right))
+        if(ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Right) || ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Middle))
         {
             _mousePos = ImGui::GetMousePos();
         }
@@ -193,6 +193,28 @@ namespace Duckvil { namespace Editor {
             {
                 m_viewport.m_rotation = glm::normalize(glm::angleAxis((_newMousePos.y - _mousePos.y) * ImGui::GetIO().DeltaTime, m_viewport.m_rotation * glm::vec3(-1, 0, 0)) *
                     glm::angleAxis((_newMousePos.x - _mousePos.x) * ImGui::GetIO().DeltaTime, glm::vec3(0, -1, 0))) * m_viewport.m_rotation;
+            }
+
+            _mousePos = _newMousePos;
+        }
+
+        ImGuiIO& _io = ImGui::GetIO();
+
+        if(ImGui::IsMouseDown(ImGuiMouseButton_::ImGuiMouseButton_Middle))
+        {
+            auto _newMousePos = ImGui::GetMousePos();
+
+            if(_mousePos.x != _newMousePos.x || _mousePos.y != _newMousePos.y)
+            {
+                if(_io.KeyShift)
+                {
+                    m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(0, 0, -1)) * ((_newMousePos.y - _mousePos.y) * ImGui::GetIO().DeltaTime * 4.f);
+                }
+                else
+                {
+                    m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(1, 0, 0)) * ((_newMousePos.x - _mousePos.x) * ImGui::GetIO().DeltaTime * 4.f);
+                    m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(0, 1, 0)) * ((_newMousePos.y - _mousePos.y) * ImGui::GetIO().DeltaTime * 4.f);
+                }
             }
 
             _mousePos = _newMousePos;
