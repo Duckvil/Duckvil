@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(17)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(18)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -33,7 +33,7 @@ _type = record_type<Duckvil::Editor::SceneHierarchyWidget>(_data, "SceneHierarch
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Editor");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 17);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 18);
 record_inheritance<Widget>(_data, _type, __protection::__protection_public);
 _constructor = record_constructor<Duckvil::Editor::SceneHierarchyWidget, const Memory::FreeList&, flecs::world*, Event::Pool<Event::mode::immediate>*, EntityFactory*>(_data, _type);
 record_meta(_data, _type, _constructor, 2, "Editor", true);
@@ -50,11 +50,11 @@ _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Editor/Widgets/SceneHierarchyWidget.h", 17);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Editor/Widgets/SceneHierarchyWidget.h", 18);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 17;
+return 18;
 }
 #endif

@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(16)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(17)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -33,7 +33,7 @@ _type = record_type<Duckvil::Editor::RuntimeReflectionWidget>(_data, "RuntimeRef
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Editor");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 16);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 17);
 record_inheritance<Widget>(_data, _type, __protection::__protection_public);
 _constructor = record_constructor<Duckvil::Editor::RuntimeReflectionWidget>(_data, _type);
 _constructor = record_constructor<Duckvil::Editor::RuntimeReflectionWidget, const Memory::FreeList&>(_data, _type);
@@ -49,11 +49,11 @@ _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Editor/Widgets/RuntimeReflectionWidget.h", 16);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Editor/Widgets/RuntimeReflectionWidget.h", 17);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 16;
+return 17;
 }
 #endif

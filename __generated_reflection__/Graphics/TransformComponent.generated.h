@@ -16,6 +16,7 @@ _pSerializer->SerializeProperty("m_scale", m_scale); \
 }
 #include "Utils/EntitySerializer.h"
 #include "Utils/ECS.h"
+#include "Engine/Entity.h"
 #define Graphics_TransformComponent_h_23_REFLECTION_MODULE_COMPONENT \
 static void Serialize(nlohmann::json& _jOut, const Entity& _entity)\
 {\
@@ -27,6 +28,17 @@ static void Deserialize(const nlohmann::json& _jIn, Entity& _entity)\
 {\
 Utils::init_ecs();\
 Utils::deserialize_component<TransformComponent>(_jIn, _entity);\
+}\
+static bool Has(const Entity& _entity)\
+{\
+Utils::init_ecs();\
+return _entity.Has<TransformComponent>();\
+}\
+\
+static uint8_t* Get(const Entity& _entity)\
+{\
+Utils::init_ecs();\
+return reinterpret_cast<uint8_t*>(_entity.m_entity.get_mut<TransformComponent>());\
 }
 #define Graphics_TransformComponent_h_23_GENERATED_BODY \
 Graphics_TransformComponent_h_23_REFLECTION_MODULE_DUMMY \

@@ -77,60 +77,67 @@
             "index": 10,
             "name": "Editor"
         },
+        "Editor\\Widgets\\EntityInspectorWidget.h": {
+            "generated_cpp": "Editor\\Widgets\\EntityInspectorWidget.generated.cpp",
+            "generated_h": "Editor\\Widgets\\EntityInspectorWidget.generated.h",
+            "hash": "2a2ae150229e421976204fc352751c62",
+            "index": 11,
+            "name": "Editor"
+        },
         "Editor\\Widgets\\HexEditorWidget.h": {
             "generated_cpp": "Editor\\Widgets\\HexEditorWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\HexEditorWidget.generated.h",
             "hash": "49a15d2746f311a568108829205bc1d4",
-            "index": 11,
+            "index": 12,
             "name": "Editor"
         },
         "Editor\\Widgets\\HexEditorWidgetEvent.h": {
             "generated_cpp": "Editor\\Widgets\\HexEditorWidgetEvent.generated.cpp",
             "generated_h": "Editor\\Widgets\\HexEditorWidgetEvent.generated.h",
             "hash": "3e38b75cd9a89e2c5ea97588019e274d",
-            "index": 12,
+            "index": 13,
             "name": "Editor"
         },
         "Editor\\Widgets\\LoadProjectWidget.h": {
             "generated_cpp": "Editor\\Widgets\\LoadProjectWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\LoadProjectWidget.generated.h",
             "hash": "17934c68a955ebf7e29cec834de2d230",
-            "index": 13,
+            "index": 14,
             "name": "Editor"
         },
         "Editor\\Widgets\\NetworkDebugger.h": {
             "generated_cpp": "Editor\\Widgets\\NetworkDebugger.generated.cpp",
             "generated_h": "Editor\\Widgets\\NetworkDebugger.generated.h",
             "hash": "7e35f72344e427eec045f09138f5e178",
-            "index": 14,
+            "index": 15,
             "name": "Editor"
         },
         "Editor\\Widgets\\NewProjectWidget.h": {
             "generated_cpp": "Editor\\Widgets\\NewProjectWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\NewProjectWidget.generated.h",
             "hash": "833c6a5f116d54278273c9cfb9d17ca1",
-            "index": 15,
+            "index": 16,
             "name": "Editor"
         },
         "Editor\\Widgets\\RuntimeReflectionWidget.h": {
             "generated_cpp": "Editor\\Widgets\\RuntimeReflectionWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\RuntimeReflectionWidget.generated.h",
             "hash": "4118d810ad79786e4cfb9fb170a439ef",
-            "index": 16,
+            "index": 17,
             "name": "Editor"
         },
         "Editor\\Widgets\\SceneHierarchyWidget.h": {
             "generated_cpp": "Editor\\Widgets\\SceneHierarchyWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\SceneHierarchyWidget.generated.h",
             "hash": "1fec60c67fb1506a922d41288ceb1367",
-            "index": 17,
+            "index": 18,
             "name": "Editor"
         },
         "Editor\\Widgets\\ViewportWidget.h": {
             "generated_cpp": "Editor\\Widgets\\ViewportWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\ViewportWidget.generated.h",
             "hash": "00ddb806f5164db1b0eeb7fe0d67a840",
-            "index": 18,
+            "index": 19,
             "name": "Editor"
         },
         "Engine\\Duckvil.h": {
@@ -962,7 +969,7 @@
         "Serializer\\ReflectionModule\\Component.h": {
             "generated_cpp": "Serializer\\ReflectionModule\\Component.generated.cpp",
             "generated_h": "Serializer\\ReflectionModule\\Component.generated.h",
-            "hash": "dcceff142da924dbefec81f9635c0683",
+            "hash": "42152c10ceb242265841c4ddceb0ecec",
             "index": 1,
             "name": "Serializer"
         },

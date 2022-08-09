@@ -2,7 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(12)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(13)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -33,7 +33,7 @@ _type = record_type<Duckvil::Editor::HexEditorWidgetInitEvent>(_data, "HexEditor
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Editor");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 13);
 #ifdef DUCKVIL_MEMORY_DEBUGGER
 _property = record_property<duckvil_memory_debug_info*>(_data, _type, offsetof(Duckvil::Editor::HexEditorWidgetInitEvent, m_pDebugInfo), "m_pDebugInfo");
 #endif
@@ -42,11 +42,11 @@ _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Editor/Widgets/HexEditorWidgetEvent.h", 12);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Editor/Widgets/HexEditorWidgetEvent.h", 13);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 12;
+return 13;
 }
 #endif
