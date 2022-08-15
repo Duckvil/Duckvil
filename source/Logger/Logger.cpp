@@ -8,7 +8,7 @@ namespace Duckvil {
     {
         logger_data _data;
 
-        RuntimeReflection::ReflectedType<__logger_channel_data> _loggerType(_heap);
+        RuntimeReflection::ReflectedType _loggerType(RuntimeReflection::ReflectedType::Tag<__logger_channel_data>{});
 
         static Event::Pool<Event::mode::immediate> _eventPool(_heap, RuntimeReflection::get_current().m_pReflection, RuntimeReflection::get_current().m_pReflectionData);
         // static Memory::Vector<__logger_channel_data> _loggers;
@@ -23,8 +23,8 @@ namespace Duckvil {
             ._pData = RuntimeReflection::get_current().m_pReflectionData
         };
 
-        RuntimeReflection::record_meta(_stuff, _loggerType.GetTypeHandle(), "EventPool", _eventPool);
-        RuntimeReflection::record_meta(_stuff, _loggerType.GetTypeHandle(), "Loggers", _data._loggers);
+        RuntimeReflection::record_meta(_stuff, _loggerType.GetHandle(), "EventPool", _eventPool);
+        RuntimeReflection::record_meta(_stuff, _loggerType.GetHandle(), "Loggers", _data._loggers);
 
         _heap.Allocate(_data.m_aChannels, 1);
 

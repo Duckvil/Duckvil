@@ -5,147 +5,375 @@
 
 #include "HotReloader/ITrackKeeper.h"
 
+#include <stdexcept>
+
 namespace Duckvil { namespace RuntimeReflection {
 
-    template<typename...>
-    struct types
+    class ReflectedArgument
     {
-        using type = types;
-    };
-
-    template<typename T>
-    struct tag
-    {
-        using type = T;
-    };
-
-    // template<typename Tag>
-    // using type_t = typename Tag::type;
-
-    template <typename Type = void>
-    class ReflectedType
-    {
+        template <typename ReturnType, typename... Args>
+        friend class ReflectedFunction;
+        friend class IReflectedFunction;
     private:
-        __data* m_pReflectionData;
-        __ftable* m_pReflection;
-        Memory::FreeList m_heap;
-        DUCKVIL_RESOURCE(type_t) m_typeHandle;
+        __duckvil_resource_argument_t m_handle;
+        __duckvil_resource_function_t m_functionHandle;
+        __duckvil_resource_type_t m_typeHandle;
+        const RuntimeReflection::__argument_t* m_argument;
+
+        ReflectedArgument(const __duckvil_resource_type_t& _typeHandle, const __duckvil_resource_function_t& _functionHandle, const __duckvil_resource_argument_t& _handle) :
+            m_typeHandle(_typeHandle),
+            m_functionHandle(_functionHandle),
+            m_handle(_handle),
+            m_argument(&RuntimeReflection::get_argument(_typeHandle, _functionHandle, _handle))
+        {
+
+        }
 
     public:
-        ReflectedType(__ftable* _pReflection, __data* _pReflectionData, const Memory::FreeList& _heap) :
-            m_pReflectionData(_pReflectionData),
-            m_pReflection(_pReflection),
-            m_heap(_heap)
-        {
-            m_typeHandle = get_type<Type>(m_pReflection, _pReflectionData);
-        }
-
-        ReflectedType(const Memory::FreeList& _heap) :
-            ReflectedType(g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _heap)
+        ~ReflectedArgument()
         {
 
         }
 
-        ~ReflectedType()
+        size_t GetTypeID() const
+        {
+            return m_argument->m_ullTypeID;
+        }
+    };
+
+    class ReflectedProperty
+    {
+        friend class ReflectedType;
+    private:
+        __duckvil_resource_property_t m_handle;
+        __duckvil_resource_type_t m_typeHandle;
+        const RuntimeReflection::__property_t* m_property;
+
+        ReflectedProperty(const __duckvil_resource_type_t& _typeHandle, const __duckvil_resource_property_t& _handle) :
+            m_typeHandle(_typeHandle),
+            m_handle(_handle),
+            m_property(&RuntimeReflection::get_property(_typeHandle, _handle))
         {
 
+        }
+
+    public:
+        ~ReflectedProperty()
+        {
+
+        }
+
+        inline const __duckvil_resource_property_t& GetHandle() const
+        {
+            return m_handle;
+        }
+
+        inline size_t GetTypeID() const
+        {
+            return m_property->m_ullTypeID;
+        }
+
+        inline const char* GetName() const
+        {
+            return m_property->m_sName;
+        }
+
+        inline size_t GetAddress() const
+        {
+            return m_property->m_ullAddress;
+        }
+    };
+
+    class IReflectedFunction
+    {
+        friend class ReflectedType;
+    protected:
+        __duckvil_resource_function_t m_handle;
+        __duckvil_resource_type_t m_typeHandle;
+        const RuntimeReflection::__function_t* m_pFunction;
+
+        IReflectedFunction(const __duckvil_resource_type_t& _typeHandle, const __duckvil_resource_function_t& _handle) :
+            m_typeHandle(_typeHandle),
+            m_handle(_handle),
+            m_pFunction(&RuntimeReflection::get_function(_typeHandle, _handle))
+        {
+
+        }
+
+    public:
+        template <size_t Length>
+        IReflectedFunction(const __duckvil_resource_type_t& _typeHandle, const char(&_sName)[Length]) :
+            m_typeHandle(_typeHandle),
+            m_handle(RuntimeReflection::get_function_handle(_typeHandle, _sName)),
+            m_pFunction(&RuntimeReflection::get_function(_typeHandle, m_handle))
+        {
+
+        }
+
+        virtual ~IReflectedFunction()
+        {
+
+        }
+
+        inline const __duckvil_resource_function_t& GetHandle() const
+        {
+            return m_handle;
+        }
+
+        Memory::Vector<ReflectedArgument> GetArguments(const Memory::FreeList& _heap) const
+        {
+            const auto& _args = RuntimeReflection::get_arguments(_heap, m_typeHandle, m_handle);
+
+            Memory::Vector<ReflectedArgument> _res;
+
+            _heap.Allocate(_res, _args.Size());
+
+            for (uint32_t _i = 0; _i < _args.Size(); _i++)
+            {
+                _res.Allocate(ReflectedArgument(m_typeHandle, m_handle, _args[_i]));
+            }
+
+            return _res;
+        }
+
+        inline size_t GetReturnTypeID() const
+        {
+            return m_pFunction->m_ullReturnTypeID;
+        }
+
+        inline const char* GetName() const
+        {
+            return m_pFunction->m_sFunctionName;
+        }
+
+        inline const void* GetPointer() const
+        {
+            return m_pFunction->m_pRawFunction;
+        }
+
+        inline size_t GetArgumentsTypeID() const
+        {
+            return m_pFunction->m_ullArgumentsTypeID;
         }
 
         template <typename... Args>
-        void* Create(Args... _vArgs)
+        void InvokeM(void* _pObject, Args... _vArgs)
         {
-            return create<Args...>(m_heap, m_pReflection, m_pReflectionData, m_typeHandle, false, _vArgs...);
+            if(((uint8_t)m_pFunction->m_traits & (uint8_t)RuntimeReflection::function_traits::is_static))
+            {
+                throw std::runtime_error("ReflectedFunction is static!");
+            }
+
+            RuntimeReflection::invoke_member<Args...>(m_typeHandle, m_handle, _pObject, _vArgs...);
         }
 
         template <typename... Args>
-        HotReloader::ITrackKeeper* CreateTracked(Args... _vArgs)
+        void InvokeS(Args... _vArgs)
         {
-            return (HotReloader::ITrackKeeper*)create<Args...>(m_heap, m_pReflection, m_pReflectionData, m_typeHandle, true, _vArgs...);
-        }
+            if(!((uint8_t)m_pFunction->m_traits & (uint8_t)function_traits::is_static))
+            {
+                throw std::runtime_error("ReflectedFunction isn't static!");
+            }
 
-        template <typename Type2, typename... Args, std::size_t Length>
-        __function<void(Type2::*)(Args...)>* GetFunctionCallback(const char (&_sName)[Length])
-        {
-            return get_function_callback<Type2, Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _sName);
-        }
-
-        template <typename ReturnType, typename Type2, typename... Args, std::size_t Length>
-        __function<ReturnType(Type2::*)(Args...)>* GetFunctionCallback(const char (&_sName)[Length])
-        {
-            return get_function_callback<ReturnType, Type2, Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _sName);
-        }
-
-        template <typename... Args, std::size_t Length>
-        __duckvil_resource_function_t GetFunctionHandle(const char (&_sName)[Length])
-        {
-            return get_function_handle<Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _sName);
-        }
-
-        template <typename... Args>
-        void Invoke(__duckvil_resource_function_t _functionHandle, void* _pObject, Args... _vArgs)
-        {
-            invoke_member<Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _functionHandle, _pObject, _vArgs...);
-        }
-
-        template <typename... Args, std::size_t Length>
-        void Invoke(const char (&_sName)[Length], void* _pObject, Args... _vArgs)
-        {
-            Invoke<Args...>(GetFunctionHandle<Args...>(_sName), _pObject, _vArgs...);
+            RuntimeReflection::invoke_static<Args...>(m_typeHandle, m_handle, _vArgs...);
         }
 
         template <typename ReturnType, typename... Args>
-        ReturnType InvokeStatic(__duckvil_resource_function_t _functionHandle, Args... _vArgs)
+        ReturnType InvokeMR(void* _pObject, Args... _vArgs)
         {
-            return invoke_static_result<ReturnType, Args...>(m_pReflectionData, m_typeHandle, _functionHandle, _vArgs...);
+            if(((uint8_t)m_pFunction->m_traits & (uint8_t)RuntimeReflection::function_traits::is_static))
+            {
+                throw std::runtime_error("ReflectedFunction is static!");
+            }
+
+            return RuntimeReflection::invoke_member_result<ReturnType, Args...>(m_typeHandle, m_handle, _pObject, _vArgs...);
         }
 
-        template <typename ReturnType, typename... Args, std::size_t Length>
-        ReturnType InvokeStatic(const char (&_sName)[Length], Args... _vArgs)
+        template <typename ReturnType, typename... Args>
+        ReturnType InvokeSR(Args... _vArgs)
         {
-            return InvokeStatic<ReturnType, Args...>(GetFunctionHandle<Args...>(_sName), _vArgs...);
+            if(!((uint8_t)m_pFunction->m_traits & (uint8_t)function_traits::is_static))
+            {
+                throw std::runtime_error("ReflectedFunction isn't static!");
+            }
+
+            return RuntimeReflection::invoke_static_result<ReturnType, Args...>(m_typeHandle, m_handle, _vArgs...);
+        }
+    };
+
+    template <typename ReturnType = void, typename... Args>
+    class ReflectedFunction : public IReflectedFunction
+    {
+        friend class ReflectedType;
+    private:
+        ReflectedFunction(const __duckvil_resource_type_t& _typeHandle, const __duckvil_resource_function_t& _handle) :
+            IReflectedFunction(_typeHandle, _handle)
+        {
+
         }
 
-        const DUCKVIL_RESOURCE(type_t)& GetTypeHandle() const
+    public:
+        template <size_t Length>
+        ReflectedFunction(const __duckvil_resource_type_t& _typeHandle, const char(&_sName)[Length]) :
+            IReflectedFunction(_typeHandle, _sName)
         {
-            return m_typeHandle;
+
+        }
+
+        ~ReflectedFunction()
+        {
+
+        }
+
+        ReturnType InvokeM(void* _pObject, Args... _vArgs)
+        {
+            return InvokeMR<ReturnType, Args...>(_pObject, _vArgs...);
+        }
+
+        ReturnType InvokeS(Args... _vArgs)
+        {
+            return InvokeSR<ReturnType, Args...>(_vArgs...);
+        }
+    };
+
+    template <typename ReturnType>
+    class ReflectedFunction<ReturnType, void> : public IReflectedFunction
+    {
+        friend class ReflectedType;
+    private:
+        ReflectedFunction(const __duckvil_resource_type_t& _typeHandle, const __duckvil_resource_function_t& _handle) :
+            IReflectedFunction(_typeHandle, _handle)
+        {
+
+        }
+
+    public:
+        template <size_t Length>
+        ReflectedFunction(const __duckvil_resource_type_t& _typeHandle, const char(&_sName)[Length]) :
+            IReflectedFunction(_typeHandle, _sName)
+        {
+            
+        }
+
+        ~ReflectedFunction()
+        {
+
+        }
+
+        ReturnType InvokeM(void* _pObject)
+        {
+            return IReflectedFunction::InvokeMR<ReturnType>(_pObject);
+        }
+
+        ReturnType InvokeS()
+        {
+            return IReflectedFunction::InvokeSR<ReturnType>();
         }
     };
 
     template <>
-    class ReflectedType<void>
+    class ReflectedFunction<void, void> : public IReflectedFunction
     {
+        friend class ReflectedType;
     private:
-        __data* m_pReflectionData;
-        __ftable* m_pReflection;
-        Memory::FreeList m_heap;
-        DUCKVIL_RESOURCE(type_t) m_typeHandle;
+        ReflectedFunction(const __duckvil_resource_type_t& _typeHandle, const __duckvil_resource_function_t& _handle) :
+            IReflectedFunction(_typeHandle, _handle)
+        {
+
+        }
 
     public:
-        ReflectedType(__ftable* _pReflection, __data* _pReflectionData, const Memory::FreeList& _heap, DUCKVIL_RESOURCE(type_t) _typeHandle) :
-            m_pReflectionData(_pReflectionData),
-            m_pReflection(_pReflection),
-            m_heap(_heap),
+        template <size_t Length>
+        ReflectedFunction(const __duckvil_resource_type_t& _typeHandle, const char(&_sName)[Length]) :
+            IReflectedFunction(_typeHandle, _sName)
+        {
+
+        }
+
+        ~ReflectedFunction()
+        {
+
+        }
+
+        void InvokeM(void* _pObject)
+        {
+            IReflectedFunction::InvokeM(_pObject);
+        }
+
+        void InvokeS()
+        {
+            IReflectedFunction::InvokeS();
+        }
+    };
+
+    template <typename... Args>
+    class ReflectedFunction<void, Args...> : public IReflectedFunction
+    {
+        friend class ReflectedType;
+    private:
+        ReflectedFunction(const __duckvil_resource_type_t& _typeHandle, const __duckvil_resource_function_t& _handle) :
+            IReflectedFunction(_typeHandle, _handle)
+        {
+
+        }
+
+    public:
+        template <size_t Length>
+        ReflectedFunction(const __duckvil_resource_type_t& _typeHandle, const char(&_sName)[Length]) :
+            IReflectedFunction(_typeHandle, _sName)
+        {
+
+        }
+
+        ~ReflectedFunction()
+        {
+
+        }
+
+        void InvokeM(void* _pObject, Args... vArgs)
+        {
+            IReflectedFunction::InvokeM<Args...>(_pObject, vArgs...);
+        }
+
+        void InvokeS(Args... vArgs)
+        {
+            IReflectedFunction::InvokeS<Args...>(vArgs...);
+        }
+    };
+
+    class ReflectedType
+    {
+    public:
+        template<typename T>
+        struct Tag
+        {
+            using type = T;
+        };
+
+    private:
+        __duckvil_resource_type_t m_typeHandle;
+        const RuntimeReflection::__type_t* m_type;
+
+    public:
+        ReflectedType(const __duckvil_resource_type_t& _typeHandle) :
+            m_type(&RuntimeReflection::get_type(_typeHandle)),
             m_typeHandle(_typeHandle)
         {
 
         }
 
-        ReflectedType(const Memory::FreeList& _heap, DUCKVIL_RESOURCE(type_t) _typeHandle) :
-            ReflectedType(g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _heap, _typeHandle)
+        template <typename T>
+        ReflectedType(ReflectedType::Tag<T>) :
+            m_typeHandle(RuntimeReflection::get_type<T>()),
+            m_type(&RuntimeReflection::get_type(m_typeHandle))
         {
 
         }
 
-        template <typename Type>
-        ReflectedType(__ftable* _pReflection, __data* _pReflectionData, const Memory::FreeList& _heap, tag<Type>) :
-            ReflectedType(_pReflection, _pReflectionData, _heap, get_type<Type>(m_pReflection, _pReflectionData))
-        {
-
-        }
-
-        template <typename Type>
-        ReflectedType(const Memory::FreeList& _heap, tag<Type>) :
-            ReflectedType(g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData, _heap, get_type<Type>(g_duckvilFrontendReflectionContext.m_pReflection, g_duckvilFrontendReflectionContext.m_pReflectionData))
+        template <size_t Length>
+        ReflectedType(const char (&_sName)[Length], const std::vector<const char*>& _aNamespaces = {}) :
+            m_typeHandle(RuntimeReflection::get_type(_sName, _aNamespaces)),
+            m_type(&RuntimeReflection::get_type(m_typeHandle))
         {
 
         }
@@ -155,116 +383,156 @@ namespace Duckvil { namespace RuntimeReflection {
 
         }
 
-        template <typename... Args>
-        void* Create(Args... _vArgs)
+        inline const char* GetName() const
         {
-            return create<Args...>(m_heap, m_pReflection, m_pReflectionData, m_typeHandle, false, _vArgs...);
+            return m_type->m_sTypeName;
         }
 
-        template <typename... Args>
-        HotReloader::ITrackKeeper* CreateTracked(Args... _vArgs)
+        inline size_t GetTypeID() const
         {
-            return (HotReloader::ITrackKeeper*)create<Args...>(m_heap, m_pReflection, m_pReflectionData, m_typeHandle, true, _vArgs...);
+            return m_type->m_ullTypeID;
         }
 
-// Constructors
-        template <typename... Args>
-        __duckvil_resource_constructor_t GetConstructorHandle()
+        template <typename KeyType>
+        const __variant& GetMeta(const KeyType& _key) const
         {
-            return get_constructor_handle<Args...>(m_pReflectionData, m_typeHandle);
+            return RuntimeReflection::get_meta(m_typeHandle, _key);
         }
 
-        Memory::Vector<__duckvil_resource_constructor_t> GetConstructors()
+        inline const __duckvil_resource_type_t& GetHandle() const
         {
-            return m_pReflection->m_fnGetConstructors(m_pReflectionData, m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_typeHandle); // get_constructors(m_pReflectionData, m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_typeHandle);
+            return m_typeHandle;
         }
 
-// Functions
-        template <typename Type, typename... Args, std::size_t Length>
-        __function<void(Type::*)(Args...)>* GetFunctionCallback(const char (&_sName)[Length])
+        template <typename T>
+        inline bool Inherits() const
         {
-            return get_function_callback<Type, Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _sName);
+            return RuntimeReflection::inherits<T>(m_typeHandle);
+        }
+
+        template <typename... Args, size_t Length>
+        const RuntimeReflection::__duckvil_resource_function_t& GetFunctionHandle(const char (&_sName)[Length]) const
+        {
+            return RuntimeReflection::get_function_handle<Args...>(m_typeHandle, _sName);
+        }
+
+        Memory::Vector<ReflectedProperty> GetProperties(const Memory::FreeList& _heap) const
+        {
+            const auto& _props = RuntimeReflection::get_properties(_heap, m_typeHandle);
+
+            Memory::Vector<ReflectedProperty> _res;
+
+            _heap.Allocate(_res, _props.Size());
+
+            for(uint32_t _i = 0; _i < _props.Size(); _i++)
+            {
+                _res.Allocate(ReflectedProperty(m_typeHandle, _props[_i]));
+            }
+
+            return _res;
+        }
+
+        Memory::Vector<IReflectedFunction> GetFunctions(const Memory::FreeList& _heap) const
+        {
+            const auto& _funcs = RuntimeReflection::get_functions(_heap, m_typeHandle);
+
+            Memory::Vector<IReflectedFunction> _res;
+
+            _heap.Allocate(_res, _funcs.Size());
+
+            for(uint32_t _i = 0; _i < _funcs.Size(); _i++)
+            {
+                _res.Allocate(IReflectedFunction(m_typeHandle, _funcs[_i]));
+            }
+
+            return _res;
+        }
+
+         template <typename Type, typename... Args, std::size_t Length>
+        __function<void(Type::*)(Args...)>* GetFunctionCallbackM(const char (&_sName)[Length])
+        {
+            return get_function_callback_m<Type, Args...>(m_typeHandle, _sName);
         }
 
         template <typename ReturnType, typename Type, typename... Args, std::size_t Length>
-        __function<ReturnType(Type::*)(Args...)>* GetFunctionCallback(const char (&_sName)[Length])
+        __function<ReturnType(Type::*)(Args...)>* GetFunctionCallbackMR(const char (&_sName)[Length])
         {
-            return get_function_callback<ReturnType, Type, Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _sName);
+            return get_function_callback_mr<ReturnType, Type, Args...>(m_typeHandle, _sName);
         }
 
         template <typename ReturnType, typename Type, typename... Args>
-        __function<ReturnType(Type::*)(Args...)>* GetFunctionCallback(DUCKVIL_RESOURCE(function_t) _functionHandle)
+        __function<ReturnType(Type::*)(Args...)>* GetFunctionCallbackMR(DUCKVIL_RESOURCE(function_t) _functionHandle)
         {
-            return get_function_callback<ReturnType, Type, Args...>(m_pReflectionData, m_typeHandle, _functionHandle);
+            return get_function_callback_mr<ReturnType, Type, Args...>(m_typeHandle, _functionHandle);
         }
 
         template <typename Type, typename... Args>
-        __function<void(Type::*)(Args...)>* GetFunctionCallback(DUCKVIL_RESOURCE(function_t) _functionHandle)
+        __function<void(Type::*)(Args...)>* GetFunctionCallbackM(DUCKVIL_RESOURCE(function_t) _functionHandle)
         {
-            return get_function_callback<Type, Args...>(m_pReflectionData, m_typeHandle, _functionHandle);
-        }
-
-        template <typename... Args, std::size_t Length>
-        __duckvil_resource_function_t GetFunctionHandle(const char (&_sName)[Length])
-        {
-            return get_function_handle<Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _sName);
+            return get_function_callback_m<Type, Args...>(m_typeHandle, _functionHandle);
         }
 
         template <typename... Args>
-        void Invoke(__duckvil_resource_function_t _functionHandle, void* _pObject, Args... _vArgs)
+        void* Create(const Memory::FreeList& _heap, Args... _vArgs)
         {
-            invoke_member<Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _functionHandle, _pObject, _vArgs...);
+            return create<Args...>(_heap, m_typeHandle, false, _vArgs...);
         }
 
-        template <typename... Args, std::size_t Length>
-        void Invoke(const char (&_sName)[Length], void* _pObject, Args... _vArgs)
+        template <typename... Args>
+        HotReloader::ITrackKeeper* CreateTracked(const Memory::FreeList& _heap, Args... _vArgs)
         {
-            Invoke<Args...>(GetFunctionHandle<Args...>(_sName), _pObject, _vArgs...);
+            return static_cast<HotReloader::ITrackKeeper*>(create<Args...>(_heap, m_typeHandle, true, _vArgs...));
+        }
+
+        template <typename... Args, size_t Length>
+        void InvokeM(const char (&_sName)[Length], void* _pObject, Args... _vArgs)
+        {
+            const auto& _funcHandle = RuntimeReflection::get_function_handle<Args...>(m_typeHandle, _sName);
+
+            RuntimeReflection::invoke_member<Args...>(m_typeHandle, _funcHandle, _pObject, _vArgs...);
+        }
+
+        template <typename R, typename... Args, size_t Length>
+        R InvokeMR(const char(&_sName)[Length], void* _pObject, Args... _vArgs)
+        {
+            const auto& _funcHandle = RuntimeReflection::get_function_handle<Args...>(m_typeHandle, _sName);
+
+            return RuntimeReflection::invoke_member_result<R, Args...>(m_typeHandle, _funcHandle, _pObject, _vArgs...);
+        }
+
+        template <typename... Args, size_t Length>
+        void InvokeS(const char(&_sName)[Length], Args... _vArgs)
+        {
+            const auto& _funcHandle = RuntimeReflection::get_function_handle<Args...>(m_typeHandle, _sName);
+
+            RuntimeReflection::invoke_static<Args...>(m_typeHandle, _funcHandle, _vArgs...);
+        }
+
+        template <typename R, typename... Args, size_t Length>
+        R InvokeSR(const char(&_sName)[Length], Args... _vArgs)
+        {
+            const auto& _funcHandle = RuntimeReflection::get_function_handle<Args...>(m_typeHandle, _sName);
+
+            return RuntimeReflection::invoke_static_result<R, Args...>(m_typeHandle, _funcHandle, _vArgs...);
+        }
+
+        template <typename ReturnType, typename... Args, size_t Length>
+        ReflectedFunction<ReturnType, Args...> GetFunction(const char (&_sName)[Length])
+        {
+            const auto& _handle = RuntimeReflection::get_function_handle<Args...>(m_typeHandle, _sName);
+
+            return ReflectedFunction<ReturnType, Args...>(m_typeHandle, _handle);
         }
 
         template <typename ReturnType, typename... Args>
-        ReturnType InvokeStatic(__duckvil_resource_function_t _functionHandle, Args... _vArgs)
+        ReflectedFunction<ReturnType, Args...> GetFunction(const RuntimeReflection::__duckvil_resource_function_t& _handle)
         {
-            return invoke_static_result<ReturnType, Args...>(m_pReflection, m_pReflectionData, m_typeHandle, _functionHandle, _vArgs...);
+            return ReflectedFunction<ReturnType, Args...>(m_typeHandle, _handle);
         }
 
-        template <typename ReturnType, typename... Args, std::size_t Length>
-        ReturnType InvokeStatic(const char (&_sName)[Length], Args... _vArgs)
+        IReflectedFunction GetFunction(const RuntimeReflection::__duckvil_resource_function_t& _handle)
         {
-            return InvokeStatic<ReturnType, Args...>(GetFunctionHandle<Args...>(_sName), _vArgs...);
-        }
-
-        const __function_t& GetFunction(const __duckvil_resource_function_t& _functionHandle) const
-        {
-            return get_function(m_pReflection, m_pReflectionData, m_typeHandle, _functionHandle);
-        }
-
-        Memory::Vector<DUCKVIL_RESOURCE(function_t)> GetFunctions() const
-        {
-            return get_functions(m_pReflection, m_pReflectionData, m_typeHandle);
-        }
-
-        template <typename KeyType>
-        const __duckvil_resource_variant_t& GetMetaHandle(const KeyType& _key) const
-        {
-            return get_meta_value_handle(m_pReflection, m_pReflectionData, m_typeHandle, _key);
-        }
-
-        template <typename KeyType>
-        const __variant& GetMetaVariant(const KeyType& _key) const
-        {
-            return get_meta(m_pReflection, m_pReflectionData, m_typeHandle, _key);
-        }
-
-        template <typename Type>
-        bool Inherits() const
-        {
-            return inherits<Type>(m_pReflection, m_pReflectionData, m_typeHandle);
-        }
-
-        const DUCKVIL_RESOURCE(type_t)& GetTypeHandle() const
-        {
-            return m_typeHandle;
+            return IReflectedFunction(m_typeHandle, _handle);
         }
     };
 

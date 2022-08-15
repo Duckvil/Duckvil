@@ -438,7 +438,7 @@ namespace Duckvil { namespace ProjectManager {
         {
             auto _runtimeCompilerType = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>();
 
-            RuntimeReflection::ReflectedType<HotReloader::RuntimeCompilerSystem> _type(_pData->m_heap);
+            RuntimeReflection::ReflectedType _type(RuntimeReflection::ReflectedType::Tag<HotReloader::RuntimeCompilerSystem>{});
 
             HotReloader::RuntimeCompilerSystem::user_data* _actionData =
                 _pData->m_heap.Allocate<HotReloader::RuntimeCompilerSystem::user_data>();
@@ -450,6 +450,7 @@ namespace Duckvil { namespace ProjectManager {
                 HotReloader::FileWatcher::ActionCallback,
                 void*
             >(
+                (const Memory::FreeList&)_pData->m_heap,
                 (const Memory::FreeList&)_pData->m_heap,
                 _pData->m_pEngineEventPool,
                 static_cast<Event::Pool<Event::mode::immediate>*>(RuntimeReflection::get_current().m_pReflectionData->m_pEvents),
@@ -472,12 +473,12 @@ namespace Duckvil { namespace ProjectManager {
 
             (static_cast<Event::Pool<Event::mode::immediate>*>(RuntimeReflection::get_current().m_pReflectionData->m_pEvents))->Add<RuntimeReflection::TrackedObjectCreatedEvent>(_pData->m_pRuntimeCompilerSystem);
 
-            _pData->m_fnRuntimeCompilerUpdate = _type.GetFunctionCallback<ISystem, double>("Update")->m_fnFunction;
-            _pData->m_fnRuntimeCompilerInit = _type.GetFunctionCallback<bool, ISystem, const std::vector<std::filesystem::path>&>("Init")->m_fnFunction;
+            _pData->m_fnRuntimeCompilerUpdate = _type.GetFunctionCallbackM<ISystem, double>("Update")->m_fnFunction;
+            _pData->m_fnRuntimeCompilerInit = _type.GetFunctionCallbackMR<bool, ISystem, const std::vector<std::filesystem::path>&>("Init")->m_fnFunction;
 
-            _type.Invoke<const Memory::FreeList&>("SetObjectsHeap", _pData->m_pRuntimeCompilerSystem, _pData->m_objectsHeap);
+            _type.InvokeM<const Memory::FreeList&>("SetObjectsHeap", _pData->m_pRuntimeCompilerSystem, _pData->m_objectsHeap);
             // _type.Invoke<Memory::Vector<PlugNPlay::__module_information>*>("SetModules", _pData->m_pRuntimeCompilerSystem, &_pData->m_aLoadedModules);
-            _type.Invoke<Memory::ThreadsafeVector<duckvil_recorderd_types>*>("SetReflectedTypes", _pData->m_pRuntimeCompilerSystem, &_project.m_aTypes);
+            _type.InvokeM<Memory::ThreadsafeVector<duckvil_recorderd_types>*>("SetReflectedTypes", _pData->m_pRuntimeCompilerSystem, &_project.m_aTypes);
 
             if(!(_pData->m_pRuntimeCompilerSystem->*_pData->m_fnRuntimeCompilerInit)(
                 {

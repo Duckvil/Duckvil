@@ -25,9 +25,9 @@ namespace Duckvil { namespace Editor {
     {
         ImGui::SetCurrentContext((ImGuiContext*)_pImguiContext);
 
-        RuntimeReflection::ReflectedType<__logger_channel_data> _loggerType(m_heap);
+        RuntimeReflection::ReflectedType _loggerType(RuntimeReflection::ReflectedType::Tag<__logger_channel_data>{});
 
-        Event::Pool<Event::mode::immediate>* aaa = (Event::Pool<Event::mode::immediate>*)RuntimeReflection::get_meta_value_ptr(_loggerType.GetTypeHandle(), "EventPool");
+        Event::Pool<Event::mode::immediate>* aaa = (Event::Pool<Event::mode::immediate>*)RuntimeReflection::get_meta_value_ptr(_loggerType.GetHandle(), "EventPool");
 
         aaa->Add<__logger_channel_log_info>(this, &ConsoleWidget::OnEvent);
     }

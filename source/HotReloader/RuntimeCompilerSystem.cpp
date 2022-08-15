@@ -190,8 +190,8 @@ namespace Duckvil { namespace HotReloader {
         for(size_t j = 0; j < _newTypes.m_ullCount; ++j)
         {
             const Duckvil::RuntimeReflection::__duckvil_resource_type_t& _typeInfo = _newTypes.m_aTypes[j];
-            const RuntimeReflection::ReflectedType<> _type(m_heap, { _typeInfo.m_ID });
-            auto _autoInstantiateMetaFlag = _type.GetMetaVariant(Duckvil::ReflectionFlags::ReflectionFlags_AutoInstantiate);
+            RuntimeReflection::ReflectedType _type(_typeInfo);
+            auto _autoInstantiateMetaFlag = _type.GetMeta(Duckvil::ReflectionFlags::ReflectionFlags_AutoInstantiate);
 
             if((!_type.Inherits<Editor::Widget>() && !_type.Inherits<ISystem>()) ||
                 (_autoInstantiateMetaFlag.m_pData != nullptr && !*static_cast<bool*>(_autoInstantiateMetaFlag.m_pData)))
@@ -274,24 +274,24 @@ namespace Duckvil { namespace HotReloader {
 
         m_compilerTypeHandle = RuntimeReflection::get_type<RuntimeCompiler::Compiler>();
 
-        m_fnInternalCompilerSetup = RuntimeReflection::get_function_callback<bool, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "Setup");
-        m_fnInternalCompilerAddFlag = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddFlag");
-        m_fnInternalCompilerAddFlag2 = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, RuntimeCompiler::Flag>(m_compilerTypeHandle, "AddFlag");
-        m_fnInternalCompilerAddDefine = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddDefine");
-        m_fnInternalCompilerAddInclude = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddInclude");
-        m_fnInternalCompilerAddLibraryPath = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddLibraryPath");
-        m_fnInternalCompilerAddLibrary = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddLibrary");
+        m_fnInternalCompilerSetup = RuntimeReflection::get_function_callback_mr<bool, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "Setup");
+        m_fnInternalCompilerAddFlag = RuntimeReflection::get_function_callback_m<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddFlag");
+        m_fnInternalCompilerAddFlag2 = RuntimeReflection::get_function_callback_m<RuntimeCompiler::Compiler, RuntimeCompiler::Flag>(m_compilerTypeHandle, "AddFlag");
+        m_fnInternalCompilerAddDefine = RuntimeReflection::get_function_callback_m<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddDefine");
+        m_fnInternalCompilerAddInclude = RuntimeReflection::get_function_callback_m<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddInclude");
+        m_fnInternalCompilerAddLibraryPath = RuntimeReflection::get_function_callback_m<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddLibraryPath");
+        m_fnInternalCompilerAddLibrary = RuntimeReflection::get_function_callback_m<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddLibrary");
 
         m_fnInternalCompilerGetFlags =
-            RuntimeReflection::get_function_callback<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetFlags");
+            RuntimeReflection::get_function_callback_mr<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetFlags");
         m_fnInternalCompilerGetDefines =
-            RuntimeReflection::get_function_callback<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetDefines");
+            RuntimeReflection::get_function_callback_mr<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetDefines");
         m_fnInternalCompilerGetIncludes =
-            RuntimeReflection::get_function_callback<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetIncludes");
+            RuntimeReflection::get_function_callback_mr<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetIncludes");
         m_fnInternalCompilerGetLibrariesPaths =
-            RuntimeReflection::get_function_callback<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetLibrariesPaths");
+            RuntimeReflection::get_function_callback_mr<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetLibrariesPaths");
         m_fnInternalCompilerGetLibraries =
-            RuntimeReflection::get_function_callback<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetLibraries");
+            RuntimeReflection::get_function_callback_mr<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetLibraries");
 
         (m_pCompiler->*m_fnInternalCompilerSetup->m_fnFunction)();
     }
@@ -349,24 +349,24 @@ namespace Duckvil { namespace HotReloader {
 
         m_compilerTypeHandle = RuntimeReflection::get_type<RuntimeCompiler::Compiler>();
 
-        m_fnInternalCompilerSetup = RuntimeReflection::get_function_callback<bool, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "Setup");
-        m_fnInternalCompilerAddFlag = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddFlag");
-        m_fnInternalCompilerAddFlag2 = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, RuntimeCompiler::Flag>(m_compilerTypeHandle, "AddFlag");
-        m_fnInternalCompilerAddDefine = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddDefine");
-        m_fnInternalCompilerAddInclude = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddInclude");
-        m_fnInternalCompilerAddLibraryPath = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddLibraryPath");
-        m_fnInternalCompilerAddLibrary = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddLibrary");
+        m_fnInternalCompilerSetup = RuntimeReflection::get_function_callback_mr<bool, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "Setup");
+        m_fnInternalCompilerAddFlag = RuntimeReflection::get_function_callback_m<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddFlag");
+        m_fnInternalCompilerAddFlag2 = RuntimeReflection::get_function_callback_m<RuntimeCompiler::Compiler, RuntimeCompiler::Flag>(m_compilerTypeHandle, "AddFlag");
+        m_fnInternalCompilerAddDefine = RuntimeReflection::get_function_callback_m<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddDefine");
+        m_fnInternalCompilerAddInclude = RuntimeReflection::get_function_callback_m<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddInclude");
+        m_fnInternalCompilerAddLibraryPath = RuntimeReflection::get_function_callback_m<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddLibraryPath");
+        m_fnInternalCompilerAddLibrary = RuntimeReflection::get_function_callback_m<RuntimeCompiler::Compiler, const std::string&>(m_compilerTypeHandle, "AddLibrary");
 
         m_fnInternalCompilerGetFlags =
-            RuntimeReflection::get_function_callback<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetFlags");
+            RuntimeReflection::get_function_callback_mr<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetFlags");
         m_fnInternalCompilerGetDefines =
-            RuntimeReflection::get_function_callback<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetDefines");
+            RuntimeReflection::get_function_callback_mr<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetDefines");
         m_fnInternalCompilerGetIncludes =
-            RuntimeReflection::get_function_callback<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetIncludes");
+            RuntimeReflection::get_function_callback_mr<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetIncludes");
         m_fnInternalCompilerGetLibrariesPaths =
-            RuntimeReflection::get_function_callback<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetLibrariesPaths");
+            RuntimeReflection::get_function_callback_mr<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetLibrariesPaths");
         m_fnInternalCompilerGetLibraries =
-            RuntimeReflection::get_function_callback<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetLibraries");
+            RuntimeReflection::get_function_callback_mr<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetLibraries");
 
         (m_pCompiler->*m_fnInternalCompilerSetup->m_fnFunction)();
     }
@@ -631,7 +631,7 @@ namespace Duckvil { namespace HotReloader {
                 _options.m_aLibraries.push_back(_option);
             }
 
-            RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::vector<std::string>&, const RuntimeCompiler::Options&)>* _compile = RuntimeReflection::get_function_callback<RuntimeCompiler::Compiler, const std::vector<std::string>&, const RuntimeCompiler::Options&>(m_compilerTypeHandle, "Compile");
+            RuntimeReflection::__function<void(RuntimeCompiler::Compiler::*)(const std::vector<std::string>&, const RuntimeCompiler::Options&)>* _compile = RuntimeReflection::get_function_callback_m<RuntimeCompiler::Compiler, const std::vector<std::string>&, const RuntimeCompiler::Options&>(m_compilerTypeHandle, "Compile");
 
             BeforeCompileEvent _beforeCompileEvent;
 

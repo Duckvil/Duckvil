@@ -121,8 +121,8 @@ namespace Duckvil { namespace Editor {
 
         _pRuntimeReflectionEventPool->Add(Utils::lambda([_data, _pEngineEventPool, _pEditor](const RuntimeReflection::TrackedObjectCreatedEvent& _event)
         {
-            RuntimeReflection::ReflectedType<> _type(_data->m_heap, _event.m_pTrackKeeper->GetTypeHandle());
-            RuntimeReflection::__variant _spawnableVariant = _type.GetMetaVariant(ReflectionFlag::Spwanable);
+            RuntimeReflection::ReflectedType _type(_event.m_pTrackKeeper->GetTypeHandle());
+            RuntimeReflection::__variant _spawnableVariant = _type.GetMeta(ReflectionFlag::Spwanable);
 
             if(!_type.Inherits<Widget>() || _spawnableVariant.m_ullTypeID != -1)
             {
@@ -141,7 +141,7 @@ namespace Duckvil { namespace Editor {
                 _data->m_aHotDraws.Resize(_data->m_aHotDraws.Size() * 2);
             }
 
-            const auto& _mainMenuDraw = _type.GetFunctionCallback<Widget>("OnMainMenuDraw");
+            const auto& _mainMenuDraw = _type.GetFunctionCallbackM<Widget>("OnMainMenuDraw");
             void (Widget::*_mainMenuDrawCallback)();
 
             _mainMenuDrawCallback = nullptr;
@@ -154,9 +154,9 @@ namespace Duckvil { namespace Editor {
             const auto& _draw =
                 Editor::HotDraw
                 {
-                    _type.GetFunctionCallback<Widget>("OnDraw")->m_fnFunction,
+                    _type.GetFunctionCallbackM<Widget>("OnDraw")->m_fnFunction,
                     _mainMenuDrawCallback,
-                    _type.GetFunctionCallback<Widget, void*>("InitEditor")->m_fnFunction,
+                    _type.GetFunctionCallbackM<Widget, void*>("InitEditor")->m_fnFunction,
                     _event.m_pTrackKeeper, _event.m_pTrackKeeper->GetTypeHandle()
                 };
 
@@ -171,7 +171,7 @@ namespace Duckvil { namespace Editor {
 
             if(_type.Inherits<Project::Script>())
             {
-                (static_cast<Widget*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_event.m_pTrackKeeper))->*_type.GetFunctionCallback<Widget, void*>("InitEditor")->m_fnFunction)(_data->_ctx);
+                (static_cast<Widget*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_event.m_pTrackKeeper))->*_type.GetFunctionCallbackM<Widget, void*>("InitEditor")->m_fnFunction)(_data->_ctx);
             }
 
             if(RuntimeReflection::get_type(_draw.m_typeHandle).m_ullTypeID == RuntimeReflection::get_type(RuntimeReflection::get_type("ViewportWidget", { "Duckvil", "Editor" })).m_ullTypeID)
@@ -183,7 +183,7 @@ namespace Duckvil { namespace Editor {
                 RuntimeReflection::invoke_member(_draw.m_typeHandle, _func3, static_cast<Widget*>(_event.m_pTrackKeeper->GetObject()), _data->m_pECS);
             }
 
-            (static_cast<Widget*>(_event.m_pTrackKeeper->GetObject())->*_type.GetFunctionCallback<Widget, void*>("InitEditor")->m_fnFunction)(_data->_ctx);
+            (static_cast<Widget*>(_event.m_pTrackKeeper->GetObject())->*_type.GetFunctionCallbackM<Widget, void*>("InitEditor")->m_fnFunction)(_data->_ctx);
 
             // _pEngineEventPool->AddA<HotReloader::SwapEvent>([_data, _pEditor](const HotReloader::SwapEvent& _event)
             // {
@@ -197,8 +197,8 @@ namespace Duckvil { namespace Editor {
 
         _pRuntimeReflectionEventPool->Add(Utils::lambda([_data, _pEngineEventPool, _pEditor](const RuntimeReflection::ObjectCreatedEvent& _event)
         {
-            RuntimeReflection::ReflectedType<> _type(_data->m_heap, { RuntimeReflection::get_type(_event.m_ullTypeID) });
-            RuntimeReflection::__variant _spawnableVariant = _type.GetMetaVariant(ReflectionFlag::Spwanable);
+            RuntimeReflection::ReflectedType _type(RuntimeReflection::get_type(_event.m_ullTypeID));
+            RuntimeReflection::__variant _spawnableVariant = _type.GetMeta(ReflectionFlag::Spwanable);
 
             if(!_type.Inherits<Widget>() || _spawnableVariant.m_ullTypeID != -1)
             {
@@ -217,7 +217,7 @@ namespace Duckvil { namespace Editor {
                 _data->m_aDraws.Resize(_data->m_aDraws.Size() * 2);
             }
 
-            const auto& _mainMenuDraw = _type.GetFunctionCallback<Widget>("OnMainMenuDraw");
+            const auto& _mainMenuDraw = _type.GetFunctionCallbackM<Widget>("OnMainMenuDraw");
             void (Widget::*_mainMenuDrawCallback)();
 
             _mainMenuDrawCallback = nullptr;
@@ -230,10 +230,10 @@ namespace Duckvil { namespace Editor {
             const auto& _draw =
                 Editor::Draw
                 {
-                    _type.GetFunctionCallback<Widget>("OnDraw")->m_fnFunction,
+                    _type.GetFunctionCallbackM<Widget>("OnDraw")->m_fnFunction,
                     _mainMenuDrawCallback,
-                    _type.GetFunctionCallback<Widget, void*>("InitEditor")->m_fnFunction,
-                    _event.m_pObject, _type.GetTypeHandle()
+                    _type.GetFunctionCallbackM<Widget, void*>("InitEditor")->m_fnFunction,
+                    _event.m_pObject, _type.GetHandle()
                 };
 
             _data->m_aDraws.Allocate(
@@ -242,7 +242,7 @@ namespace Duckvil { namespace Editor {
 
             if(_type.GetFunctionHandle<const HexEditorWidgetInitEvent&>("OnEvent").m_ID != -1)
             {
-                _data->m_pEditorEvents.Add<HexEditorWidgetInitEvent>(_event.m_pObject, _type.GetTypeHandle());
+                _data->m_pEditorEvents.Add<HexEditorWidgetInitEvent>(_event.m_pObject, _type.GetHandle());
             }
 
             if(RuntimeReflection::get_type(_draw.m_typeHandle).m_ullTypeID == RuntimeReflection::get_type(RuntimeReflection::get_type("ViewportWidget", { "Duckvil", "Editor" })).m_ullTypeID)
@@ -254,7 +254,7 @@ namespace Duckvil { namespace Editor {
                 RuntimeReflection::invoke_member(_draw.m_typeHandle, _func3, static_cast<Widget*>(_event.m_pObject), _data->m_pECS);
             }
 
-            (static_cast<Widget*>(_event.m_pObject)->*_type.GetFunctionCallback<Widget, void*>("InitEditor")->m_fnFunction)(_data->_ctx);
+            (static_cast<Widget*>(_event.m_pObject)->*_type.GetFunctionCallbackM<Widget, void*>("InitEditor")->m_fnFunction)(_data->_ctx);
         }));
 
         _pEngineEventPool->AddA<HotReloader::SwapEvent>([_data, _pEditor](const HotReloader::SwapEvent& _event)
@@ -335,7 +335,7 @@ namespace Duckvil { namespace Editor {
 
         _data->m_pEditorEvents.AddA<SpwanWidgetEvent>([_data, _pEventPool](const SpwanWidgetEvent& _event)
         {
-            RuntimeReflection::ReflectedType<> _type(_data->m_heap, _event.m_typeHandle);
+            RuntimeReflection::ReflectedType _type(_event.m_typeHandle);
             RuntimeReflection::__variant _spawnableVariant = RuntimeReflection::get_meta(_event.m_typeHandle, ReflectionFlag::Spwanable);
 
             if(_spawnableVariant.m_ullTypeID == -1 || (_spawnableVariant.m_ullTypeID == typeid(bool).hash_code() && !*static_cast<bool*>(_spawnableVariant.m_pData)))
@@ -384,7 +384,7 @@ namespace Duckvil { namespace Editor {
 
                         if(typeid(Event::Pool<Event::mode::immediate>).hash_code() == _argument.m_ullTypeID)
                         {
-                            auto _argumentMeta = RuntimeReflection::get_meta(_type.GetTypeHandle(), _constructorHandle, i, "Editor");
+                            auto _argumentMeta = RuntimeReflection::get_meta(_type.GetHandle(), _constructorHandle, i, "Editor");
 
                             if(_argumentMeta.m_ullTypeID == typeid(bool).hash_code() && *static_cast<bool*>(_argumentMeta.m_pData))
                             {
@@ -392,7 +392,7 @@ namespace Duckvil { namespace Editor {
                             }
                             else
                             {
-                                _argumentMeta = RuntimeReflection::get_meta(_type.GetTypeHandle(), _constructorHandle, i, "Engine");
+                                _argumentMeta = RuntimeReflection::get_meta(_type.GetHandle(), _constructorHandle, i, "Engine");
 
                                 if(_argumentMeta.m_ullTypeID == typeid(bool).hash_code() && *static_cast<bool*>(_argumentMeta.m_pData))
                                 {
@@ -425,7 +425,7 @@ namespace Duckvil { namespace Editor {
                     }
 
                     // const auto& _h = RuntimeReflection::get_constructor_handle<const Memory::FreeList&>(_type.GetTypeHandle());
-                    const auto& _hc = RuntimeReflection::get_constructor(_type.GetTypeHandle(), _constructorHandle);
+                    const auto& _hc = RuntimeReflection::get_constructor(_type.GetHandle(), _constructorHandle);
 
                     c.Call(_hc.m_pData);
 
@@ -438,7 +438,7 @@ namespace Duckvil { namespace Editor {
                 _data->m_aDraws.Resize(_data->m_aDraws.Size() * 2);
             }
 
-            const auto& _mainMenuDraw = _type.GetFunctionCallback<Widget>("OnMainMenuDraw");
+            const auto& _mainMenuDraw = _type.GetFunctionCallbackM<Widget>("OnMainMenuDraw");
             void (Widget::*_mainMenuDrawCallback)();
 
             _mainMenuDrawCallback = nullptr;
@@ -451,9 +451,9 @@ namespace Duckvil { namespace Editor {
             _data->m_aDraws.Allocate(
                 Editor::Draw
                 {
-                    _type.GetFunctionCallback<Widget>("OnDraw")->m_fnFunction,
+                    _type.GetFunctionCallbackM<Widget>("OnDraw")->m_fnFunction,
                     _mainMenuDrawCallback,
-                    _type.GetFunctionCallback<Widget, void*>("InitEditor")->m_fnFunction,
+                    _type.GetFunctionCallbackM<Widget, void*>("InitEditor")->m_fnFunction,
                     _object, _event.m_typeHandle
                 }
             );
@@ -483,7 +483,7 @@ namespace Duckvil { namespace Editor {
 #ifdef DUCKVIL_HOT_RELOADING
         uint32_t _index = -1;
 
-        RuntimeReflection::ReflectedType<> _type(_pData->m_heap, _event.m_pTrackKeeper->GetTypeHandle());
+        RuntimeReflection::ReflectedType _type(_event.m_pTrackKeeper->GetTypeHandle());
         RuntimeReflection::__duckvil_resource_function_t _onDrawFunctionHandle = _type.GetFunctionHandle("OnDraw");
         RuntimeReflection::__duckvil_resource_function_t _onMainMenuDrawFunctionHandle = _type.GetFunctionHandle("OnMainMenuDraw");
         RuntimeReflection::__duckvil_resource_function_t _initEditorFunctionHandle = _type.GetFunctionHandle<void*>("InitEditor");
@@ -493,7 +493,7 @@ namespace Duckvil { namespace Editor {
         {
             HotDraw& _widget = _pData->m_aHotDraws[i];
 
-            if(_widget.m_typeHandle.m_ID == _type.GetTypeHandle().m_ID)
+            if(_widget.m_typeHandle.m_ID == _type.GetHandle().m_ID)
             {
                 _index = i;
 
@@ -510,9 +510,9 @@ namespace Duckvil { namespace Editor {
 
             _pData->m_aHotDraws.Allocate(
                 {
-                    _type.GetFunctionCallback<Widget>(_onDrawFunctionHandle)->m_fnFunction,
-                    _type.GetFunctionCallback<Widget>(_onMainMenuDrawFunctionHandle)->m_fnFunction,
-                    _type.GetFunctionCallback<Widget, void*>(_initEditorFunctionHandle)->m_fnFunction,
+                    _type.GetFunctionCallbackM<Widget>(_onDrawFunctionHandle)->m_fnFunction,
+                    _type.GetFunctionCallbackM<Widget>(_onMainMenuDrawFunctionHandle)->m_fnFunction,
+                    _type.GetFunctionCallbackM<Widget, void*>(_initEditorFunctionHandle)->m_fnFunction,
                     _event.m_pTrackKeeper,
                     // _widgetInheritance,
                     _event.m_pTrackKeeper->GetTypeHandle()
@@ -524,9 +524,9 @@ namespace Duckvil { namespace Editor {
             {
                 HotDraw& _widget = _pData->m_aHotDraws[_index];
 
-                _widget.m_fnDraw = _type.GetFunctionCallback<Widget>(_onDrawFunctionHandle)->m_fnFunction;
-                _widget.m_fnDrawMainMenu = _type.GetFunctionCallback<Widget>(_onMainMenuDrawFunctionHandle)->m_fnFunction;
-                _widget.m_fnInit = _type.GetFunctionCallback<Widget, void*>(_initEditorFunctionHandle)->m_fnFunction;
+                _widget.m_fnDraw = _type.GetFunctionCallbackM<Widget>(_onDrawFunctionHandle)->m_fnFunction;
+                _widget.m_fnDrawMainMenu = _type.GetFunctionCallbackM<Widget>(_onMainMenuDrawFunctionHandle)->m_fnFunction;
+                _widget.m_fnInit = _type.GetFunctionCallbackM<Widget, void*>(_initEditorFunctionHandle)->m_fnFunction;
                 // _widget.m_pObject = _widgetInheritance;
 
                 ((Editor::Widget*)DUCKVIL_TRACK_KEEPER_GET_OBJECT(_event.m_pTrackKeeper)->*_widget.m_fnInit)(ImGui::GetCurrentContext());
