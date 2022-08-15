@@ -301,15 +301,13 @@ namespace Duckvil {
     bool argument_event_pool_inject(__data* _pData, RuntimeReflection::__duckvil_resource_type_t _typeHandle, RuntimeReflection::__duckvil_resource_constructor_t _constructorHandle, const RuntimeReflection::__argument_t& _arg, uint32_t _uiIndex, FunctionArgumentsPusher& _FAP)
     {
         // TODO: Restrict to *const
-        static const size_t _bufferedEventPoolTypeID = typeid(Event::Pool<Event::mode::buffered>*).hash_code();
-        static const size_t _cBufferedEventPoolTypeID = typeid(const Event::Pool<Event::mode::buffered>*).hash_code();
-        static const size_t _immediateEventPoolTypeID = typeid(Event::Pool<Event::mode::immediate>*).hash_code();
-        static const size_t _cImmediateEventPoolTypeID = typeid(const Event::Pool<Event::mode::immediate>*).hash_code();
+        static const size_t _bufferedEventPoolTypeID = typeid(Event::Pool<Event::mode::buffered>).hash_code();
+        static const size_t _immediateEventPoolTypeID = typeid(Event::Pool<Event::mode::immediate>).hash_code();
 
         {
             const auto& _eventPool = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, _uiIndex, "Engine");
 
-            if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && (_immediateEventPoolTypeID == _arg.m_ullTypeID || _cImmediateEventPoolTypeID == _arg.m_ullTypeID))
+            if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && _immediateEventPoolTypeID == _arg.m_ullTypeID)
             {
                 _FAP.Push(&_pData->m_eventPool);
 
@@ -320,7 +318,7 @@ namespace Duckvil {
         {
             const auto& _eventPool = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, _uiIndex, "Window");
 
-            if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && (_bufferedEventPoolTypeID == _arg.m_ullTypeID || _cBufferedEventPoolTypeID == _arg.m_ullTypeID))
+            if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && _bufferedEventPoolTypeID == _arg.m_ullTypeID)
             {
                 _FAP.Push(&_pData->m_windowEventPool);
 
@@ -613,31 +611,31 @@ namespace Duckvil {
                         {
                             _fap.Push(_pData->m_heap);
                         }
-                        else if(typeid(HotReloader::RuntimeCompilerSystem*).hash_code() == _argument.m_ullTypeID)
+                        else if(typeid(HotReloader::RuntimeCompilerSystem).hash_code() == _argument.m_ullTypeID)
                         {
                             _fap.Push(_pData->m_pRuntimeCompiler);
                         }
-                        else if(typeid(ProjectManager::ftable*).hash_code() == _argument.m_ullTypeID)
+                        else if(typeid(ProjectManager::ftable).hash_code() == _argument.m_ullTypeID)
                         {
                             _fap.Push(_pData->m_projectManager);
                         }
-                        else if(typeid(ProjectManager::data*).hash_code() == _argument.m_ullTypeID)
+                        else if(typeid(ProjectManager::data).hash_code() == _argument.m_ullTypeID)
                         {
                             _fap.Push(_pData->m_projectManagerData);
                         }
-                        else if(typeid(Network::IClient*).hash_code() == _argument.m_ullTypeID)
+                        else if(typeid(Network::IClient).hash_code() == _argument.m_ullTypeID)
                         {
                             _fap.Push(_pData->m_pClient);
                         }
-                        else if(typeid(Network::IServer*).hash_code() == _argument.m_ullTypeID)
+                        else if(typeid(Network::IServer).hash_code() == _argument.m_ullTypeID)
                         {
                             _fap.Push(_pData->m_pServer);
                         }
-                        else if(typeid(flecs::world*).hash_code() == _argument.m_ullTypeID)
+                        else if(typeid(flecs::world).hash_code() == _argument.m_ullTypeID)
                         {
                             _fap.Push(&_pData->m_ecs);
                         }
-                        else if(typeid(EntityFactory*).hash_code() == _argument.m_ullTypeID)
+                        else if(typeid(EntityFactory).hash_code() == _argument.m_ullTypeID)
                         {
                             _fap.Push(&_pData->m_entityFactory);
                         }

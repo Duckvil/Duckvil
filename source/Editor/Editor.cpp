@@ -105,13 +105,12 @@ namespace Duckvil { namespace Editor {
                 return;
             }
 
-            static const size_t _eventPoolTypeID = typeid(Event::Pool<Event::mode::immediate>*).hash_code();
-            static const size_t _cEventPoolTypeID = typeid(const Event::Pool<Event::mode::immediate>*).hash_code();
+            static const size_t _eventPoolTypeID = typeid(Event::Pool<Event::mode::immediate>).hash_code();
 
             {
                 const auto& _eventPool = RuntimeReflection::get_meta(_e.m_info.m_typeHandle, _e.m_info.m_constructorHandle, _e.m_info.m_uiArgumentIndex, "Editor");
 
-                if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && (_eventPoolTypeID == _e.m_argument.m_ullTypeID || _cEventPoolTypeID == _e.m_argument.m_ullTypeID))
+                if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && _eventPoolTypeID == _e.m_argument.m_ullTypeID)
                 {
                     _e.m_pFAP->Push(_data->m_pEditorEvents);
 
@@ -372,7 +371,7 @@ namespace Duckvil { namespace Editor {
                             c.Push(_data->m_heap);
                         }
 
-                        if(typeid(HotReloader::RuntimeCompilerSystem*).hash_code() == _argument.m_ullTypeID)
+                        if(typeid(HotReloader::RuntimeCompilerSystem).hash_code() == _argument.m_ullTypeID)
                         {
                             RequestSystemEvent _rEvent;
 
@@ -383,7 +382,7 @@ namespace Duckvil { namespace Editor {
                             c.Push(_rEvent.m_pRequestedSystem);
                         }
 
-                        if(typeid(const Event::Pool<Event::mode::immediate>*).hash_code() == _argument.m_ullTypeID)
+                        if(typeid(Event::Pool<Event::mode::immediate>).hash_code() == _argument.m_ullTypeID)
                         {
                             auto _argumentMeta = RuntimeReflection::get_meta(_type.GetTypeHandle(), _constructorHandle, i, "Editor");
 
@@ -402,7 +401,7 @@ namespace Duckvil { namespace Editor {
                             }
                         }
 
-                        if(typeid(ProjectManager::ftable*).hash_code() == _argument.m_ullTypeID)
+                        if(typeid(ProjectManager::ftable).hash_code() == _argument.m_ullTypeID)
                         {
                             RequestSystemEvent _rEvent;
 
@@ -413,7 +412,7 @@ namespace Duckvil { namespace Editor {
                             c.Push(_rEvent.m_pRequestedSystem);
                         }
 
-                        if(typeid(ProjectManager::data*).hash_code() == _argument.m_ullTypeID)
+                        if(typeid(ProjectManager::data).hash_code() == _argument.m_ullTypeID)
                         {
                             RequestSystemEvent _rEvent;
 

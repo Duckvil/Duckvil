@@ -281,12 +281,35 @@ namespace Duckvil { namespace RuntimeReflection {
         return recorder_generate_meta_info(_key, sizeof(KeyType), _value, sizeof(ValueType));
     }
 
+    template<class T, class U =
+        std::remove_cvref_t<
+            std::remove_pointer_t<
+                std::remove_extent_t<
+                    T
+                >
+            >
+        >
+    >
+    struct remove_all : remove_all<U>
+    {
+
+    };
+
+    template<class T>
+    struct remove_all<T, T>
+    {
+        typedef T type;
+    };
+
+    template<class T>
+    using remove_all_t = typename remove_all<T>::type;
+
     template <typename Type>
-    void get_argument_info(Memory::Queue<__argument_t>& _arguments)
+    static void get_argument_info(Memory::Queue<__argument_t>& _arguments)
     {
         __argument_t _arg = {};
 
-        _arg.m_ullTypeID = typeid(Type).hash_code();
+        _arg.m_ullTypeID = typeid(remove_all_t<Type>).hash_code();
         _arg.m_traits = recorder_generate_property_traits<Type>();
 
         _arguments.Allocate(_arg);
@@ -400,7 +423,9 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename B, std::size_t Length>
     static DUCKVIL_RESOURCE(property_t) record_property(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _typeHandle, uintptr_t _ullOffset, const char (&_sName)[Length])
     {
-        static std::size_t _typeB_ID = typeid(B).hash_code();
+        using StrippedType = remove_all<B>::type;
+
+        static std::size_t _typeB_ID = typeid(StrippedType).hash_code();
 
         return _data._pFunctions->m_fnRecordProperty(_data, _typeHandle, _typeB_ID, _sName, Length, _ullOffset, recorder_generate_property_traits<B>());
     }

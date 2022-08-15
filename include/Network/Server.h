@@ -43,7 +43,10 @@ namespace Duckvil { namespace Network {
         void MessageClient(std::shared_ptr<IConnection> _pClient, const Message& _message) override;
         void MessageAllClients(const Message& _message, std::shared_ptr<IConnection> _pIgnoreClient = nullptr) override;
 
+// Problem with forward declaration and stripping type modifiers
+DUCKVIL_RUNTIME_REFLECTION_PAUSE
         inline void AddSystem(NetworkSystem* _pSystem) override;
+DUCKVIL_RUNTIME_REFLECTION_RESUME
 
         bool OnClientConnect(std::shared_ptr<IConnection> _pClient);
         void OnClientDisconnect(std::shared_ptr<IConnection> _pClient);
