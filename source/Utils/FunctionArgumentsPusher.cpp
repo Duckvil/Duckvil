@@ -202,7 +202,7 @@ namespace Duckvil {
         }
     }
 
-    void FunctionArgumentsPusher::Call(void* func)
+    void FunctionArgumentsPusher::Call(const void* func)
     {
         push(rbx);
         mov(rbx, size_t(func));
