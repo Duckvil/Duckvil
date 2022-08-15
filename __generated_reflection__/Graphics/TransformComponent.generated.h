@@ -2,11 +2,11 @@
 
 #include "RuntimeReflection/Markers.h"
 
-#define Graphics_TransformComponent_h_23_REFLECTION_MODULE_DUMMY 
-#define Graphics_TransformComponent_h_23_REFLECTION_MODULE_CASTER \
+#define Graphics_TransformComponent_h_25_REFLECTION_MODULE_DUMMY 
+#define Graphics_TransformComponent_h_25_REFLECTION_MODULE_CASTER \
 public: \
 static void* Cast(void* _pObject) { return static_cast<TransformComponent*>(_pObject); }
-#define Graphics_TransformComponent_h_23_REFLECTION_MODULE_RUNTIME_COMPILER \
+#define Graphics_TransformComponent_h_25_REFLECTION_MODULE_RUNTIME_COMPILER \
 public: \
 void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\
@@ -17,7 +17,7 @@ _pSerializer->SerializeProperty("m_scale", m_scale); \
 #include "Utils/EntitySerializer.h"
 #include "Utils/ECS.h"
 #include "Engine/Entity.h"
-#define Graphics_TransformComponent_h_23_REFLECTION_MODULE_COMPONENT \
+#define Graphics_TransformComponent_h_25_REFLECTION_MODULE_COMPONENT \
 static void Serialize(nlohmann::json& _jOut, const Entity& _entity)\
 {\
 Utils::init_ecs();\
@@ -40,11 +40,11 @@ static uint8_t* Get(const Entity& _entity)\
 Utils::init_ecs();\
 return reinterpret_cast<uint8_t*>(_entity.m_entity.get_mut<TransformComponent>());\
 }
-#define Graphics_TransformComponent_h_23_GENERATED_BODY \
-Graphics_TransformComponent_h_23_REFLECTION_MODULE_DUMMY \
-Graphics_TransformComponent_h_23_REFLECTION_MODULE_CASTER \
-Graphics_TransformComponent_h_23_REFLECTION_MODULE_RUNTIME_COMPILER \
-Graphics_TransformComponent_h_23_REFLECTION_MODULE_COMPONENT
+#define Graphics_TransformComponent_h_25_GENERATED_BODY \
+Graphics_TransformComponent_h_25_REFLECTION_MODULE_DUMMY \
+Graphics_TransformComponent_h_25_REFLECTION_MODULE_CASTER \
+Graphics_TransformComponent_h_25_REFLECTION_MODULE_RUNTIME_COMPILER \
+Graphics_TransformComponent_h_25_REFLECTION_MODULE_COMPONENT
 
 #undef DUCKVIL_CURRENT_FILE_ID
 #define DUCKVIL_CURRENT_FILE_ID Graphics_TransformComponent_h

@@ -30,7 +30,6 @@ _namespaces.push_back("Renderer");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
 _enum = record_enum<Duckvil::Graphics::Renderer::renderer_op_code>(_data, _ntype, "renderer_op_code");
-_enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Graphics::Renderer::renderer_op_code::renderer_op_code_bind_shader, "renderer_op_code_bind_shader");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Graphics::Renderer::renderer_op_code::renderer_op_code_bind_texture, "renderer_op_code_bind_texture");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Graphics::Renderer::renderer_op_code::renderer_op_code_bind_texture_object, "renderer_op_code_bind_texture_object");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Graphics::Renderer::renderer_op_code::renderer_op_code_bind_framebuffer, "renderer_op_code_bind_framebuffer");
