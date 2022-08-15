@@ -783,10 +783,14 @@ namespace Duckvil { namespace Parser {
             else if(_sToken == "<")
             {
                 _triBrackets++;
+
+                _internalTmp += _sToken;
             }
             else if(_sToken == ">")
             {
                 _triBrackets--;
+
+                _internalTmp += _sToken;
             }
             else if(_sToken == "[")
             {
@@ -1566,6 +1570,7 @@ namespace Duckvil { namespace Parser {
                 {
                     _pAST->m_pPendingScope->m_pParentScope = _pAST->m_pCurrentScope;
 
+                    (static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_accessLevel = _pAST->m_currentAccess;
                     (static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_aTemplates.insert((static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_aTemplates.begin(), _pAST->m_aTemplates.begin(), _pAST->m_aTemplates.end());
 
                     _pAST->m_aTemplates.clear();
@@ -1580,6 +1585,7 @@ namespace Duckvil { namespace Parser {
                 {
                     __ast_entity_structure* _scope = new __ast_entity_structure(__ast_structure_type::__ast_structure_type_class);
 
+                    _scope->m_accessLevel = _pAST->m_currentAccess;
                     _scope->m_aTemplates.insert(_scope->m_aTemplates.begin(), _pAST->m_aTemplates.begin(), _pAST->m_aTemplates.end());
 
                     _pAST->m_aTemplates.clear();
@@ -1597,6 +1603,7 @@ namespace Duckvil { namespace Parser {
                 {
                     _pAST->m_pPendingScope->m_pParentScope = _pAST->m_pCurrentScope;
 
+                    (static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_accessLevel = _pAST->m_currentAccess;
                     (static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_aTemplates.insert((static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope))->m_aTemplates.begin(), _pAST->m_aTemplates.begin(), _pAST->m_aTemplates.end());
 
                     _pAST->m_aTemplates.clear();
@@ -1607,6 +1614,7 @@ namespace Duckvil { namespace Parser {
                 {
                     __ast_entity_structure* _scope = new __ast_entity_structure(__ast_structure_type::__ast_structure_type_struct);
 
+                    _scope->m_accessLevel = _pAST->m_currentAccess;
                     _scope->m_aTemplates.insert(_scope->m_aTemplates.begin(), _pAST->m_aTemplates.begin(), _pAST->m_aTemplates.end());
 
                     _pAST->m_aTemplates.clear();

@@ -156,6 +156,7 @@ namespace Duckvil { namespace Parser {
         std::vector<__ast_inheritance> m_aInheritance;
         std::vector<__ast_template> m_aTemplates;
         uint32_t m_uiGeneratedBodyMacroLine;
+        __ast_access m_accessLevel;
     };
 
     struct __ast_entity_enum : public __ast_entity
