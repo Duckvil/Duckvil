@@ -10,6 +10,10 @@
 
 #include "RuntimeReflection/Meta.h"
 
+#include "Utils/FunctionArgumentsPusher.h"
+
+#include "RuntimeReflection/ReflectedType.h"
+
 namespace Duckvil { namespace Editor {
 
     static void draw_vec3(const char* _sLabel, glm::vec3& _value)
@@ -22,7 +26,8 @@ namespace Duckvil { namespace Editor {
     {
         _pEditorEventPool->Add(this, &EntityInspectorWidget::OnEvent);
 
-        _heap.Allocate(m_aComponentTypeHandles, 1);
+        _heap.Allocate(m_aFunctions, 1);
+
     }
 
     EntityInspectorWidget::~EntityInspectorWidget()
@@ -34,16 +39,85 @@ namespace Duckvil { namespace Editor {
     {
         ImGui::SetCurrentContext(static_cast<ImGuiContext*>(_pImguiContext));
 
+        ecs_os_set_api_defaults();
+
         const auto& _types = RuntimeReflection::get_types();
 
         for(uint32_t _i = 0; _i < _types.Size(); _i++)
         {
-            const auto& _type = _types[_i];
-            const auto& _meta = RuntimeReflection::get_meta(_type, "Component");
+            RuntimeReflection::ReflectedType _type(_types[_i]);
+
+            const auto& _meta = _type.GetMeta("Component");
 
             if(_meta.m_ullTypeID != -1 && _meta.m_pData != nullptr)
             {
-                m_aComponentTypeHandles.Allocate(_type);
+                Component _component;
+
+                _component.m_sTypeName = _type.GetName();
+
+                m_heap.Allocate(_component.m_aFunctions, 1);
+
+                const auto& _props = _type.GetProperties(m_heap);
+                const auto& _funcs = _type.GetFunctions(m_heap);
+
+                for(uint32_t _j = 0; _j < _props.Size(); _j++)
+                {
+                    const auto& _prop = _props[_j];
+
+                    for(uint32_t _k = 0; _k < _funcs.Size(); _k++)
+                    {
+                        const auto& _func = _funcs[_k];
+
+                        if(strcmp(_func.GetName(), "Draw") == 0)
+                        {
+                            const auto& _args = _func.GetArguments(m_heap);
+
+                            if(_args.Size() == 2)
+                            {
+                                const auto& _arg = _args[1];
+
+                                if(_arg.GetTypeID() == _prop.GetTypeID())
+                                {
+                                    if(_component.m_aFunctions.Full())
+                                    {
+                                        _component.m_aFunctions.Resize(_component.m_aFunctions.Size() * 2);
+                                    }
+
+                                    Function _aa;
+
+                                    _aa.m_typeHandle = _type.GetHandle();
+
+                                    _aa.m_hasFuncHandle = _type.GetFunctionHandle<const Entity&>("Has");
+                                    _aa.m_getFuncHandle = _type.GetFunctionHandle<const Entity&>("Get");
+
+                                    _aa.m_pFunction = _func.GetPointer();
+                                    _aa.m_sPropertyName = _prop.GetName();
+                                    _aa.m_ullPropAddress = _prop.GetAddress();
+
+                                    _component.m_aFunctions.Allocate(_aa);
+
+                                    RuntimeReflection::ReflectedFunction<void, void*> _initEditorFunc = _type.GetFunction<void, void*>("InitEditor");
+
+                                    if(_initEditorFunc.GetHandle().m_ID == -1)
+                                    {
+                                        continue;
+                                    }
+
+                                    _initEditorFunc.InvokeS(_pImguiContext);
+
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (m_aFunctions.Full())
+                {
+                    m_aFunctions.Resize(m_aFunctions.Size() * 2);
+                }
+
+                m_aFunctions.Allocate(_component);
             }
         }
     }
@@ -54,60 +128,33 @@ namespace Duckvil { namespace Editor {
 
         if(m_selectedEntity.m_entity != 0)
         {
-            if(m_selectedEntity.Has<UUIDComponent>())
+            for(uint32_t _i = 0; _i < m_aFunctions.Size(); ++_i)
             {
-                ImGui::Text("UUID: %llu", m_selectedEntity.Get<UUIDComponent>().m_uuid.Hash());
-            }
-            else
-            {
-                ImGui::Text("UUID: NONE");
-            }
+                const Component& _c = m_aFunctions[_i];
 
-            for(uint32_t _i = 0; _i < m_aComponentTypeHandles.Size(); _i++)
-            {
-                const auto& _typeHandle = m_aComponentTypeHandles[_i];
-                const auto& _props = RuntimeReflection::get_properties(m_heap, _typeHandle);
-                const RuntimeReflection::__type_t& _type = RuntimeReflection::get_type(_typeHandle);
-
-                const auto& _hasFuncHandle = RuntimeReflection::get_function_handle<const Entity&>(_typeHandle, "Has");
-                bool _has = RuntimeReflection::invoke_static_result<bool, const Entity&>(_typeHandle, _hasFuncHandle, m_selectedEntity);
-
-                if(!_has)
+                if(ImGui::TreeNodeEx(_c.m_sTypeName, ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen, _c.m_sTypeName))
                 {
-                    continue;
-                }
-
-                if(ImGui::TreeNodeEx(_type.m_sTypeName, ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen, _type.m_sTypeName))
-                {
-                    const auto& _getFuncHandle = RuntimeReflection::get_function_handle<const Entity&>(_typeHandle, "Get");
-                    uint8_t* _componentAddress = RuntimeReflection::invoke_static_result<uint8_t*, const Entity&>(_typeHandle, _getFuncHandle, m_selectedEntity);
-
-                    for(uint32_t _j = 0; _j < _props.Size(); _j++)
+                    for(uint32_t _j = 0; _j < _c.m_aFunctions.Size(); ++_j)
                     {
-                        const auto& _propHandle = _props[_j];
-                        const auto& _prop = RuntimeReflection::get_property(_typeHandle, _propHandle);
+                        const Function& _func = _c.m_aFunctions[_j];
 
-                        if(_prop.m_ullTypeID == typeid(glm::vec3).hash_code())
+                        bool _has = RuntimeReflection::invoke_static_result<bool, const Entity&>(_func.m_typeHandle, _func.m_hasFuncHandle, m_selectedEntity);
+
+                        if(!_has)
                         {
-                            uint8_t* _address = _componentAddress + _prop.m_ullAddress;
-
-                            draw_vec3(_prop.m_sName, *reinterpret_cast<glm::vec3*>(_address));
+                            continue;
                         }
-                        else if(_prop.m_ullTypeID == typeid(glm::quat).hash_code())
-                        {
-                            uint8_t* _address = _componentAddress + _prop.m_ullAddress;
 
-                            auto& _quat = *reinterpret_cast<glm::quat*>(_address);
-                            glm::vec3 _rotation = glm::eulerAngles(_quat);
+                        uint8_t* _componentAddress = RuntimeReflection::invoke_static_result<uint8_t*, const Entity&>(_func.m_typeHandle, _func.m_getFuncHandle, m_selectedEntity);
 
-                            _rotation = glm::degrees(_rotation);
+                        FunctionArgumentsPusher _fap(2);
 
-                            draw_vec3(_prop.m_sName, _rotation);
+                        _fap.Push(_func.m_sPropertyName);
+                        _fap.Push(_componentAddress + _func.m_ullPropAddress);
 
-                            _rotation = glm::radians(_rotation);
+                        _fap.Call(_func.m_pFunction);
 
-                            _quat = glm::quat(_rotation);
-                        }
+                        _fap.getCode<void (*)()>()();
                     }
 
                     ImGui::TreePop();

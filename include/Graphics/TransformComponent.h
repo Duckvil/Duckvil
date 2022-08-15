@@ -13,6 +13,8 @@
 
 #include "Utils/EntitySerializer.h"
 
+#include "imgui/imgui.h"
+
 #include "Graphics/TransformComponent.generated.h"
 
 namespace Duckvil { namespace Graphics {
@@ -25,6 +27,21 @@ namespace Duckvil { namespace Graphics {
         glm::vec3 m_position;
         glm::quat m_rotation;
         glm::vec3 m_scale;
+
+        static void InitEditor(void* _pContext)
+        {
+            ImGui::SetCurrentContext(static_cast<ImGuiContext*>(_pContext));
+        }
+
+        static void Draw(const char* _sLabel, glm::vec3* _pValue)
+        {
+            ImGui::DragFloat3(_sLabel, (float*)_pValue, 0.1f);
+        }
+
+        static void Draw(const char* _sLabel, glm::quat* _pValue)
+        {
+
+        }
     };
 
 }}
