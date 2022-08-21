@@ -82,6 +82,19 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
             return _entity;
         }
 
+        Entity Make(void (*_fn)(Entity& _entity))
+        {
+            Entity _entity = m_ecs.entity();
+
+            _fn(_entity);
+
+            EntityCreatedEvent e{ _entity };
+
+            m_eventPool.Broadcast(e);
+
+            return _entity;
+        }
+
         void Destroy(Entity& _entity)
         {
             ecs_delete(m_ecs, _entity.m_entity);
