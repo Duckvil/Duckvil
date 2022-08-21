@@ -49,17 +49,20 @@ namespace Duckvil { namespace Editor {
         {
             if(ImGui::MenuItem("Create Entity"))
             {
-                Entity _e = m_pEntityFactory->Make();
+                Entity _e = m_pEntityFactory->Make(
+                    [](Entity& _entity)
+                    {
+                        _entity.Add<UUIDComponent>();
 
-                _e.Add<UUIDComponent>();
+                        Graphics::TransformComponent _t;
 
-                Graphics::TransformComponent _t;
+                        _t.m_position = glm::vec3(0, 0, 0);
+                        _t.m_scale = glm::vec3(1, 1, 1);
+                        _t.m_rotation = glm::quat(0, 0, 0, 1);
 
-                _t.m_position = glm::vec3(0, 0, 0);
-                _t.m_scale = glm::vec3(1, 1, 1);
-                _t.m_rotation = glm::quat(0, 0, 0, 1);
-
-                _e.Add(_t);
+                        _entity.Add(_t);
+                    }
+                );
             }
 
             ImGui::EndPopup();
