@@ -358,12 +358,20 @@ namespace Duckvil { namespace Editor {
         const auto& _modelLoaderGetRawHandle = RuntimeReflection::get_function_handle(_modelLoaderHandle, "GetRaw");
         const Graphics::ModelLoader::Raw& _raw = RuntimeReflection::invoke_member_result<const Graphics::ModelLoader::Raw&>(_modelLoaderHandle, _modelLoaderGetRawHandle, _modelLoader);
 
+        std::vector<int> _id(_raw.m_aVertices.size(), 0);
+
         Graphics::Renderer::vertex_buffer_object_descriptor _desc[] =
         {
             Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aVertices, 4), // size of vertices should be specified here
             Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _raw.m_aTexCoords, 2),
+            Graphics::Renderer::vertex_buffer_object_descriptor(GL_ARRAY_BUFFER, _id, 1),
             Graphics::Renderer::vertex_buffer_object_descriptor(GL_ELEMENT_ARRAY_BUFFER, _raw.m_aIndices, 1)
         };
+
+        _desc[0].m_type = GL_FLOAT;
+        _desc[1].m_type = GL_FLOAT;
+        _desc[2].m_type = GL_UNSIGNED_INT;
+        _desc[3].m_type = GL_FLOAT;
 
         m_pECS->entity().set([&](Graphics::MeshComponent& _mesh, Graphics::TransformComponent& _transform, NetworkComponent& _netComponent)
         {
