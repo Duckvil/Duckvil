@@ -149,6 +149,34 @@ namespace Duckvil { namespace Network {
         return _message;
     }
 
+    template <size_t Length>
+    static Message& operator << (Message& _message, const char (&_data)[Length])
+    {
+        size_t _s = _message.m_aBody.size();
+
+        _message.m_aBody.resize(_s + Length);
+
+        std::memcpy(_message.m_aBody.data() + _s, _data, Length);
+
+        _message.m_header.m_ullSize = _message.m_aBody.size();
+
+        return _message;
+    }
+
+    template <size_t Length>
+    static Message& operator >> (Message& _message, char (&_data)[Length])
+    {
+        size_t _s = _message.m_aBody.size() - Length;
+
+        std::memcpy(_data, _message.m_aBody.data() + _s, Length);
+
+        _message.m_aBody.resize(_s);
+
+        _message.m_header.m_ullSize = _message.m_aBody.size();
+
+        return _message;
+    }
+
 DUCKVIL_RUNTIME_REFLECTION_PAUSE
 
     struct IConnection;
