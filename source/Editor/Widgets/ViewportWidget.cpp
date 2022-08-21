@@ -51,6 +51,8 @@ namespace Duckvil { namespace Editor {
     {
         _pEditorEventPool->Add<EntitySelectedEvent>(this, &ViewportWidget::OnEvent);
         _pEditorEventPool->Add<EntityDestroyedEvent>(this, &ViewportWidget::OnEvent);
+
+        _pEntityFactory->GetEventPool()->Add<EntityCreatedEvent>(this, &ViewportWidget::OnEvent);
     }
 
     ViewportWidget::~ViewportWidget()
@@ -60,6 +62,8 @@ namespace Duckvil { namespace Editor {
 
     bool ViewportWidget::Init()
     {
+        ecs_os_set_api_defaults();
+
         return true;
     }
 
@@ -298,7 +302,7 @@ namespace Duckvil { namespace Editor {
         const auto& _view = m_viewport.m_view;
         const auto& _projection = m_viewport.m_projection;
 
-        if (m_pEntityFactory->IsValid(m_selectedEntity) && m_selectedEntity.Has<Graphics::TransformComponent>())
+        if(m_pEntityFactory->IsValid(m_selectedEntity) && m_selectedEntity.Has<Graphics::TransformComponent>())
         {
             auto _t = m_selectedEntity.m_entity.get_mut<Graphics::TransformComponent>();
 
@@ -306,7 +310,7 @@ namespace Duckvil { namespace Editor {
 
             ImGuizmo::Manipulate(glm::value_ptr(_view), glm::value_ptr(_projection), ImGuizmo::OPERATION::UNIVERSAL, ImGuizmo::LOCAL, glm::value_ptr(_model));
 
-            if (ImGuizmo::IsUsing())
+            if(ImGuizmo::IsUsing())
             {
                 glm::vec3 _position;
                 glm::quat _rotation;
@@ -318,6 +322,21 @@ namespace Duckvil { namespace Editor {
                 _t->m_rotation = _rotation;
                 _t->m_scale = _scale;
 
+                Network::Message _message(NetworkCommands::EntityUpdate);
+                char _bytes[16];
+
+                m_selectedEntity.Get<UUIDComponent>().m_uuid.GetBytes(_bytes);
+
+                _message << _position << _rotation << _scale << _bytes << EntityUpdateKind::EntityUpdateKind_Transform;
+
+                if(m_pServer != nullptr)
+                {
+                    m_pServer->MessageAllClients(_message);
+                }
+                else if(m_pClient != nullptr)
+                {
+                    m_pClient->Send(_message);
+                }
             }
         }
 
@@ -489,6 +508,142 @@ namespace Duckvil { namespace Editor {
                 return true;
             }
         }
+        else if(_message == NetworkCommands::EntityCreate)
+        {
+            char _uuidBytes[16];
+
+            _msg >> _uuidBytes;
+
+            bool _exists = false;
+
+            m_pECS->query<UUIDComponent>().each(
+                [&_uuidBytes, &_exists](const UUIDComponent& _uuidComponent)
+                {
+                    char _uuidBytes2[16];
+
+                    _uuidComponent.m_uuid.GetBytes(_uuidBytes2);
+
+                    if(memcmp(_uuidBytes2, _uuidBytes, 16) == 0)
+                    {
+                        _exists = true;
+                    }
+                }
+            );
+
+            if(_exists)
+            {
+                return true;
+            }
+
+            m_pEntityFactory->Make(
+                Utils::lambda(
+                    [&_uuidBytes](Entity& _entity)
+                    {
+                        _entity.Add(UUIDComponent{ UUID(_uuidBytes) });
+
+                        Graphics::TransformComponent _t;
+
+                        _t.m_position = glm::vec3(0, 0, 0);
+                        _t.m_scale = glm::vec3(1, 1, 1);
+                        _t.m_rotation = glm::quat(0, 0, 0, 1);
+
+                        _entity.Add(_t);
+                    }
+                )
+            );
+
+            if(m_owner == Network::IConnection::Owner::SERVER)
+            {
+                m_pServer->MessageAllClients(_message, _pClient);
+            }
+
+            return true;
+        }
+        else if(_message == NetworkCommands::EntityUpdate)
+        {
+            EntityUpdateKind _kind;
+            char _uuidBytes[16];
+
+            _msg >> _kind >> _uuidBytes;
+
+            if(_kind == EntityUpdateKind::EntityUpdateKind_Transform)
+            {
+                glm::vec3 _transformPosition;
+                glm::quat _transformRotation;
+                glm::vec3 _transformScale;
+
+                _msg >> _transformScale >> _transformRotation >> _transformPosition;
+
+                m_selectQuery.each(
+                    [&](flecs::entity _entity, const UUIDComponent& _uuidComponent, Graphics::TransformComponent& _transformComponent)
+                    {
+                        char _uuidBytes2[16];
+
+                        _uuidComponent.m_uuid.GetBytes(_uuidBytes2);
+
+                        if(memcmp(_uuidBytes2, _uuidBytes, 16) != 0)
+                        {
+                            return;
+                        }
+
+                        if(!_entity.is_valid() || !_entity.is_alive() || !_entity.has<Graphics::TransformComponent>())
+                        {
+                            return;
+                        }
+
+                        _transformComponent.m_position = _transformPosition;
+                        _transformComponent.m_rotation = _transformRotation;
+                        _transformComponent.m_scale = _transformScale;
+                    }
+                );
+            }
+
+            if(m_owner == Network::IConnection::Owner::SERVER)
+            {
+                m_pServer->MessageAllClients(_message, _pClient);
+            }
+
+            return true;
+        }
+        else if(_message == NetworkCommands::EntityDestroy)
+        {
+            char _uuidBytes[16];
+
+            _msg >> _uuidBytes;
+
+            Entity _entityToDisable;
+
+            m_pECS->query<UUIDComponent>().each(
+                [&_uuidBytes, &_entityToDisable, this](flecs::entity _entity, const UUIDComponent& _uuidComponent)
+                {
+                    char _uuidBytes2[16];
+
+                    _uuidComponent.m_uuid.GetBytes(_uuidBytes2);
+
+                    if(memcmp(_uuidBytes2, _uuidBytes, 16) == 0)
+                    {
+                        _entityToDisable = m_pEntityFactory->Clone(_entity);
+                    }
+                }
+            );
+
+            if(_entityToDisable.m_entity == m_selectedEntity.m_entity)
+            {
+                m_selectedEntity = Entity();
+            }
+
+            if(_entityToDisable.m_entity.is_valid())
+            {
+                _entityToDisable.m_entity.disable();
+            }
+
+            if(m_owner == Network::IConnection::Owner::SERVER)
+            {
+                m_pServer->MessageAllClients(_message, _pClient);
+            }
+
+            return true;
+        }
 
         return false;
     }
@@ -500,7 +655,49 @@ namespace Duckvil { namespace Editor {
 
     void ViewportWidget::OnEvent(const EntityDestroyedEvent& _event)
     {
+        char _bytes[16];
+
+        Network::Message _message(NetworkCommands::EntityDestroy);
+
+        m_selectedEntity.Get<UUIDComponent>().m_uuid.GetBytes(_bytes);
+
+        _message << _bytes;
+
+        if(m_pClient != nullptr)
+        {
+            m_pClient->Send(_message);
+        }
+        else if(m_pServer != nullptr)
+        {
+            m_pServer->MessageAllClients(_message);
+        }
+
         m_selectedEntity = Entity();
+    }
+
+    void ViewportWidget::OnEvent(EntityCreatedEvent& _event)
+    {
+        if(!_event.m_entity.Has<UUIDComponent>())
+        {
+            return;
+        }
+
+        char _bytes[16];
+
+        _event.m_entity.Get<UUIDComponent>().m_uuid.GetBytes(_bytes);
+
+        Network::Message _message(NetworkCommands::EntityCreate);
+
+        _message << _bytes;
+
+        if(m_pClient != nullptr)
+        {
+            m_pClient->Send(_message);
+        }
+        else if(m_pServer != nullptr)
+        {
+            m_pServer->MessageAllClients(_message);
+        }
     }
 
 }}

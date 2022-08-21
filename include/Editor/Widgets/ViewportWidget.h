@@ -49,7 +49,15 @@ namespace Duckvil { namespace Editor {
         enum NetworkCommands
         {
             PlayerMovement,
-            AddPlayer
+            AddPlayer,
+            EntityCreate,
+            EntityDestroy,
+            EntityUpdate
+        };
+
+        enum EntityUpdateKind
+        {
+            EntityUpdateKind_Transform
         };
 
         struct NetworkComponent
@@ -112,6 +120,7 @@ namespace Duckvil { namespace Editor {
 
         void OnEvent(const EntitySelectedEvent& _event);
         void OnEvent(const EntityDestroyedEvent& _event);
+        void OnEvent(EntityCreatedEvent& _event);
     };
 
 }}
