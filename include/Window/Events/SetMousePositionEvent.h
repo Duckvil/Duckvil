@@ -6,6 +6,7 @@ namespace Duckvil { namespace Window {
     {
         int m_iX;
         int m_iY;
+        bool m_bGlobal = false;
     };
 
 }}

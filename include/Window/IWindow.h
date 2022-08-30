@@ -12,7 +12,7 @@ namespace Duckvil { namespace Window {
         virtual void* GetContext() const = 0;
         virtual void PopulateEvents() = 0;
 
-        virtual void SetMousePosition(int _iX, int _iY) = 0;
+        virtual void SetMousePosition(int _iX, int _iY, bool _bGlobal = false) = 0;
 
         virtual void SetProcessEventsCallback(void (*_fnProcessEvents)(void* _pData)) = 0;
     };

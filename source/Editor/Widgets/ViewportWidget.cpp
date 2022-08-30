@@ -69,6 +69,8 @@ namespace Duckvil { namespace Editor {
 
     void ViewportWidget::Update(double _dDelta)
     {
+        m_dDelta = _dDelta;
+
         ZoneScopedN("Viewport update");
 
         m_pWindowEventPool->Reset();
@@ -109,32 +111,35 @@ namespace Duckvil { namespace Editor {
 
         bool _anyMovement = false;
 
-        if(m_aKeys[Window::key_a])
+        if(m_bLookingAround)
         {
-            m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(1, 0, 0)) * (float)_dDelta * 2.f;
+            if(m_aKeys[Window::key_a])
+            {
+                m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(1, 0, 0)) * (float)_dDelta * 4.f;
 
-            _anyMovement = true;
-        }
+                _anyMovement = true;
+            }
 
-        if(m_aKeys[Window::key_d])
-        {
-            m_viewport.m_position -= glm::normalize(m_viewport.m_rotation * glm::vec3(1, 0, 0)) * (float)_dDelta * 2.f;
+            if(m_aKeys[Window::key_d])
+            {
+                m_viewport.m_position -= glm::normalize(m_viewport.m_rotation * glm::vec3(1, 0, 0)) * (float)_dDelta * 4.f;
 
-            _anyMovement = true;
-        }
+                _anyMovement = true;
+            }
 
-        if(m_aKeys[Window::key_w])
-        {
-            m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(0, 0, 1)) * (float)_dDelta * 2.f;
+            if(m_aKeys[Window::key_w])
+            {
+                m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(0, 0, 1)) * (float)_dDelta * 4.f;
 
-            _anyMovement = true;
-        }
+                _anyMovement = true;
+            }
 
-        if(m_aKeys[Window::key_s])
-        {
-            m_viewport.m_position -= glm::normalize(m_viewport.m_rotation * glm::vec3(0, 0, 1)) * (float)_dDelta * 2.f;
+            if(m_aKeys[Window::key_s])
+            {
+                m_viewport.m_position -= glm::normalize(m_viewport.m_rotation * glm::vec3(0, 0, 1)) * (float)_dDelta * 4.f;
 
-            _anyMovement = true;
+                _anyMovement = true;
+            }
         }
 
         if(_anyMovement)
@@ -187,19 +192,6 @@ namespace Duckvil { namespace Editor {
         if(ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Right) || ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Middle))
         {
             _mousePos = ImGui::GetMousePos();
-        }
-
-        if(ImGui::IsMouseDown(ImGuiMouseButton_::ImGuiMouseButton_Right))
-        {
-            auto _newMousePos = ImGui::GetMousePos();
-
-            if(_mousePos.x != _newMousePos.x || _mousePos.y != _newMousePos.y)
-            {
-                m_viewport.m_rotation = glm::normalize(glm::angleAxis((_newMousePos.y - _mousePos.y) * ImGui::GetIO().DeltaTime, m_viewport.m_rotation * glm::vec3(-1, 0, 0)) *
-                    glm::angleAxis((_newMousePos.x - _mousePos.x) * ImGui::GetIO().DeltaTime, glm::vec3(0, -1, 0))) * m_viewport.m_rotation;
-            }
-
-            _mousePos = _newMousePos;
         }
 
         ImGuiIO& _io = ImGui::GetIO();
@@ -341,6 +333,58 @@ namespace Duckvil { namespace Editor {
         }
 
         m_bIsWindowFocused = ImGui::IsWindowFocused();
+
+        bool _isWindowHovered = ImGui::IsWindowHovered();
+
+        if(_isWindowHovered && ImGui::IsMouseDown(ImGuiMouseButton_::ImGuiMouseButton_Right))
+        {
+            m_bLookingAround = true;
+        }
+
+        if(m_bLookingAround && ImGui::IsMouseReleased(ImGuiMouseButton_::ImGuiMouseButton_Right))
+        {
+            m_bLookingAround = false;
+        }
+
+        if(m_bLookingAround)
+        {
+            if(_mousePos.x >= ImGui::GetWindowPos().x + ImGui::GetWindowSize().x)
+            {
+                m_pWindowEventPool->Broadcast(Window::SetMousePositionEvent{ (int)ImGui::GetWindowPos().x + 1, (int)_mousePos.y, true });
+
+                _mousePos = ImGui::GetMousePos();
+            }
+            else if(_mousePos.x <= ImGui::GetWindowPos().x)
+            {
+                m_pWindowEventPool->Broadcast(Window::SetMousePositionEvent{ (int)ImGui::GetWindowPos().x + (int)ImGui::GetWindowSize().x - 1, (int)_mousePos.y, true });
+
+                _mousePos = ImGui::GetMousePos();
+            }
+            else if(_mousePos.y >= ImGui::GetWindowPos().y + ImGui::GetWindowSize().y)
+            {
+                m_pWindowEventPool->Broadcast(Window::SetMousePositionEvent{ (int)_mousePos.x, (int)ImGui::GetWindowPos().y + 1, true });
+
+                _mousePos = ImGui::GetMousePos();
+            }
+            else if(_mousePos.y <= ImGui::GetWindowPos().y)
+            {
+                m_pWindowEventPool->Broadcast(Window::SetMousePositionEvent{ (int)_mousePos.x, (int)ImGui::GetWindowPos().y + (int)ImGui::GetWindowSize().y - 1, true });
+
+                _mousePos = ImGui::GetMousePos();
+            }
+            else
+            {
+                auto _newMousePos = ImGui::GetMousePos();
+
+                if(_mousePos.x != _newMousePos.x || _mousePos.y != _newMousePos.y)
+                {
+                    m_viewport.m_rotation = glm::normalize(glm::angleAxis((_newMousePos.y - _mousePos.y) * (float)m_dDelta * 4, m_viewport.m_rotation * glm::vec3(1, 0, 0)) *
+                        glm::angleAxis((_newMousePos.x - _mousePos.x) * (float)m_dDelta * 4, glm::vec3(0, 1, 0))) * m_viewport.m_rotation;
+                }
+
+                _mousePos = _newMousePos;
+            }
+        }
 
         ImGui::End();
     }

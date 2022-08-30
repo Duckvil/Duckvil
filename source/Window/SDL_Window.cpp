@@ -125,9 +125,16 @@ namespace Duckvil { namespace Window {
         return m_pContext;
     }
 
-    void WindowSDL::SetMousePosition(int _iX, int _iY)
+    void WindowSDL::SetMousePosition(int _iX, int _iY, bool _bGlobal)
     {
-        SDL_WarpMouseInWindow((SDL_Window*)m_pWindow, _iX, _iY);
+        if(_bGlobal)
+        {
+            SDL_WarpMouseGlobal(_iX, _iY);
+        }
+        else
+        {
+            SDL_WarpMouseInWindow(static_cast<SDL_Window*>(m_pWindow), _iX, _iY);
+        }
     }
 
     void WindowSDL::SetProcessEventsCallback(void (*_fnProcessEvents)(void* _pData))

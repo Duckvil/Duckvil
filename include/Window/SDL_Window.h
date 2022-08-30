@@ -34,7 +34,7 @@ namespace Duckvil { namespace Window {
         void* GetWindow() const override;
         void* GetContext() const override;
 
-        void SetMousePosition(int _iX, int _iY) override;
+        void SetMousePosition(int _iX, int _iY, bool _bGlobal = false) override;
 
         void SetProcessEventsCallback(void (*_fnProcessEvents)(void* _pData)) override;
     };

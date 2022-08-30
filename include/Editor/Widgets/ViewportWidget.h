@@ -98,6 +98,9 @@ namespace Duckvil { namespace Editor {
 
         glm::vec2 m_viewportBounds[2];
 
+        bool m_bLookingAround;
+        double m_dDelta = 0;
+
         void SpwanPlayer(uint32_t _uiID);
 
     public:
