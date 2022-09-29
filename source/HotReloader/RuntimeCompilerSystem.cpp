@@ -452,6 +452,7 @@ namespace Duckvil { namespace HotReloader {
 
         (m_pCompiler->*m_fnInternalCompilerAddInclude->m_fnFunction)(_includePath.string());
         (m_pCompiler->*m_fnInternalCompilerAddInclude->m_fnFunction)(_externalPath.string());
+        (m_pCompiler->*m_fnInternalCompilerAddInclude->m_fnFunction)((_externalPath / "json" / "include").string());
         (m_pCompiler->*m_fnInternalCompilerAddInclude->m_fnFunction)(_generatedIncludePath.string());
         (m_pCompiler->*m_fnInternalCompilerAddInclude->m_fnFunction)((_externalPath / "glm").string());
 
@@ -472,6 +473,7 @@ namespace Duckvil { namespace HotReloader {
         (m_pCompiler->*m_fnInternalCompilerAddLibrary->m_fnFunction)("Utils.lib");
         (m_pCompiler->*m_fnInternalCompilerAddLibrary->m_fnFunction)("UniTestFramework.lib");
         (m_pCompiler->*m_fnInternalCompilerAddLibrary->m_fnFunction)("PlugNPlay.lib");
+        (m_pCompiler->*m_fnInternalCompilerAddLibrary->m_fnFunction)("flecs_static.lib");
 #else
 #ifdef DUCKVIL_PLATFORM_LINUX
         (m_pCompiler->*m_fnInternalCompilerAddLibrary->m_fnFunction)("Utils.a");
