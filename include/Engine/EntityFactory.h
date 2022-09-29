@@ -115,6 +115,17 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
             return _entity.m_entity.is_alive();
         }
 
+        template <typename ComponentType, typename... Args>
+        Entity RegisterComponent(Args &&... args) const
+        {
+            return m_ecs.component<ComponentType>(args...);
+        }
+
+        Entity LookupComponent(const char* _sComponentTypeName) const
+        {
+            return m_ecs.lookup(_sComponentTypeName);
+        }
+
         inline Event::Pool<Event::mode::immediate>* GetEventPool() { return &m_eventPool; }
     };
 
