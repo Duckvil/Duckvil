@@ -204,12 +204,12 @@ namespace Duckvil { namespace Editor {
             {
                 if(_io.KeyShift)
                 {
-                    m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(0, 0, -1)) * ((_newMousePos.y - _mousePos.y) * ImGui::GetIO().DeltaTime * 4.f);
+                    m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(0, 0, -1)) * ((_newMousePos.y - _mousePos.y) * (float)m_dDelta * 8.f);
                 }
                 else
                 {
-                    m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(1, 0, 0)) * ((_newMousePos.x - _mousePos.x) * ImGui::GetIO().DeltaTime * 4.f);
-                    m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(0, 1, 0)) * ((_newMousePos.y - _mousePos.y) * ImGui::GetIO().DeltaTime * 4.f);
+                    m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(1, 0, 0)) * ((_newMousePos.x - _mousePos.x) * (float)m_dDelta * 8.f);
+                    m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(0, 1, 0)) * ((_newMousePos.y - _mousePos.y) * (float)m_dDelta * 8.f);
                 }
             }
 
