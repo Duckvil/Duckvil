@@ -64,6 +64,8 @@
 
 #include "Serializer/EntitySerializerSystem.h"
 
+#include "Engine/ScriptComponent.h"
+
 namespace Duckvil {
 
     struct system
@@ -146,6 +148,7 @@ namespace Duckvil {
         EntityFactory m_entityFactory;
 
         flecs::query<Graphics::TransformComponent> m_rendererQuery;
+        flecs::query<ScriptComponent> m_scriptsQuery;
 
         ProjectManager::ftable m_projectManager;
         ProjectManager::data m_projectManagerData;

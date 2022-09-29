@@ -752,6 +752,7 @@ namespace Duckvil {
             );
 
             _pData->m_rendererQuery = _pData->m_ecs.query<Graphics::TransformComponent>();
+            _pData->m_scriptsQuery = _pData->m_ecs.query<ScriptComponent>();
         }
 
         return true;
@@ -947,6 +948,26 @@ namespace Duckvil {
         //     {
         //         _transform.m_rotation = _transform.m_rotation * glm::angleAxis((float)_delta, glm::vec3(0, 0, 1));
         //     });
+
+            _pData->m_scriptsQuery.each([_delta, _pData](flecs::entity _entity, const ScriptComponent& _c)
+            {
+                for(uint32_t _i = 0; _i < Memory::fixed_vector_size(_pData->m_pMemory, _c.m_pScripts) / 8; ++_i)
+                {
+                    // auto _x = *static_cast<NativeScriptBase**>(Memory::fixed_vector_at(_pData->m_pMemory, _c.m_pScripts, _i));
+
+                    // _x->Update(_delta);
+
+                    auto _x = *static_cast<HotReloader::ITrackKeeper**>(Memory::fixed_vector_at(_pData->m_pMemory, _c.m_pScripts, _i));
+                    auto _x2 = static_cast<NativeScriptBase*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_x));
+                    auto _start = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+
+                    _x2->Update(_delta);
+
+                    auto _end = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+
+                    _x2->SetDelta(std::chrono::duration<double, std::milli>(_end - _start).count());
+                }
+            });
         // }
 
         {
