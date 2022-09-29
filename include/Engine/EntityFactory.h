@@ -110,7 +110,7 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
             return Entity(_ullID, m_ecs);
         }
 
-        bool IsValid(const Entity& _entity)
+        bool IsValid(const Entity& _entity) const
         {
             return _entity.m_entity.is_alive();
         }
