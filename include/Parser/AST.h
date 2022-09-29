@@ -92,6 +92,27 @@ namespace Duckvil { namespace Parser {
         std::vector<__ast_template_element> m_aElements;
     };
 
+    enum class __ast_preprocessor_type
+    {
+        __ast_preprocessor_type_define,
+        __ast_preprocessor_type_undef,
+        __ast_preprocessor_type_if,
+        __ast_preprocessor_type_ifdef,
+        __ast_preprocessor_type_ifndef,
+        __ast_preprocessor_type_else,
+        __ast_preprocessor_type_elif,
+        __ast_preprocessor_type_endif,
+        __ast_preprocessor_type_undefined,
+    };
+
+    struct __ast_preprocessor
+    {
+        __ast_preprocessor_type m_type;
+        std::string m_token;
+        std::vector<__ast_preprocessor> m_aChildren;
+        __ast_preprocessor* m_pParent;
+    };
+
     struct __ast_entity
     {
         __ast_entity(__ast_entity_type _scopeType = __ast_entity_type::__ast_entity_type_main) :
@@ -105,6 +126,7 @@ namespace Duckvil { namespace Parser {
         __ast_entity* m_pParentScope;
         std::vector<__ast_meta> m_aMeta;
         std::vector<std::string> m_aNeededDefines;
+        __ast_preprocessor m_aNeededDefines2;
     };
 
     struct __ast_entity_define : public __ast_entity
@@ -283,6 +305,7 @@ namespace Duckvil { namespace Parser {
         __ast_entity* m_pPendingScope;
         __ast_access m_currentAccess;
         std::string m_sCurrentDefineNeeded;
+        __ast_preprocessor* m_sCurrentDefineNeeded2;
         std::vector<user_define> m_aUserDefines;
         bool m_bPendingIfdef = false;
         std::filesystem::path m_sFile;

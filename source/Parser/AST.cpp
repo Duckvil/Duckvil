@@ -1834,6 +1834,32 @@ namespace Duckvil { namespace Parser {
             {
                 continue;
             }
+            else if(_pAST->m_bPendingIfdef && _token == "elif")
+            {
+                _pLexer->next_token(&_lexerData, &_token);
+                _pLexer->next_token(&_lexerData, &_pAST->m_sCurrentDefineNeeded);
+
+                if(_pAST->m_sCurrentDefineNeeded2 != nullptr)
+                {
+                    __ast_preprocessor _p;
+
+                    _p.m_token = _pAST->m_sCurrentDefineNeeded;
+                    _p.m_type = __ast_preprocessor_type::__ast_preprocessor_type_elif;
+
+                    _pAST->m_sCurrentDefineNeeded2->m_aChildren.push_back(_p);
+
+                    // _pAST->m_sCurrentDefineNeeded2 = &_pAST->m_sCurrentDefineNeeded2->m_aChildren.back();
+                }
+                else
+                {
+                    _pAST->m_sCurrentDefineNeeded2 = new __ast_preprocessor();
+
+                    _pAST->m_sCurrentDefineNeeded2->m_token = _pAST->m_sCurrentDefineNeeded;
+                    _pAST->m_sCurrentDefineNeeded2->m_type = __ast_preprocessor_type::__ast_preprocessor_type_elif;
+                }
+
+                continue;
+            }
             else if(_pAST->m_bPendingIfdef && _token == "define")
             {
                 bool _wasNewLine = false;
