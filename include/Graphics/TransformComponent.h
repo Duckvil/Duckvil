@@ -40,7 +40,16 @@ namespace Duckvil { namespace Graphics {
 
         static void Draw(const char* _sLabel, glm::quat* _pValue)
         {
+            auto& _quat = *_pValue;
+            glm::vec3 _rotation = glm::eulerAngles(_quat);
 
+            _rotation = glm::degrees(_rotation);
+
+            ImGui::DragFloat3(_sLabel, (float*)&_rotation, 0.1f);
+
+            _rotation = glm::radians(_rotation);
+
+            _quat = glm::quat(_rotation);
         }
     };
 
