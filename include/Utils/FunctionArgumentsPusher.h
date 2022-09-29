@@ -94,6 +94,7 @@ namespace Duckvil {
         }
 
         void Call(const void* func);
+        void Call(const void** func);
 
         template <typename R, typename C, typename... Args>
         void Call(R (C::*_pFunc)(Args...))

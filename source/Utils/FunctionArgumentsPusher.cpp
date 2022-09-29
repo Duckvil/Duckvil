@@ -264,4 +264,69 @@ namespace Duckvil {
         ret();
     }
 
+    void FunctionArgumentsPusher::Call(const void** func)
+    {
+        push(rbx);
+        push(r10);
+        mov(r10, size_t(func));
+        mov(rbx, ptr [r10]);
+        call(rbx);
+        pop(r10);
+        pop(rbx);
+
+        uint32_t _index = m_uiIndex > 4 ? 4 : m_uiIndex;
+
+        if(m_uiIndex >= 4)
+        {
+            _index--;
+
+            if(m_aFloats[_index] == false)
+            {
+                pop(r9);
+            }
+        }
+
+        if(m_uiIndex >= 3)
+        {
+            _index--;
+
+            if(m_aFloats[_index] == false)
+            {
+                pop(r8);
+            }
+        }
+
+        if(m_uiIndex >= 2)
+        {
+            _index--;
+
+            if(m_aFloats[_index] == false)
+            {
+                pop(rdx);
+            }
+        }
+
+        if(m_uiIndex >= 1)
+        {
+            _index--;
+
+            if(m_aFloats[_index] == false)
+            {
+                pop(rcx);
+            }
+        }
+
+        pop(r10);
+
+        if(m_uiCount > 4)
+        {
+            add(rsp, 24 + (8 * (m_uiCount - 4)));
+        }
+
+        mov(rsp, rbp);
+        pop(rbp);
+
+        ret();
+    }
+
 }
