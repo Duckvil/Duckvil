@@ -46,6 +46,13 @@ namespace Duckvil {
             return *this;
         }
 
+        inline Entity& Add(const Entity& _component)
+        {
+            m_entity.add(_component.m_entity);
+
+            return *this;
+        }
+
         template <typename Type>
         inline Entity& Add()
         {
@@ -68,10 +75,21 @@ namespace Duckvil {
             return m_entity.has<Type>();
         }
 
+        inline bool Has(const Entity& _entity) const
+        {
+            return m_entity.has(_entity.m_entity);
+        }
+
         template <typename Type>
         inline const Type& Get() const
         {
             return *m_entity.get<Type>();
+        }
+
+        template <typename Type>
+        inline Type* GetMut() const
+        {
+            return m_entity.get_mut<Type>();
         }
 
         template <typename Func>
