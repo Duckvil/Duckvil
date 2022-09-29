@@ -1005,7 +1005,7 @@ namespace Duckvil {
                 }
                 else if(_pData->m_windowEventPool.GetMessage(&_setMousePositionEvent))
                 {
-                    _pData->m_pWindow->SetMousePosition(_setMousePositionEvent.m_iX, _setMousePositionEvent.m_iY);
+                    _pData->m_pWindow->SetMousePosition(_setMousePositionEvent.m_iX, _setMousePositionEvent.m_iY, _setMousePositionEvent.m_bGlobal);
 
                     _pData->m_windowEventPool.EventHandled<Window::SetMousePositionEvent>();
                 }
