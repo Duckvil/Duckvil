@@ -81,12 +81,15 @@ _property = record_property<Graphics::Renderer::renderer_data>(_data, _type, off
 _property = record_property<flecs::world>(_data, _type, offsetof(Duckvil::__data, m_ecs), "m_ecs");
 _property = record_property<EntityFactory>(_data, _type, offsetof(Duckvil::__data, m_entityFactory), "m_entityFactory");
 _property = record_property<flecs::query<Graphics::TransformComponent>>(_data, _type, offsetof(Duckvil::__data, m_rendererQuery), "m_rendererQuery");
+_property = record_property<flecs::query<ScriptComponent>>(_data, _type, offsetof(Duckvil::__data, m_scriptsQuery), "m_scriptsQuery");
 _property = record_property<ProjectManager::ftable>(_data, _type, offsetof(Duckvil::__data, m_projectManager), "m_projectManager");
 _property = record_property<ProjectManager::data>(_data, _type, offsetof(Duckvil::__data, m_projectManagerData), "m_projectManagerData");
 _property = record_property<Network::IServer*>(_data, _type, offsetof(Duckvil::__data, m_pServer), "m_pServer");
 _property = record_property<bool>(_data, _type, offsetof(Duckvil::__data, m_bIsServer), "m_bIsServer");
 _property = record_property<Network::IClient*>(_data, _type, offsetof(Duckvil::__data, m_pClient), "m_pClient");
 _property = record_property<bool>(_data, _type, offsetof(Duckvil::__data, m_bIsClient), "m_bIsClient");
+_property = record_property<uint16_t>(_data, _type, offsetof(Duckvil::__data, m_usPort), "m_usPort");
+_property = record_property<const char*>(_data, _type, offsetof(Duckvil::__data, m_sIP), "m_sIP");
 _property = record_property<Memory::FreeList>(_data, _type, offsetof(Duckvil::__data, m_globalHeap), "m_globalHeap");
 _constructor = record_constructor<Duckvil::__data>(_data, _type);
 _namespaces.pop_back();

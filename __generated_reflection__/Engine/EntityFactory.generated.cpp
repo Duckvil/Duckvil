@@ -33,10 +33,12 @@ _constructor = record_constructor<Duckvil::EntityFactory, const Memory::FreeList
 _destructor = record_destructor<Duckvil::EntityFactory>(_data, _type);
 _function = record_function<Duckvil::EntityFactory, void>(_data, _type, &Duckvil::EntityFactory::Init, "Init");
 _function = record_function<Duckvil::EntityFactory, Entity>(_data, _type, &Duckvil::EntityFactory::Make, "Make");
+_function = record_function<Duckvil::EntityFactory, Entity, Entity&>(_data, _type, &Duckvil::EntityFactory::Make, "Make");
 _function = record_function<Duckvil::EntityFactory, void, Entity&>(_data, _type, &Duckvil::EntityFactory::Destroy, "Destroy");
 _function = record_function<Entity, const flecs::entity&>(_data, _type, &Duckvil::EntityFactory::Clone, "Clone");
 _function = record_function<Duckvil::EntityFactory, Entity, size_t>(_data, _type, &Duckvil::EntityFactory::FromID, "FromID");
 _function = record_function<Duckvil::EntityFactory, bool, const Entity&>(_data, _type, &Duckvil::EntityFactory::IsValid, "IsValid");
+_function = record_function<Duckvil::EntityFactory, Entity, const char*>(_data, _type, &Duckvil::EntityFactory::LookupComponent, "LookupComponent");
 _function = record_function<Duckvil::EntityFactory, Event::Pool<Event::mode::immediate>*>(_data, _type, &Duckvil::EntityFactory::GetEventPool, "GetEventPool");
 _namespaces.pop_back();
 _namespaces.pop_back();

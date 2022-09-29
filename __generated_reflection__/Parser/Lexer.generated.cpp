@@ -38,6 +38,7 @@ record_inheritance<std::exception>(_data, _type, __protection::__protection_publ
 _function = record_function<Duckvil::Parser::blank_file, const char*>(_data, _type, &Duckvil::Parser::blank_file::what, "what");
 _namespaces.pop_back();
 _enum = record_enum<Duckvil::Parser::__lexer_token_type>(_data, _ntype, "__lexer_token_type");
+_enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Parser::__lexer_token_type::__lexer_token_type_symbol, "__lexer_token_type_symbol");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Parser::__lexer_token_type::__lexer_token_type_number, "__lexer_token_type_number");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Parser::__lexer_token_type::__lexer_token_type_text, "__lexer_token_type_text");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Parser::__lexer_token_type::__lexer_token_type_string, "__lexer_token_type_string");

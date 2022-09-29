@@ -29,6 +29,8 @@ _pSerializer->SerializeProperty("m_networkQuery", m_networkQuery); \
 _pSerializer->SerializeProperty("m_selectQuery", m_selectQuery); \
 _pSerializer->SerializeProperty("m_selectedEntity", m_selectedEntity); \
 _pSerializer->SerializeProperty("m_viewportBounds", m_viewportBounds); \
+_pSerializer->SerializeProperty("m_bLookingAround", m_bLookingAround); \
+_pSerializer->SerializeProperty("m_dDelta", m_dDelta); \
 ISystem::Serialize(_pSerializer); \
 }
 #define Editor_Widgets_ViewportWidget_h_47_GENERATED_BODY \

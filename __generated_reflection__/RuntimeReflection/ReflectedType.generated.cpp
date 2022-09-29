@@ -99,6 +99,8 @@ _function = record_function<Duckvil::RuntimeReflection::ReflectedType, const __d
 _function = record_function<Duckvil::RuntimeReflection::ReflectedType, Memory::Vector<ReflectedProperty>, const Memory::FreeList&>(_data, _type, &Duckvil::RuntimeReflection::ReflectedType::GetProperties, "GetProperties");
 _function = record_function<Duckvil::RuntimeReflection::ReflectedType, Memory::Vector<IReflectedFunction>, const Memory::FreeList&>(_data, _type, &Duckvil::RuntimeReflection::ReflectedType::GetFunctions, "GetFunctions");
 _function = record_function<Duckvil::RuntimeReflection::ReflectedType, IReflectedFunction, const RuntimeReflection::__duckvil_resource_function_t&>(_data, _type, &Duckvil::RuntimeReflection::ReflectedType::GetFunction, "GetFunction");
+_function = record_function<Duckvil::RuntimeReflection::ReflectedType, Utils::string>(_data, _type, &Duckvil::RuntimeReflection::ReflectedType::GetFullName, "GetFullName");
+_function = record_function<Duckvil::RuntimeReflection::ReflectedType, Memory::Vector<Utils::string>>(_data, _type, &Duckvil::RuntimeReflection::ReflectedType::GetNamespaces, "GetNamespaces");
 _namespaces.pop_back();
 _namespaces.push_back("Tag");
 _ntype = record_type(_data, _namespaces);

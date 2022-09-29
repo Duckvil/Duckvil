@@ -36,6 +36,7 @@ record_namespace(_data, _type, "Window");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 5);
 _property = record_property<int>(_data, _type, offsetof(Duckvil::Window::SetMousePositionEvent, m_iX), "m_iX");
 _property = record_property<int>(_data, _type, offsetof(Duckvil::Window::SetMousePositionEvent, m_iY), "m_iY");
+_property = record_property<bool>(_data, _type, offsetof(Duckvil::Window::SetMousePositionEvent, m_bGlobal), "m_bGlobal");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

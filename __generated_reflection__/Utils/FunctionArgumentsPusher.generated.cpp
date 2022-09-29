@@ -40,6 +40,7 @@ _function = record_function<Duckvil::FunctionArgumentsPusher, void, const float&
 _function = record_function<Duckvil::FunctionArgumentsPusher, void, const double&>(_data, _type, &Duckvil::FunctionArgumentsPusher::Push, "Push");
 _function = record_function<Duckvil::FunctionArgumentsPusher, void, const bool&>(_data, _type, &Duckvil::FunctionArgumentsPusher::Push, "Push");
 _function = record_function<Duckvil::FunctionArgumentsPusher, void, const void*>(_data, _type, &Duckvil::FunctionArgumentsPusher::Call, "Call");
+_function = record_function<Duckvil::FunctionArgumentsPusher, void, const void**>(_data, _type, &Duckvil::FunctionArgumentsPusher::Call, "Call");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
