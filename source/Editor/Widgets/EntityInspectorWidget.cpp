@@ -14,6 +14,13 @@
 
 #include "RuntimeReflection/ReflectedType.h"
 
+#include "flecs/flecs.h"
+
+#include "Engine/ScriptComponent.h"
+#include "Engine/UUIDComponent.h"
+
+#include "Graphics/MeshComponent.h"
+
 namespace Duckvil { namespace Editor {
 
     static void draw_vec3(const char* _sLabel, glm::vec3& _value)
@@ -21,13 +28,24 @@ namespace Duckvil { namespace Editor {
         ImGui::DragFloat3(_sLabel, &_value[0], 0.1f);
     }
 
-    EntityInspectorWidget::EntityInspectorWidget(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEditorEventPool) :
-        m_heap(_heap)
+    EntityInspectorWidget::EntityInspectorWidget(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEditorEventPool, EntityFactory* _pEntityFactory, Event::Pool<Event::mode::immediate>* _pEngineEventPool) :
+        m_heap(_heap),
+        m_pEntityFactory(_pEntityFactory)
     {
-        _pEditorEventPool->Add(this, &EntityInspectorWidget::OnEvent);
+        _pEditorEventPool->Add<EntitySelectedEvent>(this, &EntityInspectorWidget::OnEvent);
+        _pEngineEventPool->Add<HotReloader::SwapEvent>(this, &EntityInspectorWidget::OnEvent);
 
         _heap.Allocate(m_aFunctions, 1);
+        _heap.Allocate(m_aScripts, 1);
 
+        ecs_os_init();
+
+        _pEntityFactory->RegisterComponent<ScriptComponent>();
+        _pEntityFactory->RegisterComponent<UUIDComponent>();
+        _pEntityFactory->RegisterComponent<Graphics::TransformComponent>();
+        _pEntityFactory->RegisterComponent<Graphics::MeshComponent>();
+
+        m_iCurrentComponentItem = -1;
     }
 
     EntityInspectorWidget::~EntityInspectorWidget()
@@ -38,6 +56,8 @@ namespace Duckvil { namespace Editor {
     void EntityInspectorWidget::InitEditor(void* _pImguiContext)
     {
         ImGui::SetCurrentContext(static_cast<ImGuiContext*>(_pImguiContext));
+
+        m_bPopupOpened = false;
 
         ecs_os_set_api_defaults();
 
@@ -53,7 +73,8 @@ namespace Duckvil { namespace Editor {
             {
                 Component _component;
 
-                _component.m_sTypeName = _type.GetName();
+                _component.m_sTypeName = _type.GetFullName();
+                _component.m_typeHandle = _type.GetHandle();
 
                 m_heap.Allocate(_component.m_aFunctions, 1);
 
@@ -112,14 +133,47 @@ namespace Duckvil { namespace Editor {
                     }
                 }
 
-                if (m_aFunctions.Full())
+                if(m_aFunctions.Full())
                 {
                     m_aFunctions.Resize(m_aFunctions.Size() * 2);
                 }
 
                 m_aFunctions.Allocate(_component);
+
+                m_aComponents.push_back(m_aFunctions[m_aFunctions.Size() - 1].m_sTypeName.m_sText);
+            }
+            else if(_type.Inherits<NativeScriptBase>())
+            {
+                Script _script;
+
+                _script.m_typeHandle = _type.GetHandle();
+                _script.m_sTypeName = _type.GetFullName();
+
+                if(m_aScripts.Full())
+                {
+                    m_aScripts.Resize(m_aScripts.Size() * 2);
+                }
+
+                m_aScripts.Allocate(_script);
+
+                m_aScriptNames.push_back(m_aScripts[m_aScripts.Size() - 1].m_sTypeName.m_sText);
             }
         }
+
+        static FunctionArgumentsPusher _fap(2);
+
+        m_ppLabel = new const char*();
+        m_ppAddress = new uint8_t*();
+        m_pFunction = new const void*();
+
+        _fap.Push(m_ppLabel);
+        _fap.Push(m_ppAddress);
+
+        *m_pFunction = nullptr;
+
+        _fap.Call(m_pFunction);
+
+        m_fnGeneratedFunction = _fap.getCode<void (*)()>();
     }
 
     void EntityInspectorWidget::OnDraw()
@@ -128,11 +182,18 @@ namespace Duckvil { namespace Editor {
 
         if(m_selectedEntity.m_entity != 0)
         {
+            bool _anyItemHovered = false;
+
             for(uint32_t _i = 0; _i < m_aFunctions.Size(); ++_i)
             {
                 const Component& _c = m_aFunctions[_i];
 
-                if(ImGui::TreeNodeEx(_c.m_sTypeName, ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen, _c.m_sTypeName))
+                if(!m_selectedEntity.Has(m_pEntityFactory->LookupComponent(_c.m_sTypeName.m_sText)))
+                {
+                    continue;
+                }
+
+                if(ImGui::TreeNodeEx(_c.m_sTypeName.m_sText, ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen, _c.m_sTypeName.m_sText))
                 {
                     for(uint32_t _j = 0; _j < _c.m_aFunctions.Size(); ++_j)
                     {
@@ -155,11 +216,150 @@ namespace Duckvil { namespace Editor {
                         _fap.Call(_func.m_pFunction);
 
                         _fap.getCode<void (*)()>()();
+
+                        // *m_ppLabel = _func.m_sPropertyName;
+                        // *m_ppAddress = _componentAddress + _func.m_ullPropAddress;
+
+                        // *m_pFunction = _func.m_pFunction;
+
+                        // m_fnGeneratedFunction();
+                    }
+
+                    const auto& a = RuntimeReflection::get_type(_c.m_typeHandle);
+
+                    if(strcmp(a.m_sTypeName, "ScriptComponent") == 0)
+                    {
+                        const auto& _scriptComponent = m_selectedEntity.Get<ScriptComponent>();
+                        auto _size = Memory::fixed_vector_size(m_heap.GetMemoryInterface(), _scriptComponent.m_pScripts) / 8;
+
+                        for(uint32_t _i = 0; _i < _size; ++_i)
+                        {
+                            const auto& _scriptKeeper = *static_cast<HotReloader::ITrackKeeper**>(Memory::fixed_vector_at(m_heap.GetMemoryInterface(), _scriptComponent.m_pScripts, _i));
+                            const auto& _script = static_cast<NativeScriptBase*>(_scriptKeeper->GetObject());
+                        	auto _type = RuntimeReflection::ReflectedType(_script->m_typeHandle);
+                            Utils::string _name = _type.GetFullName();
+
+                            if(ImGui::TreeNodeEx(_scriptKeeper, ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen, _name.m_sText))
+                            {
+                                // Expose some things...
+
+                                ImGui::TreePop();
+                            }
+
+                            const auto& _id = std::string("##script_") + std::to_string(_i);
+
+                            if(ImGui::IsItemHovered())
+                            {
+                                _anyItemHovered = true;
+
+                                if(ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Right))
+                                {
+                                    ImGui::OpenPopup(_id.c_str());
+                                }
+
+                                ImGui::BeginTooltip();
+
+                                ImGui::Text("%lf", _script->m_dDelta);
+
+                                ImGui::EndTooltip();
+                            }
+
+                            if(ImGui::BeginPopup(_id.c_str()))
+                            {
+                                if(ImGui::Button("Remove script"))
+                                {
+                                    ImGui::CloseCurrentPopup();
+
+                                    Memory::fixed_vector_erase(m_heap.GetMemoryInterface(), _scriptComponent.m_pScripts, _i);
+                                }
+
+                                ImGui::EndPopup();
+                            }
+                        }
+
+                        if(ImGui::Button("Add script"))
+                        {
+                            ImGui::OpenPopup("##addScriptPopup");
+                        }
+                    }
+
+                    if(ImGui::BeginPopup("##addScriptPopup"))
+                    {
+                        ImGui::ListBox("Scripts", &m_iCurrentScriptItem, m_aScriptNames.data(), m_aScriptNames.size());
+
+                        if(ImGui::Button("Add"))
+                        {
+                            ImGui::CloseCurrentPopup();
+
+                            auto _c = m_selectedEntity.GetMut<ScriptComponent>();
+                            const auto& _selectedScript = m_aScripts[m_iCurrentScriptItem];
+
+                            if(m_heap.GetMemoryInterface()->m_fnFixedVectorSize_(_c->m_pScripts) >= m_heap.GetMemoryInterface()->m_fnFixedVectorCapacity_(_c->m_pScripts))
+                            {
+                                m_heap.GetMemoryInterface()->m_fnFixedVectorResize_(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), &_c->m_pScripts, m_heap.GetMemoryInterface()->m_fnFixedVectorCapacity_(_c->m_pScripts) * 2);
+                            }
+
+                            auto _s = RuntimeReflection::create(m_heap, _selectedScript.m_typeHandle, true);
+                            auto _s2 = *static_cast<HotReloader::ITrackKeeper**>(m_heap.GetMemoryInterface()->m_fnFixedVectorAllocate_(_c->m_pScripts, &_s, 8, 8));
+                            auto _o = static_cast<NativeScriptBase*>(_s2->GetObject());
+
+                            _o->m_typeHandle = _selectedScript.m_typeHandle;
+
+                            _o->SetEntity(m_selectedEntity);
+                            _o->Init();
+                        }
+
+                        ImGui::EndPopup();
                     }
 
                     ImGui::TreePop();
                 }
             }
+
+            if(!_anyItemHovered && ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Right))
+            {
+                ImGui::OpenPopup("##entityInspectorPopup");
+
+                m_bPopupOpened = true;
+            }
+        }
+        else
+        {
+            // if(m_bPopupOpened)
+            // {
+            //     ImGui::CloseCurrentPopup();
+            // }
+        }
+
+        if(ImGui::BeginPopup("##entityInspectorPopup"))
+        {
+            if(ImGui::Button("Add component"))
+            {
+                ImGui::OpenPopup("##entityInspectorAddComponentPopup");
+            }
+
+            if(ImGui::BeginPopup("##entityInspectorAddComponentPopup"))
+            {
+                ImGui::ListBox("Components", &m_iCurrentComponentItem, m_aComponents.data(), m_aComponents.size());
+
+                if(ImGui::Button("Add"))
+                {
+                    if(m_selectedEntity.m_entity != 0)
+                    {
+                        Entity _e = m_pEntityFactory->LookupComponent(m_aComponents[m_iCurrentComponentItem]);
+
+                        m_selectedEntity.Add(_e);
+
+                        m_selectedEntity.GetMut<ScriptComponent>()->m_pScripts = m_heap.GetMemoryInterface()->m_fnFreeListAllocateFixedVectorAllocator(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), 8, 8);
+                    }
+
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::EndPopup();
+            }
+
+            ImGui::EndPopup();
         }
 
         ImGui::End();
@@ -168,6 +368,16 @@ namespace Duckvil { namespace Editor {
     void EntityInspectorWidget::OnEvent(const EntitySelectedEvent& _event)
     {
         m_selectedEntity = _event.m_entity;
+    }
+
+    void EntityInspectorWidget::OnEvent(const HotReloader::SwapEvent& _event)
+    {
+        printf("aaaaa");
+    }
+
+    void EntityInspectorWidget::OnEvent(const ProjectManager::OnLoadEvent& _event)
+    {
+
     }
 
 }}
