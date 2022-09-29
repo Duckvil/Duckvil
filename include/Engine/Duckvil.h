@@ -156,6 +156,9 @@ namespace Duckvil {
         Network::IClient* m_pClient;
         bool m_bIsClient;
 
+        uint16_t m_usPort;
+        const char* m_sIP;
+
         Memory::FreeList m_globalHeap;
 
         __data() :

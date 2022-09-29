@@ -27,14 +27,18 @@ enum class Options
 {
     PROJECT,
     SERVER,
-    CLIENT
+    CLIENT,
+    PORT,
+    IP
 };
 
 Duckvil::Utils::CommandArgumentsParser::Descriptor g_pDescriptors[] =
 {
     Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::PROJECT, "project"),
     Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::SERVER, "server"),
-    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::CLIENT, "client")
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::CLIENT, "client"),
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::PORT, "port"),
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::IP, "ip")
 };
 
 int main(int argc, char* argv[])
@@ -111,10 +115,15 @@ int main(int argc, char* argv[])
     if(_parser[Options::SERVER].m_bIsSet)
     {
         _engineData.m_bIsServer = true;
+
+        _engineData.m_usPort = std::stoi(_parser[Options::PORT].m_sResult);
     }
     else if(_parser[Options::CLIENT].m_bIsSet)
     {
         _engineData.m_bIsClient = true;
+
+        _engineData.m_usPort = std::stoi(_parser[Options::PORT].m_sResult);
+        _engineData.m_sIP = _parser[Options::IP].m_sResult;
     }
 
     _engine->init(&_engineData, _memoryInterface, _free_list);
