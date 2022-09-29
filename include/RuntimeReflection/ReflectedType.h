@@ -534,6 +534,25 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             return IReflectedFunction(m_typeHandle, _handle);
         }
+
+        Utils::string GetFullName() const
+        {
+            return combine(*m_type);
+        }
+
+        Memory::Vector<Utils::string> GetNamespaces() const
+        {
+            Memory::Vector<Utils::string> _namespaces;
+
+            for(uint32_t _i = 0; _i < DUCKVIL_SLOT_ARRAY_SIZE(m_type->m_namespaces); ++_i)
+            {
+                const RuntimeReflection::__namespace_t& _namespace = DUCKVIL_SLOT_ARRAY_GET(m_type->m_namespaces, _i);
+
+                _namespaces.Allocate(_namespace.m_sNamespaceName);
+            }
+
+            return _namespaces;
+        }
     };
 
 }}
