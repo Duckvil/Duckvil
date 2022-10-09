@@ -1436,6 +1436,7 @@ namespace Duckvil { namespace Parser {
         _pAST->m_pCurrentScope = &_pAST->m_main;
         _pAST->m_pPendingScope = _pAST->m_pCurrentScope;
         _pAST->m_currentAccess = __ast_access::__ast_access_not_specified;
+        _pAST->m_sCurrentDefineNeeded2 = nullptr;
 
         std::string _token;
         std::string _tmpExpression;
