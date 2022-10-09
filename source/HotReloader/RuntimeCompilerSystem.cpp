@@ -24,7 +24,7 @@
 
 namespace Duckvil { namespace HotReloader {
 
-    void generate(std::ofstream& _file, void* _pUserData)
+    void generate(std::ofstream& _hFile, std::ofstream& _sFile, void* _pUserData)
     {
         RuntimeCompilerSystem* _system = static_cast<RuntimeCompilerSystem*>(_pUserData);
         std::string _fileID = _system->m_path.string();
@@ -32,42 +32,42 @@ namespace Duckvil { namespace HotReloader {
         _fileID = Duckvil::Utils::replace_all(_fileID, "\\", "_");
         _fileID = Duckvil::Utils::replace_all(_fileID, ".", "_");
 
-        _file << "#include \"Serializer/Runtime/ISerializer.h\"\n\n";
-        _file << "#include \"RuntimeReflection/Markers.h\"\n\n";
+        _hFile << "#include \"Serializer/Runtime/ISerializer.h\"\n\n";
+        _hFile << "#include \"RuntimeReflection/Markers.h\"\n\n";
 
         std::vector<std::pair<uint32_t, std::vector<std::string>>> _generated;
 
         for(auto& _module : _system->m_aModules)
         {
-            Duckvil::RuntimeReflection::invoke_member<std::ofstream&, std::vector<std::pair<uint32_t, std::vector<std::string>>>&>(_module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _file, _generated);
+            Duckvil::RuntimeReflection::invoke_member<std::ofstream&, std::ofstream&, std::vector<std::pair<uint32_t, std::vector<std::string>>>&>(_module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _hFile, _sFile, _generated);
         }
 
         for(const auto& _generated2 : _generated)
         {
-            _file << "#define " << _fileID << "_" << _generated2.first << "_GENERATED_BODY";
+            _hFile << "#define " << _fileID << "_" << _generated2.first << "_GENERATED_BODY";
 
             if(_generated2.second.size())
             {
-                _file << " \\\n";
+                _hFile << " \\\n";
             }
 
             for(uint32_t i = 0; i < _generated2.second.size(); ++i)
             {
-                _file << _fileID << "_" << _generated2.first << "_REFLECTION_MODULE_" << _generated2.second[i];
+                _hFile << _fileID << "_" << _generated2.first << "_REFLECTION_MODULE_" << _generated2.second[i];
 
                 if(i < _generated2.second.size() - 1)
                 {
-                    _file << " \\\n";
+                    _hFile << " \\\n";
                 }
                 else
                 {
-                    _file << "\n\n";
+                    _hFile << "\n\n";
                 }
             }
         }
 
-        _file << "#undef DUCKVIL_CURRENT_FILE_ID\n";
-        _file << "#define DUCKVIL_CURRENT_FILE_ID " << _fileID << "\n";
+        _hFile << "#undef DUCKVIL_CURRENT_FILE_ID\n";
+        _hFile << "#define DUCKVIL_CURRENT_FILE_ID " << _fileID << "\n";
     }
 
     void RuntimeCompilerSystem::HotReload(const Utils::string& _sModuleFilename, void (*_fnSwap)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&))
@@ -415,7 +415,7 @@ namespace Duckvil { namespace HotReloader {
                             g_duckvilFrontendReflectionContext.m_pReflectionData
                         );
                     _module.m_typeHandle = _typeHandle;
-                    _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&, std::vector<std::pair<uint32_t, std::vector<std::string>>>&>(_typeHandle, "GenerateCustom");
+                    _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&, std::ofstream&, std::vector<std::pair<uint32_t, std::vector<std::string>>>&>(_typeHandle, "GenerateCustom");
                     _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(_typeHandle, "Clear");
                     _module.m_processAST_FunctionHandle = Duckvil::RuntimeReflection::get_function_handle<Duckvil::Parser::__ast*>(_typeHandle, "ProcessAST");
 

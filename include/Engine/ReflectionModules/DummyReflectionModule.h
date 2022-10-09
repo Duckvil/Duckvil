@@ -74,7 +74,7 @@ namespace Duckvil {
             recursive(this, *_ast, &_ast->m_main);
         }
 
-        void GenerateCustom(std::ofstream& _file, std::vector<std::pair<uint32_t, std::vector<std::string>>>& _aGenerated)
+        void GenerateCustom(std::ofstream& _hFile, std::ofstream& _sFile, std::vector<std::pair<uint32_t, std::vector<std::string>>>& _aGenerated)
         {
             if(m_aContexts.empty())
             {
@@ -86,7 +86,7 @@ namespace Duckvil {
             _fileID = Utils::replace_all(_fileID, "\\", "_");
             _fileID = Utils::replace_all(_fileID, ".", "_");
 
-            recursive_generate(&m_aContexts, _fileID, _file, m_sReflectionModuleName, _aGenerated);
+            recursive_generate(&m_aContexts, _fileID, _hFile, m_sReflectionModuleName, _aGenerated);
         }
 
         void Clear()

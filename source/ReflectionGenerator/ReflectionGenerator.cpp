@@ -53,7 +53,7 @@ struct user_data
     std::filesystem::path m_path;
 };
 
-void generate(std::ofstream& _file, void* _pUserData)
+void generate(std::ofstream& _hFile, std::ofstream& _sFile, void* _pUserData)
 {
     user_data* _userData = static_cast<user_data*>(_pUserData);
 
@@ -62,8 +62,8 @@ void generate(std::ofstream& _file, void* _pUserData)
     _fileID = Duckvil::Utils::replace_all(_fileID, "\\", "_");
     _fileID = Duckvil::Utils::replace_all(_fileID, ".", "_");
 
-    _file << "#include \"Serializer/Runtime/ISerializer.h\"\n\n";
-    _file << "#include \"RuntimeReflection/Markers.h\"\n\n";
+    _hFile << "#include \"Serializer/Runtime/ISerializer.h\"\n\n";
+    _hFile << "#include \"RuntimeReflection/Markers.h\"\n\n";
 
     std::vector<std::pair<uint32_t, std::vector<std::string>>> _generated;
 
@@ -74,35 +74,35 @@ void generate(std::ofstream& _file, void* _pUserData)
             continue;
         }
 
-        Duckvil::RuntimeReflection::invoke_member<std::ofstream&, std::vector<std::pair<uint32_t, std::vector<std::string>>>&>(_reflectionFTable, _runtimeReflectionData, _module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _file, _generated);
+        Duckvil::RuntimeReflection::invoke_member<std::ofstream&, std::ofstream&, std::vector<std::pair<uint32_t, std::vector<std::string>>>&>(_reflectionFTable, _runtimeReflectionData, _module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _hFile, _sFile, _generated);
     }
 
     for(const auto& _generated2 : _generated)
     {
-        _file << "#define " << _fileID << "_" << _generated2.first << "_GENERATED_BODY";
+        _hFile << "#define " << _fileID << "_" << _generated2.first << "_GENERATED_BODY";
 
         if(_generated2.second.size())
         {
-            _file << " \\\n";
+            _hFile << " \\\n";
         }
 
         for(uint32_t i = 0; i < _generated2.second.size(); ++i)
         {
-            _file << _fileID << "_" << _generated2.first << "_REFLECTION_MODULE_" << _generated2.second[i];
+            _hFile << _fileID << "_" << _generated2.first << "_REFLECTION_MODULE_" << _generated2.second[i];
 
             if(i < _generated2.second.size() - 1)
             {
-                _file << " \\\n";
+                _hFile << " \\\n";
             }
             else
             {
-                _file << "\n\n";
+                _hFile << "\n\n";
             }
         }
     }
 
-    _file << "#undef DUCKVIL_CURRENT_FILE_ID\n";
-    _file << "#define DUCKVIL_CURRENT_FILE_ID " << _fileID << "\n";
+    _hFile << "#undef DUCKVIL_CURRENT_FILE_ID\n";
+    _hFile << "#define DUCKVIL_CURRENT_FILE_ID " << _fileID << "\n";
 }
 
 void generate_plugin_info(std::ofstream& _file, const uint32_t& _uiIndex, const std::filesystem::path& _path)
@@ -423,7 +423,7 @@ int main(int argc, char* argv[])
 
                 _module.m_pObject = Duckvil::RuntimeReflection::create<const Duckvil::Memory::FreeList&, Duckvil::RuntimeReflection::__ftable*, Duckvil::RuntimeReflection::__data*>(_memoryInterface, _free_list, _reflectionFTable, _runtimeReflectionData, _typeHandle, false, _heap, _reflectionFTable, _runtimeReflectionData);
                 _module.m_typeHandle = _typeHandle;
-                _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&, std::vector<std::pair<uint32_t, std::vector<std::string>>>&>(_reflectionFTable, _runtimeReflectionData, _typeHandle, "GenerateCustom");
+                _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&, std::ofstream&, std::vector<std::pair<uint32_t, std::vector<std::string>>>&>(_reflectionFTable, _runtimeReflectionData, _typeHandle, "GenerateCustom");
                 _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(_reflectionFTable, _runtimeReflectionData, _typeHandle, "Clear");
                 _module.m_processAST_FunctionHandle = Duckvil::RuntimeReflection::get_function_handle<Duckvil::Parser::__ast*>(_reflectionFTable, _runtimeReflectionData, _typeHandle, "ProcessAST");
 

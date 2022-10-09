@@ -45,7 +45,7 @@ namespace Duckvil { namespace Serializer { namespace ReflectionModule {
             recursive(this, *_ast, &_ast->m_main);
         }
 
-        void GenerateCustom(std::ofstream& _file, std::vector<std::pair<uint32_t, std::vector<std::string>>>& _aGenerated)
+        void GenerateCustom(std::ofstream& _hFile, std::ofstream& _sFile, std::vector<std::pair<uint32_t, std::vector<std::string>>>& _aGenerated)
         {
             if(!m_bIsValid || m_uiGeneratedBodyLine == -1)
             {
@@ -80,11 +80,11 @@ namespace Duckvil { namespace Serializer { namespace ReflectionModule {
                 _aGenerated.push_back(std::make_pair(m_uiGeneratedBodyLine, _tmp));
             }
 
-            _file << "#include \"Utils/EntitySerializer.h\"\n";
-            _file << "#include \"Utils/ECS.h\"\n";
-            _file << "#include \"Engine/Entity.h\"\n";
-            _file << "#define " << _fileID << "_" << m_uiGeneratedBodyLine << "_REFLECTION_MODULE_" << m_sReflectionModuleName << " \\\n";
-            _file <<
+            _hFile << "#include \"Utils/EntitySerializer.h\"\n";
+            _hFile << "#include \"Utils/ECS.h\"\n";
+            _hFile << "#include \"Engine/Entity.h\"\n";
+            _hFile << "#define " << _fileID << "_" << m_uiGeneratedBodyLine << "_REFLECTION_MODULE_" << m_sReflectionModuleName << " \\\n";
+            _hFile <<
             "static void Serialize(nlohmann::json& _jOut, const Entity& _entity)\\\n"
             "{\\\n"
             "Utils::init_ecs();\\\n"
