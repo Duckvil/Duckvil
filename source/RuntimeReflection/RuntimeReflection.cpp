@@ -132,6 +132,23 @@ namespace Duckvil { namespace RuntimeReflection {
         return false;
     }
 
+    inline static bool find_function(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const void* _pFunction, __function_t& _outFunction, uint32_t& _uiID)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+
+        for(_uiID = 0; _uiID < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_functions.m_data); ++_uiID)
+        {
+            _outFunction = DUCKVIL_SLOT_ARRAY_GET(_type.m_functions, _uiID);
+
+            if(_outFunction.m_pRawFunction == _pFunction)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     __data* init(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __ftable* _pFunctions)
     {
         __data* _data = static_cast<__data*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(__data), alignof(__data)));
@@ -289,6 +306,19 @@ namespace Duckvil { namespace RuntimeReflection {
         uint32_t _id;
 
         if(find_function(_pData, _typeHandle, _sName, _ullLength, _ullTypeID, _function, _id))
+        {
+            return { _id };
+        }
+
+        return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
+    }
+
+    DUCKVIL_RESOURCE(function_t) get_function_handle_by_pointer(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const void* _pFunction)
+    {
+        __function_t _function;
+        uint32_t _id;
+
+        if(find_function(_pData, _typeHandle, _pFunction, _function, _id))
         {
             return { _id };
         }
@@ -1291,6 +1321,7 @@ Duckvil::RuntimeReflection::__ftable* duckvil_runtime_reflection_init()
 // Function
     _functions.m_fnGetFunctions = &Duckvil::RuntimeReflection::get_functions;
     _functions.m_fnGetFunctionHandle = &Duckvil::RuntimeReflection::get_function_handle;
+    _functions.m_fnGetFunctionHandleByPointer = &Duckvil::RuntimeReflection::get_function_handle_by_pointer;
     _functions.m_fnGetFunctionCallback = &Duckvil::RuntimeReflection::get_function_callback;
     _functions.m_fnGetFunctionCallbackByHandle = &Duckvil::RuntimeReflection::get_function_callback_by_handle;
     _functions.m_fnGetFunctionByHandle = &Duckvil::RuntimeReflection::get_function_by_handle;
