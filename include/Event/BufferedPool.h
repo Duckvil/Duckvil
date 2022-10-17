@@ -46,17 +46,17 @@ namespace Duckvil { namespace Event {
             m_heap(_heap),
             m_pReflectionData(_pReflectionData)
         {
-            m_pMessages = static_cast<Memory::fixed_queue_allocator*>(_heap.GetMemoryInterface()->m_fnFreeListAllocate_(_heap.GetAllocator(), sizeof(Memory::fixed_queue_allocator) + 512, alignof(Memory::fixed_queue_allocator)));
+            m_pMessages = static_cast<Memory::fixed_queue_allocator*>(_heap.GetMemoryInterface()->m_fnFreeListAllocate_(_heap.GetAllocator(), sizeof(Memory::fixed_queue_allocator) + 1024, alignof(Memory::fixed_queue_allocator)));
 
-            m_pMessages->m_ullCapacity = 512;
+            m_pMessages->m_ullCapacity = 1024;
             m_pMessages->m_ullUsed = 0;
             m_pMessages->m_ullTail = 0;
             m_pMessages->m_ullHead = 0;
             m_pMessages->m_ullBlockSize = sizeof(EventMessage);
 
-            m_pRemaining = static_cast<Memory::fixed_stack_allocator*>(_heap.GetMemoryInterface()->m_fnFreeListAllocate_(_heap.GetAllocator(), sizeof(Memory::fixed_stack_allocator) + 512, alignof(Memory::fixed_stack_allocator)));
+            m_pRemaining = static_cast<Memory::fixed_stack_allocator*>(_heap.GetMemoryInterface()->m_fnFreeListAllocate_(_heap.GetAllocator(), sizeof(Memory::fixed_stack_allocator) + 1024, alignof(Memory::fixed_stack_allocator)));
 
-            m_pRemaining->m_ullCapacity = 512;
+            m_pRemaining->m_ullCapacity = 1024;
             m_pRemaining->m_ullUsed = 0;
             m_pRemaining->m_ullBlockSize = sizeof(EventMessage);
         }
