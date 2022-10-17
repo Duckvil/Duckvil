@@ -1203,7 +1203,7 @@ namespace Duckvil { namespace Parser {
 
                 __ast_entity_variable* _entity = nullptr;
 
-                if(_pAST->m_pPendingScope != nullptr)
+                if(_pAST->m_pPendingScope != nullptr && _pAST->m_pPendingScope->m_scopeType == __ast_entity_type::__ast_entity_type_variable)
                 {
                     _entity = static_cast<__ast_entity_variable*>(_pAST->m_pPendingScope);
                 }
