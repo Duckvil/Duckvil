@@ -2,7 +2,8 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(5)
+
+DUCKVIL_RUNTIME_REFLECTION_RECORD(6)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -33,7 +34,7 @@ _type = record_type<Duckvil::RuntimeReflection::ObjectCreatedEvent>(_data, "Obje
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 5);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 6);
 _property = record_property<void*>(_data, _type, offsetof(Duckvil::RuntimeReflection::ObjectCreatedEvent, m_pObject), "m_pObject");
 _property = record_property<std::size_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::ObjectCreatedEvent, m_ullTypeID), "m_ullTypeID");
 _namespaces.pop_back();
@@ -41,11 +42,11 @@ _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "RuntimeReflection/ObjectCreatedEvent.h", 5);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "RuntimeReflection/ObjectCreatedEvent.h", 6);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 5;
+return 6;
 }
 #endif

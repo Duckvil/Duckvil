@@ -2,6 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
+
 DUCKVIL_RUNTIME_REFLECTION_RECORD(1)
 {
 using namespace Duckvil::RuntimeReflection;
@@ -58,7 +59,7 @@ _property = record_property<std::filesystem::path>(_data, _type, offsetof(Duckvi
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Serializer::ReflectionModule::Component, m_uiGeneratedBodyLine), "m_uiGeneratedBodyLine");
 _property = record_property<std::string>(_data, _type, offsetof(Duckvil::Serializer::ReflectionModule::Component, m_sTypeName), "m_sTypeName");
 _function = record_function<Duckvil::Serializer::ReflectionModule::Component, void, Parser::__ast*>(_data, _type, &Duckvil::Serializer::ReflectionModule::Component::ProcessAST, "ProcessAST");
-_function = record_function<Duckvil::Serializer::ReflectionModule::Component, void, std::ofstream&, std::vector<std::pair<uint32_t,std::vector<std::string>>>&>(_data, _type, &Duckvil::Serializer::ReflectionModule::Component::GenerateCustom, "GenerateCustom");
+_function = record_function<Duckvil::Serializer::ReflectionModule::Component, void, std::ofstream&, std::ofstream&, std::vector<std::pair<uint32_t,std::vector<std::string>>>&>(_data, _type, &Duckvil::Serializer::ReflectionModule::Component::GenerateCustom, "GenerateCustom");
 _function = record_function<Duckvil::Serializer::ReflectionModule::Component, void>(_data, _type, &Duckvil::Serializer::ReflectionModule::Component::Clear, "Clear");
 _namespaces.pop_back();
 _namespaces.pop_back();

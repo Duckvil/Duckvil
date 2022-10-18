@@ -2,6 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
+
 DUCKVIL_RUNTIME_REFLECTION_RECORD(2)
 {
 using namespace Duckvil::RuntimeReflection;
@@ -59,7 +60,7 @@ record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
 _property = record_property<__generator_data*(*)(Memory::ftable*, Memory::free_list_allocator*)>(_data, _type, offsetof(Duckvil::RuntimeReflection::__generator_ftable, init), "init");
-_property = record_property<void(*)(__generator_data*, const char, const char, const Parser::__ast&, void(*)(std::ofstream& _file, void* _pUserData))>(_data, _type, offsetof(Duckvil::RuntimeReflection::__generator_ftable, generate), "generate");
+_property = record_property<void(*)(__generator_data*, const char, const char, const Parser::__ast&, void(*)(std::ofstream& _hFile, std::ofstream& _sFile, void* _pUserData))>(_data, _type, offsetof(Duckvil::RuntimeReflection::__generator_ftable, generate), "generate");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

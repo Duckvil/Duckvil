@@ -2,6 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
+
 DUCKVIL_RUNTIME_REFLECTION_RECORD(10)
 {
 using namespace Duckvil::RuntimeReflection;
@@ -48,7 +49,7 @@ _property = record_property<std::filesystem::path>(_data, _type, offsetof(Duckvi
 _property = record_property<std::vector<NamedArgumentsReflectionModule::Context*>>(_data, _type, offsetof(Duckvil::NamedArgumentsReflectionModule, m_aContexts), "m_aContexts");
 _property = record_property<NamedArgumentsReflectionModule::Context*>(_data, _type, offsetof(Duckvil::NamedArgumentsReflectionModule, m_pCurrentContext), "m_pCurrentContext");
 _function = record_function<Duckvil::NamedArgumentsReflectionModule, void, Parser::__ast*>(_data, _type, &Duckvil::NamedArgumentsReflectionModule::ProcessAST, "ProcessAST");
-_function = record_function<Duckvil::NamedArgumentsReflectionModule, void, std::ofstream&, std::vector<std::pair<uint32_t,std::vector<std::string>>>&>(_data, _type, &Duckvil::NamedArgumentsReflectionModule::GenerateCustom, "GenerateCustom");
+_function = record_function<Duckvil::NamedArgumentsReflectionModule, void, std::ofstream&, std::ofstream&, std::vector<std::pair<uint32_t,std::vector<std::string>>>&>(_data, _type, &Duckvil::NamedArgumentsReflectionModule::GenerateCustom, "GenerateCustom");
 _function = record_function<Duckvil::NamedArgumentsReflectionModule, void>(_data, _type, &Duckvil::NamedArgumentsReflectionModule::Clear, "Clear");
 _namespaces.pop_back();
 _namespaces.push_back("argument");

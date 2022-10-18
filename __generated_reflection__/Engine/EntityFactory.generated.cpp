@@ -2,6 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
+
 DUCKVIL_RUNTIME_REFLECTION_RECORD(2)
 {
 using namespace Duckvil::RuntimeReflection;
@@ -33,7 +34,6 @@ _constructor = record_constructor<Duckvil::EntityFactory, const Memory::FreeList
 _destructor = record_destructor<Duckvil::EntityFactory>(_data, _type);
 _function = record_function<Duckvil::EntityFactory, void>(_data, _type, &Duckvil::EntityFactory::Init, "Init");
 _function = record_function<Duckvil::EntityFactory, Entity>(_data, _type, &Duckvil::EntityFactory::Make, "Make");
-_function = record_function<Duckvil::EntityFactory, Entity, Entity&>(_data, _type, &Duckvil::EntityFactory::Make, "Make");
 _function = record_function<Duckvil::EntityFactory, void, Entity&>(_data, _type, &Duckvil::EntityFactory::Destroy, "Destroy");
 _function = record_function<Entity, const flecs::entity&>(_data, _type, &Duckvil::EntityFactory::Clone, "Clone");
 _function = record_function<Duckvil::EntityFactory, Entity, size_t>(_data, _type, &Duckvil::EntityFactory::FromID, "FromID");

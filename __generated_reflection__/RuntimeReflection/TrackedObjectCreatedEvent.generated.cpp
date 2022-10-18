@@ -2,7 +2,8 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(10)
+
+DUCKVIL_RUNTIME_REFLECTION_RECORD(12)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -33,18 +34,18 @@ _type = record_type<Duckvil::RuntimeReflection::TrackedObjectCreatedEvent>(_data
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<HotReloader::ITrackKeeper*>(_data, _type, offsetof(Duckvil::RuntimeReflection::TrackedObjectCreatedEvent, m_pTrackKeeper), "m_pTrackKeeper");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "RuntimeReflection/TrackedObjectCreatedEvent.h", 10);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "RuntimeReflection/TrackedObjectCreatedEvent.h", 12);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 10;
+return 12;
 }
 #endif
