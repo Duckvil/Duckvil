@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RuntimeReflection/RuntimeReflection.h"
+#include "RuntimeReflection/Global.h"
 
 #include "Memory/FreeList.h"
 
