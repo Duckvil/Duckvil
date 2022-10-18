@@ -100,6 +100,8 @@ namespace Duckvil { namespace RuntimeReflection {
 
         DUCKVIL_SLOT_ARRAY_GET_POINTER(_data._pData->m_aTypes, _type_handle)->m_uiSlotIndex = _handle;
 
+        _data._pData->m_pTypesByTypeID->insert({ _ullTypeID, _handle });
+
         return _handle;
     }
 

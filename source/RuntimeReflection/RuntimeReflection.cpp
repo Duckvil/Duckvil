@@ -158,6 +158,8 @@ namespace Duckvil { namespace RuntimeReflection {
         _data->m_aObjects = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, __object_t);
         // _data->m_aFrontend = Memory::Vector<IReflectedType*>(_pMemoryInterface, _pAllocator, 1);
 
+        _data->m_pTypesByTypeID = new std::unordered_map<std::size_t, __duckvil_resource_type_t>();
+
         return _data;
     }
 
@@ -210,14 +212,11 @@ namespace Duckvil { namespace RuntimeReflection {
 
     DUCKVIL_RESOURCE(type_t) get_type_by_type_id(__data* _pData, const std::size_t& _ullTypeID)
     {
-        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_pData->m_aTypes.m_data); ++i)
-        {
-            const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, i);
+        const auto& _handle = _pData->m_pTypesByTypeID->find(_ullTypeID);
 
-            if(_type.m_ullTypeID == _ullTypeID)
-            {
-                return _type.m_uiSlotIndex;
-            }
+        if(_handle != _pData->m_pTypesByTypeID->end())
+        {
+            return _handle->second;
         }
 
         return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };

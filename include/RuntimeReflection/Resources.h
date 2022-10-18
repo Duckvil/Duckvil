@@ -8,6 +8,8 @@
 #include "Memory/Vector.h"
 #include "Memory/FreeList.h"
 
+#include <unordered_map>
+
 #define DUCKVIL_META_CAT(...) __VA_ARGS__
 
 #define DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(...) typeid(void(__VA_ARGS__)).hash_code()
@@ -236,6 +238,8 @@ namespace Duckvil { namespace RuntimeReflection {
         DUCKVIL_SLOT_ARRAY(__object_t) m_aObjects;
         // Event::Pool<Event::mode::immediate> m_events;
         void* m_pEvents;
+
+        std::unordered_map<std::size_t, __duckvil_resource_type_t>* m_pTypesByTypeID;
     };
 
     struct __ftable
