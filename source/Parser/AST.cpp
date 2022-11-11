@@ -951,6 +951,7 @@ namespace Duckvil { namespace Parser {
             _entity->m_accessLevel = _pAST->m_currentAccess;
             _entity->m_sType = _type;
             _entity->m_sName = _name;
+            _entity->m_flags = _flags;
 
             if(_pAST->m_bPendingIfdef)
             {
@@ -1215,6 +1216,7 @@ namespace Duckvil { namespace Parser {
                 _entity->m_sName = _internalTmp;
                 _entity->m_sType = _type;
                 _entity->m_accessLevel = _pAST->m_currentAccess;
+                _entity->m_flags = _flags;
 
                 if(_pAST->m_bPendingIfdef)
                 {

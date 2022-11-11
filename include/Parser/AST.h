@@ -160,9 +160,11 @@ namespace Duckvil { namespace Parser {
             __ast_entity_argument(_entityType)
         {
             m_accessLevel = __ast_access::__ast_access_undefined;
+            m_flags = __ast_flags::__ast_flags_undefined;
         }
 
         __ast_access m_accessLevel;
+        __ast_flags m_flags;
     };
 
     struct __ast_entity_structure : public __ast_entity
