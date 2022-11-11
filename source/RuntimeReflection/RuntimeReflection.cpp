@@ -519,6 +519,24 @@ namespace Duckvil { namespace RuntimeReflection {
         return false;
     }
 
+    bool inherits_by_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(type_t) _typeHandle2)
+    {
+        const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
+        const __type_t& _type2 = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle2.m_ID);
+
+        for(uint32_t i = 0; i < DUCKVIL_DYNAMIC_ARRAY_SIZE(_type.m_inheritances.m_data); ++i)
+        {
+            auto& _inheritance = DUCKVIL_SLOT_ARRAY_GET(_type.m_inheritances, i);
+
+            if(_inheritance.m_ullInheritanceTypeID == _type2.m_ullTypeID)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     const __variant_t& get_variant_key_by_handle(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(variant_t) _handle)
     {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _typeHandle.m_ID);
@@ -1311,6 +1329,7 @@ Duckvil::RuntimeReflection::__ftable* duckvil_runtime_reflection_init()
     _functions.m_fnGetInheritance = &Duckvil::RuntimeReflection::get_inheritance;
     _functions.m_fnInherits = &Duckvil::RuntimeReflection::inherits;
     _functions.m_fnInheritsByTypeID = &Duckvil::RuntimeReflection::inherits_by_type_id;
+    _functions.m_fnInheritsByHandle = &Duckvil::RuntimeReflection::inherits_by_handle;
 
 // Constructor
     _functions.m_fnGetConstructors = &Duckvil::RuntimeReflection::get_constructors;

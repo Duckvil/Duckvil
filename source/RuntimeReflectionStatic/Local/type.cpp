@@ -64,4 +64,9 @@ namespace Duckvil { namespace RuntimeReflection {
         return _pReflection->m_fnGetNTypeByHandle(_pData, _typeHandle);
     }
 
+    bool inherits(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(type_t) _typeHandle2)
+    {
+        return _pReflection->m_fnInheritsByHandle(_pData, _typeHandle, _typeHandle2);
+    }
+
 }}
