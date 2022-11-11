@@ -138,6 +138,7 @@ namespace Duckvil { namespace Parser {
         }
 
         std::string m_sName;
+        std::vector<std::string> m_aArguments;
     };
 
     struct __ast_entity_argument : public __ast_entity
