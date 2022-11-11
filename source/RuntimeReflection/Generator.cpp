@@ -184,6 +184,11 @@ namespace Duckvil { namespace RuntimeReflection {
             }
         }
 
+        if(_castedVariable->m_flags & Parser::__ast_flags::__ast_flags_static)
+        {
+            return;
+        }
+
         for(const auto& _define : _castedVariable->m_aNeededDefines)
         {
             _file << "#ifdef " << _define << "\n";
