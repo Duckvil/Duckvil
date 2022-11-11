@@ -53,4 +53,11 @@ namespace Duckvil { namespace RuntimeReflection {
         return get_type(_context.m_pReflection, _context.m_pReflectionData, _typeHandle);
     }
 
+    bool inherits(DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(type_t) _typeHandle2)
+    {
+        duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext;
+
+        return inherits(_context.m_pReflection, _context.m_pReflectionData, _typeHandle, _typeHandle2);
+    }
+
 }}

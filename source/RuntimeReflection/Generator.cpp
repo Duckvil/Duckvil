@@ -189,7 +189,18 @@ namespace Duckvil { namespace RuntimeReflection {
             _file << "#ifdef " << _define << "\n";
         }
 
-        _file << "_property = record_property<" + _additionalNamespaceTypedef + _castedVariable->m_sType + ">(_data, _type, offsetof(" + _sNamespace + _pParentEntity->m_sName + ", " + _castedVariable->m_sName + "), \"" + _castedVariable->m_sName + "\");\n";
+        _file << "_property = record_property<" + _additionalNamespaceTypedef + _castedVariable->m_sType + ">(_data, _type, ";
+
+        if(_castedVariable->m_flags & Parser::__ast_flags::__ast_flags_static)
+        {
+            // _file << "&" << _sNamespace << _pParentEntity->m_sName << "::" << _castedVariable->m_sName;
+        }
+        else
+        {
+            _file << "offsetof(" + _sNamespace + _pParentEntity->m_sName + ", " + _castedVariable->m_sName + ")";
+        }
+
+        _file << ", \"" + _castedVariable->m_sName + "\");\n";
 
         for(const Parser::__ast_meta& _meta : _castedVariable->m_aMeta)
         {
@@ -256,6 +267,10 @@ namespace Duckvil { namespace RuntimeReflection {
         bool _skip = false;
 
         if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_class && _castedFunction->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
+        {
+            _skip = true;
+        }
+        else if (_castedFunction->m_flags & Parser::__ast_flags::__ast_flags_virtual)
         {
             _skip = true;
         }

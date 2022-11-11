@@ -48,6 +48,8 @@ namespace Duckvil { namespace RuntimeReflection {
         return inherits<Type>(_context.m_pReflection, _context.m_pReflectionData, _typeHandle);
     }
 
+    bool inherits(DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(type_t) _typeHandle2);
+
     DUCKVIL_RESOURCE(ntype_t) get_type(const std::vector<const char*>& _aNamespaces);
 
     const __ntype_t& get_type(DUCKVIL_RESOURCE(ntype_t) _typeHandle);

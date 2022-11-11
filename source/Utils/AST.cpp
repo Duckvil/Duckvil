@@ -6,6 +6,9 @@ namespace Duckvil { namespace Utils {
     {
         uint32_t _roundBrackets = 0;
         std::string _token;
+        std::string _curr;
+
+        Duckvil::Parser::__ast_entity_define* _defineEntity = new Duckvil::Parser::__ast_entity_define();
 
         while(_pLexer->next_token(_pLexerData, &_token))
         {
@@ -13,12 +16,26 @@ namespace Duckvil { namespace Utils {
             {
                 _roundBrackets++;
             }
+            else if (_token == ",")
+            {
+                if(_curr != "")
+                {
+                    _defineEntity->m_aArguments.push_back(_curr);
+                }
+
+                _curr.clear();
+            }
             else if(_token == ")")
             {
                 _roundBrackets--;
 
                 if(_roundBrackets == 0)
                 {
+                    if(_curr != "")
+                    {
+                        _defineEntity->m_aArguments.push_back(_curr);
+                    }
+
                     break;
                 }
             }
@@ -26,9 +43,16 @@ namespace Duckvil { namespace Utils {
             {
                 break;
             }
-        }
+            else
+            {
+                if(_pLexerData->m_bSpace)
+                {
+                    _curr += " ";
+                }
 
-        Duckvil::Parser::__ast_entity_define* _defineEntity = new Duckvil::Parser::__ast_entity_define();
+                _curr += _token;
+            }
+        }
 
         _defineEntity->m_sName = _sUserDefine;
         _defineEntity->m_pParentScope = _pAST->m_pCurrentScope;
