@@ -259,6 +259,10 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             _skip = true;
         }
+        else if (_castedFunction->m_flags & Parser::__ast_flags::__ast_flags_virtual)
+        {
+            _skip = true;
+        }
         else if(_pParentEntity->m_structureType == Parser::__ast_structure_type::__ast_structure_type_struct && _castedFunction->m_accessLevel == Parser::__ast_access::__ast_access_not_specified)
         {
             _skip = false;
