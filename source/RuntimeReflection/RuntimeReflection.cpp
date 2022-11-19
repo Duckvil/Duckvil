@@ -369,7 +369,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
             if(find_property(_pData, { i }, _sName, _ullLength, _property, _id))
             {
-                return static_cast<const uint8_t*>(_pObject) + _property.m_ullAddress;
+                return (_property.m_traits & property_traits::is_static ? reinterpret_cast<void*>(_property.m_ullAddress) : static_cast<const uint8_t*>(_pObject) + _property.m_ullAddress);
             }
         }
 
@@ -441,7 +441,7 @@ namespace Duckvil { namespace RuntimeReflection {
         const __type_t& _type = DUCKVIL_SLOT_ARRAY_GET(_pData->m_aTypes, _type_handle.m_ID);
         const __property_t& _property = DUCKVIL_SLOT_ARRAY_GET(_type.m_properties, _handle.m_ID);
 
-        return static_cast<const uint8_t*>(_pObject) + _property.m_ullAddress;
+        return (_property.m_traits & property_traits::is_static ? reinterpret_cast<void*>(_property.m_ullAddress) : static_cast<const uint8_t*>(_pObject) + _property.m_ullAddress);
     }
 
     const void* get_property_value_by_name(__data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, const char* _sName, std::size_t _ullLength, const void* _pObject)
@@ -451,7 +451,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
         if(find_property(_pData, _typeHandle, _sName, _ullLength, _property, _id))
         {
-            return static_cast<const uint8_t*>(_pObject) + _property.m_ullAddress;
+            return (_property.m_traits & property_traits::is_static ? reinterpret_cast<void*>(_property.m_ullAddress) : static_cast<const uint8_t*>(_pObject) + _property.m_ullAddress);
         }
 
         return nullptr;
