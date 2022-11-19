@@ -20,7 +20,8 @@ namespace Duckvil { namespace RuntimeReflection {
         is_floating_point   = 1 << 5,
         is_enum             = 1 << 6,
         is_bool             = 1 << 7,
-        is_const            = 1 << 8
+        is_const            = 1 << 8,
+        is_static           = 1 << 9
     };
 
 #ifdef DUCKVIL_PLATFORM_WINDOWS
@@ -47,6 +48,11 @@ namespace Duckvil { namespace RuntimeReflection {
     inline property_traits operator|(property_traits a, property_traits b)
     {
         return static_cast<property_traits>(static_cast<uint16_t>(a) | static_cast<uint16_t>(b));
+    }
+
+    inline bool operator&(property_traits a, property_traits b)
+    {
+        return static_cast<uint16_t>(a) & static_cast<uint16_t>(b);
     }
 
     inline function_traits operator|(function_traits a, function_traits b)
@@ -114,6 +120,9 @@ namespace Duckvil { namespace RuntimeReflection {
             template <typename Type>
             using is_pointer = std::is_pointer<Type>;
 
+            // template <typename Type>
+            // using is_static = std::negation<std::is_member_pointer<Type>>;
+
         }
 
     }
@@ -132,6 +141,7 @@ namespace Duckvil { namespace RuntimeReflection {
         _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, property, is_enum);
         _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, property, is_bool);
         _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, property, is_const);
+        // _traits = DUCKVIL_RUNTIME_REFLECTION_RECORDER_TRAIT(Type, property, is_static);
 
         return _traits;
     }

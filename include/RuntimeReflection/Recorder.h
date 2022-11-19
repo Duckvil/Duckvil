@@ -320,7 +320,8 @@ namespace Duckvil { namespace RuntimeReflection {
         DUCKVIL_RESOURCE(type_t) (*m_fnRecordType)(const duckvil_runtime_reflection_recorder_stuff& _data, std::size_t _ullTypeID, const char* _sTypeName, std::size_t _ullLength);
         DUCKVIL_RESOURCE(constructor_t) (*m_fnRecordConstructor)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, uint8_t* _pConctructor, Memory::Queue<__argument_t>& _arguments);
         DUCKVIL_RESOURCE(destructor_t) (*m_fnRecordDestructor)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, uint8_t* _pConctructor);
-        DUCKVIL_RESOURCE(property_t) (*m_fnRecordProperty)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, const char* _sName, std::size_t _ullLength, uintptr_t _ullAddress, const property_traits& _traits);
+        DUCKVIL_RESOURCE(property_t) (*m_fnRecordPropertyByOffset)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, const char* _sName, std::size_t _ullLength, uintptr_t _ullOffset, const property_traits& _traits);
+        DUCKVIL_RESOURCE(property_t) (*m_fnRecordPropertyByAddress)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, const char* _sName, std::size_t _ullLength, uintptr_t _ullAddress, const property_traits& _traits);
         DUCKVIL_RESOURCE(namespace_t) (*m_fnRecordNamespace)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, const char* _sName, std::size_t _ullLength);
         DUCKVIL_RESOURCE(inheritance_t) (*m_fnRecordInheritance)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullInheritanceTypeID, __protection _protection);
         DUCKVIL_RESOURCE(function_t) (*m_fnRecordFunction)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, __ifunction* _pFunction, const char* _sName, std::size_t _ullLength, std::size_t _ullReturnTypeID, std::size_t _ullArgumentsTypeID, Memory::Queue<__argument_t>& _arguments, const function_traits& _traits);
@@ -427,7 +428,17 @@ namespace Duckvil { namespace RuntimeReflection {
 
         static std::size_t _typeB_ID = typeid(StrippedType).hash_code();
 
-        return _data._pFunctions->m_fnRecordProperty(_data, _typeHandle, _typeB_ID, _sName, Length, _ullOffset, recorder_generate_property_traits<B>());
+        return _data._pFunctions->m_fnRecordPropertyByOffset(_data, _typeHandle, _typeB_ID, _sName, Length, _ullOffset, recorder_generate_property_traits<B>());
+    }
+
+    template <typename B, std::size_t Length>
+    static DUCKVIL_RESOURCE(property_t) record_property(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _typeHandle, B* _pAddress, const char(&_sName)[Length])
+    {
+        using StrippedType = remove_all<B>::type;
+
+        static std::size_t _typeB_ID = typeid(StrippedType).hash_code();
+
+        return _data._pFunctions->m_fnRecordPropertyByAddress(_data, _typeHandle, _typeB_ID, _sName, Length, reinterpret_cast<uintptr_t>(_pAddress), recorder_generate_property_traits<B>());
     }
 
     template <std::size_t Length>

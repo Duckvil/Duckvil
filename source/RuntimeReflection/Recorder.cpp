@@ -677,7 +677,30 @@ namespace Duckvil { namespace RuntimeReflection {
         return _handle;
     }
 
-    DUCKVIL_RESOURCE(property_t) record_property(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, const char* _sName, std::size_t _ullLength, uintptr_t _ullAddress, const property_traits& _traits)
+    DUCKVIL_RESOURCE(property_t) record_property_by_offset(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, const char* _sName, std::size_t _ullLength, uintptr_t _ullOffset, const property_traits& _traits)
+    {
+        __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_data._pData->m_aTypes, _owner.m_ID);
+        __property_t _property = {};
+
+        _property.m_ullAddress = _ullOffset;
+        _property.m_ullTypeID = _ullTypeID;
+        _property.m_owner = _owner;
+        _property.m_metas = DUCKVIL_SLOT_ARRAY_NEW(_data._pMemoryInterface, _data._pAllocator, __meta_t);
+        _property.m_traits = _traits;
+
+        // _property.m_sName = new char[_ullLength];
+        _property.m_sName = static_cast<char*>(_data._pMemoryInterface->m_fnFreeListAllocate_(_data._pAllocator, _ullLength, 8));
+
+        memcpy(_property.m_sName, _sName, _ullLength);
+
+        DUCKVIL_RESOURCE(property_t) _handle = {};
+
+        _handle.m_ID = duckvil_slot_array_insert(_data._pMemoryInterface, _data._pAllocator, _type->m_properties, _property);
+
+        return _handle;
+    }
+
+    DUCKVIL_RESOURCE(property_t) record_property_by_address(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(type_t) _owner, std::size_t _ullTypeID, const char* _sName, std::size_t _ullLength, uintptr_t _ullAddress, const property_traits& _traits)
     {
         __type_t* _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_data._pData->m_aTypes, _owner.m_ID);
         __property_t _property = {};
@@ -686,7 +709,7 @@ namespace Duckvil { namespace RuntimeReflection {
         _property.m_ullTypeID = _ullTypeID;
         _property.m_owner = _owner;
         _property.m_metas = DUCKVIL_SLOT_ARRAY_NEW(_data._pMemoryInterface, _data._pAllocator, __meta_t);
-        _property.m_traits = _traits;
+        _property.m_traits = _traits | property_traits::is_static;
 
         // _property.m_sName = new char[_ullLength];
         _property.m_sName = static_cast<char*>(_data._pMemoryInterface->m_fnFreeListAllocate_(_data._pAllocator, _ullLength, 8));
@@ -814,7 +837,8 @@ Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_record
     _functions.m_fnRecordType = &Duckvil::RuntimeReflection::record_type;
     _functions.m_fnRecordConstructor = &Duckvil::RuntimeReflection::record_constructor;
     _functions.m_fnRecordDestructor = &Duckvil::RuntimeReflection::record_destructor;
-    _functions.m_fnRecordProperty = &Duckvil::RuntimeReflection::record_property;
+    _functions.m_fnRecordPropertyByOffset = &Duckvil::RuntimeReflection::record_property_by_offset;
+    _functions.m_fnRecordPropertyByAddress = &Duckvil::RuntimeReflection::record_property_by_address;
     _functions.m_fnRecordNamespace = &Duckvil::RuntimeReflection::record_namespace;
     _functions.m_fnRecordInheritance = &Duckvil::RuntimeReflection::record_inheritance;
     _functions.m_fnRecordFunction = &Duckvil::RuntimeReflection::record_function;

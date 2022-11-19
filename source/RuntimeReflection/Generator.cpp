@@ -184,24 +184,19 @@ namespace Duckvil { namespace RuntimeReflection {
             }
         }
 
-        if(_castedVariable->m_flags & Parser::__ast_flags::__ast_flags_static)
-        {
-            return;
-        }
-
         for(const auto& _define : _castedVariable->m_aNeededDefines)
         {
             _file << "#ifdef " << _define << "\n";
         }
 
-        _file << "_property = record_property<" + _additionalNamespaceTypedef + _castedVariable->m_sType + ">(_data, _type, ";
-
         if(_castedVariable->m_flags & Parser::__ast_flags::__ast_flags_static)
         {
-            // _file << "&" << _sNamespace << _pParentEntity->m_sName << "::" << _castedVariable->m_sName;
+            _file << "_property = record_property<" << _castedVariable->m_sType << ">(_data, _type, &" << _sNamespace + _pParentEntity->m_sName + "::" + _castedVariable->m_sName;
         }
         else
         {
+            _file << "_property = record_property<" + _additionalNamespaceTypedef + _castedVariable->m_sType + ">(_data, _type, ";
+
             _file << "offsetof(" + _sNamespace + _pParentEntity->m_sName + ", " + _castedVariable->m_sName + ")";
         }
 
