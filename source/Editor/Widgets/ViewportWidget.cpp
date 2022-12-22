@@ -83,7 +83,7 @@ namespace Duckvil { namespace Editor {
 
             if(m_pWindowEventPool->GetMessage(&_keyDownEvent))
             {
-                if(m_bIsWindowFocused)
+                if(m_bLookingAround)
                 {
                     m_aKeys[_keyDownEvent.m_key] = true;
                 }
@@ -92,10 +92,7 @@ namespace Duckvil { namespace Editor {
             }
             else if(m_pWindowEventPool->GetMessage(&_keyUpEvent))
             {
-                if(m_bIsWindowFocused)
-                {
-                    m_aKeys[_keyUpEvent.m_key] = false;
-                }
+            	m_aKeys[_keyUpEvent.m_key] = false;
 
                 m_pWindowEventPool->EventHandled(_keyUpEvent);
             }
@@ -113,33 +110,33 @@ namespace Duckvil { namespace Editor {
 
         if(m_bLookingAround)
         {
-            if(m_aKeys[Window::key_a])
-            {
-                m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(1, 0, 0)) * (float)_dDelta * 4.f;
+	        if(m_aKeys[Window::key_a])
+	        {
+	            m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(1, 0, 0)) * (float)_dDelta * 4.f;
 
-                _anyMovement = true;
-            }
+	            _anyMovement = true;
+	        }
 
-            if(m_aKeys[Window::key_d])
-            {
-                m_viewport.m_position -= glm::normalize(m_viewport.m_rotation * glm::vec3(1, 0, 0)) * (float)_dDelta * 4.f;
+	        if(m_aKeys[Window::key_d])
+	        {
+	            m_viewport.m_position -= glm::normalize(m_viewport.m_rotation * glm::vec3(1, 0, 0)) * (float)_dDelta * 4.f;
 
-                _anyMovement = true;
-            }
+	            _anyMovement = true;
+	        }
 
-            if(m_aKeys[Window::key_w])
-            {
-                m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(0, 0, 1)) * (float)_dDelta * 4.f;
+	        if(m_aKeys[Window::key_w])
+	        {
+	            m_viewport.m_position += glm::normalize(m_viewport.m_rotation * glm::vec3(0, 0, 1)) * (float)_dDelta * 4.f;
 
-                _anyMovement = true;
-            }
+	            _anyMovement = true;
+	        }
 
-            if(m_aKeys[Window::key_s])
-            {
-                m_viewport.m_position -= glm::normalize(m_viewport.m_rotation * glm::vec3(0, 0, 1)) * (float)_dDelta * 4.f;
+	        if(m_aKeys[Window::key_s])
+	        {
+	            m_viewport.m_position -= glm::normalize(m_viewport.m_rotation * glm::vec3(0, 0, 1)) * (float)_dDelta * 4.f;
 
-                _anyMovement = true;
-            }
+	            _anyMovement = true;
+	        }
         }
 
         if(_anyMovement)
@@ -332,18 +329,48 @@ namespace Duckvil { namespace Editor {
             }
         }
 
-        m_bIsWindowFocused = ImGui::IsWindowFocused();
-
         bool _isWindowHovered = ImGui::IsWindowHovered();
+        static bool _looked = false;
 
         if(_isWindowHovered && ImGui::IsMouseDown(ImGuiMouseButton_::ImGuiMouseButton_Right))
         {
             m_bLookingAround = true;
         }
 
+        if(_isWindowHovered && !_looked && ImGui::IsMouseReleased(ImGuiMouseButton_::ImGuiMouseButton_Right))
+        {
+            ImGui::OpenPopup("##viewportContextMenuPopup");
+        }
+
+        if(ImGui::BeginPopup("##viewportContextMenuPopup"))
+        {
+            if(m_pEntityFactory->IsValid(m_selectedEntity))
+            {
+                if(ImGui::Button("Delete"))
+                {
+                    Entity _entity = m_selectedEntity;
+
+                    m_selectedEntity = Entity();
+
+                    m_pEditorEventPool->Broadcast(EntitySelectedEvent{ m_selectedEntity });
+
+                    m_pEntityFactory->Destroy(_entity);
+
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::Separator();
+            }
+
+            ImGui::Text("Some window context content");
+
+            ImGui::EndPopup();
+        }
+
         if(m_bLookingAround && ImGui::IsMouseReleased(ImGuiMouseButton_::ImGuiMouseButton_Right))
         {
             m_bLookingAround = false;
+            _looked = false;
         }
 
         if(m_bLookingAround)
@@ -380,6 +407,8 @@ namespace Duckvil { namespace Editor {
                 {
                     m_viewport.m_rotation = glm::normalize(glm::angleAxis((_newMousePos.y - _mousePos.y) * (float)m_dDelta * 4, m_viewport.m_rotation * glm::vec3(1, 0, 0)) *
                         glm::angleAxis((_newMousePos.x - _mousePos.x) * (float)m_dDelta * 4, glm::vec3(0, 1, 0))) * m_viewport.m_rotation;
+
+                    _looked = true;
                 }
 
                 _mousePos = _newMousePos;
