@@ -51,6 +51,11 @@ namespace Duckvil { namespace Editor {
             Utils::string m_sTypeName;
         };
 
+        struct ExternalModule
+        {
+            bool (*m_fnDraw)();
+        };
+
         Entity m_selectedEntity;
 
         Memory::FreeList m_heap;
@@ -58,6 +63,7 @@ namespace Duckvil { namespace Editor {
         // Memory::Vector<RuntimeReflection::__duckvil_resource_type_t> m_aComponentTypeHandles;
         Memory::Vector<EntityInspectorWidget::Component> m_aFunctions;
         Memory::Vector<EntityInspectorWidget::Script> m_aScripts;
+        Memory::Vector<EntityInspectorWidget::ExternalModule> m_aExternalModules;
 
         bool m_bPopupOpened;
 
@@ -73,6 +79,8 @@ namespace Duckvil { namespace Editor {
         uint8_t** m_ppAddress;
         const void** m_pFunction;
         void (*m_fnGeneratedFunction)();
+
+        Event::Pool<Event::mode::immediate>* m_pEngineEventPool;
 
     public:
         EntityInspectorWidget(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Editor") Event::Pool<Event::mode::immediate>* _pEditorEventPool, EntityFactory* _pEntityFactory, DUCKVIL_ARGUMENT("Engine") Event::Pool<Event::mode::immediate>* _pEngineEventPool);

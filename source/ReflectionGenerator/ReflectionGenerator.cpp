@@ -157,6 +157,7 @@ nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil
     _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_SLOT_ARRAY_DECLARE", &Duckvil::Utils::user_define_behavior });
     _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_META_CAT", &Duckvil::Utils::user_define_behavior });
     _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_META_UTIL", &Duckvil::Utils::user_define_behavior });
+    _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_CS_FUNCTION", &Duckvil::Utils::user_define_behavior });
 
 #ifdef DUCKVIL_HOT_RELOADING
     _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_HOT_RELOADING", &Duckvil::Utils::user_define_behavior });

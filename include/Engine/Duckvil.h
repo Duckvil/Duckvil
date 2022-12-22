@@ -66,6 +66,8 @@
 
 #include "Engine/ScriptComponent.h"
 
+#include "ScriptEngine/Language.h"
+
 namespace Duckvil {
 
     struct system
@@ -161,6 +163,8 @@ namespace Duckvil {
 
         uint16_t m_usPort;
         const char* m_sIP;
+
+        ScriptEngine::Language* m_pCSharpLanguage;
 
         Memory::FreeList m_globalHeap;
 

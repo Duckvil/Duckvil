@@ -91,6 +91,8 @@ namespace Duckvil {
             make_current_runtime_reflection_context = nullptr;
             make_current_heap_context = nullptr;
 
+            printf("RuntimeReflection: Loading %s\n", _loadedModule.m_sName.m_sText);
+
             _module.get(_loadedModule, "duckvil_get_runtime_reflection_recorder_count", reinterpret_cast<void**>(&get_recorder_count));
             _module.get(_loadedModule, "duckvil_plugin_make_current_runtime_reflection_context", reinterpret_cast<void**>(&make_current_runtime_reflection_context));
             _module.get(_loadedModule, "duckvil_plugin_make_current_heap_context", reinterpret_cast<void**>(&make_current_heap_context));
@@ -99,6 +101,8 @@ namespace Duckvil {
             if(get_recorder_count == nullptr)
             {
                 // DUCKVIL_LOG_INFO_("No recorder for %s", _loadedModule.m_sName.m_sText);
+
+                printf("RuntimeReflection: Skipping %s\n", _loadedModule.m_sName.m_sText);
 
                 continue;
             }
@@ -410,6 +414,20 @@ namespace Duckvil {
         init_editor(_pData, &_module);
 #endif
         init_project_manager(_pData, &_module);
+
+        const auto& _CSharpTypeHandle = RuntimeReflection::get_type("CSharp", { "Duckvil", "CSharp" });
+
+        _pData->m_pCSharpLanguage =
+            static_cast<ScriptEngine::Language*>(
+				RuntimeReflection::create<
+					const Memory::FreeList&,
+					EntityFactory*,
+					Event::Pool<Event::mode::immediate>*
+                >(_pData->m_heap, _CSharpTypeHandle, false, _pData->m_heap, &_pData->m_entityFactory, &_pData->m_eventPool)
+			);
+
+        _pData->m_pCSharpLanguage->Setup();
+        _pData->m_pCSharpLanguage->Init();
 
 #ifndef DUCKVIL_HEADLESS_SERVER
         if(_pData->m_bIsServer)
@@ -969,6 +987,8 @@ namespace Duckvil {
                 }
             });
         // }
+
+        _pData->m_pCSharpLanguage->Update();
 
         {
             ZoneScopedN("Editor");

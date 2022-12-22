@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CSDuckvil": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

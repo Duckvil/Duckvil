@@ -88,6 +88,7 @@ if(DUCKVIL_GENERATE_REFLECTION)
 endif()
 
 add_subdirectory(source)
+add_subdirectory(scripting)
 
 if(DUCKVIL_TESTS)
     list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")

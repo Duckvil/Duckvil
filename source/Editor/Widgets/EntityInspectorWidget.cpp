@@ -21,6 +21,8 @@
 
 #include "Graphics/MeshComponent.h"
 
+#include "Engine/Events/RequestSystemEvent.h"
+
 namespace Duckvil { namespace Editor {
 
     static void draw_vec3(const char* _sLabel, glm::vec3& _value)
@@ -30,7 +32,8 @@ namespace Duckvil { namespace Editor {
 
     EntityInspectorWidget::EntityInspectorWidget(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEditorEventPool, EntityFactory* _pEntityFactory, Event::Pool<Event::mode::immediate>* _pEngineEventPool) :
         m_heap(_heap),
-        m_pEntityFactory(_pEntityFactory)
+        m_pEntityFactory(_pEntityFactory),
+        m_pEngineEventPool(_pEngineEventPool)
     {
         _pEditorEventPool->Add<EntitySelectedEvent>(this, &EntityInspectorWidget::OnEvent);
         _pEngineEventPool->Add<HotReloader::SwapEvent>(this, &EntityInspectorWidget::OnEvent);
@@ -144,19 +147,59 @@ namespace Duckvil { namespace Editor {
             }
             else if(_type.Inherits<NativeScriptBase>())
             {
-                Script _script;
+                const auto& _drawFunc = _type.GetFunctionHandle<const char***, uint32_t*, void*>("GetScripts");
 
-                _script.m_typeHandle = _type.GetHandle();
-                _script.m_sTypeName = _type.GetFullName();
-
-                if(m_aScripts.Full())
+                if(_drawFunc.m_ID == -1)
                 {
-                    m_aScripts.Resize(m_aScripts.Size() * 2);
+                    Script _script;
+
+                    _script.m_typeHandle = _type.GetHandle();
+                    _script.m_sTypeName = _type.GetFullName();
+
+                    if(m_aScripts.Full())
+                    {
+                        m_aScripts.Resize(m_aScripts.Size() * 2);
+                    }
+
+                    m_aScripts.Allocate(_script);
+
+                    m_aScriptNames.push_back(m_aScripts[m_aScripts.Size() - 1].m_sTypeName.m_sText);
                 }
+                else
+                {
+                    const auto& _rFunc = RuntimeReflection::get_function(_type.GetHandle(), _drawFunc);
+                    auto _pFunc = static_cast<RuntimeReflection::__proxy_static_function<void, const char***, uint32_t*, void*>*>(_rFunc.m_pFunction);
 
-                m_aScripts.Allocate(_script);
+                    const char** _scripts;
+                    uint32_t _count = 0;
 
-                m_aScriptNames.push_back(m_aScripts[m_aScripts.Size() - 1].m_sTypeName.m_sText);
+                    RequestSystemEvent _e;
+
+                    _e.m_typeHandle = RuntimeReflection::get_type("CSharp", { "Duckvil", "CSharp" });
+
+                    m_pEngineEventPool->Broadcast(_e);
+
+                    _pFunc->Invoke(&_scripts, &_count, _e.m_pRequestedSystem);
+
+                    for(uint32_t _k = 0; _k < _count; ++_k)
+                    {
+                        Script _script;
+
+                        _script.m_typeHandle = _type.GetHandle();
+                        _script.m_sTypeName = _scripts[_k];
+
+                        if(m_aScripts.Full())
+                        {
+                            m_aScripts.Resize(m_aScripts.Size() * 2);
+                        }
+
+                        m_aScripts.Allocate(_script);
+
+                        m_aScriptNames.push_back(m_aScripts[m_aScripts.Size() - 1].m_sTypeName.m_sText);
+                    }
+
+                    delete[] _scripts;
+                }
             }
         }
 
@@ -180,7 +223,7 @@ namespace Duckvil { namespace Editor {
     {
         ImGui::Begin("Entity inspector");
 
-        if(m_selectedEntity.m_entity != 0)
+        if(m_pEntityFactory->IsValid(m_selectedEntity) && m_selectedEntity.m_entity != 0)
         {
             bool _anyItemHovered = false;
 
@@ -243,6 +286,13 @@ namespace Duckvil { namespace Editor {
                             {
                                 // Expose some things...
 
+                                auto _drawDetailsHandle = RuntimeReflection::get_function_handle<>(_script->m_typeHandle, "DrawDetails");
+
+                                if(_drawDetailsHandle.m_ID != -1)
+                                {
+                                    RuntimeReflection::invoke_member(_script->m_typeHandle, _drawDetailsHandle, _script);
+                                }
+
                                 ImGui::TreePop();
                             }
 
@@ -269,6 +319,11 @@ namespace Duckvil { namespace Editor {
                                 if(ImGui::Button("Remove script"))
                                 {
                                     ImGui::CloseCurrentPopup();
+
+                                    HotReloader::ITrackKeeper* _tScript = *Memory::fixed_vector_at<HotReloader::ITrackKeeper*>(m_heap.GetMemoryInterface(), _scriptComponent.m_pScripts, _i);
+
+                                    reinterpret_cast<NativeScriptBase*>(_tScript->GetObject())->~NativeScriptBase();
+                                    _tScript->~ITrackKeeper();
 
                                     Memory::fixed_vector_erase(m_heap.GetMemoryInterface(), _scriptComponent.m_pScripts, _i);
                                 }
@@ -306,6 +361,20 @@ namespace Duckvil { namespace Editor {
                             _o->m_typeHandle = _selectedScript.m_typeHandle;
 
                             _o->SetEntity(m_selectedEntity);
+
+                            const auto& _createScriptFunc = RuntimeReflection::get_function_handle<const char*, void*>(_selectedScript.m_typeHandle, "CreateScript");
+
+                            if(_createScriptFunc.m_ID != -1)
+                            {
+                                RequestSystemEvent _e;
+
+                                _e.m_typeHandle = RuntimeReflection::get_type("CSharp", { "Duckvil", "CSharp" });
+
+                                m_pEngineEventPool->Broadcast(_e);
+
+                                RuntimeReflection::invoke_member<const char*, void*>(_selectedScript.m_typeHandle, _createScriptFunc, _o, m_aScriptNames[m_iCurrentScriptItem], _e.m_pRequestedSystem);
+                            }
+
                             _o->Init();
                         }
 

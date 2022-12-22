@@ -1,0 +1,3 @@
+INCLUDE_EXTERNAL_MSPROJECT(CSDuckvil ${CMAKE_SOURCE_DIR}/scripting/CSDuckvil/CSDuckvil.csproj PLATFORM "Any CPU")
+INCLUDE_EXTERNAL_MSPROJECT(CSGenerator ${CMAKE_SOURCE_DIR}/scripting/CSGenerator/CSGenerator.csproj PLATFORM "Any CPU")
+INCLUDE_EXTERNAL_MSPROJECT(Sandbox ${CMAKE_SOURCE_DIR}/scripting/Sandbox/Sandbox.csproj PLATFORM "Any CPU")
