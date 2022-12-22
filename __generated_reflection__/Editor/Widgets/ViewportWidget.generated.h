@@ -18,7 +18,6 @@ _pSerializer->SerializeProperty("m_pWindowEventPool", m_pWindowEventPool); \
 _pSerializer->SerializeProperty("m_pEditorEventPool", m_pEditorEventPool); \
 _pSerializer->SerializeProperty("m_viewport", m_viewport); \
 _pSerializer->SerializeProperty("m_aKeys", m_aKeys); \
-_pSerializer->SerializeProperty("m_bIsWindowFocused", m_bIsWindowFocused); \
 _pSerializer->SerializeProperty("m_bSkip", m_bSkip); \
 _pSerializer->SerializeProperty("m_pECS", m_pECS); \
 _pSerializer->SerializeProperty("m_pEntityFactory", m_pEntityFactory); \

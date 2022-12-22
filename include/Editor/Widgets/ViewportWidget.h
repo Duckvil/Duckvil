@@ -79,7 +79,7 @@ namespace Duckvil { namespace Editor {
         viewport m_viewport;
 
         bool m_aKeys[Window::key_size];
-        bool m_bIsWindowFocused = false;
+        //bool m_bIsWindowFocused = false;
 
         bool m_bSkip = false;
 
