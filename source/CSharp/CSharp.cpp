@@ -280,12 +280,12 @@ namespace Duckvil { namespace CSharp {
         {
             MonoClass* _sharedScriptClass = mono_class_from_name(mono_assembly_get_image(static_cast<MonoAssembly*>(m_pCoreAssembly)), "Duckvil", "SharedScript");
 
-            if(!mono_class_implements_interface(_event.m_pClass, _sharedScriptClass))
+            if(!mono_class_implements_interface(static_cast<MonoClass*>(_event.m_pClass), _sharedScriptClass))
             {
                 return;
             }
 
-            const auto& _namespace = cpp_combine(_event.m_pClass);
+            const auto& _namespace = cpp_combine(static_cast<MonoClass*>(_event.m_pClass));
             std::vector<const char*> _namespaceCstr;
 
             for(const auto& _n : _namespace)
@@ -293,7 +293,7 @@ namespace Duckvil { namespace CSharp {
                 _namespaceCstr.push_back(_n.c_str());
             }
 
-            auto _typeHandle = RuntimeReflection::get_type(mono_class_get_name(_event.m_pClass), _namespaceCstr);
+            auto _typeHandle = RuntimeReflection::get_type(mono_class_get_name(static_cast<MonoClass*>(_event.m_pClass)), _namespaceCstr);
 
             SharedScript* _nativeClass = Create(_typeHandle);
             size_t _id = -1;
@@ -301,7 +301,7 @@ namespace Duckvil { namespace CSharp {
             Register(&_id, _nativeClass);
 
             {
-                auto _methodSharedScriptSetID = mono_class_get_method_from_name(_event.m_pClass, "SetSharedScriptID", 1);
+                auto _methodSharedScriptSetID = mono_class_get_method_from_name(static_cast<MonoClass*>(_event.m_pClass), "SetSharedScriptID", 1);
 
                 void* _params[1];
 
@@ -310,8 +310,8 @@ namespace Duckvil { namespace CSharp {
                 mono_runtime_invoke(_methodSharedScriptSetID, _event.m_pObject, _params, nullptr);
             }
 
-            _nativeClass->SetCSharpClass(_event.m_pClass);
-            _nativeClass->SetCSharpObject(_event.m_pObject);
+            _nativeClass->SetCSharpClass(static_cast<MonoClass*>(_event.m_pClass));
+            _nativeClass->SetCSharpObject(static_cast<MonoObject*>(_event.m_pObject));
             _nativeClass->InternalInit();
         }));
     }

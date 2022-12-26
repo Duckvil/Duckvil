@@ -15,15 +15,15 @@ namespace Duckvil { namespace CSharp {
     struct ScriptField
     {
         Duckvil::CSharp::CSharp::ScriptFieldType m_type;
-        MonoClassField* m_monoField;
+        void* m_monoField;
     };
 
     struct ScriptProperty
     {
         Duckvil::CSharp::CSharp::ScriptFieldType m_type;
-        MonoProperty* m_pMonoProperty;
-        MonoMethod* m_pGetMethod;
-        MonoMethod* m_pSetMethod;
+        void* m_pMonoProperty;
+        void* m_pGetMethod;
+        void* m_pSetMethod;
     };
 
     class Script : public NativeScriptBase, public Editor::Widget
@@ -34,11 +34,11 @@ namespace Duckvil { namespace CSharp {
         template <typename T>
         friend void imgui_variable(const Script* _pEntity, const ScriptField& _field, const std::string_view& _sName);
     private:
-        MonoObject* m_pObject;
-        MonoClass* m_pClass;
+        void* m_pObject;
+        void* m_pClass;
 
-        MonoMethod* m_pInit;
-        MonoMethod* m_pUpdate;
+        void* m_pInit;
+        void* m_pUpdate;
 
         std::unordered_map<std::string, ScriptField> m_aFields;
         std::unordered_map<std::string, ScriptProperty> m_aProperties;

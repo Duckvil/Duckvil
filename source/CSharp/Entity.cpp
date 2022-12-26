@@ -6,17 +6,17 @@ namespace Duckvil { namespace CSharp {
 
     void Script::GetFieldValue(const ScriptField& _field, void* _pOutValue) const
     {
-        mono_field_get_value(m_pObject, _field.m_monoField, _pOutValue);
+        mono_field_get_value(static_cast<MonoObject*>(m_pObject), static_cast<MonoClassField*>(_field.m_monoField), _pOutValue);
     }
 
     void Script::SetFieldValue(const ScriptField& _field, const void* _pInValue) const
     {
-        mono_field_set_value(m_pObject, _field.m_monoField, (void*)_pInValue);
+        mono_field_set_value(static_cast<MonoObject*>(m_pObject), static_cast<MonoClassField*>(_field.m_monoField), (void*)_pInValue);
     }
 
     void* Script::GetPropertyValue(const ScriptProperty& _property) const
     {
-        MonoObject* _object = mono_property_get_value(_property.m_pMonoProperty, m_pObject, 0, 0);
+        MonoObject* _object = mono_property_get_value(static_cast<MonoProperty*>(_property.m_pMonoProperty), static_cast<MonoObject*>(m_pObject), 0, 0);
 		
         return mono_object_unbox(_object);
     }
@@ -27,7 +27,7 @@ namespace Duckvil { namespace CSharp {
 
         _params[0] = { (void*)_pInValue };
 
-        mono_property_set_value(_property.m_pMonoProperty, m_pObject, _params, 0);
+        mono_property_set_value(static_cast<MonoProperty*>(_property.m_pMonoProperty), static_cast<MonoObject*>(m_pObject), _params, 0);
     }
 
     Script::Script()
@@ -46,12 +46,12 @@ namespace Duckvil { namespace CSharp {
 
         _params[0] = &_dDelta;
 
-        mono_runtime_invoke(m_pUpdate, m_pObject, _params, nullptr);
+        mono_runtime_invoke(static_cast<MonoMethod*>(m_pUpdate), static_cast<MonoObject*>(m_pObject), _params, nullptr);
     }
 
     bool Script::Init()
     {
-        mono_runtime_invoke(m_pInit, m_pObject, nullptr, nullptr);
+        mono_runtime_invoke(static_cast<MonoMethod*>(m_pInit), static_cast<MonoObject*>(m_pObject), nullptr, nullptr);
 
         return true;
     }
@@ -112,12 +112,12 @@ namespace Duckvil { namespace CSharp {
         MonoImage* _appImage = mono_assembly_get_image(static_cast<MonoAssembly*>(_csEngine->m_pAppAssembly));
 
         m_pClass = mono_class_from_name(_appImage, _name.substr(0, _pos).c_str(), _name.substr(_pos + 1).c_str());
-        m_pInit = mono_class_get_method_from_name(m_pClass, "Initialize", 0);
-        m_pUpdate = mono_class_get_method_from_name(m_pClass, "Update", 1);
+        m_pInit = mono_class_get_method_from_name(static_cast<MonoClass*>(m_pClass), "Initialize", 0);
+        m_pUpdate = mono_class_get_method_from_name(static_cast<MonoClass*>(m_pClass), "Update", 1);
 
         m_pObject = _csEngine->Create(m_pClass);
 
-        mono_runtime_object_init(m_pObject);
+        mono_runtime_object_init(static_cast<MonoObject*>(m_pObject));
 
         MonoClass* _entityScriptClass = mono_class_from_name(_coreImage, "Duckvil", "Entity");
         const auto _constructor = mono_class_get_method_from_name(_entityScriptClass, ".ctor", 1);
@@ -133,7 +133,7 @@ namespace Duckvil { namespace CSharp {
 
         void* _fIt = nullptr;
 
-        while(MonoClassField* _f = mono_class_get_fields(m_pClass, &_fIt))
+        while(MonoClassField* _f = mono_class_get_fields(static_cast<MonoClass*>(m_pClass), &_fIt))
         {
             uint32_t _flags = mono_field_get_flags(_f);
 
@@ -158,10 +158,10 @@ namespace Duckvil { namespace CSharp {
 
         void* _pIt = nullptr;
 
-        while(MonoProperty* _p = mono_class_get_properties(m_pClass, &_pIt))
+        while(MonoProperty* _p = mono_class_get_properties(static_cast<MonoClass*>(m_pClass), &_pIt))
         {
             MonoClass* _attrClass = mono_class_from_name(_coreImage, "Duckvil", "CppSharedAttribute");
-            MonoCustomAttrInfo* _attrsInfo = mono_custom_attrs_from_property(m_pClass, _p);
+            MonoCustomAttrInfo* _attrsInfo = mono_custom_attrs_from_property(static_cast<MonoClass*>(m_pClass), _p);
 
             if(!mono_custom_attrs_has_attr(_attrsInfo, _attrClass))
             {
