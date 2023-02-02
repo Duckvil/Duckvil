@@ -3,7 +3,7 @@
 namespace Duckvil { namespace CSharp {
 
     void recursive(ReflectionModule* _pData, const Parser::__ast& _ast, Parser::__ast_entity* _entity);
-    void recursive_generate(void* _pContext, const std::string& _sFileID, std::ofstream& _file, const char* _sModuleName, std::vector<std::pair<uint32_t, std::vector<std::string>>>& _aGenerated);
+    void recursive_generate(void* _pContext, const std::string& _sFileID, std::ofstream& _file, const char* _sModuleName, RuntimeReflection::GeneratedVector& _aGenerated);
     void recursive_generate_source(void* _pContext, const std::string& _sFileID, std::ofstream& _file, const char* _sModuleName);
 
     ReflectionModule::ReflectionModule(const Memory::FreeList& _heap, RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData) :
@@ -26,7 +26,7 @@ namespace Duckvil { namespace CSharp {
         recursive(this, *_ast, &_ast->m_main);
     }
 
-    void ReflectionModule::GenerateCustom(std::ofstream& _hFile, std::ofstream& _sFile, std::vector<std::pair<uint32_t, std::vector<std::string>>>& _aGenerated)
+    void ReflectionModule::GenerateCustom(std::ofstream& _hFile, std::ofstream& _sFile, RuntimeReflection::GeneratedVector& _aGenerated)
     {
         if (m_aContexts.empty())
         {
@@ -264,9 +264,9 @@ namespace Duckvil { namespace CSharp {
     struct duckvil_cs_ ## name args; \
     rType name(duckvil_cs_ ## name _args) { generated_ ## name(_args); }
 
-    void generate_internal_call(std::ofstream& _file, const ReflectionModule::InternalCall& _call, const std::string_view& _sNewLine = "\\\n", void (*_fnBody)(std::ofstream&) = nullptr)
+    void generate_internal_call(std::ofstream& _file, const ReflectionModule::InternalCall& _call, const std::string& _sNamespace, const std::string_view& _sNewLine = "\\\n", void (*_fnBody)(std::ofstream&) = nullptr)
     {
-        _file << (_fnBody ? "" : "static ") << "void csharp_internal_" << _call.m_sName << "(size_t _ullSharedScriptID";
+        _file << (_fnBody ? "" : "static ") << "void " << _sNamespace << " csharp_internal_" << _call.m_sName << "(size_t _ullSharedScriptID";
 
         if (!_call.m_aArgs.empty())
         {
@@ -299,7 +299,7 @@ namespace Duckvil { namespace CSharp {
         }
     }
 
-    void recursive_generate(void* _pContext, const std::string& _sFileID, std::ofstream& _file, const char* _sModuleName, std::vector<std::pair<uint32_t, std::vector<std::string>>>& _aGenerated)
+    void recursive_generate(void* _pContext, const std::string& _sFileID, std::ofstream& _file, const char* _sModuleName, RuntimeReflection::GeneratedVector& _aGenerated)
     {
         const std::vector<ReflectionModule::Context*>& _contexts = *static_cast<std::vector<ReflectionModule::Context*>*>(_pContext);
 
@@ -391,13 +391,13 @@ namespace Duckvil { namespace CSharp {
             }
 
             _file << "private: \\\n";
-            _file << "MonoObject* m_pCSharpObject;\\\n";
-            _file << "MonoClass* m_pCSharpClass;\\\n";
-            _file << "void SetCSharpClass(MonoClass* _pClass) override\\\n";
+            _file << "void* m_pCSharpObject;\\\n";
+            _file << "void* m_pCSharpClass;\\\n";
+            _file << "void SetCSharpClass(void* _pClass) override\\\n";
             _file << "{\\\n";
             _file << "m_pCSharpClass = _pClass;\\\n";
             _file << "}\\\n";
-            _file << "void SetCSharpObject(MonoObject* _pObject) override\\\n";
+            _file << "void SetCSharpObject(void* _pObject) override\\\n";
             _file << "{\\\n";
             _file << "m_pCSharpObject = _pObject;\\\n";
             _file << "}\\\n";
@@ -418,7 +418,7 @@ namespace Duckvil { namespace CSharp {
 
             for (const auto& _internalCall : _context->m_aInternalCalls)
             {
-                generate_internal_call(_file, _internalCall);
+                generate_internal_call(_file, _internalCall, "");
             }
 
             _file << "void InternalInit() override;\n";
@@ -471,7 +471,7 @@ namespace Duckvil { namespace CSharp {
 
                 std::string _name = Utils::replace_all(_var.m_sName, "_an_", "");
 
-                _file << "void " << _namespace << _name << "(" << _var.m_sType << " _v) { " << _var.m_sName << " = _v; mono_field_set_value(m_pCSharpObject, m_pCSharpField_" << _name << ", (void*)&_v); }\n";
+                _file << "void " << _namespace << _name << "(" << _var.m_sType << " _v) { " << _var.m_sName << " = _v; mono_field_set_value(static_cast<MonoObject*>(m_pCSharpObject), m_pCSharpField_" << _name << ", (void*)&_v); }\n";
                 _file << _var.m_sType << " " << _namespace << _name << "() const { return " << _var.m_sName << "; }\n";
             }
 
@@ -569,7 +569,7 @@ namespace Duckvil { namespace CSharp {
 
             for (const auto& _internalCall : _context->m_aInternalCalls)
             {
-                generate_internal_call(_file, _internalCall, "\n", Utils::lambda([&](std::ofstream& _b)
+                generate_internal_call(_file, _internalCall, _namespace, "\n", Utils::lambda([&](std::ofstream& _b)
                     {
                         _b << "auto _csEngine = Duckvil::CSharp::CSharp::GetScriptEngine();\n";
                 _b << _context->m_sClassName << "* _script = static_cast<" << _context->m_sClassName << "*>(_csEngine->GetSharedScript(_ullSharedScriptID));\n";
@@ -601,14 +601,14 @@ namespace Duckvil { namespace CSharp {
 
             for (const auto& _csCall : _context->m_aCSharpCalls)
             {
-                _file << "m_pCSharpMethod_" << _csCall.m_sName << " = mono_class_get_method_from_name(m_pCSharpClass, \"" << _csCall.m_sName << "\", " << _csCall.m_aArgs.size() << ");\n";
+                _file << "m_pCSharpMethod_" << _csCall.m_sName << " = mono_class_get_method_from_name(static_cast<MonoClass*>(m_pCSharpClass), \"" << _csCall.m_sName << "\", " << _csCall.m_aArgs.size() << ");\n";
             }
 
             for (const auto& _varialbe : _context->m_aVariables)
             {
                 std::string _name = Utils::replace_all(_varialbe.m_sName, "_an_", "");
 
-                _file << "m_pCSharpField_" << _name << " = mono_class_get_field_from_name(m_pCSharpClass, \"" << _varialbe.m_sName << "\");\n";
+                _file << "m_pCSharpField_" << _name << " = mono_class_get_field_from_name(static_cast<MonoClass*>(m_pCSharpClass), \"" << _varialbe.m_sName << "\");\n";
                 _file << "mono_add_internal_call(\"" << _csNamespace << "::VariableChanged_" << _name << "\", csharp_internal_VariableChanged_" << _name << ");\n";
             }
 

@@ -6,7 +6,7 @@
 
 namespace Duckvil { namespace RuntimeReflection {
 
-    std::string combine_namespace(std::queue<__generator_namespace> _namespaces)
+    std::string combine_namespace(std::deque<__generator_namespace> _namespaces)
     {
         std::string _res;
 
@@ -19,7 +19,7 @@ namespace Duckvil { namespace RuntimeReflection {
                 _res += "::";
             }
 
-            _namespaces.pop();
+            _namespaces.pop_front();
         }
 
         return _res;
@@ -195,7 +195,7 @@ namespace Duckvil { namespace RuntimeReflection {
         }
         else
         {
-            _file << "_property = record_property<" + _additionalNamespaceTypedef + _castedVariable->m_sType + ">(_data, _type, ";
+            _file << "_property = record_property<" + /*_additionalNamespaceTypedef + */_castedVariable->m_sType + ">(_data, _type, ";
 
             _file << "offsetof(" + _sNamespace + _pParentEntity->m_sName + ", " + _castedVariable->m_sName + ")";
         }
@@ -496,7 +496,7 @@ namespace Duckvil { namespace RuntimeReflection {
                 _namespace.m_aMeta.push_back(_meta);
             }
 
-            _pData->m_aNamespaces.push(_namespace);
+            _pData->m_aNamespaces.push_back(_namespace);
 
             _file << "{\n";
             _file << "_namespaces.push_back(\"" << _casted->m_sName << "\");\n";
@@ -584,7 +584,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
         if(_entity->m_scopeType == Parser::__ast_entity_type::__ast_entity_type_namespace)
         {
-            _pData->m_aNamespaces.pop();
+            _pData->m_aNamespaces.pop_back();
 
             _file << "_namespaces.pop_back();\n";
             _file << "}\n";

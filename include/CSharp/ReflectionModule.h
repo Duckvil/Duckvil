@@ -66,7 +66,7 @@ namespace Duckvil { namespace CSharp {
         ReflectionModule::Context* m_pCurrentContext;
 
         void ProcessAST(Parser::__ast* _ast);
-        void GenerateCustom(std::ofstream& _hFile, std::ofstream& _sFile, std::vector<std::pair<uint32_t, std::vector<std::string>>>& _aGenerated);
+        void GenerateCustom(std::ofstream& _hFile, std::ofstream& _sFile, RuntimeReflection::GeneratedVector& _aGenerated);
         void Clear();
     };
 

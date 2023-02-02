@@ -6,6 +6,7 @@
 
 #include <cassert>
 #include <filesystem>
+#include <vector>
 
 #include "RuntimeReflection/Meta.h"
 
@@ -39,7 +40,7 @@ namespace Duckvil { namespace HotReloader {
 
         for(auto& _module : _system->m_aModules)
         {
-            Duckvil::RuntimeReflection::invoke_member<std::ofstream&, std::ofstream&, std::vector<std::pair<uint32_t, std::vector<std::string>>>&>(_module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _hFile, _sFile, _generated);
+            Duckvil::RuntimeReflection::invoke_member<std::ofstream&, std::ofstream&, Duckvil::RuntimeReflection::GeneratedVector&>(_module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _hFile, _sFile, _generated);
         }
 
         for(const auto& _generated2 : _generated)
@@ -415,7 +416,7 @@ namespace Duckvil { namespace HotReloader {
                             g_duckvilFrontendReflectionContext.m_pReflectionData
                         );
                     _module.m_typeHandle = _typeHandle;
-                    _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&, std::ofstream&, std::vector<std::pair<uint32_t, std::vector<std::string>>>&>(_typeHandle, "GenerateCustom");
+                    _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&, std::ofstream&, Duckvil::RuntimeReflection::GeneratedVector&>(_typeHandle, "GenerateCustom");
                     _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(_typeHandle, "Clear");
                     _module.m_processAST_FunctionHandle = Duckvil::RuntimeReflection::get_function_handle<Duckvil::Parser::__ast*>(_typeHandle, "ProcessAST");
 

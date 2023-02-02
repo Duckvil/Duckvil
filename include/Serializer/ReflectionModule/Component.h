@@ -45,7 +45,7 @@ namespace Duckvil { namespace Serializer { namespace ReflectionModule {
             recursive(this, *_ast, &_ast->m_main);
         }
 
-        void GenerateCustom(std::ofstream& _hFile, std::ofstream& _sFile, std::vector<std::pair<uint32_t, std::vector<std::string>>>& _aGenerated)
+        void GenerateCustom(std::ofstream& _hFile, std::ofstream& _sFile, RuntimeReflection::GeneratedVector& _aGenerated)
         {
             if(!m_bIsValid || m_uiGeneratedBodyLine == -1)
             {

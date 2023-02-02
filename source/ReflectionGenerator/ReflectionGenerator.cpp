@@ -74,7 +74,7 @@ void generate(std::ofstream& _hFile, std::ofstream& _sFile, void* _pUserData)
             continue;
         }
 
-        Duckvil::RuntimeReflection::invoke_member<std::ofstream&, std::ofstream&, std::vector<std::pair<uint32_t, std::vector<std::string>>>&>(_reflectionFTable, _runtimeReflectionData, _module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _hFile, _sFile, _generated);
+        Duckvil::RuntimeReflection::invoke_member<std::ofstream&, std::ofstream&, Duckvil::RuntimeReflection::GeneratedVector&>(_reflectionFTable, _runtimeReflectionData, _module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _hFile, _sFile, _generated);
     }
 
     for(const auto& _generated2 : _generated)
@@ -424,7 +424,7 @@ int main(int argc, char* argv[])
 
                 _module.m_pObject = Duckvil::RuntimeReflection::create<const Duckvil::Memory::FreeList&, Duckvil::RuntimeReflection::__ftable*, Duckvil::RuntimeReflection::__data*>(_memoryInterface, _free_list, _reflectionFTable, _runtimeReflectionData, _typeHandle, false, _heap, _reflectionFTable, _runtimeReflectionData);
                 _module.m_typeHandle = _typeHandle;
-                _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&, std::ofstream&, std::vector<std::pair<uint32_t, std::vector<std::string>>>&>(_reflectionFTable, _runtimeReflectionData, _typeHandle, "GenerateCustom");
+                _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&, std::ofstream&, Duckvil::RuntimeReflection::GeneratedVector&>(_reflectionFTable, _runtimeReflectionData, _typeHandle, "GenerateCustom");
                 _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(_reflectionFTable, _runtimeReflectionData, _typeHandle, "Clear");
                 _module.m_processAST_FunctionHandle = Duckvil::RuntimeReflection::get_function_handle<Duckvil::Parser::__ast*>(_reflectionFTable, _runtimeReflectionData, _typeHandle, "ProcessAST");
 

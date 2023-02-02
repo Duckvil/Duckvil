@@ -21,7 +21,7 @@ namespace Duckvil {
     class CasterReflectionModule;
 
     void recursive(CasterReflectionModule* _pData, Parser::__ast_entity* _entity);
-    void recursive_generate(void* _pContext, const std::string& _sFileID, std::ofstream& _file, const char* _sModuleName, std::vector<std::pair<uint32_t, std::vector<std::string>>>& _aGenerated);
+    void recursive_generate(void* _pContext, const std::string& _sFileID, std::ofstream& _file, const char* _sModuleName, RuntimeReflection::GeneratedVector& _aGenerated);
 
     DUCKVIL_CLASS(ReflectionFlags::ReflectionFlags_ReflectionModule)
     class CasterReflectionModule
@@ -63,7 +63,7 @@ namespace Duckvil {
             recursive(this, &_ast->m_main);
         }
 
-        void GenerateCustom(std::ofstream& _hFile, std::ofstream& _sFile, std::vector<std::pair<uint32_t, std::vector<std::string>>>& _aGenerated)
+        void GenerateCustom(std::ofstream& _hFile, std::ofstream& _sFile, RuntimeReflection::GeneratedVector& _aGenerated)
         {
             if(m_aContexts.empty())
             {
@@ -165,7 +165,7 @@ namespace Duckvil {
         _pData->m_pCurrentContext = _pData->m_pCurrentContext ? _pData->m_pCurrentContext->m_pParent : nullptr;
     }
 
-    void recursive_generate(void* _pContext, const std::string& _sFileID, std::ofstream& _file, const char* _sModuleName, std::vector<std::pair<uint32_t, std::vector<std::string>>>& _aGenerated)
+    void recursive_generate(void* _pContext, const std::string& _sFileID, std::ofstream& _file, const char* _sModuleName, RuntimeReflection::GeneratedVector& _aGenerated)
     {
         const std::vector<CasterReflectionModule::Context*>& _contexts = *static_cast<std::vector<CasterReflectionModule::Context*>*>(_pContext);
 
