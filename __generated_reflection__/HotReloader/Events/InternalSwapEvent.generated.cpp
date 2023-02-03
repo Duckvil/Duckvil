@@ -37,7 +37,7 @@ record_namespace(_data, _type, "HotReloader");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
 _property = record_property<Memory::Vector<RuntimeCompilerSystem::hot_object>*>(_data, _type, offsetof(Duckvil::HotReloader::InternalSwapEvent, m_pHotObjects), "m_pHotObjects");
 _property = record_property<duckvil_recorderd_types>(_data, _type, offsetof(Duckvil::HotReloader::InternalSwapEvent, m_recordedTypes), "m_recordedTypes");
-_property = record_property<void(*)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&)>(_data, _type, offsetof(Duckvil::HotReloader::InternalSwapEvent, m_fnSwap), "m_fnSwap");
+_property = record_property<void(*)(Memory::Vector<RuntimeCompilerSystem::hot_object>*,duckvil_recorderd_types&)>(_data, _type, offsetof(Duckvil::HotReloader::InternalSwapEvent, m_fnSwap), "m_fnSwap");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

@@ -22,6 +22,12 @@ std::vector<const char*> _namespaces;
 _namespaces.push_back("Duckvil");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
+{
+_namespaces.push_back("Editor");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+_namespaces.pop_back();
+}
 _namespaces.push_back("NativeScriptBase");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
@@ -33,9 +39,9 @@ record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMe
 _destructor = record_destructor<Duckvil::NativeScriptBase>(_data, _type);
 _function = record_function<Duckvil::NativeScriptBase, void, double>(_data, _type, &Duckvil::NativeScriptBase::Update, "Update");
 _function = record_function<Duckvil::NativeScriptBase, bool>(_data, _type, &Duckvil::NativeScriptBase::Init, "Init");
-_function = record_function<Duckvil::NativeScriptBase, void, Entity>(_data, _type, &Duckvil::NativeScriptBase::SetEntity, "SetEntity");
-_function = record_function<Duckvil::NativeScriptBase, const Entity&>(_data, _type, &Duckvil::NativeScriptBase::GetEntity, "GetEntity");
-_function = record_function<Duckvil::NativeScriptBase, 		void, double>(_data, _type, &Duckvil::NativeScriptBase::SetDelta, "SetDelta");
+_function = record_function<Duckvil::NativeScriptBase, void, Duckvil::Entity>(_data, _type, &Duckvil::NativeScriptBase::SetEntity, "SetEntity");
+_function = record_function<Duckvil::NativeScriptBase, Duckvil::Entity const&>(_data, _type, &Duckvil::NativeScriptBase::GetEntity, "GetEntity");
+_function = record_function<Duckvil::NativeScriptBase, void, double>(_data, _type, &Duckvil::NativeScriptBase::SetDelta, "SetDelta");
 _namespaces.pop_back();
 _namespaces.push_back("ScriptComponent");
 _ntype = record_type(_data, _namespaces);

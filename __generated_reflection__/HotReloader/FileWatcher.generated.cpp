@@ -37,7 +37,7 @@ record_namespace(_data, _type, "HotReloader");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 5);
 _constructor = record_constructor<Duckvil::HotReloader::FileWatcher, FileWatcher::ActionCallback, void*>(_data, _type);
 _destructor = record_destructor<Duckvil::HotReloader::FileWatcher>(_data, _type);
-_function = record_function<Duckvil::HotReloader::FileWatcher, void, const std::filesystem::path&>(_data, _type, &Duckvil::HotReloader::FileWatcher::Watch, "Watch");
+_function = record_function<Duckvil::HotReloader::FileWatcher, void, std::filesystem::path const&>(_data, _type, &Duckvil::HotReloader::FileWatcher::Watch, "Watch");
 _function = record_function<Duckvil::HotReloader::FileWatcher, void>(_data, _type, &Duckvil::HotReloader::FileWatcher::Update, "Update");
 _namespaces.pop_back();
 _enum = record_enum<Duckvil::HotReloader::FileWatcher::FileStatus>(_data, _ntype, "FileStatus");

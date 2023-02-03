@@ -37,7 +37,7 @@ record_namespace(_data, _type, "Editor");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 17);
 record_inheritance<Widget>(_data, _type, __protection::__protection_public);
 _constructor = record_constructor<Duckvil::Editor::RuntimeReflectionWidget>(_data, _type);
-_constructor = record_constructor<Duckvil::Editor::RuntimeReflectionWidget, const Memory::FreeList&>(_data, _type);
+_constructor = record_constructor<Duckvil::Editor::RuntimeReflectionWidget, Memory::FreeList const&>(_data, _type);
 _destructor = record_destructor<Duckvil::Editor::RuntimeReflectionWidget>(_data, _type);
 _function = record_function<Duckvil::Editor::RuntimeReflectionWidget, void, void*>(_data, _type, &Duckvil::Editor::RuntimeReflectionWidget::InitEditor, "InitEditor");
 _function = record_function<Duckvil::Editor::RuntimeReflectionWidget, void>(_data, _type, &Duckvil::Editor::RuntimeReflectionWidget::OnDraw, "OnDraw");

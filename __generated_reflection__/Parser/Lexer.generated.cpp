@@ -3,7 +3,7 @@
 #include "RuntimeReflection/GeneratedMeta.h"
 
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(1)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(2)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -34,9 +34,9 @@ _type = record_type<Duckvil::Parser::blank_file>(_data, "blank_file");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Parser");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
 record_inheritance<std::exception>(_data, _type, __protection::__protection_public);
-_function = record_function<Duckvil::Parser::blank_file, const char*>(_data, _type, &Duckvil::Parser::blank_file::what, "what");
+_function = record_function<Duckvil::Parser::blank_file, char const*>(_data, _type, &Duckvil::Parser::blank_file::what, "what");
 _namespaces.pop_back();
 _enum = record_enum<Duckvil::Parser::__lexer_token_type>(_data, _ntype, "__lexer_token_type");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Parser::__lexer_token_type::__lexer_token_type_symbol, "__lexer_token_type_symbol");
@@ -54,8 +54,8 @@ _type = record_type<Duckvil::Parser::__lexer_token>(_data, "__lexer_token");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Parser");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
-_property = record_property<__lexer_token_type>(_data, _type, offsetof(Duckvil::Parser::__lexer_token, m_tokenType), "m_tokenType");
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
+_property = record_property<Duckvil::Parser::__lexer_token_type>(_data, _type, offsetof(Duckvil::Parser::__lexer_token, m_tokenType), "m_tokenType");
 _namespaces.pop_back();
 _namespaces.push_back("__lexer_data");
 _ntype = record_type(_data, _namespaces);
@@ -64,7 +64,7 @@ _type = record_type<Duckvil::Parser::__lexer_data>(_data, "__lexer_data");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Parser");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
 _property = record_property<std::vector<std::string>>(_data, _type, offsetof(Duckvil::Parser::__lexer_data, m_aLines), "m_aLines");
 _property = record_property<std::string>(_data, _type, offsetof(Duckvil::Parser::__lexer_data, m_sCurrentLine), "m_sCurrentLine");
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Parser::__lexer_data, m_uiCurrentLine), "m_uiCurrentLine");
@@ -83,20 +83,20 @@ _type = record_type<Duckvil::Parser::__lexer_ftable>(_data, "__lexer_ftable");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Parser");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
-_property = record_property<void(*)(__lexer_data*, const char)>(_data, _type, offsetof(Duckvil::Parser::__lexer_ftable, load_file), "load_file");
-_property = record_property<bool(*)(__lexer_data*, std::string*)>(_data, _type, offsetof(Duckvil::Parser::__lexer_ftable, next_token), "next_token");
-_property = record_property<bool(*)(const __lexer_data&)>(_data, _type, offsetof(Duckvil::Parser::__lexer_ftable, space), "space");
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
+_property = record_property<void(*)(Duckvil::Parser::__lexer_data*,char const[256])>(_data, _type, offsetof(Duckvil::Parser::__lexer_ftable, load_file), "load_file");
+_property = record_property<bool(*)(Duckvil::Parser::__lexer_data*,std::string*)>(_data, _type, offsetof(Duckvil::Parser::__lexer_ftable, next_token), "next_token");
+_property = record_property<bool(*)(Duckvil::Parser::__lexer_data const&)>(_data, _type, offsetof(Duckvil::Parser::__lexer_ftable, space), "space");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Parser/Lexer.h", 1);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Parser/Lexer.h", 2);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 1;
+return 2;
 }
 #endif

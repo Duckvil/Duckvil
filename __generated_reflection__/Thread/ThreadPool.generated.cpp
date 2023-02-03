@@ -35,84 +35,27 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Thread");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 0);
-_property = record_property<TaskCallback>(_data, _type, offsetof(Duckvil::Thread::task, m_callback), "m_callback");
+_property = record_property<Duckvil::Thread::TaskCallback>(_data, _type, offsetof(Duckvil::Thread::task, m_callback), "m_callback");
 _property = record_property<void*>(_data, _type, offsetof(Duckvil::Thread::task, m_pData), "m_pData");
 _namespaces.pop_back();
 _namespaces.push_back("pool_data");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
-#ifdef DUCKVIL_PLATFORM_LINUX
 _type = record_type<Duckvil::Thread::pool_data>(_data, "pool_data");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Thread");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 0);
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
-_property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_uiThreadsCount), "m_uiThreadsCount");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
-_property = record_property<bool>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_bRunning), "m_bRunning");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
-_property = record_property<bool>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_bTerminate), "m_bTerminate");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
-_property = record_property<pthread_mutex_t>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_lock), "m_lock");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
-_property = record_property<pthread_mutex_t>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_threadPoolLock), "m_threadPoolLock");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
-_property = record_property<pthread_cond_t>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_condition), "m_condition");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
+_property = record_property<Memory::Vector<std::thread *>>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_aWorkers), "m_aWorkers");
 _property = record_property<Memory::Queue<task>>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_aTasks), "m_aTasks");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
-_property = record_property<Memory::Vector<pthread_t>>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_aWorkers), "m_aWorkers");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
 _property = record_property<Memory::FreeList>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_heap), "m_heap");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
-_property = record_property<std::atomic<uint32_t>>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_uiTaskCount), "m_uiTaskCount");
-#endif
-_namespaces.pop_back();
-_namespaces.push_back("pool_data");
-_ntype = record_type(_data, _namespaces);
-_recordedNTypes.push_back(_ntype);
-#ifdef DUCKVIL_PLATFORM_LINUX
-_type = record_type<Duckvil::Thread::pool_data>(_data, "pool_data");
-_recordedTypes.push_back(_type);
-record_namespace(_data, _type, "Duckvil");
-record_namespace(_data, _type, "Thread");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 0);
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
-_property = record_property<Memory::Vector<std::thread*>>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_aWorkers), "m_aWorkers");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
-_property = record_property<Memory::Queue<task>>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_aTasks), "m_aTasks");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
-_property = record_property<Memory::FreeList>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_heap), "m_heap");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_uiThreadsCount), "m_uiThreadsCount");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
+_property = record_property<std::mutex>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_lock), "m_lock");
+_property = record_property<std::mutex>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_threadPoolLock), "m_threadPoolLock");
 _property = record_property<std::condition_variable_any>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_condition), "m_condition");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
 _property = record_property<std::atomic<uint32_t>>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_uiTaskCount), "m_uiTaskCount");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
 _property = record_property<bool>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_bRunning), "m_bRunning");
-#endif
-#ifdef DUCKVIL_PLATFORM_LINUX
 _property = record_property<bool>(_data, _type, offsetof(Duckvil::Thread::pool_data, m_bTerminate), "m_bTerminate");
-#endif
 _namespaces.pop_back();
 _namespaces.push_back("pool_ftable");
 _ntype = record_type(_data, _namespaces);
@@ -122,13 +65,13 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Thread");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 0);
-_property = record_property<pool_data*(*)(const Memory::FreeList&)>(_data, _type, offsetof(Duckvil::Thread::pool_ftable, m_fnInit), "m_fnInit");
-_property = record_property<void(*)(pool_data*)>(_data, _type, offsetof(Duckvil::Thread::pool_ftable, m_fnStart), "m_fnStart");
-_property = record_property<void(*)(pool_data*)>(_data, _type, offsetof(Duckvil::Thread::pool_ftable, m_fnTerminate), "m_fnTerminate");
-_property = record_property<void(*)(pool_data*, TaskCallback)>(_data, _type, offsetof(Duckvil::Thread::pool_ftable, m_fnOrderTask), "m_fnOrderTask");
-_property = record_property<void(*)(pool_data*, TaskCallback, void*)>(_data, _type, offsetof(Duckvil::Thread::pool_ftable, m_fnOrderDataTask), "m_fnOrderDataTask");
-_property = record_property<bool(*)(pool_data*)>(_data, _type, offsetof(Duckvil::Thread::pool_ftable, m_fnRemainingTasks), "m_fnRemainingTasks");
-_property = record_property<uint32_t(*)(pool_data*)>(_data, _type, offsetof(Duckvil::Thread::pool_ftable, m_fnGetTaskCount), "m_fnGetTaskCount");
+_property = record_property<Duckvil::Thread::pool_data*(*)(Memory::FreeList const&)>(_data, _type, offsetof(Duckvil::Thread::pool_ftable, m_fnInit), "m_fnInit");
+_property = record_property<void(*)(Duckvil::Thread::pool_data*)>(_data, _type, offsetof(Duckvil::Thread::pool_ftable, m_fnStart), "m_fnStart");
+_property = record_property<void(*)(Duckvil::Thread::pool_data*)>(_data, _type, offsetof(Duckvil::Thread::pool_ftable, m_fnTerminate), "m_fnTerminate");
+_property = record_property<void(*)(Duckvil::Thread::pool_data*,Duckvil::Thread::TaskCallback)>(_data, _type, offsetof(Duckvil::Thread::pool_ftable, m_fnOrderTask), "m_fnOrderTask");
+_property = record_property<void(*)(Duckvil::Thread::pool_data*,Duckvil::Thread::TaskCallback,void*)>(_data, _type, offsetof(Duckvil::Thread::pool_ftable, m_fnOrderDataTask), "m_fnOrderDataTask");
+_property = record_property<bool(*)(Duckvil::Thread::pool_data*)>(_data, _type, offsetof(Duckvil::Thread::pool_ftable, m_fnRemainingTasks), "m_fnRemainingTasks");
+_property = record_property<uint32_t(*)(Duckvil::Thread::pool_data*)>(_data, _type, offsetof(Duckvil::Thread::pool_ftable, m_fnGetTaskCount), "m_fnGetTaskCount");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

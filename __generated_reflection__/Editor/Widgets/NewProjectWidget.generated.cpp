@@ -39,7 +39,7 @@ record_meta(_data, _type, ReflectionFlag::Spwanable, true);
 record_inheritance<Widget>(_data, _type, __protection::__protection_public);
 record_inheritance<ISystem>(_data, _type, __protection::__protection_public);
 _constructor = record_constructor<Duckvil::Editor::NewProjectWidget>(_data, _type);
-_constructor = record_constructor<Duckvil::Editor::NewProjectWidget, const Memory::FreeList&, const Event::Pool<Event::mode::immediate>*, ProjectManager::ftable*, ProjectManager::data*>(_data, _type);
+_constructor = record_constructor<Duckvil::Editor::NewProjectWidget, Memory::FreeList const&, Event::Pool<Event::mode::immediate> const*, ProjectManager::ftable*, ProjectManager::data*>(_data, _type);
 record_meta(_data, _type, _constructor, 1, "Editor", true);
 _destructor = record_destructor<Duckvil::Editor::NewProjectWidget>(_data, _type);
 _function = record_function<Duckvil::Editor::NewProjectWidget, void, void*>(_data, _type, &Duckvil::Editor::NewProjectWidget::InitEditor, "InitEditor");

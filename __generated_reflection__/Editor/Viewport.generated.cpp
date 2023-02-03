@@ -48,7 +48,7 @@ _property = record_property<glm::vec3>(_data, _type, offsetof(Duckvil::Editor::v
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Editor::viewport, m_uiWidth), "m_uiWidth");
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Editor::viewport, m_uiHeight), "m_uiHeight");
 _property = record_property<flecs::world*>(_data, _type, offsetof(Duckvil::Editor::viewport, m_ecs), "m_ecs");
-_property = record_property<flecs::query<Graphics::MeshComponent,Graphics::TransformComponent>>(_data, _type, offsetof(Duckvil::Editor::viewport, m_rendererQuery), "m_rendererQuery");
+_property = record_property<flecs::query<Graphics::MeshComponent, Graphics::TransformComponent>>(_data, _type, offsetof(Duckvil::Editor::viewport, m_rendererQuery), "m_rendererQuery");
 _property = record_property<int>(_data, _type, offsetof(Duckvil::Editor::viewport, m_iBackgroundValue), "m_iBackgroundValue");
 _property = record_property<bool>(_data, _type, offsetof(Duckvil::Editor::viewport, m_bFirstTime), "m_bFirstTime");
 _namespaces.pop_back();

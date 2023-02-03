@@ -38,7 +38,7 @@ record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMe
 record_meta(_data, _type, ReflectionFlag::Spwanable, true);
 record_inheritance<Widget>(_data, _type, __protection::__protection_public);
 _constructor = record_constructor<Duckvil::Editor::LoadProjectWidget>(_data, _type);
-_constructor = record_constructor<Duckvil::Editor::LoadProjectWidget, const Memory::FreeList&, const Event::Pool<Event::mode::immediate>*, const Event::Pool<Event::mode::immediate>*>(_data, _type);
+_constructor = record_constructor<Duckvil::Editor::LoadProjectWidget, Memory::FreeList const&, Event::Pool<Event::mode::immediate> const*, Event::Pool<Event::mode::immediate> const*>(_data, _type);
 record_meta(_data, _type, _constructor, 1, "Editor", true);
 record_meta(_data, _type, _constructor, 2, "Engine", true);
 _destructor = record_destructor<Duckvil::Editor::LoadProjectWidget>(_data, _type);

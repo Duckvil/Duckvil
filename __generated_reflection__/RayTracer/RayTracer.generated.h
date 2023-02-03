@@ -16,6 +16,7 @@ _pSerializer->SerializeProperty("image_data", image_data); \
 _pSerializer->SerializeProperty("image_texture", image_texture); \
 _pSerializer->SerializeProperty("_module", _module); \
 _pSerializer->SerializeProperty("_kernelModule", _kernelModule); \
+_pSerializer->SerializeProperty("ray_trace", ray_trace); \
 _pSerializer->SerializeProperty("m_pDeviceMemory", m_pDeviceMemory); \
 _pSerializer->SerializeProperty("elapsed_time_ms", elapsed_time_ms); \
 _pSerializer->SerializeProperty("elapsed_time_ms2", elapsed_time_ms2); \

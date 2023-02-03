@@ -30,7 +30,7 @@ _type = record_type<Duckvil::EntityDestroyedEvent>(_data, "EntityDestroyedEvent"
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 4);
-_property = record_property<Entity>(_data, _type, offsetof(Duckvil::EntityDestroyedEvent, m_entity), "m_entity");
+_property = record_property<Duckvil::Entity>(_data, _type, offsetof(Duckvil::EntityDestroyedEvent, m_entity), "m_entity");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

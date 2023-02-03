@@ -31,7 +31,7 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 11);
 _constructor = record_constructor<Duckvil::UUID>(_data, _type);
-_constructor = record_constructor<Duckvil::UUID, const char*>(_data, _type);
+_constructor = record_constructor<Duckvil::UUID, char const*>(_data, _type);
 _destructor = record_destructor<Duckvil::UUID>(_data, _type);
 _function = record_function<Duckvil::UUID, void, char*>(_data, _type, &Duckvil::UUID::GetBytes, "GetBytes");
 _function = record_function<Duckvil::UUID, size_t>(_data, _type, &Duckvil::UUID::Hash, "Hash");

@@ -76,7 +76,7 @@ record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Event");
 record_namespace(_data, _type, "Channel");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
-_function = record_function<Duckvil::Event::Channel::imember_const_event, void, const Message&>(_data, _type, &Duckvil::Event::Channel::imember_const_event::Invoke, "Invoke");
+_function = record_function<Duckvil::Event::Channel::imember_const_event, void, Message const&>(_data, _type, &Duckvil::Event::Channel::imember_const_event::Invoke, "Invoke");
 _namespaces.pop_back();
 _namespaces.push_back("imember_event");
 _ntype = record_type(_data, _namespaces);

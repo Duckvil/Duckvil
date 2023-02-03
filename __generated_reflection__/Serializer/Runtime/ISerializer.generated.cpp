@@ -38,7 +38,7 @@ record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMe
 _destructor = record_destructor<Duckvil::RuntimeSerializer::ISerializer>(_data, _type);
 _function = record_function<Duckvil::RuntimeSerializer::ISerializer, void>(_data, _type, &Duckvil::RuntimeSerializer::ISerializer::Clear, "Clear");
 _function = record_function<Duckvil::RuntimeSerializer::ISerializer, void, uint32_t>(_data, _type, &Duckvil::RuntimeSerializer::ISerializer::Clear, "Clear");
-_function = record_function<Duckvil::RuntimeSerializer::ISerializer, void, uint32_t, const char*>(_data, _type, &Duckvil::RuntimeSerializer::ISerializer::Clear, "Clear");
+_function = record_function<Duckvil::RuntimeSerializer::ISerializer, void, uint32_t, char const*>(_data, _type, &Duckvil::RuntimeSerializer::ISerializer::Clear, "Clear");
 _function = record_function<Duckvil::RuntimeSerializer::ISerializer, bool>(_data, _type, &Duckvil::RuntimeSerializer::ISerializer::IsLoading, "IsLoading");
 _namespaces.pop_back();
 _namespaces.pop_back();

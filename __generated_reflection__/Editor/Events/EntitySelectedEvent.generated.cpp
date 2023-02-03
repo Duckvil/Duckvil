@@ -35,7 +35,7 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Editor");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
-_property = record_property<Entity>(_data, _type, offsetof(Duckvil::Editor::EntitySelectedEvent, m_entity), "m_entity");
+_property = record_property<Duckvil::Entity>(_data, _type, offsetof(Duckvil::Editor::EntitySelectedEvent, m_entity), "m_entity");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

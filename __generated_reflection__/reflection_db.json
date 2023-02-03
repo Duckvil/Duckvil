@@ -1,5 +1,54 @@
 {
     "files2": {
+        "CSharp\\CSharp.h": {
+            "generated_cpp": "CSharp\\CSharp.generated.cpp",
+            "generated_h": "CSharp\\CSharp.generated.h",
+            "hash": "b0ce7112af0e5176b590f8ab75451c9c",
+            "index": 0,
+            "name": "CSharp"
+        },
+        "CSharp\\Entity.h": {
+            "generated_cpp": "CSharp\\Entity.generated.cpp",
+            "generated_h": "CSharp\\Entity.generated.h",
+            "hash": "744ece663ea13ceb992f0f19b5e98b90",
+            "index": 1,
+            "name": "CSharp"
+        },
+        "CSharp\\Events\\MonoObjectCreatedEvent.h": {
+            "generated_cpp": "CSharp\\Events\\MonoObjectCreatedEvent.generated.cpp",
+            "generated_h": "CSharp\\Events\\MonoObjectCreatedEvent.generated.h",
+            "hash": "cd67a5667b248bd6ad4014b4fda1137a",
+            "index": 2,
+            "name": "CSharp"
+        },
+        "CSharp\\ReflectionFlags.h": {
+            "generated_cpp": "CSharp\\ReflectionFlags.generated.cpp",
+            "generated_h": "CSharp\\ReflectionFlags.generated.h",
+            "hash": "61d34011dfcad38a9e8133c049373ade",
+            "index": 3,
+            "name": "CSharp"
+        },
+        "CSharp\\ReflectionModule.h": {
+            "generated_cpp": "CSharp\\ReflectionModule.generated.cpp",
+            "generated_h": "CSharp\\ReflectionModule.generated.h",
+            "hash": "ead7ed061ae2f2e9268ad6ea54226e38",
+            "index": 4,
+            "name": "CSharp"
+        },
+        "CSharp\\SharedScript.h": {
+            "generated_cpp": "CSharp\\SharedScript.generated.cpp",
+            "generated_h": "CSharp\\SharedScript.generated.h",
+            "hash": "a13b57acabd713caf4d7b3c5239ef117",
+            "index": 5,
+            "name": "CSharp"
+        },
+        "CSharp\\TestSharedScript.h": {
+            "generated_cpp": "CSharp\\TestSharedScript.generated.cpp",
+            "generated_h": "CSharp\\TestSharedScript.generated.h",
+            "hash": "78481811cceca98f0ae722ceeb8d0ce7",
+            "index": 6,
+            "name": "CSharp"
+        },
         "Editor\\Draw.h": {
             "generated_cpp": "Editor\\Draw.generated.cpp",
             "generated_h": "Editor\\Draw.generated.h",
@@ -80,7 +129,7 @@
         "Editor\\Widgets\\EntityInspectorWidget.h": {
             "generated_cpp": "Editor\\Widgets\\EntityInspectorWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\EntityInspectorWidget.generated.h",
-            "hash": "69f027d887693d216303cb95a78a09ff",
+            "hash": "0e758f0339f08c1656089cea4b8c6ecd",
             "index": 11,
             "name": "Editor"
         },
@@ -136,14 +185,14 @@
         "Editor\\Widgets\\ViewportWidget.h": {
             "generated_cpp": "Editor\\Widgets\\ViewportWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\ViewportWidget.generated.h",
-            "hash": "a86072e4f5a3b73c07410e3c9be41de0",
+            "hash": "3dad61ceab8efd2a2cdb01d2f2382078",
             "index": 19,
             "name": "Editor"
         },
         "Engine\\Duckvil.h": {
             "generated_cpp": "Engine\\Duckvil.generated.cpp",
             "generated_h": "Engine\\Duckvil.generated.h",
-            "hash": "456751e94b458f51ed977ee847da858f",
+            "hash": "41d17a24e550ffd8bbfa403d31ce5af3",
             "index": 0,
             "name": "Engine"
         },
@@ -206,14 +255,14 @@
         "Engine\\ReflectionModules\\DummyReflectionModule.h": {
             "generated_cpp": "Engine\\ReflectionModules\\DummyReflectionModule.generated.cpp",
             "generated_h": "Engine\\ReflectionModules\\DummyReflectionModule.generated.h",
-            "hash": "7ca337462d0cb3c69e463d461e6aa1af",
+            "hash": "f6a9d8b682e3c51d33af5349751e2e5e",
             "index": 9,
             "name": "Engine"
         },
         "Engine\\ReflectionModules\\NamedArgumentsReflectionModule.h": {
             "generated_cpp": "Engine\\ReflectionModules\\NamedArgumentsReflectionModule.generated.cpp",
             "generated_h": "Engine\\ReflectionModules\\NamedArgumentsReflectionModule.generated.h",
-            "hash": "71d829024795e5b984549f52f04814c7",
+            "hash": "04756a4402c5a99bbb9630595095f3cc",
             "index": 10,
             "name": "Engine"
         },
@@ -311,7 +360,7 @@
         "HotReloader\\CasterReflectionModule.h": {
             "generated_cpp": "HotReloader\\CasterReflectionModule.generated.cpp",
             "generated_h": "HotReloader\\CasterReflectionModule.generated.h",
-            "hash": "8b18947856f15be7c8d4b432604f5199",
+            "hash": "9b2d2c8bb8af0b561c623001539447e4",
             "index": 0,
             "name": "HotReloader"
         },
@@ -381,7 +430,7 @@
         "HotReloader\\ReflectionModule.h": {
             "generated_cpp": "HotReloader\\ReflectionModule.generated.cpp",
             "generated_h": "HotReloader\\ReflectionModule.generated.h",
-            "hash": "ab2321a6ffe48128a70bf094de04646d",
+            "hash": "dcce9cef9f5d4562e1c8ace9f007d87f",
             "index": 10,
             "name": "HotReloader"
         },
@@ -668,14 +717,14 @@
         "Network\\Client.h": {
             "generated_cpp": "Network\\Client.generated.cpp",
             "generated_h": "Network\\Client.generated.h",
-            "hash": "e7933e2943f72b17d4880ac7bfed543b",
+            "hash": "0155c00c745f7d2f36684cb9e92c527f",
             "index": 0,
             "name": "Network"
         },
         "Network\\Connection.h": {
             "generated_cpp": "Network\\Connection.generated.cpp",
             "generated_h": "Network\\Connection.generated.h",
-            "hash": "e52002c61488b09b77572ad0a4c67344",
+            "hash": "ab5b9b9f5bf760ec34f6c3054b457cd8",
             "index": 1,
             "name": "Network"
         },
@@ -717,7 +766,7 @@
         "Network\\Server.h": {
             "generated_cpp": "Network\\Server.generated.cpp",
             "generated_h": "Network\\Server.generated.h",
-            "hash": "e0b06db3dc74d1832137fc5bb968c795",
+            "hash": "47de87534dd4ed102fb487babd56754b",
             "index": 7,
             "name": "Network"
         },
@@ -731,7 +780,7 @@
         "Parser\\AST.h": {
             "generated_cpp": "Parser\\AST.generated.cpp",
             "generated_h": "Parser\\AST.generated.h",
-            "hash": "1190a88d07534dc986b2400fc2f004aa",
+            "hash": "1a131cabb52207c03e803c8550b5bb9a",
             "index": 0,
             "name": "Parser"
         },
@@ -739,7 +788,21 @@
             "generated_cpp": "Parser\\Lexer.generated.cpp",
             "generated_h": "Parser\\Lexer.generated.h",
             "hash": "3cd9a38c64d7df27d6d3b13dabcc600f",
+            "index": 2,
+            "name": "Parser"
+        },
+        "Parser\\config.h": {
+            "generated_cpp": "Parser\\config.generated.cpp",
+            "generated_h": "Parser\\config.generated.h",
+            "hash": "7e4969b631e5b181a55614433bbe0f62",
             "index": 1,
+            "name": "Parser"
+        },
+        "Parser\\parser.h": {
+            "generated_cpp": "Parser\\parser.generated.cpp",
+            "generated_h": "Parser\\parser.generated.h",
+            "hash": "e4799e339d0a22e382225de91f844c8d",
+            "index": 3,
             "name": "Parser"
         },
         "PlugNPlay\\AutoLoader.h": {
@@ -948,7 +1011,7 @@
         "RuntimeReflectionStatic\\global\\type.h": {
             "generated_cpp": "RuntimeReflectionStatic\\global\\type.generated.cpp",
             "generated_h": "RuntimeReflectionStatic\\global\\type.generated.h",
-            "hash": "1f95e4643fade94d6d859c8e4955188e",
+            "hash": "285876b898b6d4b2b254de733ef91b63",
             "index": 9,
             "name": "RuntimeReflectionStatic"
         },
@@ -983,7 +1046,7 @@
         "RuntimeReflectionStatic\\local\\function.h": {
             "generated_cpp": "RuntimeReflectionStatic\\local\\function.generated.cpp",
             "generated_h": "RuntimeReflectionStatic\\local\\function.generated.h",
-            "hash": "5cffea51541086420c8667fe7522c04f",
+            "hash": "41408a3d6ee2639f89f2d22f517734d2",
             "index": 14,
             "name": "RuntimeReflectionStatic"
         },
@@ -1018,7 +1081,7 @@
         "RuntimeReflectionStatic\\local\\type.h": {
             "generated_cpp": "RuntimeReflectionStatic\\local\\type.generated.cpp",
             "generated_h": "RuntimeReflectionStatic\\local\\type.generated.h",
-            "hash": "8e5d2742801926703c2795a7a2162931",
+            "hash": "fed6b0c654341f7547f0daf4e07fb4b8",
             "index": 19,
             "name": "RuntimeReflectionStatic"
         },
@@ -1032,7 +1095,7 @@
         "RuntimeReflection\\Function.h": {
             "generated_cpp": "RuntimeReflection\\Function.generated.cpp",
             "generated_h": "RuntimeReflection\\Function.generated.h",
-            "hash": "226f33101a5d1cd319f3f9d3d80c7236",
+            "hash": "ec1fa2cfe7c185764dfed0421c6b692b",
             "index": 0,
             "name": "RuntimeReflection"
         },
@@ -1046,7 +1109,7 @@
         "RuntimeReflection\\Generator.h": {
             "generated_cpp": "RuntimeReflection\\Generator.generated.cpp",
             "generated_h": "RuntimeReflection\\Generator.generated.h",
-            "hash": "ca7197d053d89e9130adf0ecd3eef993",
+            "hash": "fb07777e2bbc462ed20955a83797dc4b",
             "index": 2,
             "name": "RuntimeReflection"
         },
@@ -1060,7 +1123,7 @@
         "RuntimeReflection\\Markers.h": {
             "generated_cpp": "RuntimeReflection\\Markers.generated.cpp",
             "generated_h": "RuntimeReflection\\Markers.generated.h",
-            "hash": "4696df74e44db09e14676af23399a453",
+            "hash": "a5616314ce5737d96da608678c554e1f",
             "index": 4,
             "name": "RuntimeReflection"
         },
@@ -1088,7 +1151,7 @@
         "RuntimeReflection\\Recorder.h": {
             "generated_cpp": "RuntimeReflection\\Recorder.generated.cpp",
             "generated_h": "RuntimeReflection\\Recorder.generated.h",
-            "hash": "1b41e809d0b48c8627978d0973510327",
+            "hash": "3e8250664614811726fd2f6c405be6ef",
             "index": 8,
             "name": "RuntimeReflection"
         },
@@ -1102,7 +1165,7 @@
         "RuntimeReflection\\Resources.h": {
             "generated_cpp": "RuntimeReflection\\Resources.generated.cpp",
             "generated_h": "RuntimeReflection\\Resources.generated.h",
-            "hash": "dcb66e24736bfce6d0ef8f1fc533b89b",
+            "hash": "ed819cedd6f3b92cfd12e751eeedd834",
             "index": 10,
             "name": "RuntimeReflection"
         },
@@ -1123,7 +1186,7 @@
         "RuntimeReflection\\Trait.h": {
             "generated_cpp": "RuntimeReflection\\Trait.generated.cpp",
             "generated_h": "RuntimeReflection\\Trait.generated.h",
-            "hash": "4b7120add37c058220755211b1ad3773",
+            "hash": "7c7a8cae060ce3be85ea7e617289ebb5",
             "index": 13,
             "name": "RuntimeReflection"
         },
@@ -1133,6 +1196,20 @@
             "hash": "a134c4461edf938e8a7eab18bd23ab7b",
             "index": 14,
             "name": "RuntimeReflection"
+        },
+        "ScriptEngine\\Language.h": {
+            "generated_cpp": "ScriptEngine\\Language.generated.cpp",
+            "generated_h": "ScriptEngine\\Language.generated.h",
+            "hash": "9b801087ffc521ee2f5aa7080eef18ad",
+            "index": 0,
+            "name": "ScriptEngine"
+        },
+        "ScriptEngine\\ScriptEngine.h": {
+            "generated_cpp": "ScriptEngine\\ScriptEngine.generated.cpp",
+            "generated_h": "ScriptEngine\\ScriptEngine.generated.h",
+            "hash": "5cb07ca764f5b9ef0aa0cfe244a833de",
+            "index": 1,
+            "name": "ScriptEngine"
         },
         "Serializer\\EntitySerializerSystem.h": {
             "generated_cpp": "Serializer\\EntitySerializerSystem.generated.cpp",
@@ -1144,7 +1221,7 @@
         "Serializer\\ReflectionModule\\Component.h": {
             "generated_cpp": "Serializer\\ReflectionModule\\Component.generated.cpp",
             "generated_h": "Serializer\\ReflectionModule\\Component.generated.h",
-            "hash": "f79077c2665018cb97f2aea026f43266",
+            "hash": "05c145325f5e5fc152109c1b12c5037b",
             "index": 1,
             "name": "Serializer"
         },
@@ -1242,7 +1319,7 @@
         "Utils\\Macro.h": {
             "generated_cpp": "Utils\\Macro.generated.cpp",
             "generated_h": "Utils\\Macro.generated.h",
-            "hash": "90bcc450c1e5bd7159a61d94777d1eb7",
+            "hash": "473b2499d0f38f6c2b83d7b3472d6a57",
             "index": 7,
             "name": "Utils"
         },

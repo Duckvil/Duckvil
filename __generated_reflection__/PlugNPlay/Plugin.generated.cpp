@@ -39,11 +39,11 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "PlugNPlay");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 4);
-_property = record_property<const char*>(_data, _type, offsetof(Duckvil::PlugNPlay::__plugin_details, m_sPluginName), "m_sPluginName");
-_property = record_property<allocator_callback>(_data, _type, offsetof(Duckvil::PlugNPlay::__plugin_details, m_pAllocator), "m_pAllocator");
-_property = record_property<instance_callback>(_data, _type, offsetof(Duckvil::PlugNPlay::__plugin_details, m_pInstance), "m_pInstance");
-_property = record_property<free_callback>(_data, _type, offsetof(Duckvil::PlugNPlay::__plugin_details, m_pDeallocator), "m_pDeallocator");
-_property = record_property<__instantiation>(_data, _type, offsetof(Duckvil::PlugNPlay::__plugin_details, m_instantiation), "m_instantiation");
+_property = record_property<char const*>(_data, _type, offsetof(Duckvil::PlugNPlay::__plugin_details, m_sPluginName), "m_sPluginName");
+_property = record_property<Duckvil::PlugNPlay::allocator_callback>(_data, _type, offsetof(Duckvil::PlugNPlay::__plugin_details, m_pAllocator), "m_pAllocator");
+_property = record_property<Duckvil::PlugNPlay::instance_callback>(_data, _type, offsetof(Duckvil::PlugNPlay::__plugin_details, m_pInstance), "m_pInstance");
+_property = record_property<Duckvil::PlugNPlay::free_callback>(_data, _type, offsetof(Duckvil::PlugNPlay::__plugin_details, m_pDeallocator), "m_pDeallocator");
+_property = record_property<Duckvil::PlugNPlay::__instantiation>(_data, _type, offsetof(Duckvil::PlugNPlay::__plugin_details, m_instantiation), "m_instantiation");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

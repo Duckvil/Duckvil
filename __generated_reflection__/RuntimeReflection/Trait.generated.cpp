@@ -27,7 +27,6 @@ _namespaces.push_back("RuntimeReflection");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
 _enum = record_enum<Duckvil::RuntimeReflection::property_traits>(_data, _ntype, "property_traits");
-_enum = record_enum<Duckvil::RuntimeReflection::property_traits>(_data, _ntype, "property_traits");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::RuntimeReflection::property_traits::is_pointer, "is_pointer");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::RuntimeReflection::property_traits::is_reference, "is_reference");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::RuntimeReflection::property_traits::is_array, "is_array");
@@ -37,8 +36,9 @@ _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::RuntimeReflect
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::RuntimeReflection::property_traits::is_enum, "is_enum");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::RuntimeReflection::property_traits::is_bool, "is_bool");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::RuntimeReflection::property_traits::is_const, "is_const");
+_enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::RuntimeReflection::property_traits::is_static, "is_static");
 _enum = record_enum<Duckvil::RuntimeReflection::function_traits>(_data, _ntype, "function_traits");
-_enum = record_enum<Duckvil::RuntimeReflection::function_traits>(_data, _ntype, "function_traits");
+_enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::RuntimeReflection::function_traits::is_static, "is_static");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::RuntimeReflection::function_traits::is_const, "is_const");
 {
 _namespaces.push_back("traits");

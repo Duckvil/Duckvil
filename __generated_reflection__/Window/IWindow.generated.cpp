@@ -35,13 +35,13 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Window");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 6);
-_function = record_function<Duckvil::Window::IWindow, bool, const char*, int, int>(_data, _type, &Duckvil::Window::IWindow::Create, "Create");
+_function = record_function<Duckvil::Window::IWindow, bool, char const*, int, int>(_data, _type, &Duckvil::Window::IWindow::Create, "Create");
 _function = record_function<Duckvil::Window::IWindow, void>(_data, _type, &Duckvil::Window::IWindow::Refresh, "Refresh");
 _function = record_function<Duckvil::Window::IWindow, void*>(_data, _type, &Duckvil::Window::IWindow::GetWindow, "GetWindow");
 _function = record_function<Duckvil::Window::IWindow, void*>(_data, _type, &Duckvil::Window::IWindow::GetContext, "GetContext");
 _function = record_function<Duckvil::Window::IWindow, void>(_data, _type, &Duckvil::Window::IWindow::PopulateEvents, "PopulateEvents");
 _function = record_function<Duckvil::Window::IWindow, void, int, int, bool>(_data, _type, &Duckvil::Window::IWindow::SetMousePosition, "SetMousePosition");
-_function = record_function<Duckvil::Window::IWindow, void>(_data, _type, &Duckvil::Window::IWindow::SetProcessEventsCallback, "SetProcessEventsCallback");
+_function = record_function<Duckvil::Window::IWindow, void, void(*)(void*)>(_data, _type, &Duckvil::Window::IWindow::SetProcessEventsCallback, "SetProcessEventsCallback");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

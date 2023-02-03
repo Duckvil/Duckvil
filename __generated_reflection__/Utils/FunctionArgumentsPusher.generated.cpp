@@ -30,18 +30,19 @@ _type = record_type<Duckvil::FunctionArgumentsPusher>(_data, "FunctionArgumentsP
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 6);
-record_inheritance<Xbyak::CodeGenerator>(_data, _type, _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::FunctionArgumentsPusher, m_uiIndex), "m_uiIndex");
-_property = record_property<bool>(_data, _type, offsetof(Duckvil::FunctionArgumentsPusher, m_aFloats), "m_aFloats");
+record_inheritance<Xbyak::CodeGenerator>(_data, _type, __protection::__protection_public);
+_property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::FunctionArgumentsPusher, m_uiIndex), "m_uiIndex");
+_property = record_property<bool[4]>(_data, _type, offsetof(Duckvil::FunctionArgumentsPusher, m_aFloats), "m_aFloats");
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::FunctionArgumentsPusher, m_uiCount), "m_uiCount");
 _constructor = record_constructor<Duckvil::FunctionArgumentsPusher, uint32_t>(_data, _type);
 _destructor = record_destructor<Duckvil::FunctionArgumentsPusher>(_data, _type);
-_function = record_function<Duckvil::FunctionArgumentsPusher, explicit, const int&>(_data, _type, &Duckvil::FunctionArgumentsPusher::voidPush, "voidPush");
-_function = record_function<Duckvil::FunctionArgumentsPusher, void, const size_t&>(_data, _type, &Duckvil::FunctionArgumentsPusher::Push, "Push");
-_function = record_function<Duckvil::FunctionArgumentsPusher, void, const float&>(_data, _type, &Duckvil::FunctionArgumentsPusher::Push, "Push");
-_function = record_function<Duckvil::FunctionArgumentsPusher, void, const double&>(_data, _type, &Duckvil::FunctionArgumentsPusher::Push, "Push");
-_function = record_function<Duckvil::FunctionArgumentsPusher, void, const bool&>(_data, _type, &Duckvil::FunctionArgumentsPusher::Push, "Push");
-_function = record_function<Duckvil::FunctionArgumentsPusher, void, const void*>(_data, _type, &Duckvil::FunctionArgumentsPusher::Call, "Call");
-_function = record_function<Duckvil::FunctionArgumentsPusher, void, const void**>(_data, _type, &Duckvil::FunctionArgumentsPusher::Call, "Call");
+_function = record_function<Duckvil::FunctionArgumentsPusher, void, int const&>(_data, _type, &Duckvil::FunctionArgumentsPusher::Push, "Push");
+_function = record_function<Duckvil::FunctionArgumentsPusher, void, size_t const&>(_data, _type, &Duckvil::FunctionArgumentsPusher::Push, "Push");
+_function = record_function<Duckvil::FunctionArgumentsPusher, void, float const&>(_data, _type, &Duckvil::FunctionArgumentsPusher::Push, "Push");
+_function = record_function<Duckvil::FunctionArgumentsPusher, void, double const&>(_data, _type, &Duckvil::FunctionArgumentsPusher::Push, "Push");
+_function = record_function<Duckvil::FunctionArgumentsPusher, void, bool const&>(_data, _type, &Duckvil::FunctionArgumentsPusher::Push, "Push");
+_function = record_function<Duckvil::FunctionArgumentsPusher, void, void const*>(_data, _type, &Duckvil::FunctionArgumentsPusher::Call, "Call");
+_function = record_function<Duckvil::FunctionArgumentsPusher, void, void const**>(_data, _type, &Duckvil::FunctionArgumentsPusher::Call, "Call");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

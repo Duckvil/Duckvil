@@ -35,9 +35,6 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Editor");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 13);
-#ifdef DUCKVIL_MEMORY_DEBUGGER
-_property = record_property<duckvil_memory_debug_info*>(_data, _type, offsetof(Duckvil::Editor::HexEditorWidgetInitEvent, m_pDebugInfo), "m_pDebugInfo");
-#endif
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

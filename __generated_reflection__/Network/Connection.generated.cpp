@@ -39,10 +39,10 @@ record_inheritance<IConnection>(_data, _type, __protection::__protection_public)
 record_inheritance<std::enable_shared_from_this<Connection>>(_data, _type, __protection::__protection_public);
 _destructor = record_destructor<Duckvil::Network::Connection>(_data, _type);
 _function = record_function<Duckvil::Network::Connection, void, asio::ip::tcp::resolver::results_type&>(_data, _type, &Duckvil::Network::Connection::ConnectToServer, "ConnectToServer");
-_function = record_function<Duckvil::Network::Connection, void, IServer*, uint32_t>(_data, _type, &Duckvil::Network::Connection::ConnectToClient, "ConnectToClient");
+_function = record_function<Duckvil::Network::Connection, void, Duckvil::Network::IServer*, uint32_t>(_data, _type, &Duckvil::Network::Connection::ConnectToClient, "ConnectToClient");
 _function = record_function<Duckvil::Network::Connection, void>(_data, _type, &Duckvil::Network::Connection::Disconnect, "Disconnect");
 _function = record_function<Duckvil::Network::Connection, bool>(_data, _type, &Duckvil::Network::Connection::IsConnected, "IsConnected");
-_function = record_function<Duckvil::Network::Connection, void, const Message&>(_data, _type, &Duckvil::Network::Connection::Send, "Send");
+_function = record_function<Duckvil::Network::Connection, void, Duckvil::Network::Message const&>(_data, _type, &Duckvil::Network::Connection::Send, "Send");
 _function = record_function<Duckvil::Network::Connection, uint32_t>(_data, _type, &Duckvil::Network::Connection::GetID, "GetID");
 _namespaces.pop_back();
 _namespaces.pop_back();

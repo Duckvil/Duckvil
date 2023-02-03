@@ -37,7 +37,7 @@ record_namespace(_data, _type, "Editor");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
 _property = record_property<RuntimeReflection::__duckvil_resource_type_t>(_data, _type, offsetof(Duckvil::Editor::CloseWidgetEvent, m_typeHandle), "m_typeHandle");
 _property = record_property<void*>(_data, _type, offsetof(Duckvil::Editor::CloseWidgetEvent, m_pObject), "m_pObject");
-_constructor = record_constructor<Duckvil::Editor::CloseWidgetEvent, const RuntimeReflection::__duckvil_resource_type_t&, void*>(_data, _type);
+_constructor = record_constructor<Duckvil::Editor::CloseWidgetEvent, RuntimeReflection::__duckvil_resource_type_t const&, void*>(_data, _type);
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

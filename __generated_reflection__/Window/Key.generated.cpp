@@ -27,6 +27,7 @@ _namespaces.push_back("Window");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
 _enum = record_enum<Duckvil::Window::key>(_data, _ntype, "key");
+_enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Window::key::key_w, "key_w");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Window::key::key_s, "key_s");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Window::key::key_a, "key_a");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Window::key::key_d, "key_d");

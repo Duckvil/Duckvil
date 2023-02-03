@@ -56,7 +56,7 @@ record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMe
 record_inheritance<ISystem>(_data, _type, __protection::__protection_public);
 record_inheritance<Editor::Widget>(_data, _type, __protection::__protection_public);
 _constructor = record_constructor<Duckvil::Graphics::RayTracer::RayTracer>(_data, _type);
-_constructor = record_constructor<Duckvil::Graphics::RayTracer::RayTracer, const Memory::FreeList&, Event::Pool<Event::mode::buffered>*>(_data, _type);
+_constructor = record_constructor<Duckvil::Graphics::RayTracer::RayTracer, Memory::FreeList const&, Event::Pool<Event::mode::buffered>*>(_data, _type);
 record_meta(_data, _type, _constructor, 1, "Window", true);
 _destructor = record_destructor<Duckvil::Graphics::RayTracer::RayTracer>(_data, _type);
 _function = record_function<Duckvil::Graphics::RayTracer::RayTracer, bool>(_data, _type, &Duckvil::Graphics::RayTracer::RayTracer::Init, "Init");

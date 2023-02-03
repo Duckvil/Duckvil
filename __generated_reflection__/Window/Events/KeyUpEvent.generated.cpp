@@ -35,7 +35,7 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Window");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
-_property = record_property<key>(_data, _type, offsetof(Duckvil::Window::KeyUpEvent, m_key), "m_key");
+_property = record_property<Duckvil::Window::key>(_data, _type, offsetof(Duckvil::Window::KeyUpEvent, m_key), "m_key");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

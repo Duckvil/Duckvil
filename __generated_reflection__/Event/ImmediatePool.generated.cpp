@@ -36,7 +36,7 @@ record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Event");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
 record_inheritance<std::exception>(_data, _type, __protection::__protection_public);
-_function = record_function<Duckvil::Event::EventEventNotFound, const char*>(_data, _type, &Duckvil::Event::EventEventNotFound::what, "what");
+_function = record_function<Duckvil::Event::EventEventNotFound, char const*>(_data, _type, &Duckvil::Event::EventEventNotFound::what, "what");
 _namespaces.pop_back();
 _namespaces.push_back("Pool");
 _ntype = record_type(_data, _namespaces);
