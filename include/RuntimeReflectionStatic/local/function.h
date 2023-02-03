@@ -13,7 +13,7 @@ namespace Duckvil { namespace RuntimeReflection {
     template <typename Type, typename... Args>
     DUCKVIL_RESOURCE(function_t) get_function_handle(__ftable* _pReflection, __data* _pData, void (Type::*_fnCallback)(Args...))
     {
-        const auto& _typeHandle = get_type<Type>();
+        const auto& _typeHandle = get_type<Type>(_pReflection, _pData);
 
         return _pReflection->m_fnGetFunctionHandleByPointer(_pData, _typeHandle, _fnCallback);
     }

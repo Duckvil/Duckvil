@@ -5,6 +5,7 @@
 #include "Network/IConnection.h"
 #include "Network/NetworkSystem.h"
 
+#include <sdkddkver.h>
 #include "asio.hpp"
 
 #include "Memory/FreeList.h"

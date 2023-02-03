@@ -51,8 +51,8 @@ namespace Duckvil { namespace CSharp {
             typedef bool (*HasComponentCallback)(Entity);
             typedef bool (*AddComponentCallback)(Entity, void*);
 
-            Duckvil::CSharp::CSharp::Function::HasComponentCallback m_fnHasComponent;
-            Duckvil::CSharp::CSharp::Function::AddComponentCallback m_fnAddComponent;
+            HasComponentCallback m_fnHasComponent;
+            AddComponentCallback m_fnAddComponent;
         };
 
         static const char* ms_sRootDomainName;

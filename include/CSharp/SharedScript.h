@@ -14,9 +14,14 @@
 
 #include "CSharp/SharedScript.generated.h"
 
+#ifndef DUCKVIL_AST
 #define DUCKVIL_CS_FUNCTION(rType, name, args) \
     struct duckvil_cs_ ## name args; \
     rType name(duckvil_cs_ ## name _args) { generated_csharp_ ## name(_args); }
+#else
+#define DUCKVIL_STRING(s) #s
+#define DUCKVIL_CS_FUNCTION(rType, name, _args) class [[using duckvil: meta(rType,name,DUCKVIL_STRING(_args))]] __duckvil_csharp_function__ ## name;
+#endif
 
 namespace Duckvil { namespace CSharp {
 
@@ -28,19 +33,19 @@ namespace Duckvil { namespace CSharp {
 
         // I guess it should be protected in order to be called as needed
         // Accessable by ILanguage/Language
-        virtual void InternalInit() = 0;
-        virtual bool Init() = 0;
+        virtual void InternalInit() { }
+        virtual bool Init() { throw std::exception(""); }
         virtual void Update()
         {
 
         }
 
-        virtual void SetCSharpClass(MonoClass* _pClass)
+        virtual void SetCSharpClass(void* _pClass)
         {
 
         }
 
-        virtual void SetCSharpObject(MonoObject* _pObject)
+        virtual void SetCSharpObject(void* _pObject)
         {
 
         }

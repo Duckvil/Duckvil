@@ -8,6 +8,8 @@
 #include "Memory/Vector.h"
 #include "Memory/FreeList.h"
 
+#include <sdkddkver.h>
+
 #include "asio.hpp"
 
 #include <thread>

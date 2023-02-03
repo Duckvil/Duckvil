@@ -4,6 +4,8 @@
 #include "Network/TSQueue.h"
 #include "Network/IServer.h"
 
+#include <sdkddkver.h>
+
 #include "asio.hpp"
 
 #define DUCKVIL_RUNTIME_REFLECTION_PAUSE

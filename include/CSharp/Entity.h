@@ -17,7 +17,7 @@ namespace Duckvil { namespace CSharp {
         Duckvil::CSharp::CSharp::ScriptFieldType m_type;
         void* m_monoField;
     };
-
+    DUCKVIL_CLASS()
     struct ScriptProperty
     {
         Duckvil::CSharp::CSharp::ScriptFieldType m_type;
@@ -25,7 +25,7 @@ namespace Duckvil { namespace CSharp {
         void* m_pGetMethod;
         void* m_pSetMethod;
     };
-
+    DUCKVIL_CLASS("aaa" = 1, "bbb" = true, "ccc" = ScriptProperty())
     class Script : public NativeScriptBase, public Editor::Widget
     {
         DUCKVIL_GENERATED_BODY
@@ -37,7 +37,7 @@ namespace Duckvil { namespace CSharp {
         void* m_pObject;
         void* m_pClass;
 
-        void* m_pInit;
+    	void* m_pInit;
         void* m_pUpdate;
 
         std::unordered_map<std::string, ScriptField> m_aFields;
