@@ -8,7 +8,7 @@ DUCKVIL_RUNTIME_REFLECTION_SKIP
 
 #undef max
 
-#define DUCKVIL_SLOT_ARRAY_INVALID_HANDLE std::numeric_limits<uint32_t>::max()
+#define DUCKVIL_SLOT_ARRAY_INVALID_HANDLE static_cast<uint32_t>(-1)
 
 #define DUCKVIL_SLOT_ARRAY_DECLARE(t) \
     struct __duckvil_slot_array_##t \
