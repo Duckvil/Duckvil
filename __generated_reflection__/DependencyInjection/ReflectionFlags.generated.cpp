@@ -1,9 +1,9 @@
-#include "HotReloader/ReflectionFlags.h"
+#include "DependencyInjection/ReflectionFlags.h"
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(9)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(3)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -23,20 +23,20 @@ _namespaces.push_back("Duckvil");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
 {
-_namespaces.push_back("HotReloader");
+_namespaces.push_back("DependencyInjection");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
-_enum = record_enum<Duckvil::HotReloader::ReflectionFlags>(_data, _ntype, "ReflectionFlags");
-_enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::HotReloader::ReflectionFlags::NOT_SERIALIZABLE, "NOT_SERIALIZABLE");
+_enum = record_enum<Duckvil::DependencyInjection::ReflectionFlag>(_data, _ntype, "ReflectionFlag");
+_enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::DependencyInjection::ReflectionFlag::INJECTABLE, "INJECTABLE");
 _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "HotReloader/ReflectionFlags.h", 9);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "DependencyInjection/ReflectionFlags.h", 3);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 9;
+return 3;
 }
 #endif

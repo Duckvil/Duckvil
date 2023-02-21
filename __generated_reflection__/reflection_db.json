@@ -49,6 +49,41 @@
             "index": 6,
             "name": "CSharp"
         },
+        "DependencyInjection\\DependencyInjection.h": {
+            "generated_cpp": "DependencyInjection\\DependencyInjection.generated.cpp",
+            "generated_h": "DependencyInjection\\DependencyInjection.generated.h",
+            "hash": "9079cfde8373307d8466a0f2db6a3b56",
+            "index": 0,
+            "name": "DependencyInjection"
+        },
+        "DependencyInjection\\IDependencyInjector.h": {
+            "generated_cpp": "DependencyInjection\\IDependencyInjector.generated.cpp",
+            "generated_h": "DependencyInjection\\IDependencyInjector.generated.h",
+            "hash": "afcf9997f7a5aeb5094c7e91a5ca0ee4",
+            "index": 1,
+            "name": "DependencyInjection"
+        },
+        "DependencyInjection\\IDependencyResolver.h": {
+            "generated_cpp": "DependencyInjection\\IDependencyResolver.generated.cpp",
+            "generated_h": "DependencyInjection\\IDependencyResolver.generated.h",
+            "hash": "69dcd62ad95d2507197ca1c0dd5c34e4",
+            "index": 2,
+            "name": "DependencyInjection"
+        },
+        "DependencyInjection\\ReflectionFlags.h": {
+            "generated_cpp": "DependencyInjection\\ReflectionFlags.generated.cpp",
+            "generated_h": "DependencyInjection\\ReflectionFlags.generated.h",
+            "hash": "cd9b933c730e4b46d7f6eec5c8993c72",
+            "index": 3,
+            "name": "DependencyInjection"
+        },
+        "DependencyInjection\\ReflectionModule.h": {
+            "generated_cpp": "DependencyInjection\\ReflectionModule.generated.cpp",
+            "generated_h": "DependencyInjection\\ReflectionModule.generated.h",
+            "hash": "b602af5bc06e7f6ca9443ea30e696eb1",
+            "index": 4,
+            "name": "DependencyInjection"
+        },
         "Editor\\Draw.h": {
             "generated_cpp": "Editor\\Draw.generated.cpp",
             "generated_h": "Editor\\Draw.generated.h",
@@ -192,7 +227,7 @@
         "Engine\\Duckvil.h": {
             "generated_cpp": "Engine\\Duckvil.generated.cpp",
             "generated_h": "Engine\\Duckvil.generated.h",
-            "hash": "41d17a24e550ffd8bbfa403d31ce5af3",
+            "hash": "e401dd36cd0b802792fed5e40abbd1b5",
             "index": 0,
             "name": "Engine"
         },
@@ -206,7 +241,7 @@
         "Engine\\EntityFactory.h": {
             "generated_cpp": "Engine\\EntityFactory.generated.cpp",
             "generated_h": "Engine\\EntityFactory.generated.h",
-            "hash": "d1bded7a7e83659dd884e5f6c0863075",
+            "hash": "76a136270db20578817cf0c477890f5c",
             "index": 2,
             "name": "Engine"
         },
@@ -227,7 +262,7 @@
         "Engine\\Events\\InjectConstructorArgumentEvent.h": {
             "generated_cpp": "Engine\\Events\\InjectConstructorArgumentEvent.generated.cpp",
             "generated_h": "Engine\\Events\\InjectConstructorArgumentEvent.generated.h",
-            "hash": "99c95e84811dc9a3d8f6b33cb0d30e55",
+            "hash": "7f8f5f2dfc3761ec380d070f0093d894",
             "index": 5,
             "name": "Engine"
         },
@@ -290,7 +325,7 @@
         "Event\\BufferedPool.h": {
             "generated_cpp": "Event\\BufferedPool.generated.cpp",
             "generated_h": "Event\\BufferedPool.generated.h",
-            "hash": "ec5e51758a2c5b33ebe62950bf866b3a",
+            "hash": "b3cceeae0724a716b745b04aa6f99858",
             "index": 0,
             "name": "Event"
         },
@@ -311,7 +346,7 @@
         "Event\\ImmediatePool.h": {
             "generated_cpp": "Event\\ImmediatePool.generated.cpp",
             "generated_h": "Event\\ImmediatePool.generated.h",
-            "hash": "8413ffa911ee3c72c5e9fdff54f3df59",
+            "hash": "6fdefb18f1b1666b892cca1c9fa1482e",
             "index": 3,
             "name": "Event"
         },
@@ -423,21 +458,21 @@
         "HotReloader\\ReflectionFlags.h": {
             "generated_cpp": "HotReloader\\ReflectionFlags.generated.cpp",
             "generated_h": "HotReloader\\ReflectionFlags.generated.h",
-            "hash": "3c2cb7276f80cc62462d05434d926238",
+            "hash": "e7c54c70067ecf1773dd92030d44bc14",
             "index": 9,
             "name": "HotReloader"
         },
         "HotReloader\\ReflectionModule.h": {
             "generated_cpp": "HotReloader\\ReflectionModule.generated.cpp",
             "generated_h": "HotReloader\\ReflectionModule.generated.h",
-            "hash": "dcce9cef9f5d4562e1c8ace9f007d87f",
+            "hash": "20ed8455a61e7791fe0509019461e81e",
             "index": 10,
             "name": "HotReloader"
         },
         "HotReloader\\RuntimeCompilerSystem.h": {
             "generated_cpp": "HotReloader\\RuntimeCompilerSystem.generated.cpp",
             "generated_h": "HotReloader\\RuntimeCompilerSystem.generated.h",
-            "hash": "673a9cb310f08c92a052848f9ff6271e",
+            "hash": "309483be427315093aff0ee672c37c1d",
             "index": 11,
             "name": "HotReloader"
         },
@@ -521,7 +556,7 @@
         "Memory\\FreeList.h": {
             "generated_cpp": "Memory\\FreeList.generated.cpp",
             "generated_h": "Memory\\FreeList.generated.h",
-            "hash": "5621816dde702afb01f1c293009036e4",
+            "hash": "86330839630451df327f2fb395a51db9",
             "index": 8,
             "name": "Memory"
         },
@@ -647,7 +682,7 @@
         "Memory\\SlotArray.h": {
             "generated_cpp": "Memory\\SlotArray.generated.cpp",
             "generated_h": "Memory\\SlotArray.generated.h",
-            "hash": "21506835e3f9da0341fce24e14602034",
+            "hash": "3cd64c1afa3c4b84989f0b3843748252",
             "index": 26,
             "name": "Memory"
         },
@@ -801,7 +836,7 @@
         "Parser\\parser.h": {
             "generated_cpp": "Parser\\parser.generated.cpp",
             "generated_h": "Parser\\parser.generated.h",
-            "hash": "e4799e339d0a22e382225de91f844c8d",
+            "hash": "4409d90c5561b0b3f6ba11558f3ca952",
             "index": 3,
             "name": "Parser"
         },
@@ -892,7 +927,7 @@
         "ProjectManager\\ProjectManager.h": {
             "generated_cpp": "ProjectManager\\ProjectManager.generated.cpp",
             "generated_h": "ProjectManager\\ProjectManager.generated.h",
-            "hash": "3146fcfef6b47ce800283b2a49921faf",
+            "hash": "ad558725360140ccd939904c492432f6",
             "index": 4,
             "name": "ProjectManager"
         },
@@ -1249,7 +1284,7 @@
         "Serializer\\Runtime\\Serializer.h": {
             "generated_cpp": "Serializer\\Runtime\\Serializer.generated.cpp",
             "generated_h": "Serializer\\Runtime\\Serializer.generated.h",
-            "hash": "b4539e1bfd85ee997201e700e5c3a1f2",
+            "hash": "7067fc2d80abce91058e07035ccc0369",
             "index": 5,
             "name": "Serializer"
         },
@@ -1309,18 +1344,18 @@
             "index": 5,
             "name": "Utils"
         },
-        "Utils\\FunctionArgumentsPusher.h": {
-            "generated_cpp": "Utils\\FunctionArgumentsPusher.generated.cpp",
-            "generated_h": "Utils\\FunctionArgumentsPusher.generated.h",
-            "hash": "34ce6f52847790db43bf78ff8b29b075",
-            "index": 6,
-            "name": "Utils"
-        },
         "Utils\\Macro.h": {
             "generated_cpp": "Utils\\Macro.generated.cpp",
             "generated_h": "Utils\\Macro.generated.h",
             "hash": "473b2499d0f38f6c2b83d7b3472d6a57",
-            "index": 7,
+            "index": 6,
+            "name": "Utils"
+        },
+        "Utils\\RuntimeDependencyInjector.h": {
+            "generated_cpp": "Utils\\RuntimeDependencyInjector.generated.cpp",
+            "generated_h": "Utils\\RuntimeDependencyInjector.generated.h",
+            "hash": "8497cd19562c71f95e2ca58ca435269c",
+            "index": 8,
             "name": "Utils"
         },
         "Utils\\TemplateEngine.h": {
@@ -1348,7 +1383,7 @@
             "generated_cpp": "Utils\\md5.generated.cpp",
             "generated_h": "Utils\\md5.generated.h",
             "hash": "8d0ddd56d0e005195f01cd5e2a548c05",
-            "index": 8,
+            "index": 7,
             "name": "Utils"
         },
         "Window\\Events\\CloseEvent.h": {

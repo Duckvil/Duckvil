@@ -89,6 +89,7 @@ _property = record_property<bool>(_data, _type, offsetof(Duckvil::__data, m_bIsC
 _property = record_property<uint16_t>(_data, _type, offsetof(Duckvil::__data, m_usPort), "m_usPort");
 _property = record_property<char const*>(_data, _type, offsetof(Duckvil::__data, m_sIP), "m_sIP");
 _property = record_property<ScriptEngine::Language*>(_data, _type, offsetof(Duckvil::__data, m_pCSharpLanguage), "m_pCSharpLanguage");
+_property = record_property<DependencyInjection::IDependencyResolver*>(_data, _type, offsetof(Duckvil::__data, m_pDependencyInjector), "m_pDependencyInjector");
 _property = record_property<Memory::FreeList>(_data, _type, offsetof(Duckvil::__data, m_globalHeap), "m_globalHeap");
 _constructor = record_constructor<Duckvil::__data>(_data, _type);
 _namespaces.pop_back();
