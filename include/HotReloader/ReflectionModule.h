@@ -128,6 +128,23 @@ namespace Duckvil { namespace HotReloader {
 
         Parser::__ast_entity_structure* _struct = (Parser::__ast_entity_structure*)_entity;
 
+        bool _found = false;
+
+        for(const auto& _meta : _struct->m_aMeta)
+        {
+            if(_meta.m_sKey == DUCKVIL_TO_STRING(Duckvil::HotReloader::NOT_SERIALIZABLE) && _meta.m_sValue == "true")
+            {
+                _found = true;
+
+                break;
+            }
+        }
+
+        if(!_found)
+        {
+            return;
+        }
+
         _pData->m_pCurrentContext->m_uiGeneratedBodyLine = _struct->m_uiGeneratedBodyMacroLine;
 
         if(_pData->m_pCurrentContext->m_uiGeneratedBodyLine == -1)
