@@ -14,6 +14,8 @@ namespace Duckvil { namespace Event {
         }
     };
 
+    // TODO: Check support for template specialized class reflection
+
     // This pool can handle many different event messages
     template <>
     class Pool<mode::immediate>
@@ -48,6 +50,14 @@ namespace Duckvil { namespace Event {
             _heap.Allocate(m_aChannels, 10);
         }
 
+        Pool(const Pool& _pool) noexcept
+        {
+            m_heap = _pool.m_heap;
+            m_aChannels = _pool.m_aChannels;
+            m_pReflectionData = _pool.m_pReflectionData;
+            m_pReflection = _pool.m_pReflection;
+        }
+
         Pool(Pool&& _pool) noexcept :
             m_aChannels(std::move(_pool.m_aChannels)),
             m_heap(std::move(_pool.m_heap)),
@@ -61,6 +71,21 @@ namespace Duckvil { namespace Event {
         ~Pool()
         {
 
+        }
+
+        Pool& operator=(const Pool& _pool)
+        {
+            if(&_pool == this)
+            {
+                return *this;
+            }
+
+            this->m_aChannels = _pool.m_aChannels;
+            this->m_heap = _pool.m_heap;
+            this->m_pReflectionData = _pool.m_pReflectionData;
+            this->m_pReflection = _pool.m_pReflection;
+
+            return *this;
         }
 
         Pool& operator=(Pool&& _pool)

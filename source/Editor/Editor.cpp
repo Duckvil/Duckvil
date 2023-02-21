@@ -27,7 +27,7 @@
 
 #include "tracy/Tracy.hpp"
 
-#include "Utils/FunctionArgumentsPusher.h"
+#include "Utils/RuntimeDependencyInjector.h"
 
 #include "Engine/Events/RequestSystemEvent.h"
 #include "Engine/Events/InjectConstructorArgumentEvent.h"
@@ -354,7 +354,7 @@ namespace Duckvil { namespace Editor {
 
                 if(_constructorArgumentsCount > 0)
                 {
-                    FunctionArgumentsPusher c(5 + _constructorArgumentsCount);
+                    RuntimeDependencyInjector c(5 + _constructorArgumentsCount);
 
                     c.Push(_data->m_heap.GetMemoryInterface());
                     c.Push(_data->m_heap.GetAllocator());
@@ -368,7 +368,8 @@ namespace Duckvil { namespace Editor {
 
                         if(typeid(Memory::FreeList).hash_code() == _argument.m_ullTypeID)
                         {
-                            c.Push(_data->m_heap);
+                            static_cast<DependencyInjection::IDependencyInjector*>(&c)->Push(_data->m_heap);
+                            //c.Push(_data->m_heap);
                         }
 
                         if(typeid(HotReloader::RuntimeCompilerSystem).hash_code() == _argument.m_ullTypeID)

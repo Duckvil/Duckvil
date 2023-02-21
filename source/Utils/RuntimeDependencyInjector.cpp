@@ -1,8 +1,8 @@
-#include "Utils/FunctionArgumentsPusher.h"
+#include "Utils/RuntimeDependencyInjector.h"
 
 namespace Duckvil {
 
-    FunctionArgumentsPusher::FunctionArgumentsPusher(uint32_t _uiCount) :
+    RuntimeDependencyInjector::RuntimeDependencyInjector(uint32_t _uiCount) :
         m_uiCount(_uiCount)
     {
         push(rbp);
@@ -18,12 +18,48 @@ namespace Duckvil {
         push(r10);
     }
 
-    FunctionArgumentsPusher::~FunctionArgumentsPusher()
+    RuntimeDependencyInjector::~RuntimeDependencyInjector()
     {
-
+        
     }
 
-    void FunctionArgumentsPusher::Push(const int& _data)
+    void RuntimeDependencyInjector::Push(const void* _pData)
+    {
+	    if(m_uiIndex < 4)
+        {
+            m_aFloats[m_uiIndex] = false;
+        }
+
+        m_uiIndex++;
+
+        if(m_uiIndex == 1)
+        {
+            push(rcx);
+            mov(rcx, (size_t)_pData);
+        }
+        else if(m_uiIndex == 2)
+        {
+            push(rdx);
+            mov(rdx, (size_t)_pData);
+        }
+        else if(m_uiIndex == 3)
+        {
+            push(r8);
+            mov(r8, (size_t)_pData);
+        }
+        else if(m_uiIndex == 4)
+        {
+            push(r9);
+            mov(r9, (size_t)_pData);
+        }
+        else
+        {
+            mov(r10, size_t(_pData));
+            mov(qword[rsp + 24 + (8 * (m_uiIndex - 5))], r10);
+        }
+    }
+
+    void RuntimeDependencyInjector::Push(const int& _data)
     {
         if(m_uiIndex < 4)
         {
@@ -58,7 +94,7 @@ namespace Duckvil {
         }
     }
 
-    void FunctionArgumentsPusher::Push(const size_t& _data)
+    void RuntimeDependencyInjector::Push(const size_t& _data)
     {
         if(m_uiIndex < 4)
         {
@@ -93,7 +129,7 @@ namespace Duckvil {
         }
     }
 
-    void FunctionArgumentsPusher::Push(const float& _data)
+    void RuntimeDependencyInjector::Push(const float& _data)
     {
         if(m_uiIndex < 4)
         {
@@ -130,7 +166,7 @@ namespace Duckvil {
         }
     }
 
-    void FunctionArgumentsPusher::Push(const double& _data)
+    void RuntimeDependencyInjector::Push(const double& _data)
     {
         if(m_uiIndex < 4)
         {
@@ -167,7 +203,7 @@ namespace Duckvil {
         }
     }
 
-    void FunctionArgumentsPusher::Push(const bool& _data)
+    void RuntimeDependencyInjector::Push(const bool& _data)
     {
         if(m_uiIndex < 4)
         {
@@ -202,7 +238,7 @@ namespace Duckvil {
         }
     }
 
-    void FunctionArgumentsPusher::Call(const void* func)
+    void RuntimeDependencyInjector::Call(const void* func)
     {
         push(rbx);
         mov(rbx, size_t(func));
@@ -264,7 +300,7 @@ namespace Duckvil {
         ret();
     }
 
-    void FunctionArgumentsPusher::Call(const void** func)
+    void RuntimeDependencyInjector::Call(const void** func)
     {
         push(rbx);
         push(r10);
@@ -327,6 +363,11 @@ namespace Duckvil {
         pop(rbp);
 
         ret();
+    }
+
+    void RuntimeDependencyInjector::Execute()
+    {
+    	getCode<void* (*)()>()();
     }
 
 }

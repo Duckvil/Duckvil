@@ -208,7 +208,7 @@ namespace Duckvil { namespace HotReloader {
                 const auto& _constructor = RuntimeReflection::get_constructor({ _typeInfo.m_ID }, _constructorHandle);
                 uint32_t _constructorArgumentsCount = DUCKVIL_SLOT_ARRAY_SIZE(_constructor.m_arguments);
 
-                FunctionArgumentsPusher _fap(5 + _constructorArgumentsCount);
+                RuntimeDependencyInjector _fap(5 + _constructorArgumentsCount);
 
                 _fap.Push(m_heap.GetMemoryInterface());
                 _fap.Push(m_heap.GetAllocator());

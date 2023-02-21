@@ -5,6 +5,8 @@
 #include "Memory/QueueAllocator.h"
 #include "Memory/StackAllocator.h"
 
+#undef GetMessage
+
 namespace Duckvil { namespace Event {
 
     template <>
@@ -61,6 +63,14 @@ namespace Duckvil { namespace Event {
             m_pRemaining->m_ullBlockSize = sizeof(EventMessage);
         }
 
+        Pool(const Pool& _pool) noexcept
+        {
+            m_heap = _pool.m_heap;
+            m_pReflectionData = _pool.m_pReflectionData;
+            m_pMessages = _pool.m_pMessages;
+            m_pRemaining = _pool.m_pRemaining;
+        }
+
         Pool(Pool&& _pool) noexcept :
             m_heap(std::move(_pool.m_heap)),
             m_pReflectionData(std::move(_pool.m_pReflectionData)),
@@ -75,6 +85,21 @@ namespace Duckvil { namespace Event {
         ~Pool()
         {
 
+        }
+
+        Pool& operator=(const Pool& _pool) noexcept
+        {
+            if(&_pool == this)
+            {
+                return *this;
+            }
+
+            m_heap = _pool.m_heap;
+            m_pReflectionData = _pool.m_pReflectionData;
+            m_pMessages = _pool.m_pMessages;
+            m_pRemaining = _pool.m_pRemaining;
+
+            return *this;
         }
 
         Pool& operator=(Pool&& _pool) noexcept

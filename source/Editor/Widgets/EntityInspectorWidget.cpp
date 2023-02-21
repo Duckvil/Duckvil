@@ -10,7 +10,7 @@
 
 #include "RuntimeReflection/Meta.h"
 
-#include "Utils/FunctionArgumentsPusher.h"
+#include "Utils/RuntimeDependencyInjector.h"
 
 #include "RuntimeReflection/ReflectedType.h"
 
@@ -203,7 +203,7 @@ namespace Duckvil { namespace Editor {
             }
         }
 
-        static FunctionArgumentsPusher _fap(2);
+        static RuntimeDependencyInjector _fap(2);
 
         m_ppLabel = new const char*();
         m_ppAddress = new uint8_t*();
@@ -251,7 +251,7 @@ namespace Duckvil { namespace Editor {
 
                         uint8_t* _componentAddress = RuntimeReflection::invoke_static_result<uint8_t*, const Entity&>(_func.m_typeHandle, _func.m_getFuncHandle, m_selectedEntity);
 
-                        FunctionArgumentsPusher _fap(2);
+                        RuntimeDependencyInjector _fap(2);
 
                         _fap.Push(_func.m_sPropertyName);
                         _fap.Push(_componentAddress + _func.m_ullPropAddress);

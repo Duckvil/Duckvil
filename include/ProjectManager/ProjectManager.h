@@ -18,6 +18,10 @@
 
 #include "Engine/ISystem.h"
 
+#include "DependencyInjection/ReflectionFlags.h"
+
+#include "ProjectManager/ProjectManager.generated.h"
+
 namespace Duckvil { namespace ProjectManager {
 
     enum class project_type : uint8_t
@@ -27,8 +31,11 @@ namespace Duckvil { namespace ProjectManager {
         mod
     };
 
+    DUCKVIL_CLASS(Duckvil::DependencyInjection::INJECTABLE)
     struct data
     {
+        DUCKVIL_GENERATED_BODY
+
         Memory::FreeList m_heap;
         HotReloader::RuntimeCompilerSystem* m_pRCS;
 
@@ -51,8 +58,11 @@ namespace Duckvil { namespace ProjectManager {
         Memory::FreeList m_objectsHeap;
     };
 
+    DUCKVIL_CLASS(Duckvil::DependencyInjection::INJECTABLE)
     struct ftable
     {
+        DUCKVIL_GENERATED_BODY
+
         bool (*m_fnInitProjectManager)(data* _pData, const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEngineEventPool);
         project (*m_fnLoadProject)(data* _pData, const Utils::string& _sFilename, const Utils::string& _sPath);
         bool (*m_fnCreateProject)(data* _pData, const Utils::string& _sName, const Utils::string& _sPath);

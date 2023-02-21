@@ -68,6 +68,8 @@
 
 #include "ScriptEngine/Language.h"
 
+#include "DependencyInjection/IDependencyResolver.h"
+
 namespace Duckvil {
 
     struct system
@@ -165,6 +167,8 @@ namespace Duckvil {
         const char* m_sIP;
 
         ScriptEngine::Language* m_pCSharpLanguage;
+
+        DependencyInjection::IDependencyResolver* m_pDependencyInjector;
 
         Memory::FreeList m_globalHeap;
 

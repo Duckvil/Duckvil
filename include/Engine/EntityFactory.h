@@ -11,13 +11,21 @@
 
 #include "Utils/ECS.h"
 
+#include "DependencyInjection/ReflectionFlags.h"
+
+#include "HotReloader/ReflectionFlags.h"
+
+#include "Engine/EntityFactory.generated.h"
+
 #define DUCKVIL_RUNTIME_REFLECTION_PAUSE
 #define DUCKVIL_RUNTIME_REFLECTION_RESUME
 
 namespace Duckvil {
 
+    DUCKVIL_CLASS(Duckvil::DependencyInjection::INJECTABLE, Duckvil::HotReloader::NOT_SERIALIZABLE)
     class EntityFactory
     {
+        DUCKVIL_GENERATED_BODY
     private:
         flecs::world& m_ecs;
         const Memory::FreeList& m_heap;

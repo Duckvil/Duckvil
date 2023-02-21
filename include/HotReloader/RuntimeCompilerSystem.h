@@ -33,6 +33,12 @@
 
 #include "Editor/Widget.h"
 
+#include "Utils/RuntimeDependencyInjector.h"
+
+#include "DependencyInjection/ReflectionModule.h"
+
+#include "HotReloader/RuntimeCompilerSystem.generated.h"
+
 #define DUCKVIL_RUNTIME_REFLECTION_PAUSE
 #define DUCKVIL_RUNTIME_REFLECTION_RESUME
 
@@ -54,9 +60,10 @@ DUCKVIL_RUNTIME_REFLECTION_PAUSE
 
 DUCKVIL_RUNTIME_REFLECTION_RESUME
 
-    DUCKVIL_CLASS(Duckvil::ReflectionFlags::ReflectionFlags_EngineSystem, Duckvil::ReflectionFlags_AutoInstantiate = false)
+    DUCKVIL_CLASS(Duckvil::ReflectionFlags::ReflectionFlags_EngineSystem, Duckvil::ReflectionFlags_AutoInstantiate = false, Duckvil::DependencyInjection::INJECTABLE)
     class RuntimeCompilerSystem : public ISystem, public Editor::Widget
     {
+		DUCKVIL_GENERATED_BODY
         friend class Network::HotObjectSync;
     public:
         struct user_data

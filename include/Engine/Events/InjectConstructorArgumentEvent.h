@@ -2,7 +2,7 @@
 
 #include "RuntimeReflection/RuntimeReflection.h"
 
-#include "Utils/FunctionArgumentsPusher.h"
+#include "Utils/RuntimeDependencyInjector.h"
 
 namespace Duckvil {
 
@@ -16,11 +16,11 @@ namespace Duckvil {
         };
 
         bool m_bSuccess;
-        FunctionArgumentsPusher* m_pFAP;
+        DependencyInjection::IDependencyInjector* m_pFAP;
         InjectConstructorArgumentEvent::Info m_info;
         RuntimeReflection::__argument_t m_argument;
 
-        InjectConstructorArgumentEvent(FunctionArgumentsPusher* _pFAP, const InjectConstructorArgumentEvent::Info& _info, const RuntimeReflection::__argument_t& _argument) :
+        InjectConstructorArgumentEvent(DependencyInjection::IDependencyInjector* _pFAP, const InjectConstructorArgumentEvent::Info& _info, const RuntimeReflection::__argument_t& _argument) :
             m_bSuccess(false),
             m_pFAP(_pFAP),
             m_info(_info),

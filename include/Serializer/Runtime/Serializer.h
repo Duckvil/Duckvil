@@ -8,7 +8,7 @@
 
 #include "RuntimeReflection/RuntimeReflection.h"
 
-#include "Utils/FunctionArgumentsPusher.h"
+#include "Utils/RuntimeDependencyInjector.h"
 
 #define DUCKVIL_RUNTIME_REFLECTION_SKIP
 
@@ -65,7 +65,7 @@ namespace Duckvil { namespace RuntimeSerializer {
 
         void Serialize(void* _pHotObject, void* _pSerializeFunction)
         {
-            FunctionArgumentsPusher _c(2);
+            RuntimeDependencyInjector _c(2);
 
             _c.Push(_pHotObject);
             _c.Push(this);

@@ -7,12 +7,22 @@
 #include "Memory/Array.h"
 #include "Memory/Queue.h"
 
+#include "DependencyInjection/ReflectionFlags.h"
+
+#include "RuntimeReflection/Markers.h"
+
+#include "DependencyInjection/IDependencyInjector.h"
+
+#include "Memory/FreeList.generated.h"
+
 namespace Duckvil { namespace Memory {
 
 // Copied FreeList will share the same memory region from which we copied it
 
+    DUCKVIL_CLASS(Duckvil::DependencyInjection::INJECTABLE)
     class FreeList
     {
+        DUCKVIL_GENERATED_BODY
     private:
         ftable* m_pMemory;
         free_list_allocator* m_pContainer;
@@ -116,7 +126,26 @@ namespace Duckvil { namespace Memory {
             return free_list_emplace_back<Type>(m_pMemory, m_pContainer, std::forward<Args>(_vArgs)...);
         }
 
+        template <typename ContainerType>
+        void Allocate(ContainerType& _container, std::size_t _ullSize)
+        {
+            throw std::exception("Not implemented");
+        }
+
+        template <typename ContainerType>
+        void Allocate(ContainerType& _container, std::size_t _ullSize) const
+        {
+            throw std::exception("Not implemented");
+        }
+
+        template <>
         void Allocate(FreeList& _container, std::size_t _ullSize)
+        {
+            _container = FreeList(m_pMemory, m_pContainer, _ullSize);
+        }
+
+        template <>
+        void Allocate(FreeList& _container, std::size_t _ullSize) const
         {
             _container = FreeList(m_pMemory, m_pContainer, _ullSize);
         }

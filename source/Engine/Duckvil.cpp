@@ -35,7 +35,7 @@
 
 #include "tracy/Tracy.hpp"
 
-#include "Utils/FunctionArgumentsPusher.h"
+#include "Utils/RuntimeDependencyInjector.h"
 
 // #include "TestSystem/TestSystem.h"
 
@@ -44,6 +44,8 @@
 #include "Network/NetworkSystem.h"
 
 #include "Engine/UUIDComponent.h"
+
+#include "DependencyInjection/DependencyInjection.h"
 
 namespace Duckvil {
 
@@ -302,37 +304,6 @@ namespace Duckvil {
         return true;
     }
 
-    bool argument_event_pool_inject(__data* _pData, RuntimeReflection::__duckvil_resource_type_t _typeHandle, RuntimeReflection::__duckvil_resource_constructor_t _constructorHandle, const RuntimeReflection::__argument_t& _arg, uint32_t _uiIndex, FunctionArgumentsPusher& _FAP)
-    {
-        // TODO: Restrict to *const
-        static const size_t _bufferedEventPoolTypeID = typeid(Event::Pool<Event::mode::buffered>).hash_code();
-        static const size_t _immediateEventPoolTypeID = typeid(Event::Pool<Event::mode::immediate>).hash_code();
-
-        {
-            const auto& _eventPool = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, _uiIndex, "Engine");
-
-            if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && _immediateEventPoolTypeID == _arg.m_ullTypeID)
-            {
-                _FAP.Push(&_pData->m_eventPool);
-
-                return true;
-            }
-        }
-
-        {
-            const auto& _eventPool = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, _uiIndex, "Window");
-
-            if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && _bufferedEventPoolTypeID == _arg.m_ullTypeID)
-            {
-                _FAP.Push(&_pData->m_windowEventPool);
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
 #ifndef DUCKVIL_HEADLESS_SERVER
     void create_window(__data* _pData)
     {
@@ -583,6 +554,50 @@ namespace Duckvil {
                 _type.InvokeM<Memory::ThreadsafeVector<duckvil_recorderd_types>*>("SetReflectedTypes", _pData->m_pRuntimeCompiler, &_pData->m_aRecordedTypes);
             }
 
+            // _pData->m_pDependencyInjector = _pData->m_heap.Allocate<DependencyInjection::
+
+            const auto& _diTypeHandle = RuntimeReflection::get_type<DependencyInjection::DependencyResolver>();
+            RuntimeReflection::ReflectedType _diType(_diTypeHandle);
+
+            _pData->m_pDependencyInjector = static_cast<DependencyInjection::IDependencyResolver*>(_diType.Create<const Memory::FreeList&, Event::Pool<Event::mode::immediate>*>(_pData->m_heap, _pData->m_heap, &_pData->m_eventPool));
+
+            _pData->m_pDependencyInjector->Register(_pData->m_pRuntimeCompiler);
+            _pData->m_pDependencyInjector->Register(_pData->m_heap);
+            _pData->m_pDependencyInjector->Register(_pData->m_projectManager);
+            _pData->m_pDependencyInjector->Register(_pData->m_projectManagerData);
+            _pData->m_pDependencyInjector->Register(_pData->m_pClient);
+            _pData->m_pDependencyInjector->Register(_pData->m_pServer);
+            _pData->m_pDependencyInjector->Register(&_pData->m_ecs);
+            _pData->m_pDependencyInjector->Register(&_pData->m_entityFactory);
+            _pData->m_pDependencyInjector->Register(&_pData->m_eventPool, Utils::lambda([&](const RuntimeReflection::__duckvil_resource_type_t& _typeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, const RuntimeReflection::__duckvil_resource_argument_t& _argumentHandle)
+                {
+			        static const size_t _immediateEventPoolTypeID = typeid(Event::Pool<Event::mode::immediate>).hash_code();
+
+                    const RuntimeReflection::__argument_t& _arg = RuntimeReflection::get_argument(_typeHandle, _constructorHandle, _argumentHandle);
+		            const auto& _eventPool = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, _argumentHandle.m_ID, "Engine");
+
+		            if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && _immediateEventPoolTypeID == _arg.m_ullTypeID)
+		            {
+		                return true;
+		            }
+
+            		return false;
+				}));
+            _pData->m_pDependencyInjector->Register(&_pData->m_windowEventPool, Utils::lambda([&](const RuntimeReflection::__duckvil_resource_type_t& _typeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, const RuntimeReflection::__duckvil_resource_argument_t& _argumentHandle)
+                {
+                    static const size_t _bufferedEventPoolTypeID = typeid(Event::Pool<Event::mode::buffered>).hash_code();
+
+                    const auto& _eventPool = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, _argumentHandle.m_ID, "Window");
+                    const RuntimeReflection::__argument_t& _arg = RuntimeReflection::get_argument(_typeHandle, _constructorHandle, _argumentHandle);
+
+		            if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && _bufferedEventPoolTypeID == _arg.m_ullTypeID)
+		            {
+		                return true;
+		            }
+
+                    return false;
+				}));
+
             for(uint32_t i = 0; i < _types.Size(); ++i)
             {
                 const RuntimeReflection::__duckvil_resource_type_t& _typeHandle = _types[i];
@@ -605,76 +620,12 @@ namespace Duckvil {
             // TODO: Problem in release
                 for(/*const auto& _constructorHandle : _constructors*/ uint32_t i = 0; i < _constructors.Size(); ++i)
                 {
-                    const auto& _constructorHandle = _constructors[i];
-                    const auto& _constructor = RuntimeReflection::get_constructor(_typeHandle, _constructorHandle);
-                    uint32_t _constructorArgumentsCount = DUCKVIL_SLOT_ARRAY_SIZE(_constructor.m_arguments);
-
-                    if(_constructorArgumentsCount == 0)
+                    if(_pData->m_pDependencyInjector->Resolve(_typeHandle, _constructors[i]))
                     {
-                        continue;
+                        // Called the constructor
+
+                        break;
                     }
-
-                    FunctionArgumentsPusher _fap(5 + _constructorArgumentsCount);
-
-                    _fap.Push(_pData->m_pMemory);
-                    _fap.Push(_pData->m_pHeap);
-                    _fap.Push(_pData->m_pRuntimeReflection);
-                    _fap.Push(_pData->m_pRuntimeReflectionData);
-                    _fap.Push(true);
-
-                    for(uint32_t i = 0; i < _constructorArgumentsCount; ++i)
-                    {
-                        const RuntimeReflection::__argument_t& _argument = DUCKVIL_SLOT_ARRAY_GET(_constructor.m_arguments, i);
-
-                        if(typeid(Memory::FreeList).hash_code() == _argument.m_ullTypeID)
-                        {
-                            _fap.Push(_pData->m_heap);
-                        }
-                        else if(typeid(HotReloader::RuntimeCompilerSystem).hash_code() == _argument.m_ullTypeID)
-                        {
-                            _fap.Push(_pData->m_pRuntimeCompiler);
-                        }
-                        else if(typeid(ProjectManager::ftable).hash_code() == _argument.m_ullTypeID)
-                        {
-                            _fap.Push(_pData->m_projectManager);
-                        }
-                        else if(typeid(ProjectManager::data).hash_code() == _argument.m_ullTypeID)
-                        {
-                            _fap.Push(_pData->m_projectManagerData);
-                        }
-                        else if(typeid(Network::IClient).hash_code() == _argument.m_ullTypeID)
-                        {
-                            _fap.Push(_pData->m_pClient);
-                        }
-                        else if(typeid(Network::IServer).hash_code() == _argument.m_ullTypeID)
-                        {
-                            _fap.Push(_pData->m_pServer);
-                        }
-                        else if(typeid(flecs::world).hash_code() == _argument.m_ullTypeID)
-                        {
-                            _fap.Push(&_pData->m_ecs);
-                        }
-                        else if(typeid(EntityFactory).hash_code() == _argument.m_ullTypeID)
-                        {
-                            _fap.Push(&_pData->m_entityFactory);
-                        }
-                        else if(!argument_event_pool_inject(_pData, _typeHandle, _constructorHandle, _argument, i, _fap))
-                        {
-                            // Call other events to incject
-                            InjectConstructorArgumentEvent::Info _info;
-
-                            _info.m_uiArgumentIndex = i;
-                            _info.m_constructorHandle = _constructorHandle;
-                            _info.m_typeHandle = _typeHandle;
-
-                            InjectConstructorArgumentEvent _e(&_fap, _info, _argument);
-
-                            _pData->m_eventPool.Broadcast(_e);
-                        }
-                    }
-
-                    _fap.Call(_constructor.m_pData);
-                    _fap.getCode<void*(*)()>()();
                 }
             }
 
