@@ -11,6 +11,8 @@
 
 #include "HotReloader/ReflectionFlags.h"
 
+#include "DependencyInjection/Inject.h"
+
 #include "Editor/Widgets/RuntimeReflectionWidget.generated.h"
 
 namespace Duckvil { namespace Editor {
@@ -29,7 +31,10 @@ namespace Duckvil { namespace Editor {
 
     public:
         RuntimeReflectionWidget();
-        RuntimeReflectionWidget(const Memory::FreeList& _heap);
+        RuntimeReflectionWidget(
+            DUCKVIL_ARGUMENT("Size" = 1024 * 1024)
+            const Memory::FreeList& _heap
+        );
         ~RuntimeReflectionWidget();
 
         void InitEditor(void* _pImguiContext);

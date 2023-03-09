@@ -4,6 +4,8 @@
 
 #include "Engine/Events/InjectConstructorArgumentEvent.h"
 
+#include "DependencyInjection/Scope.h"
+
 namespace Duckvil { namespace DependencyInjection {
 
     const DependencyResolver::Dependency& DependencyResolver::FindDependency(size_t _ullTypeID, RuntimeReflection::__duckvil_resource_type_t* _pTypeHandle)
@@ -51,7 +53,7 @@ namespace Duckvil { namespace DependencyInjection {
         return true;
     }
 
-    bool DependencyResolver::Resolve(const RuntimeReflection::__duckvil_resource_type_t& _clientTypeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle)
+    bool DependencyResolver::Resolve(const RuntimeReflection::__duckvil_resource_type_t& _clientTypeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, void** _ppResolvedObject)
     {
         RuntimeReflection::__constructor_t _constructor = RuntimeReflection::get_constructor(_clientTypeHandle, _constructorHandle);
 
@@ -104,7 +106,7 @@ namespace Duckvil { namespace DependencyInjection {
 	                continue;
                 }
 
-                if(_dependency.m_scope != DependencyResolver::Scope::SINGLETON)
+                if(_dependency.m_scope != Scope::SINGLETON)
                 {
                     throw std::exception("Not implemented");
                 }
@@ -124,9 +126,15 @@ namespace Duckvil { namespace DependencyInjection {
                     throw std::exception("Not implemented");
                 }
 
-                if(_dependency.m_scope != DependencyResolver::Scope::SINGLETON)
+                const void* _data = nullptr;
+
+                if(_dependency.m_scope == Scope::SINGLETON)
                 {
-                    throw std::exception("Not implemented");
+                    _data = _dependency.m_pData;
+                }
+                else if(_dependency.m_scope == Scope::TRANSIENT && _dependency.m_fnFactory != nullptr)
+                {
+                    _data = _dependency.m_fnFactory(_clientTypeHandle, _constructorHandle, { i });
                 }
 
                 RuntimeReflection::__duckvil_resource_function_t _functionHandle = RuntimeReflection::get_function_handle<IDependencyInjector*, const void*>(_typeHandle, "Push");
@@ -138,12 +146,18 @@ namespace Duckvil { namespace DependencyInjection {
                     return false;
                 }
 
-                RuntimeReflection::invoke_static<IDependencyInjector*, const void*>(_typeHandle, _functionHandle, &_fap, _dependency.m_pData);
+                RuntimeReflection::invoke_static<IDependencyInjector*, const void*>(_typeHandle, _functionHandle, &_fap, _data);
             }
         }
 
         _fap.Call(_constructor.m_pData);
-        _fap.Execute();
+
+        void* _resolvedObject = _fap.Execute();
+
+        if(_ppResolvedObject != nullptr)
+        {
+            *_ppResolvedObject = _resolvedObject;
+        }
 
         return true;
     }

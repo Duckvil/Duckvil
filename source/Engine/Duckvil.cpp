@@ -562,7 +562,26 @@ namespace Duckvil {
             _pData->m_pDependencyInjector = static_cast<DependencyInjection::IDependencyResolver*>(_diType.Create<const Memory::FreeList&, Event::Pool<Event::mode::immediate>*>(_pData->m_heap, _pData->m_heap, &_pData->m_eventPool));
 
             _pData->m_pDependencyInjector->Register(_pData->m_pRuntimeCompiler);
-            _pData->m_pDependencyInjector->Register(_pData->m_heap);
+            _pData->m_pDependencyInjector->Register<Memory::FreeList>(Utils::lambda([&](const RuntimeReflection::__duckvil_resource_type_t& _typeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, const RuntimeReflection::__duckvil_resource_argument_t& _argumentHandle) -> void*
+                {
+                    if(RuntimeReflection::meta_has_value(_typeHandle, _constructorHandle, _argumentHandle, "Original"))
+                    {
+                        return &_pData->m_heap;
+                    }
+
+                    auto _m = _pData->m_heap.Allocate<Memory::FreeList>();
+                    const auto _sizeMeta = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, _argumentHandle.m_ID, "Size");
+                    uint32_t _size = 1024 * 1024;
+
+					if(_sizeMeta.m_pData != nullptr)
+					{
+                        _size = *static_cast<uint32_t*>(_sizeMeta.m_pData);
+					}
+
+					_pData->m_heap.Allocate(*_m, _size);
+
+                    return _m;
+                }), DependencyInjection::Scope::TRANSIENT);
             _pData->m_pDependencyInjector->Register(_pData->m_projectManager);
             _pData->m_pDependencyInjector->Register(_pData->m_projectManagerData);
             _pData->m_pDependencyInjector->Register(_pData->m_pClient);
@@ -576,9 +595,9 @@ namespace Duckvil {
                     const RuntimeReflection::__argument_t& _arg = RuntimeReflection::get_argument(_typeHandle, _constructorHandle, _argumentHandle);
 
 					if(RuntimeReflection::meta_has_value(_typeHandle, _constructorHandle, _argumentHandle, "Engine") && _immediateEventPoolTypeID == _arg.m_ullTypeID)
-		            {
-		                return true;
-		            }
+					{
+                        return true;
+					}
 
             		return false;
 				}));

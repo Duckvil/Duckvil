@@ -15,11 +15,6 @@
 
 namespace Duckvil { namespace DependencyInjection {
 
-    struct Injectable
-    {
-
-    };
-
     DUCKVIL_CLASS(Duckvil::ReflectionFlags::ReflectionFlags_ReflectionModule)
     class ReflectionModule
     {

@@ -7,7 +7,7 @@
 #include "Memory/Array.h"
 #include "Memory/Queue.h"
 
-#include "DependencyInjection/ReflectionFlags.h"
+#include "DependencyInjection/Injectable.h"
 
 #include "RuntimeReflection/Markers.h"
 
@@ -18,8 +18,8 @@
 namespace Duckvil { namespace Memory {
 
 // Copied FreeList will share the same memory region from which we copied it
-
-    DUCKVIL_CLASS(Duckvil::DependencyInjection::INJECTABLE)
+    
+    DUCKVIL_CLASS(Duckvil::DependencyInjection::Injectable(Duckvil::DependencyInjection::Scope::TRANSIENT))
     class FreeList
     {
         DUCKVIL_GENERATED_BODY

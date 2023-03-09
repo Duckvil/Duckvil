@@ -30,7 +30,10 @@ namespace Duckvil { namespace Editor {
 
     public:
         EngineInfoWidget();
-        EngineInfoWidget(const Memory::FreeList& _heap);
+        EngineInfoWidget(
+            DUCKVIL_ARGUMENT("Original")
+            const Memory::FreeList& _heap
+        );
         ~EngineInfoWidget();
 
         void InitEditor(void* _pImguiContext);

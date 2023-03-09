@@ -89,7 +89,7 @@ namespace Duckvil { namespace DependencyInjection {
 
         for(const auto& _meta : _struct->m_aMeta)
         {
-            if(_meta.m_sKey == DUCKVIL_TO_STRING(Duckvil::DependencyInjection::INJECTABLE) && _meta.m_sValue == "true")
+            if(_meta.m_sKey.find(DUCKVIL_TO_STRING(Duckvil::DependencyInjection::Injectable)) != std::string::npos)
             {
                 _found = true;
 
@@ -164,7 +164,7 @@ namespace Duckvil { namespace DependencyInjection {
             Parser::__ast_entity_argument _arg;
             
             _arg.m_sName = "_pFAP";
-            _arg.m_sType = DUCKVIL_TO_STRING(Duckvil::DependencyInjection::IFunctionArgumentsInjector*);
+            _arg.m_sType = DUCKVIL_TO_STRING(Duckvil::DependencyInjection::IDependencyInjector*);
             _arg.m_pParentScope = _func;
 
             _func->m_aArguments.push_back(_arg);

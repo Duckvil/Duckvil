@@ -20,7 +20,7 @@ namespace Duckvil { namespace DependencyInjection {
         virtual void Call(const void* func) = 0;
         virtual void Call(const void** func) = 0;
 
-        virtual void Execute() = 0;
+        virtual void* Execute() = 0;
 
         template <typename Type>
         void Push(const Type& _data)
