@@ -365,9 +365,9 @@ namespace Duckvil {
         ret();
     }
 
-    void RuntimeDependencyInjector::Execute()
+    void* RuntimeDependencyInjector::Execute()
     {
-    	getCode<void* (*)()>()();
+    	return getCode<void* (*)()>()();
     }
 
 }

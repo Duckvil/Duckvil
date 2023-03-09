@@ -29,7 +29,7 @@ namespace Duckvil {
         void Call(const void* func) override;
         void Call(const void** func) override;
 
-        void Execute() override;
+        void* Execute() override;
     };
 
 }
