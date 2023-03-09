@@ -35,6 +35,8 @@
 #include "ProjectManager/ProjectManager.h"
 #include "ProjectManager/Script.h"
 
+#include "DependencyInjection/DependencyInjection.h"
+
 #undef GetObject
 
 namespace Duckvil { namespace Editor {
@@ -333,6 +335,55 @@ namespace Duckvil { namespace Editor {
 //             }
 //         }
 
+        _data->m_pDependencyInjector = static_cast<DependencyInjection::IDependencyResolver*>(RuntimeReflection::create<const Memory::FreeList&, Event::Pool<Event::mode::immediate>*>(_data->m_heap, RuntimeReflection::get_type<DependencyInjection::DependencyResolver>(), false, _data->m_heap, _pEventPool));
+
+        _data->m_pDependencyInjector->Register(_data->m_heap);
+        {
+            RequestSystemEvent _rEvent;
+
+            _rEvent.m_typeHandle = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>();
+
+            _pEventPool->Broadcast(_rEvent);
+
+            _data->m_pDependencyInjector->Register(static_cast<HotReloader::RuntimeCompilerSystem*>(_rEvent.m_pRequestedSystem));
+        }
+        _data->m_pDependencyInjector->Register(&_data->m_pEditorEvents, Utils::lambda([](const RuntimeReflection::__duckvil_resource_type_t& _typeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, const RuntimeReflection::__duckvil_resource_argument_t& _argumentHandle) -> bool
+			{
+                if(RuntimeReflection::meta_has_value(_typeHandle, _constructorHandle, _argumentHandle, "Editor"))
+                {
+                    return true;
+                }
+
+        		return false;
+			}));
+        _data->m_pDependencyInjector->Register(_pEventPool, Utils::lambda([](const RuntimeReflection::__duckvil_resource_type_t& _typeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, const RuntimeReflection::__duckvil_resource_argument_t& _argumentHandle) -> bool
+			{
+                if(RuntimeReflection::meta_has_value(_typeHandle, _constructorHandle, _argumentHandle, "Engine"))
+                {
+                    return true;
+                }
+
+        		return false;
+			}));
+        {
+            RequestSystemEvent _rEvent;
+
+            _rEvent.m_typeHandle = RuntimeReflection::get_type<ProjectManager::ftable>();
+
+            _pEventPool->Broadcast(_rEvent);
+
+            _data->m_pDependencyInjector->Register(static_cast<ProjectManager::ftable*>(_rEvent.m_pRequestedSystem));
+        }
+        {
+            RequestSystemEvent _rEvent;
+
+            _rEvent.m_typeHandle = RuntimeReflection::get_type<ProjectManager::data>();
+
+            _pEventPool->Broadcast(_rEvent);
+
+            _data->m_pDependencyInjector->Register(static_cast<ProjectManager::data*>(_rEvent.m_pRequestedSystem));
+        }
+
         _data->m_pEditorEvents.AddA<SpwanWidgetEvent>([_data, _pEventPool](const SpwanWidgetEvent& _event)
         {
             RuntimeReflection::ReflectedType _type(_event.m_typeHandle);
@@ -349,88 +400,13 @@ namespace Duckvil { namespace Editor {
 
             for(const auto& _constructorHandle : _constructors)
             {
-                const auto& _constructor = RuntimeReflection::get_constructor(_event.m_typeHandle, _constructorHandle);
-                uint32_t _constructorArgumentsCount = DUCKVIL_SLOT_ARRAY_SIZE(_constructor.m_arguments);
+                void* _resolvedObject = nullptr;
 
-                if(_constructorArgumentsCount > 0)
+                if(_data->m_pDependencyInjector->Resolve(_event.m_typeHandle, _constructorHandle, &_resolvedObject))
                 {
-                    RuntimeDependencyInjector c(5 + _constructorArgumentsCount);
+                    _object = _resolvedObject;
 
-                    c.Push(_data->m_heap.GetMemoryInterface());
-                    c.Push(_data->m_heap.GetAllocator());
-                    c.Push(RuntimeReflection::get_current().m_pReflection);
-                    c.Push(RuntimeReflection::get_current().m_pReflectionData);
-                    c.Push(false);
-
-                    for(uint32_t i = 0; i < _constructorArgumentsCount; ++i)
-                    {
-                        const RuntimeReflection::__argument_t& _argument = DUCKVIL_SLOT_ARRAY_GET(_constructor.m_arguments, i);
-
-                        if(typeid(Memory::FreeList).hash_code() == _argument.m_ullTypeID)
-                        {
-                            static_cast<DependencyInjection::IDependencyInjector*>(&c)->Push(_data->m_heap);
-                            //c.Push(_data->m_heap);
-                        }
-
-                        if(typeid(HotReloader::RuntimeCompilerSystem).hash_code() == _argument.m_ullTypeID)
-                        {
-                            RequestSystemEvent _rEvent;
-
-                            _rEvent.m_typeHandle = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>();
-
-                            _pEventPool->Broadcast(_rEvent);
-
-                            c.Push(_rEvent.m_pRequestedSystem);
-                        }
-
-                        if(typeid(Event::Pool<Event::mode::immediate>).hash_code() == _argument.m_ullTypeID)
-                        {
-                            auto _argumentMeta = RuntimeReflection::get_meta(_type.GetHandle(), _constructorHandle, i, "Editor");
-
-                            if(_argumentMeta.m_ullTypeID == typeid(bool).hash_code() && *static_cast<bool*>(_argumentMeta.m_pData))
-                            {
-                                c.Push(&_data->m_pEditorEvents);
-                            }
-                            else
-                            {
-                                _argumentMeta = RuntimeReflection::get_meta(_type.GetHandle(), _constructorHandle, i, "Engine");
-
-                                if(_argumentMeta.m_ullTypeID == typeid(bool).hash_code() && *static_cast<bool*>(_argumentMeta.m_pData))
-                                {
-                                    c.Push(_pEventPool);
-                                }
-                            }
-                        }
-
-                        if(typeid(ProjectManager::ftable).hash_code() == _argument.m_ullTypeID)
-                        {
-                            RequestSystemEvent _rEvent;
-
-                            _rEvent.m_typeHandle = RuntimeReflection::get_type<ProjectManager::ftable>();
-
-                            _pEventPool->Broadcast(_rEvent);
-
-                            c.Push(_rEvent.m_pRequestedSystem);
-                        }
-
-                        if(typeid(ProjectManager::data).hash_code() == _argument.m_ullTypeID)
-                        {
-                            RequestSystemEvent _rEvent;
-
-                            _rEvent.m_typeHandle = RuntimeReflection::get_type<ProjectManager::data>();
-
-                            _pEventPool->Broadcast(_rEvent);
-
-                            c.Push(_rEvent.m_pRequestedSystem);
-                        }
-                    }
-
-                    // const auto& _h = RuntimeReflection::get_constructor_handle<const Memory::FreeList&>(_type.GetTypeHandle());
-                    const auto& _hc = RuntimeReflection::get_constructor(_type.GetHandle(), _constructorHandle);
-
-                    c.Call(_hc.m_pData);
-
-                    _object = c.getCode<void*(*)()>()();
+                    break;
                 }
             }
 

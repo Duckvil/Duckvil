@@ -21,6 +21,8 @@
 
 #include "Editor/Events/SpwanWidgetEvent.h"
 
+#include "DependencyInjection/IDependencyResolver.h"
+
 namespace Duckvil { namespace Editor {
 
     struct ImGuiEditorData
@@ -42,6 +44,8 @@ namespace Duckvil { namespace Editor {
         Event::Pool<Event::mode::buffered>* m_pWindowEventPool;
 
         flecs::world* m_pECS;
+
+        DependencyInjection::IDependencyResolver* m_pDependencyInjector;
 
         // Store viewports, and retrieve them
     };
