@@ -1,9 +1,9 @@
-#include "DependencyInjection/ReflectionFlags.h"
+#include "DependencyInjection/Scope.h"
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(5)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(7)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -26,17 +26,19 @@ _recordedNTypes.push_back(_ntype);
 _namespaces.push_back("DependencyInjection");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
-_enum = record_enum<Duckvil::DependencyInjection::ReflectionFlag>(_data, _ntype, "ReflectionFlag");
-_enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::DependencyInjection::ReflectionFlag::INJECTABLE, "INJECTABLE");
+_enum = record_enum<Duckvil::DependencyInjection::Scope>(_data, _ntype, "Scope");
+_enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::DependencyInjection::Scope::SINGLETON, "SINGLETON");
+_enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::DependencyInjection::Scope::SCOPED, "SCOPED");
+_enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::DependencyInjection::Scope::TRANSIENT, "TRANSIENT");
 _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "DependencyInjection/ReflectionFlags.h", 5);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "DependencyInjection/Scope.h", 7);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 5;
+return 7;
 }
 #endif

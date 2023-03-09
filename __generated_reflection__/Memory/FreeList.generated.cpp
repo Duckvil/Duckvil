@@ -39,7 +39,7 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Memory");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 8);
-record_meta(_data, _type, Duckvil::DependencyInjection::INJECTABLE, true);
+record_meta(_data, _type, Duckvil::DependencyInjection::Injectable(Duckvil::DependencyInjection::Scope::TRANSIENT), true);
 _constructor = record_constructor<Duckvil::Memory::FreeList>(_data, _type);
 _constructor = record_constructor<Duckvil::Memory::FreeList, Duckvil::Memory::ftable*, Duckvil::Memory::linear_allocator*, std::size_t>(_data, _type);
 _constructor = record_constructor<Duckvil::Memory::FreeList, Duckvil::Memory::ftable*, Duckvil::Memory::free_list_allocator*, std::size_t>(_data, _type);

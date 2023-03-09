@@ -45,6 +45,7 @@ _property = record_property<Graphics::Renderer::renderer_ftable*>(_data, _type, 
 _property = record_property<Graphics::Renderer::renderer_data*>(_data, _type, offsetof(Duckvil::Editor::ImGuiEditorData, m_pRendererData), "m_pRendererData");
 _property = record_property<Event::Pool<Event::mode::buffered>*>(_data, _type, offsetof(Duckvil::Editor::ImGuiEditorData, m_pWindowEventPool), "m_pWindowEventPool");
 _property = record_property<flecs::world*>(_data, _type, offsetof(Duckvil::Editor::ImGuiEditorData, m_pECS), "m_pECS");
+_property = record_property<DependencyInjection::IDependencyResolver*>(_data, _type, offsetof(Duckvil::Editor::ImGuiEditorData, m_pDependencyInjector), "m_pDependencyInjector");
 _namespaces.pop_back();
 _namespaces.push_back("EditorFTable");
 _ntype = record_type(_data, _namespaces);

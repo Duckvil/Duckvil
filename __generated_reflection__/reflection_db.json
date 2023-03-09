@@ -52,36 +52,57 @@
         "DependencyInjection\\DependencyInjection.h": {
             "generated_cpp": "DependencyInjection\\DependencyInjection.generated.cpp",
             "generated_h": "DependencyInjection\\DependencyInjection.generated.h",
-            "hash": "9079cfde8373307d8466a0f2db6a3b56",
+            "hash": "fdaf97531bd9f753c88e3daa2ef6c52b",
             "index": 0,
             "name": "DependencyInjection"
         },
         "DependencyInjection\\IDependencyInjector.h": {
             "generated_cpp": "DependencyInjection\\IDependencyInjector.generated.cpp",
             "generated_h": "DependencyInjection\\IDependencyInjector.generated.h",
-            "hash": "afcf9997f7a5aeb5094c7e91a5ca0ee4",
+            "hash": "35dd77cf8310c9fb0f4101fe66a573c7",
             "index": 1,
             "name": "DependencyInjection"
         },
         "DependencyInjection\\IDependencyResolver.h": {
             "generated_cpp": "DependencyInjection\\IDependencyResolver.generated.cpp",
             "generated_h": "DependencyInjection\\IDependencyResolver.generated.h",
-            "hash": "69dcd62ad95d2507197ca1c0dd5c34e4",
+            "hash": "1fca2f0aeb9c9aa9d5d7235b6dc22d6c",
             "index": 2,
+            "name": "DependencyInjection"
+        },
+        "DependencyInjection\\Inject.h": {
+            "generated_cpp": "DependencyInjection\\Inject.generated.cpp",
+            "generated_h": "DependencyInjection\\Inject.generated.h",
+            "hash": "baf9893b022e0bdf84c0b6ec16ceecfb",
+            "index": 3,
+            "name": "DependencyInjection"
+        },
+        "DependencyInjection\\Injectable.h": {
+            "generated_cpp": "DependencyInjection\\Injectable.generated.cpp",
+            "generated_h": "DependencyInjection\\Injectable.generated.h",
+            "hash": "49d90d6485b4fcf29a8edbe9a05f7df0",
+            "index": 4,
             "name": "DependencyInjection"
         },
         "DependencyInjection\\ReflectionFlags.h": {
             "generated_cpp": "DependencyInjection\\ReflectionFlags.generated.cpp",
             "generated_h": "DependencyInjection\\ReflectionFlags.generated.h",
             "hash": "cd9b933c730e4b46d7f6eec5c8993c72",
-            "index": 3,
+            "index": 5,
             "name": "DependencyInjection"
         },
         "DependencyInjection\\ReflectionModule.h": {
             "generated_cpp": "DependencyInjection\\ReflectionModule.generated.cpp",
             "generated_h": "DependencyInjection\\ReflectionModule.generated.h",
-            "hash": "b602af5bc06e7f6ca9443ea30e696eb1",
-            "index": 4,
+            "hash": "e3d14308a7024ed0a9f1c4aedab52170",
+            "index": 6,
+            "name": "DependencyInjection"
+        },
+        "DependencyInjection\\Scope.h": {
+            "generated_cpp": "DependencyInjection\\Scope.generated.cpp",
+            "generated_h": "DependencyInjection\\Scope.generated.h",
+            "hash": "df38e9c66d1c2534b25fb559c0d1be31",
+            "index": 7,
             "name": "DependencyInjection"
         },
         "Editor\\Draw.h": {
@@ -94,7 +115,7 @@
         "Editor\\Editor.h": {
             "generated_cpp": "Editor\\Editor.generated.cpp",
             "generated_h": "Editor\\Editor.generated.h",
-            "hash": "9d9305529938f0ceb9cda5e7b40d0d86",
+            "hash": "a5637c767067d41f66804c843c10c420",
             "index": 1,
             "name": "Editor"
         },
@@ -157,7 +178,7 @@
         "Editor\\Widgets\\EngineInfoWidget.h": {
             "generated_cpp": "Editor\\Widgets\\EngineInfoWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\EngineInfoWidget.generated.h",
-            "hash": "c10e2beb06f99a6559ec95c384b2c895",
+            "hash": "18443d00ca18c51e6282b2abb991f04e",
             "index": 10,
             "name": "Editor"
         },
@@ -206,7 +227,7 @@
         "Editor\\Widgets\\RuntimeReflectionWidget.h": {
             "generated_cpp": "Editor\\Widgets\\RuntimeReflectionWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\RuntimeReflectionWidget.generated.h",
-            "hash": "4118d810ad79786e4cfb9fb170a439ef",
+            "hash": "e5a40b995bf5e76a2603c700efd4e509",
             "index": 17,
             "name": "Editor"
         },
@@ -346,7 +367,7 @@
         "Event\\ImmediatePool.h": {
             "generated_cpp": "Event\\ImmediatePool.generated.cpp",
             "generated_h": "Event\\ImmediatePool.generated.h",
-            "hash": "6fdefb18f1b1666b892cca1c9fa1482e",
+            "hash": "923080a7077941b04061f275c29a9aa1",
             "index": 3,
             "name": "Event"
         },
@@ -472,7 +493,7 @@
         "HotReloader\\RuntimeCompilerSystem.h": {
             "generated_cpp": "HotReloader\\RuntimeCompilerSystem.generated.cpp",
             "generated_h": "HotReloader\\RuntimeCompilerSystem.generated.h",
-            "hash": "309483be427315093aff0ee672c37c1d",
+            "hash": "55269861f7e11605c959dadeabc1abcd",
             "index": 11,
             "name": "HotReloader"
         },
@@ -556,7 +577,7 @@
         "Memory\\FreeList.h": {
             "generated_cpp": "Memory\\FreeList.generated.cpp",
             "generated_h": "Memory\\FreeList.generated.h",
-            "hash": "86330839630451df327f2fb395a51db9",
+            "hash": "258bef59b7d28c86d003d93db4361460",
             "index": 8,
             "name": "Memory"
         },
@@ -1165,7 +1186,7 @@
         "RuntimeReflection\\Meta.h": {
             "generated_cpp": "RuntimeReflection\\Meta.generated.cpp",
             "generated_h": "RuntimeReflection\\Meta.generated.h",
-            "hash": "59e0e934001c3f3c5276bae982855d36",
+            "hash": "d7b3a734009e60033faf8d39beb22640",
             "index": 5,
             "name": "RuntimeReflection"
         },
@@ -1186,14 +1207,14 @@
         "RuntimeReflection\\Recorder.h": {
             "generated_cpp": "RuntimeReflection\\Recorder.generated.cpp",
             "generated_h": "RuntimeReflection\\Recorder.generated.h",
-            "hash": "3e8250664614811726fd2f6c405be6ef",
+            "hash": "609d1288be3d3db1ed4d27ab9eb8c144",
             "index": 8,
             "name": "RuntimeReflection"
         },
         "RuntimeReflection\\ReflectedType.h": {
             "generated_cpp": "RuntimeReflection\\ReflectedType.generated.cpp",
             "generated_h": "RuntimeReflection\\ReflectedType.generated.h",
-            "hash": "57317013eae3cf61f7e5e14dbeb2134d",
+            "hash": "3443e3a16737f69f38d34c3d6e7aba5c",
             "index": 9,
             "name": "RuntimeReflection"
         },
@@ -1354,7 +1375,7 @@
         "Utils\\RuntimeDependencyInjector.h": {
             "generated_cpp": "Utils\\RuntimeDependencyInjector.generated.cpp",
             "generated_h": "Utils\\RuntimeDependencyInjector.generated.h",
-            "hash": "8497cd19562c71f95e2ca58ca435269c",
+            "hash": "6ced6082ad6de0ec3fb60ab9c1d67a67",
             "index": 8,
             "name": "Utils"
         },

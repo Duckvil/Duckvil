@@ -44,7 +44,7 @@ _function = record_function<Duckvil::DependencyInjection::IDependencyInjector, v
 _function = record_function<Duckvil::DependencyInjection::IDependencyInjector, void, bool const&>(_data, _type, &Duckvil::DependencyInjection::IDependencyInjector::Push, "Push");
 _function = record_function<Duckvil::DependencyInjection::IDependencyInjector, void, void const*>(_data, _type, &Duckvil::DependencyInjection::IDependencyInjector::Call, "Call");
 _function = record_function<Duckvil::DependencyInjection::IDependencyInjector, void, void const**>(_data, _type, &Duckvil::DependencyInjection::IDependencyInjector::Call, "Call");
-_function = record_function<Duckvil::DependencyInjection::IDependencyInjector, void>(_data, _type, &Duckvil::DependencyInjection::IDependencyInjector::Execute, "Execute");
+_function = record_function<Duckvil::DependencyInjection::IDependencyInjector, void*>(_data, _type, &Duckvil::DependencyInjection::IDependencyInjector::Execute, "Execute");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

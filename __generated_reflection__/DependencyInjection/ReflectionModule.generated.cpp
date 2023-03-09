@@ -3,7 +3,7 @@
 #include "RuntimeReflection/GeneratedMeta.h"
 
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(4)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(6)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -26,24 +26,15 @@ _recordedNTypes.push_back(_ntype);
 _namespaces.push_back("DependencyInjection");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
-_namespaces.push_back("Injectable");
-_ntype = record_type(_data, _namespaces);
-_recordedNTypes.push_back(_ntype);
-using namespace Duckvil::DependencyInjection;
-_type = record_type<Duckvil::DependencyInjection::Injectable>(_data, "Injectable");
-_recordedTypes.push_back(_type);
-record_namespace(_data, _type, "Duckvil");
-record_namespace(_data, _type, "DependencyInjection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 4);
-_namespaces.pop_back();
 _namespaces.push_back("ReflectionModule");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
+using namespace Duckvil::DependencyInjection;
 _type = record_type<Duckvil::DependencyInjection::ReflectionModule>(_data, "ReflectionModule");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "DependencyInjection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 4);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 6);
 record_meta(_data, _type, Duckvil::ReflectionFlags::ReflectionFlags_ReflectionModule, true);
 _property = record_property<char const*>(_data, _type, offsetof(Duckvil::DependencyInjection::ReflectionModule, m_sReflectionModuleName), "m_sReflectionModuleName");
 _constructor = record_constructor<Duckvil::DependencyInjection::ReflectionModule, Memory::FreeList const&, RuntimeReflection::__ftable*, RuntimeReflection::__data*>(_data, _type);
@@ -66,7 +57,7 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "DependencyInjection");
 record_namespace(_data, _type, "ReflectionModule");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 4);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 6);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::DependencyInjection::ReflectionModule::Context, m_uiGeneratedBodyLine), "m_uiGeneratedBodyLine");
 _property = record_property<std::vector<ReflectionModule::Context *>>(_data, _type, offsetof(Duckvil::DependencyInjection::ReflectionModule::Context, m_aChildren), "m_aChildren");
 _property = record_property<ReflectionModule::Context*>(_data, _type, offsetof(Duckvil::DependencyInjection::ReflectionModule::Context, m_pParent), "m_pParent");
@@ -77,11 +68,11 @@ _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "DependencyInjection/ReflectionModule.h", 4);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "DependencyInjection/ReflectionModule.h", 6);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 4;
+return 6;
 }
 #endif

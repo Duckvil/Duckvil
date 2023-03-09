@@ -42,7 +42,7 @@ _function = record_function<Duckvil::RuntimeDependencyInjector, void, double con
 _function = record_function<Duckvil::RuntimeDependencyInjector, void, bool const&>(_data, _type, &Duckvil::RuntimeDependencyInjector::Push, "Push");
 _function = record_function<Duckvil::RuntimeDependencyInjector, void, void const*>(_data, _type, &Duckvil::RuntimeDependencyInjector::Call, "Call");
 _function = record_function<Duckvil::RuntimeDependencyInjector, void, void const**>(_data, _type, &Duckvil::RuntimeDependencyInjector::Call, "Call");
-_function = record_function<Duckvil::RuntimeDependencyInjector, void>(_data, _type, &Duckvil::RuntimeDependencyInjector::Execute, "Execute");
+_function = record_function<Duckvil::RuntimeDependencyInjector, void*>(_data, _type, &Duckvil::RuntimeDependencyInjector::Execute, "Execute");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
