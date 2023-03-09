@@ -574,9 +574,8 @@ namespace Duckvil {
 			        static const size_t _immediateEventPoolTypeID = typeid(Event::Pool<Event::mode::immediate>).hash_code();
 
                     const RuntimeReflection::__argument_t& _arg = RuntimeReflection::get_argument(_typeHandle, _constructorHandle, _argumentHandle);
-		            const auto& _eventPool = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, _argumentHandle.m_ID, "Engine");
 
-		            if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && _immediateEventPoolTypeID == _arg.m_ullTypeID)
+					if(RuntimeReflection::meta_has_value(_typeHandle, _constructorHandle, _argumentHandle, "Engine") && _immediateEventPoolTypeID == _arg.m_ullTypeID)
 		            {
 		                return true;
 		            }
@@ -587,10 +586,9 @@ namespace Duckvil {
                 {
                     static const size_t _bufferedEventPoolTypeID = typeid(Event::Pool<Event::mode::buffered>).hash_code();
 
-                    const auto& _eventPool = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, _argumentHandle.m_ID, "Window");
                     const RuntimeReflection::__argument_t& _arg = RuntimeReflection::get_argument(_typeHandle, _constructorHandle, _argumentHandle);
 
-		            if(_eventPool.m_ullTypeID == typeid(bool).hash_code() && _eventPool.m_pData && *(bool*)_eventPool.m_pData && _bufferedEventPoolTypeID == _arg.m_ullTypeID)
+		            if(RuntimeReflection::meta_has_value(_typeHandle, _constructorHandle, _argumentHandle, "Window") && _bufferedEventPoolTypeID == _arg.m_ullTypeID)
 		            {
 		                return true;
 		            }
