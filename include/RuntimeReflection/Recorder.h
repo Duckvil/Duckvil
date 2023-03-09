@@ -94,7 +94,15 @@ static inline duckvil_recorderd_types duckvil_recorded_types_create(Duckvil::Mem
         __recorder_meta_info _meta = recorder_generate_meta_info(_key, _value); \
  \
         return _data._pFunctions->m_fnRecord ## name ## Meta(_data, types2, _meta); \
-    }
+    } \
+ \
+	template <typename ValueType> \
+	static DUCKVIL_RESOURCE(meta_t) record_meta(const duckvil_runtime_reflection_recorder_stuff& _data, types, const ValueType& _value) \
+	{ \
+     __recorder_meta_info _meta = recorder_generate_meta_info(std::move(_value)); \
+     \
+     return _data._pFunctions->m_fnRecord ## name ## Meta(_data, types2, _meta); \
+	}
 
 namespace Duckvil { namespace RuntimeReflection {
 
@@ -215,6 +223,26 @@ namespace Duckvil { namespace RuntimeReflection {
         return _meta;
     }
 
+    template <typename ValueType>
+    __recorder_meta_info recorder_generate_meta_info(const ValueType* _value, size_t _ullValueSize)
+    {
+        __recorder_meta_info _meta = {};
+
+        _meta.m_ullKeyTypeID = typeid(ValueType).hash_code();
+        _meta.m_ullKeyTypeSize = 0;
+        _meta.m_ucKeyTypeAlignment = 0;
+        _meta.m_pKeyData = nullptr;
+        _meta.m_keyTraits = recorder_generate_property_traits<ValueType>();
+
+        _meta.m_ullValueTypeID = typeid(ValueType).hash_code();
+        _meta.m_ullValueTypeSize = _ullValueSize;
+        _meta.m_ucValueTypeAlignment = alignof(ValueType);
+        _meta.m_pValueData = _value;
+        _meta.m_valueTraits = recorder_generate_property_traits<ValueType>();
+
+        return _meta;
+    }
+
     template <typename ValueType, std::size_t Length>
     __recorder_meta_info recorder_generate_meta_info(const char (&_key)[Length], const ValueType& _value, size_t _ullValueSize)
     {
@@ -279,6 +307,16 @@ namespace Duckvil { namespace RuntimeReflection {
     __recorder_meta_info recorder_generate_meta_info(const KeyType& _key, const ValueType& _value)
     {
         return recorder_generate_meta_info(_key, sizeof(KeyType), _value, sizeof(ValueType));
+    }
+
+    template <typename ValueType>
+    __recorder_meta_info recorder_generate_meta_info(const ValueType& _value)
+    {
+        auto _v = new ValueType();
+
+        *_v = _value;
+
+        return recorder_generate_meta_info<ValueType>(_v, sizeof(ValueType));
     }
 
     template<class T, class U =

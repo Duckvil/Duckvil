@@ -36,9 +36,9 @@
  \
             if(_keyVariant.m_variant.m_ullTypeID == _ullTypeID && _keyVariant.m_variant.m_ullSize == _ullSize && memcmp(_keyVariant.m_variant.m_pData, _pKey, _ullSize) == 0) \
             { \
-                const __variant_t& _valueVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantValues, _meta.m_key.m_ID); \
- \
-                return _valueVariant.m_variant.m_pData; \
+				const __variant_t& _valueVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantValues, _meta.m_key.m_ID); \
+                 \
+				return _valueVariant.m_variant.m_pData; \
             } \
         } \
  \
@@ -688,7 +688,11 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             const __variant_t& _keyVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantKeys, i);
 
-            if(_keyVariant.m_variant.m_ullTypeID == _ullTypeID && _keyVariant.m_variant.m_ullSize == _ullSize && memcmp(_keyVariant.m_variant.m_pData, _pKey, _ullSize) == 0)
+            // _keyVariant.m_variant.m_ullTypeID == _ullTypeID && (_keyVariant.m_variant.m_pData == nullptr || (_keyVariant.m_variant.m_ullSize == _ullSize && memcmp(_keyVariant.m_variant.m_pData, _pKey, _ullSize) == 0))
+
+
+
+        	if(_keyVariant.m_variant.m_ullTypeID == _ullTypeID && _keyVariant.m_variant.m_ullSize == _ullSize && memcmp(_keyVariant.m_variant.m_pData, _pKey, _ullSize) == 0 || (_keyVariant.m_variant.m_ullTypeID == _ullTypeID && _keyVariant.m_variant.m_pData == nullptr))
             {
                 const __variant_t& _valueVariant = DUCKVIL_SLOT_ARRAY_GET(_type.m_variantValues, i);
 

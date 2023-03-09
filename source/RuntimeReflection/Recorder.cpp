@@ -136,11 +136,19 @@ namespace Duckvil { namespace RuntimeReflection {
 
                 _keyVariant.m_variant.m_ullTypeID = _meta.m_ullKeyTypeID;
                 _keyVariant.m_variant.m_ullSize = _meta.m_ullKeyTypeSize;
-                _keyVariant.m_variant.m_pData = _data._pMemoryInterface->m_fnFreeListAllocate_(_data._pAllocator, _keyVariant.m_variant.m_ullSize, _meta.m_ucKeyTypeAlignment);
+
+                if(_meta.m_pKeyData != nullptr)
+                {
+					_keyVariant.m_variant.m_pData = _data._pMemoryInterface->m_fnFreeListAllocate_(_data._pAllocator, _keyVariant.m_variant.m_ullSize, _meta.m_ucKeyTypeAlignment);
+                    memcpy(_keyVariant.m_variant.m_pData, _meta.m_pKeyData, _keyVariant.m_variant.m_ullSize);
+                }
+                else
+                {
+                    printf("AAA\n");
+                }
+
                 _keyVariant.m_variant.m_traits = _meta.m_keyTraits;
                 _keyVariant.m_owner = __variant_owner::__variant_owner_type;
-
-                memcpy(_keyVariant.m_variant.m_pData, _meta.m_pKeyData, _keyVariant.m_variant.m_ullSize);
 
                 _keyHandle.m_ID = duckvil_slot_array_insert(_data._pMemoryInterface, _data._pAllocator, _type->m_variantKeys, _keyVariant);
             }

@@ -399,6 +399,12 @@ namespace Duckvil { namespace RuntimeReflection {
             return RuntimeReflection::get_meta(m_typeHandle, _key);
         }
 
+        template <typename KeyType>
+        const __variant& GetMeta() const
+        {
+            return RuntimeReflection::get_meta<KeyType>(m_typeHandle);
+        }
+
         inline const __duckvil_resource_type_t& GetHandle() const
         {
             return m_typeHandle;

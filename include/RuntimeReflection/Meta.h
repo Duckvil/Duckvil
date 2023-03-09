@@ -35,6 +35,12 @@
         return _pReflection->m_fnGet ## name ## MetaVariant(_pData, type2, &_key, sizeof(KeyType), typeid(KeyType).hash_code()); \
     } \
  \
+	template <typename KeyType> \
+    static inline const __variant& get_meta(__ftable* _pReflection, __data* _pData, type) \
+    { \
+        return _pReflection->m_fnGet ## name ## MetaVariant(_pData, type2, nullptr, sizeof(KeyType), typeid(KeyType).hash_code()); \
+    } \
+ \
     template <std::size_t Length> \
     static inline DUCKVIL_RESOURCE(variant_t) get_meta_value_handle(__ftable* _pReflection, __data* _pData, type, const char (&_key)[Length]) \
     { \
@@ -101,6 +107,13 @@
     { \
         const duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext; \
         return get_meta<KeyType>(_context.m_pReflection, _context.m_pReflectionData, type2, _key); \
+    } \
+ \
+	template <typename KeyType> \
+    static inline const __variant& get_meta(type) \
+    { \
+        const duckvil_frontend_reflection_context& _context = g_duckvilFrontendReflectionContext; \
+        return get_meta<KeyType>(_context.m_pReflection, _context.m_pReflectionData, type2); \
     } \
  \
     template <std::size_t Length> \
@@ -337,6 +350,19 @@ namespace Duckvil { namespace RuntimeReflection {
             _heapContext.m_heap.GetAllocator(),
             _pObject
         );
+    }
+
+    template <typename KeyType>
+    static bool meta_has_value(const __duckvil_resource_type_t& _typeHandle, const __duckvil_resource_constructor_t& _constructorHandle, const __duckvil_resource_argument_t& _argumentHandle, const KeyType& _key)
+    {
+        const auto _meta = RuntimeReflection::get_meta(_typeHandle, _constructorHandle, _argumentHandle.m_ID, _key);
+
+        if(_meta.m_pData != nullptr && _meta.m_ullTypeID == typeid(bool).hash_code() && *static_cast<bool*>(_meta.m_pData))
+        {
+            return true;
+        }
+
+        return false;
     }
 
 }}
