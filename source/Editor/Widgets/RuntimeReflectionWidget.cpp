@@ -14,7 +14,7 @@ namespace Duckvil { namespace Editor {
 
     RuntimeReflectionWidget::RuntimeReflectionWidget(const Memory::FreeList& _heap)
     {
-        m_heap = Memory::FreeList(_heap.GetMemoryInterface(), _heap.GetAllocator(), 1024 * 1024);
+        m_heap = Memory::FreeList(_heap.GetMemoryInterface(), _heap.GetAllocator(), 1024 * 512);
     }
 
     RuntimeReflectionWidget::~RuntimeReflectionWidget()

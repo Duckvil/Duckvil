@@ -43,7 +43,7 @@ namespace Duckvil { namespace Editor {
         ImGui::Begin("EngineInfoWidget");
 
         ImGui::Text("Delta: %f ms", m_pTime->m_dDelta * 1000.f);
-        ImGui::Text("Memory used: %i of: %i", m_heap.GetAllocator()->m_ullUsed, m_heap.GetAllocator()->m_ullCapacity);
+        ImGui::Text("Memory used: %i of: %i (%f %%)", m_heap.GetAllocator()->m_ullUsed, m_heap.GetAllocator()->m_ullCapacity, (m_heap.GetAllocator()->m_ullUsed * 100.f) / m_heap.GetAllocator()->m_ullCapacity);
         ImGui::Text("FPS: %i", m_uiOldFPS);
         // ImGui::Text("AAAAA");
 
