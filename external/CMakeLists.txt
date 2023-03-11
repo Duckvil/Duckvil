@@ -24,6 +24,7 @@ if(NOT DUCKVIL_CICD)
     add_subdirectory(xbyak)
     add_subdirectory(assimp)
     add_subdirectory(json)
+    add_subdirectory(cppast)
 
     if(${DUCKVIL_TRACY_PROFILER})
         add_subdirectory(tracy)
@@ -44,6 +45,22 @@ if(NOT DUCKVIL_CICD)
             FOLDER external
         )
     endif()
+
+    set_target_properties(cppast PROPERTIES
+        CXX_STANDARD 20
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+        LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/bin"
+        ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/bin"
+        RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/bin"
+        LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin"
+        ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin"
+        RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin"
+        DEBUG_POSTFIX ""
+        PREFIX ""
+        FOLDER external
+    )
 
     set_target_properties(SDL2 PROPERTIES
         CXX_STANDARD 20
@@ -225,3 +242,6 @@ set_target_properties(flecs_static PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin"
     FOLDER external
 )
+
+add_definitions(-Dflecs_EXPORTS)
+remove_definitions(-Dflecs_STATIC)
