@@ -47,6 +47,8 @@
 
 #include "DependencyInjection/DependencyInjection.h"
 
+#include "Editor/ReflectionFlag.h"
+
 #include "Engine/runtime_reflection.h"
 
 namespace Duckvil {
@@ -514,9 +516,11 @@ namespace Duckvil {
                 const RuntimeReflection::__duckvil_resource_type_t& _typeHandle = _types[i];
                 const RuntimeReflection::ReflectedType _type(_typeHandle);
                 auto _autoInstantiateMetaFlag = _type.GetMeta(ReflectionFlags::ReflectionFlags_AutoInstantiate);
+                auto _spawnableVariant = _type.GetMeta(Editor::ReflectionFlag::Spwanable);
 
                 if((!_type.Inherits<Editor::Widget>() && !_type.Inherits<ISystem>()) ||
-                    (_autoInstantiateMetaFlag.m_pData != nullptr && !*static_cast<bool*>(_autoInstantiateMetaFlag.m_pData)))
+                    (_autoInstantiateMetaFlag.m_pData != nullptr && !*static_cast<bool*>(_autoInstantiateMetaFlag.m_pData)) ||
+                    _spawnableVariant.m_ullTypeID != -1)
                 {
                     continue;
                 }
