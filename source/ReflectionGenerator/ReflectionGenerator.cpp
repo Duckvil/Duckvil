@@ -109,7 +109,7 @@ void generate_plugin_info(std::ofstream& _file, const uint32_t& _uiIndex, const 
 {
     _file << "#include \"RuntimeReflection/Recorder.h\"\n";
     _file << "#include \"Logger/Logger.h\"\n";
-    _file << "DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(" << _uiIndex << ")\n\n";
+    _file << "DUCKVIL_RUNTIME_REFLECTION_RECORDERS_COUNT(" << _uiIndex << ")\n\n";
     _file << "DUCKVIL_EXPORT void duckvil_plugin_make_current_runtime_reflection_context(const duckvil_frontend_reflection_context& _runtimeReflectionContext)\n";
     _file << "{\n";
     _file << "Duckvil::RuntimeReflection::make_current(_runtimeReflectionContext);\n";
@@ -374,7 +374,7 @@ int main(int argc, char* argv[])
         const Duckvil::PlugNPlay::__module_information& _loadedModule = _loadedModules[i];
         Duckvil::RuntimeReflection::GetRecordersCountFunction get_recorder_count = nullptr;
 
-        _module.get(_loadedModule, "duckvil_get_runtime_reflection_recorder_count", reinterpret_cast<void**>(&get_recorder_count));
+        _module.get(_loadedModule, "duckvil_get_runtime_reflection_recorders_count", reinterpret_cast<void**>(&get_recorder_count));
 
         if(get_recorder_count == nullptr)
         {

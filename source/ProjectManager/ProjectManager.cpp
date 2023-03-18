@@ -248,7 +248,7 @@ namespace Duckvil { namespace ProjectManager {
         void (*make_current_runtime_reflection_context)(const duckvil_frontend_reflection_context&);
         void (*make_current_logger_context)(const logger_context&);
 
-        _module.get(_projectManager, "duckvil_get_runtime_reflection_recorder_count", reinterpret_cast<void**>(&get_recorder_count));
+        _module.get(_projectManager, "duckvil_get_runtime_reflection_recorders_count", reinterpret_cast<void**>(&get_recorder_count));
         _module.get(_projectManager, "duckvil_plugin_make_current_runtime_reflection_context", reinterpret_cast<void**>(&make_current_runtime_reflection_context));
         _module.get(_projectManager, "duckvil_plugin_make_current_logger_context", reinterpret_cast<void**>(&make_current_logger_context));
 

@@ -60,8 +60,8 @@ static inline duckvil_recorderd_types duckvil_recorded_types_create(Duckvil::Mem
 #define DUCKVIL_RUNTIME_REFLECTION_RECORD(index) \
     DUCKVIL_EXPORT duckvil_recorderd_types duckvil_runtime_reflection_record_##index(const duckvil_runtime_reflection_recorder_stuff& _data)
 
-#define DUCKVIL_RUNTIME_REFLECTION_RECORD_COUNT(count) \
-    DUCKVIL_EXPORT uint32_t duckvil_get_runtime_reflection_recorder_count() { return count; }
+#define DUCKVIL_RUNTIME_REFLECTION_RECORDERS_COUNT(count) \
+    DUCKVIL_EXPORT uint32_t duckvil_get_runtime_reflection_recorders_count() { return count; }
 
 #define DUCKVIL_REFLECTION_META_UTIL(name, types, types2) \
     template <typename KeyType, typename ValueType> \

@@ -22,10 +22,10 @@
     Memory::Vector<DUCKVIL_RESOURCE(meta_t)> (*m_fnGet ## name ## Metas)(const Memory::FreeList& _heap, __data* _pData, type);
 
 #define DUCKVIL_RESOURCE(t) \
-    __duckvil_resource_##t
+    Duckvil::RuntimeReflection::__duckvil_resource_##t
 
 #define DUCKVIL_RESOURCE_DECLARE(t) \
-    struct DUCKVIL_RESOURCE(t) \
+    struct __duckvil_resource_##t \
     { \
         uint32_t m_ID; \
     }
