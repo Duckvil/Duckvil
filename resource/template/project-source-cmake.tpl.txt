@@ -39,6 +39,7 @@ target_link_libraries(
     {$duckvilWorkingDirectory}/bin/glew32.lib
     {$duckvilWorkingDirectory}/bin/SDL2.lib
     {$duckvilWorkingDirectory}/bin/flecs_static.lib
+    {$duckvilWorkingDirectory}/bin/RuntimeReflectionStatic.lib
 )
 set_target_properties({$projectName} PROPERTIES
     CXX_STANDARD 20
@@ -54,6 +55,8 @@ set_target_properties({$projectName} PROPERTIES
     DEBUG_POSTFIX ""
     PREFIX ""
 )
+add_definitions(-Dflecs_EXPORTS)
+remove_definitions(-Dflecs_STATIC)
 # BEGIN SUBDIRECTORIES
 # END SUBDIRECTORIES
 # FOREACH(child ${children})
