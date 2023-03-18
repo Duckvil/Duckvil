@@ -2870,11 +2870,11 @@ namespace Duckvil { namespace Parser {
 
         try
         {
-            _parser.parse(("E:/Projects/C++/Duckvil/include" / _pAST->m_sFile).string(), _config);
+            _parser.parse((_pAST->m_sPath / _pAST->m_sFile).string(), _config);
         }
         catch(const std::exception& ex)
         {
-            printf("AAA\n");
+            printf("Exception while parsing: %s\n", ex.what());
 
             return;
         }

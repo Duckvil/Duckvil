@@ -312,6 +312,7 @@ namespace Duckvil { namespace Parser {
         std::vector<user_define> m_aUserDefines;
         bool m_bPendingIfdef = false;
         std::filesystem::path m_sFile;
+        std::filesystem::path m_sPath;
         std::vector<__ast_template> m_aTemplates;
     };
 

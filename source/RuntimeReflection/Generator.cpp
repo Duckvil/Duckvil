@@ -6,6 +6,8 @@
 
 namespace Duckvil { namespace RuntimeReflection {
 
+    // Returns combined namespace from deque
+    // Result example: A::B::C
     std::string combine_namespace(std::deque<__generator_namespace> _namespaces)
     {
         std::string _res;

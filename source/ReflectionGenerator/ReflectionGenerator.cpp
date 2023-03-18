@@ -166,6 +166,7 @@ nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil
     _relativePath = std::filesystem::relative(_path, _cwd / "include");
 
     _astData.m_sFile = _relativePath;
+    _astData.m_sPath = _cwd / "include";
 
     _pAST_FTable->ast_generate(&_astData, _pLexerFTable, _data);
     // _ast->ast_print(_astData);
