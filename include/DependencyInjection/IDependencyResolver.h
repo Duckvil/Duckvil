@@ -40,9 +40,8 @@ namespace Duckvil { namespace DependencyInjection {
         }
 
         virtual bool Register(const Dependency& _dependency) = 0;
-
-        // TODO: Rename to Resolve
-        virtual bool Resolve(const RuntimeReflection::__duckvil_resource_type_t& _typeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, void** _ppResolvedObject = nullptr) = 0;
+        
+        virtual bool Resolve(const RuntimeReflection::__duckvil_resource_type_t& _typeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, void** _ppResolvedObject = nullptr, bool _bHot = false) = 0;
 
         template <typename Type>
         bool Register(const Type& _pData, Dependency::OnInjectCallback _fnOnInject = nullptr, Scope _scope = Scope::SINGLETON)

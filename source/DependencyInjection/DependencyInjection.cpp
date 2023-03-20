@@ -53,7 +53,7 @@ namespace Duckvil { namespace DependencyInjection {
         return true;
     }
 
-    bool DependencyResolver::Resolve(const RuntimeReflection::__duckvil_resource_type_t& _clientTypeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, void** _ppResolvedObject)
+    bool DependencyResolver::Resolve(const RuntimeReflection::__duckvil_resource_type_t& _clientTypeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, void** _ppResolvedObject, bool _bHot)
     {
         RuntimeReflection::__constructor_t _constructor = RuntimeReflection::get_constructor(_clientTypeHandle, _constructorHandle);
 
@@ -70,7 +70,7 @@ namespace Duckvil { namespace DependencyInjection {
         _fap.Push(m_heap.GetAllocator());
         _fap.Push(RuntimeReflection::get_current().m_pReflection);
         _fap.Push(RuntimeReflection::get_current().m_pReflectionData);
-        _fap.Push(true);
+        _fap.Push(_bHot);
 
         for(uint32_t i = 0; i < _constructorArgumentsCount; ++i)
         {
