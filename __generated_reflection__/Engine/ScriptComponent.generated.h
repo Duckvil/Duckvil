@@ -6,11 +6,15 @@
 #define Engine_ScriptComponent_h_67_REFLECTION_MODULE_CASTER \
 public: \
 static void* Cast(void* _pObject) { return static_cast<ScriptComponent*>(_pObject); }
-#define Engine_ScriptComponent_h_67_REFLECTION_MODULE_RUNTIME_COMPILER \
+#define Engine_ScriptComponent_h_0_REFLECTION_MODULE_RUNTIME_COMPILER \
 public: \
 void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\
-_pSerializer->SerializeProperty("m_pScripts", m_pScripts); \
+}
+#define Engine_ScriptComponent_h_0_REFLECTION_MODULE_RUNTIME_COMPILER \
+public: \
+void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
+{\
 }
 #include "Utils/EntitySerializer.h"
 #include "Utils/ECS.h"
@@ -41,8 +45,11 @@ return reinterpret_cast<uint8_t*>(_entity.m_entity.get_mut<ScriptComponent>());\
 #define Engine_ScriptComponent_h_67_GENERATED_BODY \
 Engine_ScriptComponent_h_67_REFLECTION_MODULE_DUMMY \
 Engine_ScriptComponent_h_67_REFLECTION_MODULE_CASTER \
-Engine_ScriptComponent_h_67_REFLECTION_MODULE_RUNTIME_COMPILER \
 Engine_ScriptComponent_h_67_REFLECTION_MODULE_COMPONENT
+
+#define Engine_ScriptComponent_h_0_GENERATED_BODY \
+Engine_ScriptComponent_h_0_REFLECTION_MODULE_RUNTIME_COMPILER \
+Engine_ScriptComponent_h_0_REFLECTION_MODULE_RUNTIME_COMPILER
 
 #undef DUCKVIL_CURRENT_FILE_ID
 #define DUCKVIL_CURRENT_FILE_ID Engine_ScriptComponent_h

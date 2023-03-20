@@ -2,9 +2,6 @@
 
 #include "RuntimeReflection/Markers.h"
 
-#define HotReloader_RuntimeCompilerSystem_h_66_REFLECTION_MODULE_DEPENDENCY_INJECTION \
-public:\
-static void Push(DependencyInjection::IDependencyInjector* _pFAP, const void* _pData);
 #define HotReloader_RuntimeCompilerSystem_h_66_REFLECTION_MODULE_DUMMY 
 #define HotReloader_RuntimeCompilerSystem_h_66_REFLECTION_MODULE_CASTER \
 public: \
@@ -15,7 +12,6 @@ void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\
 }
 #define HotReloader_RuntimeCompilerSystem_h_66_GENERATED_BODY \
-HotReloader_RuntimeCompilerSystem_h_66_REFLECTION_MODULE_DEPENDENCY_INJECTION \
 HotReloader_RuntimeCompilerSystem_h_66_REFLECTION_MODULE_DUMMY \
 HotReloader_RuntimeCompilerSystem_h_66_REFLECTION_MODULE_CASTER
 

@@ -37,7 +37,7 @@ record_namespace(_data, _type, "DependencyInjection");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
 _destructor = record_destructor<Duckvil::DependencyInjection::IDependencyResolver>(_data, _type);
 _function = record_function<Duckvil::DependencyInjection::IDependencyResolver, bool, Duckvil::DependencyInjection::IDependencyResolver::Dependency const&>(_data, _type, &Duckvil::DependencyInjection::IDependencyResolver::Register, "Register");
-_function = record_function<Duckvil::DependencyInjection::IDependencyResolver, bool, RuntimeReflection::__duckvil_resource_type_t const&, RuntimeReflection::__duckvil_resource_constructor_t const&, void**>(_data, _type, &Duckvil::DependencyInjection::IDependencyResolver::Resolve, "Resolve");
+_function = record_function<Duckvil::DependencyInjection::IDependencyResolver, bool, RuntimeReflection::__duckvil_resource_type_t const&, RuntimeReflection::__duckvil_resource_constructor_t const&, void**, bool>(_data, _type, &Duckvil::DependencyInjection::IDependencyResolver::Resolve, "Resolve");
 _namespaces.pop_back();
 _namespaces.push_back("Dependency");
 _ntype = record_type(_data, _namespaces);

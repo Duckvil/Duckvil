@@ -6,16 +6,17 @@
 #define Engine_UUIDComponent_h_14_REFLECTION_MODULE_CASTER \
 public: \
 static void* Cast(void* _pObject) { return static_cast<UUIDComponent*>(_pObject); }
-#define Engine_UUIDComponent_h_14_REFLECTION_MODULE_RUNTIME_COMPILER \
+#define Engine_UUIDComponent_h_0_REFLECTION_MODULE_RUNTIME_COMPILER \
 public: \
 void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\
-_pSerializer->SerializeProperty("m_uuid", m_uuid); \
 }
 #define Engine_UUIDComponent_h_14_GENERATED_BODY \
 Engine_UUIDComponent_h_14_REFLECTION_MODULE_DUMMY \
-Engine_UUIDComponent_h_14_REFLECTION_MODULE_CASTER \
-Engine_UUIDComponent_h_14_REFLECTION_MODULE_RUNTIME_COMPILER
+Engine_UUIDComponent_h_14_REFLECTION_MODULE_CASTER
+
+#define Engine_UUIDComponent_h_0_GENERATED_BODY \
+Engine_UUIDComponent_h_0_REFLECTION_MODULE_RUNTIME_COMPILER
 
 #undef DUCKVIL_CURRENT_FILE_ID
 #define DUCKVIL_CURRENT_FILE_ID Engine_UUIDComponent_h

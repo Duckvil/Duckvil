@@ -31,7 +31,7 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 0);
 _property = record_property<RuntimeReflection::__duckvil_resource_type_t>(_data, _type, offsetof(Duckvil::system, m_type), "m_type");
-_property = record_property<Duckvil::ISystem*>(_data, _type, offsetof(Duckvil::system, m_pTrackKeeper), "m_pTrackKeeper");
+_property = record_property<Duckvil::ISystem*>(_data, _type, offsetof(Duckvil::system, m_pObject), "m_pObject");
 _property = record_property<bool>(_data, _type, offsetof(Duckvil::system, m_bIsHot), "m_bIsHot");
 _property = record_property<Duckvil::system::UpdateCallback>(_data, _type, offsetof(Duckvil::system, m_fnUpdateCallback), "m_fnUpdateCallback");
 _property = record_property<Duckvil::system::InitCallback>(_data, _type, offsetof(Duckvil::system, m_fnInitCallback), "m_fnInitCallback");
