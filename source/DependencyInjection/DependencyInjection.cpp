@@ -84,34 +84,48 @@ namespace Duckvil { namespace DependencyInjection {
 
                 const Dependency& _dependency = FindDependency(_argument.m_ullTypeID, &_typeHandle);
 
-                if(_dependency.m_fnOnInject != nullptr && !_dependency.m_fnOnInject(_clientTypeHandle, _constructorHandle, { i }))
+                if(_dependency.m_scope == Scope::SINGLETON)
                 {
-                    // Call events
+	                if(_dependency.m_fnOnInject != nullptr && !_dependency.m_fnOnInject(_clientTypeHandle, _constructorHandle, { i }))
+	                {
+	                    // Call events
 
-                    InjectConstructorArgumentEvent::Info _info;
+	                    InjectConstructorArgumentEvent::Info _info;
 
-                    _info.m_uiArgumentIndex = i;
-                    _info.m_constructorHandle = _constructorHandle;
-                    _info.m_typeHandle = _clientTypeHandle;
+	                    _info.m_uiArgumentIndex = i;
+	                    _info.m_constructorHandle = _constructorHandle;
+	                    _info.m_typeHandle = _clientTypeHandle;
 
-                    InjectConstructorArgumentEvent _e(&_fap, _info, _argument);
+	                    InjectConstructorArgumentEvent _e(&_fap, _info, _argument);
 
-                    m_pEngineEventPool->Broadcast(_e);
+	                    m_pEngineEventPool->Broadcast(_e);
 
-                    if(!_e.m_bSuccess)
-                    {
-                        throw std::exception("");
-                    }
+	                    if(!_e.m_bSuccess)
+	                    {
+	                        auto _type = RuntimeReflection::get_type(_argument.m_ullTypeID);
 
-	                continue;
+	                        throw std::exception("Could not resolve dependency");
+	                    }
+
+		                continue;
+	                }
+
+	                /*if(_dependency.m_scope != Scope::SINGLETON)
+	                {
+	                    throw std::exception("Not implemented");
+	                }*/
+
+	                _fap.Push(_dependency.m_pData);
                 }
-
-                if(_dependency.m_scope != Scope::SINGLETON)
+                else if(_dependency.m_scope == Scope::TRANSIENT)
                 {
-                    throw std::exception("Not implemented");
-                }
+	                if(_dependency.m_fnFactory != nullptr)
+	                {
+                        void* _data = _dependency.m_fnFactory(_clientTypeHandle, _constructorHandle, { i });
 
-                _fap.Push(_dependency.m_pData);
+                        _fap.Push(_data);
+	                }
+                }
             }
             else
             {

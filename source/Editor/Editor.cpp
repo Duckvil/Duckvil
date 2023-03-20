@@ -347,24 +347,18 @@ namespace Duckvil { namespace Editor {
 
             _data->m_pDependencyInjector->Register(static_cast<HotReloader::RuntimeCompilerSystem*>(_rEvent.m_pRequestedSystem));
         }
-        _data->m_pDependencyInjector->Register(&_data->m_pEditorEvents, Utils::lambda([](const RuntimeReflection::__duckvil_resource_type_t& _typeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, const RuntimeReflection::__duckvil_resource_argument_t& _argumentHandle) -> bool
-			{
-                if(RuntimeReflection::meta_has_value(_typeHandle, _constructorHandle, _argumentHandle, "Editor"))
+        _data->m_pDependencyInjector->Register<Event::Pool<Event::mode::immediate>>(Utils::lambda([_data, _pEventPool](const RuntimeReflection::__duckvil_resource_type_t& _typeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, const RuntimeReflection::__duckvil_resource_argument_t& _argumentHandle) -> void*
+	        {
+		        if(RuntimeReflection::meta_has_value(_typeHandle, _constructorHandle, _argumentHandle, "Editor"))
                 {
-                    return true;
+                    return &_data->m_pEditorEvents;
                 }
 
-        		return false;
-			}));
-        _data->m_pDependencyInjector->Register(_pEventPool, Utils::lambda([](const RuntimeReflection::__duckvil_resource_type_t& _typeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, const RuntimeReflection::__duckvil_resource_argument_t& _argumentHandle) -> bool
-			{
-                if(RuntimeReflection::meta_has_value(_typeHandle, _constructorHandle, _argumentHandle, "Engine"))
+        		if(RuntimeReflection::meta_has_value(_typeHandle, _constructorHandle, _argumentHandle, "Engine"))
                 {
-                    return true;
+                    return _pEventPool;
                 }
-
-        		return false;
-			}));
+	        }), DependencyInjection::Scope::TRANSIENT);
         {
             RequestSystemEvent _rEvent;
 
@@ -402,9 +396,11 @@ namespace Duckvil { namespace Editor {
             {
                 void* _resolvedObject = nullptr;
 
-                if(_data->m_pDependencyInjector->Resolve(_event.m_typeHandle, _constructorHandle, &_resolvedObject))
+                if(_data->m_pDependencyInjector->Resolve(_event.m_typeHandle, _constructorHandle, &_resolvedObject, false))
                 {
                     _object = _resolvedObject;
+
+                    // TODO: Somehow get info if the created object is hot re-loadable
 
                     break;
                 }
