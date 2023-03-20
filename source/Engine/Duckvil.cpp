@@ -374,7 +374,8 @@ namespace Duckvil {
             system _system = {};
 
             _system.m_type = _event.m_pTrackKeeper->GetTypeHandle();
-            _system.m_pTrackKeeper = _event.m_pTrackKeeper;
+            _system.m_pObject = _event.m_pTrackKeeper;
+            _system.m_bIsHot = true;
 
             const auto& _update = _type.GetFunctionCallbackM<ISystem, double>("Update");
             const auto& _init = _type.GetFunctionCallbackMR<bool, ISystem>("Init");
@@ -403,6 +404,69 @@ namespace Duckvil {
                     if(_functionHandle.GetArgumentsTypeID() == DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(const HotReloader::SwapEvent&) && strcmp(_functionHandle.GetName(), "OnEvent") == 0)
                     {
                         _pData->m_eventPool.Add<HotReloader::SwapEvent>(_event.m_pTrackKeeper, _type.GetHandle());
+                    }
+                }
+            }
+        });
+
+        (static_cast<Event::Pool<Event::mode::immediate>*>(_pData->m_pRuntimeReflectionData->m_pEvents))->AddA<RuntimeReflection::ObjectCreatedEvent>([_pData](const RuntimeReflection::ObjectCreatedEvent& _event)
+        {
+            DUCKVIL_RESOURCE(type_t) _typeHandle = RuntimeReflection::get_type(_event.m_ullTypeID);
+            RuntimeReflection::ReflectedType _type(_typeHandle);
+
+            if(!_type.Inherits<ISystem>())
+            {
+                return;
+            }
+
+            if(_pData->m_pClient)
+            {
+                if(_type.Inherits<Network::NetworkSystem>())
+                {
+                    _pData->m_pClient->AddSystem(static_cast<Network::NetworkSystem*>(_event.m_pObject));
+                }
+            }
+            else if(_pData->m_pServer)
+            {
+                if(_type.Inherits<Network::NetworkSystem>())
+                {
+                    _pData->m_pServer->AddSystem(static_cast<Network::NetworkSystem*>(_event.m_pObject));
+                }
+            }
+
+            system _system = {};
+
+            _system.m_type = _typeHandle;
+            _system.m_pObject = _event.m_pObject;
+            _system.m_bIsHot = false;
+
+            const auto& _update = _type.GetFunctionCallbackM<ISystem, double>("Update");
+            const auto& _init = _type.GetFunctionCallbackMR<bool, ISystem>("Init");
+
+            if(_update && _init)
+            {
+                _system.m_fnUpdateCallback = _update->m_fnFunction;
+                _system.m_fnInitCallback = _init->m_fnFunction;
+
+                if(_pData->m_aEngineSystems.Full())
+                {
+                    _pData->m_aEngineSystems.Resize(_pData->m_aEngineSystems.Size() * 2);
+                }
+
+                _pData->m_aEngineSystems.Allocate(_system);
+            }
+
+            const auto& _meta = _type.GetMeta(ReflectionFlags_AutoEventsAdding);
+
+            if(_meta.m_ullTypeID != -1 && _meta.m_pData != nullptr)
+            {
+                const auto& _functions = _type.GetFunctions(_pData->m_heap);
+
+                for(const auto& _functionHandle : _functions)
+                {
+                    if(_functionHandle.GetArgumentsTypeID() == DUCKVIL_RUNTIME_REFLECTION_ARGS_TYPE_ID(const HotReloader::SwapEvent&) && strcmp(_functionHandle.GetName(), "OnEvent") == 0)
+                    {
+                        _pData->m_eventPool.Add<HotReloader::SwapEvent>(_event.m_pObject, _type.GetHandle());
                     }
                 }
             }
@@ -577,9 +641,19 @@ namespace Duckvil {
 
         for(const system& _system : _pData->m_aEngineSystems)
         {
-            if(!(static_cast<ISystem*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pTrackKeeper))->*_system.m_fnInitCallback)())
+            if(_system.m_bIsHot)
             {
-                return false;
+	            if(!(static_cast<ISystem*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pObject))->*_system.m_fnInitCallback)())
+	            {
+	                return false;
+	            }
+            }
+            else
+            {
+	            if(!(static_cast<ISystem*>(_system.m_pObject)->*_system.m_fnInitCallback)())
+	            {
+	                return false;
+	            }
             }
         }
 
@@ -780,7 +854,14 @@ namespace Duckvil {
             {
                 system& _system = _pData->m_aEngineSystems[i];
 
-                (static_cast<ISystem*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pTrackKeeper))->*_system.m_fnUpdateCallback)(_delta);
+                if(_system.m_bIsHot)
+                {
+					(static_cast<ISystem*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_system.m_pObject))->*_system.m_fnUpdateCallback)(_delta);
+                }
+                else
+                {
+                    (static_cast<ISystem*>(_system.m_pObject)->*_system.m_fnUpdateCallback)(_delta);
+                }
             }
         }
 
