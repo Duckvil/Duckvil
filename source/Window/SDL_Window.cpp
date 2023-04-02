@@ -15,7 +15,7 @@ namespace Duckvil { namespace Window {
 
     }
 
-    bool WindowSDL::Create(const char* _sTitle, int _iWidth, int _iHeight)
+    bool WindowSDL::Create(const char* _sTitle, uint32_t _uiWidth, uint32_t _uiHeight)
     {
         SDL_Init(SDL_INIT_EVERYTHING);
 
@@ -31,12 +31,20 @@ namespace Duckvil { namespace Window {
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-        m_pWindow = SDL_CreateWindow(_sTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _iWidth, _iHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+        m_pWindow = SDL_CreateWindow(_sTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _uiWidth, _uiHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+
+        if(m_pWindow == nullptr)
+        {
+            return false;
+        }
 
         m_pContext = SDL_GL_CreateContext((SDL_Window*)m_pWindow);
 
         SDL_GL_MakeCurrent((SDL_Window*)m_pWindow, m_pContext);
-        SDL_GL_SetSwapInterval(0);
+        SDL_GL_SetSwapInterval(-1);
+
+        m_uiWidth = _uiWidth;
+        m_uiHeight = _uiHeight;
 
         return true;
     }
@@ -44,6 +52,10 @@ namespace Duckvil { namespace Window {
     void WindowSDL::Refresh() const
     {
         SDL_GL_SwapWindow((SDL_Window*)m_pWindow);
+
+        FrameMarkStart("Sleep");
+        SDL_Delay(static_cast<int>((1.f / 60.f) * 1000));
+        FrameMarkEnd("Sleep");
     }
 
     void WindowSDL::PopulateEvents()
