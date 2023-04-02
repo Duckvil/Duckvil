@@ -14,6 +14,8 @@
 
 #include "flecs/flecs.h"
 
+#include "Utils/Graphics.h"
+
 #define DUCKVIL_RENDERER_PUSH_COMMAND(memory, allocator, cb, op_code, ...) \
     Duckvil::Graphics::Renderer::command_buffer_write(memory, allocator, cb, op_code); \
     __VA_ARGS__ \
@@ -37,7 +39,11 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         renderer_op_code_clear_attachment,
         renderer_op_code_viewport,
 
-        renderer_op_code_read_pixels,
+        renderer_op_code_read_pixel,
+        renderer_op_code_fbo_read_pixel,
+
+        renderer_op_code_frame_buffer_reader_read,
+        renderer_op_code_frame_buffer_reader_update,
 
         renderer_op_code_none
     };
@@ -159,12 +165,15 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         uint32_t m_uiDrawCount;
     };
 
+    using frame_buffer_reader = Duckvil::Utils::Graphics::FrameBufferReader;
+
     DUCKVIL_SLOT_ARRAY_DECLARE(shader);
     DUCKVIL_SLOT_ARRAY_DECLARE(texture);
     DUCKVIL_SLOT_ARRAY_DECLARE(texture_object);
     DUCKVIL_SLOT_ARRAY_DECLARE(framebuffer);
     DUCKVIL_SLOT_ARRAY_DECLARE(vertex_array_object);
     DUCKVIL_SLOT_ARRAY_DECLARE(uniform);
+    DUCKVIL_SLOT_ARRAY_DECLARE(frame_buffer_reader);
 
     struct renderer_data
     {
@@ -174,6 +183,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         DUCKVIL_SLOT_ARRAY(framebuffer) m_fbo;
         DUCKVIL_SLOT_ARRAY(vertex_array_object) m_vao;
         DUCKVIL_SLOT_ARRAY(uniform) m_uniform;
+        DUCKVIL_SLOT_ARRAY(frame_buffer_reader) m_frameBufferReader;
 
         command_buffer m_pCommandBuffer;
         Memory::free_list_allocator* m_pAllocator;
@@ -190,7 +200,8 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         void (*m_fnBindAsRenderTarget)();
 
         uint32_t (*m_fnCreateShader)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const char* _sVertexFilename, const char* _sFragmentFilename);
-        uint32_t (*m_fnCreateTexture)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const texture_descriptor& _descriptor);
+        uint32_t (*m_fnCreateFrameBufferReader)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiTargetWidth, uint32_t _uiTargetHeight, frame_buffer_reader::Format _format, frame_buffer_reader::Type _type);
+    	uint32_t (*m_fnCreateTexture)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const texture_descriptor& _descriptor);
         uint32_t (*m_fnCreateTextureObject)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const texture_object_descriptor& _descriptor);
         uint32_t (*m_fnCreateFramebuffer)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const framebuffer_descriptor& _descriptor);
         uint32_t (*m_fnCreateVAO)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const vertex_array_object_descriptor& _descriptor);
@@ -242,13 +253,26 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         );
     }
 
-    static inline void read_pixel_colors(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t m_uiAttachmentIndex, int _iX, int _iY, void (*_fnCallback)(uint32_t _uiValue))
+    static inline void read_pixel_colors(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t m_uiAttachmentIndex, uint32_t _uiX, uint32_t _uiY, void (*_fnCallback)(uint32_t _uiValue))
     {
-        DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_read_pixels,
+        DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_read_pixel,
             {
                 Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), m_uiAttachmentIndex);
-                Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _iX);
-                Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _iY);
+                Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiX);
+                Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiY);
+                Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _fnCallback);
+            }
+        );
+    }
+
+    static inline void read_pixel(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t m_uiAttachmentIndex, uint32_t _uiX, uint32_t _uiY, uint32_t _uiFBO, void (*_fnCallback)(uint32_t _uiValue))
+    {
+        DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_fbo_read_pixel,
+            {
+                Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), m_uiAttachmentIndex);
+                Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiX);
+                Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiY);
+                Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiFBO);
                 Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _fnCallback);
             }
         );
@@ -358,6 +382,55 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
             Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _value);
         });
     }
+
+    static inline void frame_buffer_reader_read(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiHandle, uint32_t _uiFBOHandle, uint32_t _uiSourceWidth, uint32_t _uiSourceHeight, uint8_t _u8Attachment)
+    {
+        DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_frame_buffer_reader_read,
+        {
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiHandle);
+			Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiFBOHandle);
+			Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiSourceWidth);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiSourceHeight);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _u8Attachment);
+        });
+    }
+
+    static inline void frame_buffer_reader_update(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiHandle, void (*_fnCallback)(void* _pTextureData, uint32_t _uiWidth, uint32_t _uiHeight, uint32_t _uiOffset))
+    {
+        DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_frame_buffer_reader_update,
+        {
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiHandle);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _fnCallback);
+        });
+    }
+
+    /*static inline void pixels_read(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiHandle)
+    {
+        DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_pixels_read,
+        {
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiHandle);
+        });
+    }
+
+    static inline void pixels_read(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiHandle, uint32_t _uiFBO, uint32_t _uiWidth, uint32_t _uiHeight)
+    {
+        DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_pixels_read_fbo,
+        {
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiHandle);
+			Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiFBO);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiWidth);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiHeight);
+        });
+    }
+
+    static inline void pixels_process(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiHandle, void (*_fnCallback)(void* _pUserData, void* _pTextureData, uint32_t _uiWidth, uint32_t _uiHeight, uint32_t _uiOffset))
+    {
+        DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_pixels_process,
+        {
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _uiHandle);
+            Duckvil::Graphics::Renderer::command_buffer_write(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), _fnCallback);
+        });
+    }*/
 
 }}}
 

@@ -107,6 +107,18 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         );
     }
 
+    uint32_t impl_renderer_create_frame_buffer_reader(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiTargetWidth, uint32_t _uiTargetHeight, frame_buffer_reader::Format _format, frame_buffer_reader::Type _type)
+    {
+        frame_buffer_reader _buffer(_pMemoryInterface, _pAllocator, _uiTargetWidth, _uiTargetHeight, _format, _type);
+
+        return duckvil_slot_array_insert(
+            _pMemoryInterface,
+            _pAllocator,
+            _pData->m_frameBufferReader,
+            _buffer
+        );
+    }
+
     uint32_t impl_renderer_create_texture(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const texture_descriptor& _descriptor)
     {
         GLuint _texture = -1;
@@ -304,6 +316,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         _pData->m_fbo = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, framebuffer);
         _pData->m_vao = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, vertex_array_object);
         _pData->m_uniform = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, uniform);
+        _pData->m_frameBufferReader = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, frame_buffer_reader);
 
         _pData->m_pCommandBuffer = command_buffer_new(_pMemoryInterface, _pAllocator);
         _pData->m_pAllocator = _pAllocator;
@@ -331,8 +344,12 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
     {
         Memory::byte_buffer_seek_to_begin(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands);
 
-        for(uint32_t i = 0; i < _pData->m_pCommandBuffer.m_uiCommandCount; ++i)
+        auto& _count = _pData->m_pCommandBuffer.m_uiCommandCount;
+        
+        while(_count > 0)
         {
+            _count--;
+
             renderer_op_code _command = renderer_op_code_none;
 
             Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_command);
@@ -388,13 +405,13 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _fbo.m_FBO);
             }
                 break;
-            case renderer_op_code_read_pixels:
+            case renderer_op_code_read_pixel:
             {
                 uint32_t _attachmentIndex;
-                int _x;
-                int _y;
+                uint32_t _x;
+                uint32_t _y;
                 void (*_fnCallback)(uint32_t);
-                uint32_t _value;
+                uint32_t _value = 0;
 
                 Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_attachmentIndex);
                 Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_x);
@@ -408,6 +425,64 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 _fnCallback(_value);
             }
                 break;
+            case renderer_op_code_fbo_read_pixel:
+            {
+                uint32_t _attachmentIndex;
+                uint32_t _x;
+                uint32_t _y;
+                void (*_fnCallback)(uint32_t);
+                uint32_t _value = 0;
+                uint32_t _fboHandle = 0;
+
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_attachmentIndex);
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_x);
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_y);
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_fboHandle);
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_fnCallback);
+
+                framebuffer _fbo = DUCKVIL_SLOT_ARRAY_GET(_pData->m_fbo, _fboHandle);
+
+                glBindFramebuffer(GL_READ_FRAMEBUFFER, _fbo.m_FBO);
+                glReadBuffer(GL_COLOR_ATTACHMENT0 + _attachmentIndex);
+                glReadPixels(_x, _y, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &_value);
+                glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+                _fnCallback(_value);
+            }
+				break;
+            case renderer_op_code_frame_buffer_reader_read:
+            {
+                uint32_t _handle;
+                uint32_t _fboHandle;
+                uint32_t _sourceWidth;
+                uint32_t _sourceHeight;
+                uint8_t _attachment;
+
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_handle);
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_fboHandle);
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_sourceWidth);
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_sourceHeight);
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_attachment);
+
+                frame_buffer_reader& _reader = DUCKVIL_SLOT_ARRAY_GET(_pData->m_frameBufferReader, _handle);
+                framebuffer _fbo = DUCKVIL_SLOT_ARRAY_GET(_pData->m_fbo, _fboHandle);
+
+                _reader.Read(_fbo.m_FBO, _sourceWidth, _sourceHeight, _attachment);
+            }
+				break;
+            case renderer_op_code_frame_buffer_reader_update:
+            {
+                uint32_t _handle;
+                void (*_fnCallback)(void* _pTextureData, uint32_t _uiWidth, uint32_t _uiHeight, uint32_t _uiOffset);
+
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_handle);
+                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_fnCallback);
+
+                frame_buffer_reader& _reader = DUCKVIL_SLOT_ARRAY_GET(_pData->m_frameBufferReader, _handle);
+
+                _reader.Update(_fnCallback);
+            }
+				break;
             case renderer_op_code_draw:
             {
                 uint32_t _vaoID = -1;
@@ -540,7 +615,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         }
 
         //Memory::byte_buffer_seek_to_begin(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands);
-        _pData->m_pCommandBuffer.m_uiCommandCount = 0;
+        //_pData->m_pCommandBuffer.m_uiCommandCount = 0;
     }
 
     void impl_renderer_update(Memory::ftable* _pMemoryInterface, renderer_data* _pData)
@@ -571,6 +646,7 @@ Duckvil::Graphics::Renderer::renderer_ftable* duckvil_graphics_renderer_init()
     _result.m_fnBindAsRenderTarget = &Duckvil::Graphics::Renderer::impl_renderer_bind_as_render_target;
 
     _result.m_fnCreateShader = &Duckvil::Graphics::Renderer::impl_renderer_create_shader;
+    _result.m_fnCreateFrameBufferReader = &Duckvil::Graphics::Renderer::impl_renderer_create_frame_buffer_reader;
     _result.m_fnCreateTexture = &Duckvil::Graphics::Renderer::impl_renderer_create_texture;
     _result.m_fnCreateTextureObject = &Duckvil::Graphics::Renderer::impl_renderer_create_texture_object;
     _result.m_fnCreateFramebuffer = &Duckvil::Graphics::Renderer::impl_renderer_create_framebuffer;
