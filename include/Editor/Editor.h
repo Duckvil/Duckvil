@@ -23,6 +23,8 @@
 
 #include "DependencyInjection/IDependencyResolver.h"
 
+#include "Utils/Graphics.h"
+
 namespace Duckvil { namespace Editor {
 
     struct ImGuiEditorData
@@ -46,6 +48,10 @@ namespace Duckvil { namespace Editor {
         flecs::world* m_pECS;
 
         DependencyInjection::IDependencyResolver* m_pDependencyInjector;
+
+#ifdef DUCKVIL_TRACY_EDITOR
+        Utils::Graphics::FrameBufferReader m_reader;
+#endif
 
         // Store viewports, and retrieve them
     };

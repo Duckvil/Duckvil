@@ -20,6 +20,10 @@ namespace Duckvil { namespace Memory {
 
         std::size_t m_ullCapacity = 0;
         std::size_t m_ullUsed = 0;
+
+#ifdef TRACY_ENABLE
+    	char* m_sName;
+#endif
     };
 
     struct linear_allocator : public allocator
@@ -204,6 +208,7 @@ namespace Duckvil { namespace Memory {
         typedef std::size_t (*_fixed_vector_size_)(fixed_vector_allocator* _pAllocator);
         typedef std::size_t (*_fixed_vector_capacity_)(fixed_vector_allocator* _pAllocator);
         typedef void (*_fixed_vector_erase_)(fixed_vector_allocator* _pAllocator, uint32_t _uiIndex);
+        typedef void (*_fixed_vector_copy_)(fixed_vector_allocator* _pSourceAllocator, fixed_vector_allocator* _pTargetAllocator, void (*)(fixed_vector_allocator* _pTargetAllocator, void* _pValue));
 
         typedef bool (*_byte_buffer_will_fit)(byte_buffer_allocator* _pAllocator, std::size_t _ullSize);
         typedef void (*_byte_buffer_clear)(byte_buffer_allocator* _pAllocator);
@@ -314,6 +319,7 @@ namespace Duckvil { namespace Memory {
         _fixed_vector_size_             m_fnFixedVectorSize_;
         _fixed_vector_capacity_         m_fnFixedVectorCapacity_;
         _fixed_vector_erase_            m_fnFixedVectorErase_;
+        _fixed_vector_copy_             m_fnFixedVectorCopy_;
 
         _byte_buffer_will_fit       m_fnByteBufferWillFit_;
         _byte_buffer_clear          m_fnByteBufferClear_;

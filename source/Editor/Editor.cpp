@@ -449,6 +449,10 @@ namespace Duckvil { namespace Editor {
                 }
             }
         });
+
+#ifdef DUCKVIL_TRACY_EDITOR
+        _data->m_reader = Utils::Graphics::FrameBufferReader(_data->m_heap.GetMemoryInterface(), _data->m_heap.GetAllocator(), 320, 180, Utils::Graphics::FrameBufferReader::RGBA, Utils::Graphics::FrameBufferReader::UNSIGNED_BYTE);
+#endif
     }
 
     void hot_reload_init(ImGuiEditorData* _pData, const HotReloader::SwapEvent& _event)
@@ -515,6 +519,13 @@ namespace Duckvil { namespace Editor {
     void render(void* _pData, Window::IWindow* _pWindow)
     {
         ImGuiEditorData* _data = static_cast<ImGuiEditorData*>(_pData);
+
+#ifdef DUCKVIL_TRACY_EDITOR
+        _data->m_reader.Update([](void* _pTextureData, uint32_t _uiWidth, uint32_t _uiHeight, uint32_t _uiOffset)
+        {
+        	FrameImage(_pTextureData, _uiWidth, _uiHeight, _uiOffset, true);
+        });
+#endif
 
         {
             ZoneScopedN("ImGuiNewFrame");
@@ -631,7 +642,7 @@ namespace Duckvil { namespace Editor {
         {
             ZoneScopedN("ImGui_ImplOpenGL3_RenderDrawData");
 
-            glClearColor(1, 0, 0, 1);
+            glClearColor(0, 0, 0, 1);
             glClear(GL_COLOR_BUFFER_BIT);
             ImGui_ImplOpenGL3_RenderDrawData(::ImGui::GetDrawData());
         }
@@ -641,6 +652,10 @@ namespace Duckvil { namespace Editor {
 
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
+
+#ifdef DUCKVIL_TRACY_EDITOR
+        _data->m_reader.Read(0, _pWindow->GetWidth(), _pWindow->GetHeight(), 0);
+#endif
 
         {
             ZoneScopedN("SDL_GL_MakeCurrent");

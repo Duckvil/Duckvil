@@ -174,6 +174,7 @@ Duckvil::Memory::ftable* duckvil_memory_init()
     memory.m_fnFixedVectorSize_ =           &impl_fixed_vector_size;
     memory.m_fnFixedVectorCapacity_ =       &impl_fixed_vector_capacity;
     memory.m_fnFixedVectorErase_ =          &impl_fixed_vector_erase;
+    memory.m_fnFixedVectorCopy_ =           &impl_fixed_vector_copy;
 
     memory.m_fnByteBufferWillFit_ =     &impl_byte_buffer_will_fit;
     memory.m_fnByteBufferClear_ =       &impl_byte_buffer_clear;

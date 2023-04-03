@@ -238,9 +238,8 @@ namespace Duckvil {
 
         Memory::heap_make_current(Memory::free_list_context(_pData->m_globalHeap));
 
-        FrameMarkStart("Initializing memory");
+        TracyMessageL("Initializing memory");
         init_memory(_pData);
-        FrameMarkEnd("Initializing memory");
 
         DUCKVIL_DEBUG_MEMORY(_pData->m_objectsHeap.GetAllocator(), "m_objectsHeap");
         DUCKVIL_DEBUG_MEMORY(_pData->m_eventsHeap.GetAllocator(), "m_eventsHeap");
@@ -263,15 +262,13 @@ namespace Duckvil {
 
         PlugNPlay::AutoLoader _autoLoader(DUCKVIL_OUTPUT);
 
-        FrameMarkStart("Loading engine modules");
+        TracyMessageL("Loading engine modules");
         _autoLoader.LoadAll(_pMemoryInterface, _pAllocator, &_pData->m_aLoadedModules);
-        FrameMarkEnd("Loading engine modules");
 
         // DUCKVIL_LOG_INFO_("Modules to load %i", _pData->m_uiLoadedModulesCount);
 
-        FrameMarkStart("Initializing reflection");
+        TracyMessageL("Initializing reflection");
         init_runtime_reflection(_pData, _module);
-        FrameMarkEnd("Initializing reflection");
 
         init_logger(_pData, &_module);
         init_threading(_pData, &_module);
@@ -351,7 +348,7 @@ namespace Duckvil {
         {
             RuntimeReflection::ReflectedType _type(_event.m_pTrackKeeper->GetTypeHandle());
 
-            if(!_type.Inherits<ISystem>())
+            if(!_type.Inherits<ISystem>() || _type.GetTypeID() == typeid(HotReloader::RuntimeCompilerSystem).hash_code())
             {
                 return;
             }
@@ -414,7 +411,7 @@ namespace Duckvil {
             DUCKVIL_RESOURCE(type_t) _typeHandle = RuntimeReflection::get_type(_event.m_ullTypeID);
             RuntimeReflection::ReflectedType _type(_typeHandle);
 
-            if(!_type.Inherits<ISystem>())
+            if(!_type.Inherits<ISystem>() || _type.GetTypeID() == typeid(HotReloader::RuntimeCompilerSystem).hash_code())
             {
                 return;
             }
@@ -837,6 +834,8 @@ namespace Duckvil {
 
     void update(__data* _pData, __ftable* _pFTable)
     {
+        FrameMark;
+
 #ifndef DUCKVIL_HEADLESS_SERVER
         _pData->m_pWindow->PopulateEvents();
 #endif
@@ -872,7 +871,11 @@ namespace Duckvil {
         }
 #endif
 
-        _pData->m_projectManager.m_fnUpdate(&_pData->m_projectManagerData, _delta);
+        {
+            ZoneScopedN("Update project");
+
+            _pData->m_projectManager.m_fnUpdate(&_pData->m_projectManagerData, _delta);
+        }
 
         if(_pData->m_ullLastTimeUsed != _pData->m_pHeap->m_ullUsed)
         {
@@ -906,46 +909,47 @@ namespace Duckvil {
 
 #ifndef DUCKVIL_HEADLESS_SERVER
 
-        // {
-        //     ZoneScopedN("Update ECS transforms");
-
-        //     _pData->m_rendererQuery.each([_delta](Graphics::TransformComponent& _transform)
-        //     {
-        //         _transform.m_rotation = _transform.m_rotation * glm::angleAxis((float)_delta, glm::vec3(0, 0, 1));
-        //     });
+	    {
+            ZoneScopedN("Update native scripts");
 
             _pData->m_scriptsQuery.each([_delta, _pData](flecs::entity _entity, const ScriptComponent& _c)
             {
-                for(uint32_t _i = 0; _i < Memory::fixed_vector_size(_pData->m_pMemory, _c.m_pScripts) / 8; ++_i)
+            	const uint32_t _size = Memory::fixed_vector_size(_pData->m_pMemory, _c.m_pScripts) / 8;
+
+                for(uint32_t _i = 0; _i < _size; ++_i)
                 {
-                    // auto _x = *static_cast<NativeScriptBase**>(Memory::fixed_vector_at(_pData->m_pMemory, _c.m_pScripts, _i));
+                    const auto _trackKeeper = *static_cast<HotReloader::ITrackKeeper**>(Memory::fixed_vector_at(_pData->m_pMemory, _c.m_pScripts, _i));
+                    const auto _object = static_cast<NativeScriptBase*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_trackKeeper));
+                    const auto _start = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 
-                    // _x->Update(_delta);
+                    _object->Update(_delta);
 
-                    auto _x = *static_cast<HotReloader::ITrackKeeper**>(Memory::fixed_vector_at(_pData->m_pMemory, _c.m_pScripts, _i));
-                    auto _x2 = static_cast<NativeScriptBase*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_x));
-                    auto _start = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+                    const auto _end = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 
-                    _x2->Update(_delta);
-
-                    auto _end = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-
-                    _x2->SetDelta(std::chrono::duration<double, std::milli>(_end - _start).count());
+                    _object->SetDelta(std::chrono::duration<double, std::milli>(_end - _start).count());
                 }
             });
-        // }
+        }
 
-        _pData->m_pCSharpLanguage->Update();
+        {
+            ZoneScopedN("Update C#");
+
+            _pData->m_pCSharpLanguage->Update();
+        }
+
+        {
+            ZoneScopedN("Renderer");
+
+            _pData->m_pRenderer->m_fnUpdate(_pData->m_pMemory, &_pData->m_pRendererData);
+
+            _pData->m_pRenderer->m_fnBindAsRenderTarget();
+        }
 
         {
             ZoneScopedN("Editor");
 
             _pData->m_pEditor->m_fnRender(_pData->m_pEditorData, _pData->m_pWindow);
         }
-
-        _pData->m_pRenderer->m_fnUpdate(_pData->m_pMemory, &_pData->m_pRendererData);
-
-        _pData->m_pRenderer->m_fnBindAsRenderTarget();
 
         {
             ZoneScopedN("ProcessWindowEventPool");

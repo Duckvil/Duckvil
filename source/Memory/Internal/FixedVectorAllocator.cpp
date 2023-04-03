@@ -155,6 +155,20 @@ namespace Duckvil { namespace Memory {
         _pAllocator->m_ullUsed -= _pAllocator->m_ullBlockSize;
     }
 
+    void impl_fixed_vector_copy(fixed_vector_allocator* _pSourceAllocator, fixed_vector_allocator* _pTargetAllocator, void (*_fnCopy)(fixed_vector_allocator* _pTargetAllocator, void* _pValue))
+    {
+        TracyMessageL("Copy vector");
+
+        _pTargetAllocator->m_ullBlockSize = _pSourceAllocator->m_ullBlockSize;
+        _pTargetAllocator->m_ullCapacity = _pSourceAllocator->m_ullCapacity;
+        _pTargetAllocator->m_ullUsed = 0;
+
+        for(uint32_t _i = 0; _i < _pSourceAllocator->m_ullUsed / _pSourceAllocator->m_ullBlockSize; ++_i)
+        {
+            _fnCopy(_pTargetAllocator, impl_fixed_vector_at(_pSourceAllocator, _i));
+        }
+    }
+
     void impl_fixed_vector_clear(fixed_vector_allocator* _pAllocator)
     {
         TracyMessageL("Vector clear");

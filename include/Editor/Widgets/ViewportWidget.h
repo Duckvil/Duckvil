@@ -101,6 +101,10 @@ namespace Duckvil { namespace Editor {
         bool m_bLookingAround;
         double m_dDelta = 0;
 
+#ifndef DUCKVIL_TRACY_EDITOR
+        uint32_t m_uiReaderHandle;
+#endif
+
         void SpwanPlayer(uint32_t _uiID);
 
     public:

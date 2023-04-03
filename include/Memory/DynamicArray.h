@@ -53,38 +53,43 @@ inline bool duckvil_dynamic_array_full(void* _pArray)
 
 static inline void* duckvil_dynamic_array_resize(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, void* _pArray, std::size_t _ullSize, std::size_t _ullAmount)
 {
-    uint32_t _capacity;
     __duckvil_dynamic_array* _data = DUCKVIL_DYNAMIC_ARRAY_HEAD(_pArray);
+    const size_t _newSize = (_ullAmount * _ullSize) + sizeof(__duckvil_dynamic_array);
 
     if(_pArray)
     {
-        _capacity = _ullAmount;
-        _data = (__duckvil_dynamic_array*)_pMemoryInterface->m_fnFreeListReallocate_(_pAllocator, DUCKVIL_DYNAMIC_ARRAY_HEAD(_pArray), (_data->m_ullCapacity * _ullSize) + sizeof(__duckvil_dynamic_array), (_capacity * _ullSize) + sizeof(__duckvil_dynamic_array), alignof(__duckvil_dynamic_array));
+        char* _cpy = _pAllocator->m_sName;
+        _pAllocator->m_sName = nullptr;
+
+        const size_t _currentSize = (_data->m_ullCapacity * _ullSize) + sizeof(__duckvil_dynamic_array);
+        
+        _data = (__duckvil_dynamic_array*)_pMemoryInterface->m_fnFreeListReallocate_(_pAllocator, DUCKVIL_DYNAMIC_ARRAY_HEAD(_pArray), _currentSize, _newSize, alignof(__duckvil_dynamic_array));
+        
+        _pAllocator->m_sName = _cpy;
     }
     else
     {
-        _capacity = _ullAmount;
-        _data = (__duckvil_dynamic_array*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, (_capacity * _ullSize) + sizeof(__duckvil_dynamic_array), alignof(__duckvil_dynamic_array));
+        _data = (__duckvil_dynamic_array*)_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, _newSize, alignof(__duckvil_dynamic_array));
     }
 
-    if(_data)
+    if(_data == nullptr)
     {
-        _data->m_ullCapacity = _capacity;
-
-        if(_pArray == nullptr)
-        {
-            _data->m_ullSize = 0;
-        }
-
-        return (uint8_t*)_data + sizeof(__duckvil_dynamic_array);
+        return nullptr;
     }
 
-    return nullptr;
+    _data->m_ullCapacity = _ullAmount;
+
+    if(_pArray == nullptr)
+    {
+        _data->m_ullSize = 0;
+    }
+
+    return (uint8_t*)_data + sizeof(__duckvil_dynamic_array);
 }
 
 static inline void duckvil_dynamic_array_free(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, void* _pArray)
 {
-    _pMemoryInterface->m_fnFreeListFree_(_pAllocator, (uint8_t*)_pArray - sizeof(__duckvil_dynamic_array));
+    _pMemoryInterface->m_fnFreeListFree_(_pAllocator, DUCKVIL_DYNAMIC_ARRAY_HEAD(_pArray));
 }
 
 inline bool duckvil_dynamic_array_need_grow(void* _pArray, uint32_t _ullN)

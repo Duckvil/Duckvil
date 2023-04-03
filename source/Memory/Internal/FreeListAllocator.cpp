@@ -71,9 +71,12 @@ namespace Duckvil { namespace Memory {
 
             _pAllocator->m_ullUsed += _total_size;
 
-            TracyAllocN((void*)_aligned_address, _ullSize, "FreeList");
-
             _ASSERT(calculate_padding(_aligned_address, _ucAlignment) == 0);
+
+#ifdef TRACY_ENABLE
+            if(_pAllocator->m_sName != nullptr)
+				TracyAllocN(reinterpret_cast<void*>(_aligned_address), _ullSize, _pAllocator->m_sName);
+#endif
 
             return reinterpret_cast<void*>(_aligned_address);
         }
@@ -156,7 +159,10 @@ namespace Duckvil { namespace Memory {
 
         _pAllocator->m_ullUsed -= _block_size;
 
-        TracyFreeN(_pointer, "FreeList");
+#ifdef TRACY_ENABLE
+        if(_pAllocator->m_sName != nullptr)
+			TracyFreeN(_pointer, _pAllocator->m_sName);
+#endif
     }
 
     void impl_free_list_clear(free_list_allocator* _pAllocator)

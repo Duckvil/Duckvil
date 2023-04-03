@@ -164,6 +164,10 @@ namespace Duckvil { namespace Editor {
     {
         ImGui::SetCurrentContext((ImGuiContext*)_pImguiContext);
 
+#ifndef DUCKVIL_TRACY_EDITOR
+        m_uiReaderHandle = m_pRenderer->m_fnCreateFrameBufferReader(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_pRendererData, 320, 180, Utils::Graphics::FrameBufferReader::RGBA, Utils::Graphics::FrameBufferReader::UNSIGNED_BYTE);
+#endif
+
         if(!m_bSkip)
         {
             m_viewport.m_uiWidth = 1920;
@@ -184,6 +188,10 @@ namespace Duckvil { namespace Editor {
 
     void ViewportWidget::OnDraw()
     {
+        ZoneScopedN("Viewport draw");
+
+        FrameMarkStart("Mouse logic");
+
         static ImVec2 _mousePos;
 
         if(ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Right) || ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Middle))
@@ -213,9 +221,23 @@ namespace Duckvil { namespace Editor {
             _mousePos = _newMousePos;
         }
 
-        ZoneScopedN("Viewport draw");
+        FrameMarkEnd("Mouse logic");
+
+        FrameMarkStart("Pre-render");
+#ifndef DUCKVIL_TRACY_EDITOR
+        Graphics::Renderer::frame_buffer_reader_update(m_heap.GetMemoryInterface(), m_pRendererData, m_uiReaderHandle, [](void* _pTextureData, uint32_t _uiWidth, uint32_t _uiHeight, uint32_t _uiOffset)
+            {
+                FrameImage(_pTextureData, _uiWidth, _uiHeight, _uiOffset, true);
+            });
+#endif
 
         render_viewport(&m_viewport, m_heap.GetMemoryInterface(), m_heap.GetAllocator(), m_pRenderer, m_pRendererData);
+
+#ifndef DUCKVIL_TRACY_EDITOR
+        Graphics::Renderer::frame_buffer_reader_read(m_heap.GetMemoryInterface(), m_pRendererData, m_uiReaderHandle, m_viewport.m_fbo, m_viewport.m_uiWidth, m_viewport.m_uiHeight, 0);
+#endif
+
+        FrameMarkEnd("Pre-render");
 
         auto[_mx, _my] = ImGui::GetMousePos();
 
@@ -228,12 +250,13 @@ namespace Duckvil { namespace Editor {
 
         if(_mx >= 0 && _my >= 0 && _mx < _viewportSize.x && _my < _viewportSize.y && ImGui::IsMouseReleased(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing())
         {
-            Graphics::Renderer::read_pixel_colors(
+            Graphics::Renderer::read_pixel(
                 m_heap.GetMemoryInterface(),
                 m_pRendererData,
                 1,
                 (int)_mx,
                 (int)_my,
+                m_viewport.m_fbo,
                 Utils::lambda([&](uint32_t _uiValue)
                 {
                     if(_uiValue == 0)
@@ -261,7 +284,7 @@ namespace Duckvil { namespace Editor {
 
         ImVec2 _size = ImGui::GetContentRegionAvail();
 
-        if((_size.x != m_oldSize.x || _size.y != m_oldSize.y) && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+        if((_size.x != m_oldSize.x || _size.y != m_oldSize.y) && _size.x >= 320 && _size.y >= 180 && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
         {
             DUCKVIL_LOG_INFO(LoggerChannelID::Default, "New viewport size: %f %f", _size.x, _size.y);
 
@@ -275,6 +298,16 @@ namespace Duckvil { namespace Editor {
         }
 
         uint32_t* _texture = (uint32_t*)m_pRenderer->m_fnGetTextures(m_pRendererData, m_viewport.m_fboTextureObject);
+
+        if(_size.x < 320)
+        {
+            _size.x = 320;
+        }
+
+        if (_size.y < 180)
+        {
+            _size.y = 180;
+        }
 
         ImGui::Image((void*)(intptr_t)*_texture, _size, ImVec2(0, 1), ImVec2(1, 0));
 

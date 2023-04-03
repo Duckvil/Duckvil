@@ -523,6 +523,8 @@ namespace Duckvil { namespace HotReloader {
 
     void RuntimeCompilerSystem::Update(double _dDelta)
     {
+        ZoneScopedN("Hot-reloader update")
+
         m_eventPool.Reset();
 
         while(m_eventPool.AnyEvents())

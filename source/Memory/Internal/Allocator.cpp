@@ -2,6 +2,7 @@
 
 #include <cstring>
 #include <cstdlib>
+#include <string>
 
 #include "Memory/Internal/FreeListAllocator.h"
 
@@ -150,6 +151,13 @@ namespace Duckvil { namespace Memory {
 
         _pAllocator->m_ullUsed += _ullSize + ALLOCATOR_SIZE;
 
+#ifdef TRACY_ENABLE
+        /*auto _name = "aaa";
+        _allocator->m_sName = new char[strlen(_name) + 1];
+        memcpy(_allocator->m_sName, _name, strlen(_name) + 1);*/
+        _allocator->m_sName = nullptr;
+#endif
+
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;
         _allocator->m_fnOnDeallocate = _pAllocator->m_fnOnDeallocate;
@@ -274,6 +282,16 @@ namespace Duckvil { namespace Memory {
 
         _node->m_ullSize = _ullSize;
         _node->m_pNext = nullptr;
+
+#ifdef TRACY_ENABLE
+        static int _counter = 0;
+
+        _counter++;
+
+        auto _name = (std::string("FreeList_") + std::to_string(_counter));
+        _allocator->m_sName = new char[_name.length() + 1];
+        memcpy(_allocator->m_sName, &_name[0], _name.length() + 1);
+#endif
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
         _allocator->m_fnOnAllocate = _pAllocator->m_fnOnAllocate;

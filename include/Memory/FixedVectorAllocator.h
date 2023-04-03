@@ -5,6 +5,7 @@
 #include "Memory/Iterator.h"
 
 #include "Utils/Utils.h"
+#include "Utils/Function.h"
 
 namespace Duckvil { namespace Memory {
 
@@ -140,6 +141,15 @@ namespace Duckvil { namespace Memory {
     static inline void fixed_vector_clear(ftable* _pMemory, fixed_vector_allocator* _pAllocator)
     {
         _pMemory->m_fnFixedVectorClear_(_pAllocator);
+    }
+
+    template <typename Type>
+    static inline void fixed_vector_copy(ftable* _pMemory, fixed_vector_allocator* _pSourceAllocator, fixed_vector_allocator* _pTargetAllocator)
+    {
+        _pMemory->m_fnFixedVectorCopy_(_pSourceAllocator, _pTargetAllocator, Utils::lambda([_pMemory](fixed_vector_allocator* _pTargetAllocator, void* _pValue)
+        {
+        	fixed_vector_allocate<Type>(_pMemory, _pTargetAllocator, *static_cast<Type*>(_pValue));
+        }));
     }
 
 }}

@@ -35,16 +35,7 @@ namespace Duckvil { namespace Memory {
 
             _pThis->m_pContainer = static_cast<fixed_vector_allocator*>(free_list_allocate(_pThis->m_pMemoryInterface, static_cast<free_list_allocator*>(_vec.m_pAllocator), sizeof(fixed_vector_allocator) + (sizeof(Type) * _vec.Size()), alignof(fixed_vector_allocator)));
 
-            TracyMessageL("Copy vector");
-
-            static_cast<fixed_vector_allocator*>(_pThis->m_pContainer)->m_ullBlockSize = static_cast<fixed_vector_allocator*>(_vec.m_pContainer)->m_ullBlockSize;
-            static_cast<fixed_vector_allocator*>(_pThis->m_pContainer)->m_ullCapacity = static_cast<fixed_vector_allocator*>(_vec.m_pContainer)->m_ullCapacity;
-            static_cast<fixed_vector_allocator*>(_pThis->m_pContainer)->m_ullUsed = 0;
-
-            for(uint32_t _i = 0; _i < _vec.Size(); ++_i)
-            {
-                fixed_vector_allocate<Type>(_pThis->m_pMemoryInterface, _pThis->m_pContainer, _vec[_i]);
-            }
+            Memory::fixed_vector_copy<Type>(_pThis->m_pMemoryInterface, _vec.m_pContainer, _pThis->m_pContainer);
 
             // DUCKVIL_DEBUG_MEMORY(_pThis->m_pContainer, "Copied Vector");
 
