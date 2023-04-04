@@ -23,6 +23,10 @@
 
 #include "Event/ImmediateChannel.h"
 
+#ifdef DUCKVIL_PLATFORM_WINDOWS
+#include <Windows.h>
+#endif
+
 enum class Options
 {
     PROJECT,
@@ -127,6 +131,25 @@ int main(int argc, char* argv[])
     }
 
     _engine->init(&_engineData, _memoryInterface, _free_list);
+
+#ifdef DUCKVIL_PLATFORM_WINDOWS
+    SetConsoleCtrlHandler(Duckvil::Utils::lambda([&](DWORD _dwCtrlType)
+    {
+        if(_dwCtrlType == CTRL_CLOSE_EVENT)
+        {
+            if(!_engine->stop(&_engineData, _engine))
+            {
+                printf("Failed to close the engine!\n");
+
+                return FALSE;
+            }
+
+            return TRUE;
+        }
+
+        return FALSE;
+    }), true);
+#endif
 
 #ifdef DUCKVIL_MEMORY_DEBUGGER
     _engineData.m_pMemoryDebugger = &_memoryDebug;
