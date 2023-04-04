@@ -13,6 +13,8 @@ option(DUCKVIL_HOT_RELOADING "Hot reloading" ON)
 option(DUCKVIL_TRACY_PROFILER "Tracy profiler" OFF)
 option(DUCKVIL_HEADLESS_SERVER "Headless server" OFF)
 option(DUCKVIL_TESTS "Generate tests" OFF)
+
+set(DUCKVIL_TRACY_PATH CACHE FILEPATH "Tracy path")
 set(DUCKVIL_PROJECTS_PATH CACHE PATH "Projects path")
 
 find_program(DUCKVIL_MSBUILD_PATH "MSBuild.exe")
@@ -21,6 +23,7 @@ find_program(DUCKVIL_VCVARS_PATH "vcvarsall.bat")
 add_definitions(-DDUCKVIL_MSBUILD_PATH="${DUCKVIL_MSBUILD_PATH}")
 add_definitions(-DDUCKVIL_VCVARS_PATH="${DUCKVIL_VCVARS_PATH}")
 add_definitions(-DDUCKVIL_PROJECTS_PATH="${DUCKVIL_PROJECTS_PATH}")
+add_definitions(-DDUCKVIL_TRACY_PATH="${DUCKVIL_TRACY_PATH}")
 
 if(NOT DUCKVIL_COMPILE_REFLECTION_SOURCE)
     add_definitions(-DDUCKVIL_GENERATED_BODY="")

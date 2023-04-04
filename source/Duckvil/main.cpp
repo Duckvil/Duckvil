@@ -25,6 +25,35 @@
 
 #ifdef DUCKVIL_PLATFORM_WINDOWS
 #include <Windows.h>
+
+VOID startup(LPSTR _cmd, LPCTSTR lpApplicationName)
+{
+    // additional information
+    STARTUPINFO si;
+    PROCESS_INFORMATION pi;
+
+    // set the size of the structures
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory(&pi, sizeof(pi));
+
+    // start the program up
+    CreateProcess(lpApplicationName,   // the path
+        _cmd,           // Command line
+        NULL,           // Process handle not inheritable
+        NULL,           // Thread handle not inheritable
+        FALSE,          // Set handle inheritance to FALSE
+        0,              // No creation flags
+        NULL,           // Use parent's environment block
+        NULL,           // Use parent's starting directory 
+        &si,            // Pointer to STARTUPINFO structure
+        &pi             // Pointer to PROCESS_INFORMATION structure (removed extra parentheses)
+    );
+    // Close process and thread handles. 
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+}
+
 #endif
 
 enum class Options
@@ -33,7 +62,8 @@ enum class Options
     SERVER,
     CLIENT,
     PORT,
-    IP
+    IP,
+    TRACY
 };
 
 Duckvil::Utils::CommandArgumentsParser::Descriptor g_pDescriptors[] =
@@ -42,7 +72,8 @@ Duckvil::Utils::CommandArgumentsParser::Descriptor g_pDescriptors[] =
     Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::SERVER, "server"),
     Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::CLIENT, "client"),
     Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::PORT, "port"),
-    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::IP, "ip")
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::IP, "ip"),
+    Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::TRACY, "tracy")
 };
 
 int main(int argc, char* argv[])
@@ -160,6 +191,17 @@ int main(int argc, char* argv[])
     if(_parser[Options::PROJECT].m_bIsSet)
     {
         _engineData.m_bufferedEventPool.Broadcast(Duckvil::ProjectManager::LoadProjectEvent{ _parser[Options::PROJECT].m_sResult });
+    }
+
+    if(_parser[Options::TRACY].m_bIsSet)
+    {
+#ifdef DUCKVIL_PLATFORM_WINDOWS
+        std::string _command = "Tracy.exe -a ";
+
+        _command += _parser[Options::TRACY].m_sResult;
+
+        startup(&_command[0], DUCKVIL_TRACY_PATH);
+#endif
     }
 
     _engine->start(&_engineData, _engine);
