@@ -38,7 +38,7 @@ record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMe
 record_inheritance<IWindow>(_data, _type, __protection::__protection_public);
 _constructor = record_constructor<Duckvil::Window::WindowSDL, Event::Pool<Event::mode::buffered>*>(_data, _type);
 _destructor = record_destructor<Duckvil::Window::WindowSDL>(_data, _type);
-_function = record_function<Duckvil::Window::WindowSDL, bool, char const*, int, int>(_data, _type, &Duckvil::Window::WindowSDL::Create, "Create");
+_function = record_function<Duckvil::Window::WindowSDL, bool, char const*, uint32_t, uint32_t>(_data, _type, &Duckvil::Window::WindowSDL::Create, "Create");
 _function = record_function<Duckvil::Window::WindowSDL, void>(_data, _type, &Duckvil::Window::WindowSDL::Refresh, "Refresh");
 _function = record_function<Duckvil::Window::WindowSDL, void>(_data, _type, &Duckvil::Window::WindowSDL::PopulateEvents, "PopulateEvents");
 _function = record_function<Duckvil::Window::WindowSDL, void*>(_data, _type, &Duckvil::Window::WindowSDL::GetWindow, "GetWindow");

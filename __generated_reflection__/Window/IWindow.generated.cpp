@@ -35,7 +35,7 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Window");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 6);
-_function = record_function<Duckvil::Window::IWindow, bool, char const*, int, int>(_data, _type, &Duckvil::Window::IWindow::Create, "Create");
+_function = record_function<Duckvil::Window::IWindow, bool, char const*, uint32_t, uint32_t>(_data, _type, &Duckvil::Window::IWindow::Create, "Create");
 _function = record_function<Duckvil::Window::IWindow, void>(_data, _type, &Duckvil::Window::IWindow::Refresh, "Refresh");
 _function = record_function<Duckvil::Window::IWindow, void*>(_data, _type, &Duckvil::Window::IWindow::GetWindow, "GetWindow");
 _function = record_function<Duckvil::Window::IWindow, void*>(_data, _type, &Duckvil::Window::IWindow::GetContext, "GetContext");
