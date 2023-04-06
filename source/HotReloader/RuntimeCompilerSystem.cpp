@@ -148,19 +148,23 @@ namespace Duckvil { namespace HotReloader {
     {
         bool _found = false;
 
-        for(uint32_t i = 0; i < _pHotObjects->Size(); ++i)
-        {
-            RuntimeCompilerSystem::hot_object& _hot = _pHotObjects->At(i);
+        
+	    for(size_t j = 0; j < _newTypes.m_ullCount; ++j)
+	    {
+	        const Duckvil::RuntimeReflection::__duckvil_resource_type_t& _type = _newTypes.m_aTypes[j];
 
-            for(size_t j = 0; j < _newTypes.m_ullCount; ++j)
+            for(uint32_t i = 0; i < _pHotObjects->Size(); ++i)
             {
-                const Duckvil::RuntimeReflection::__duckvil_resource_type_t& _type = _newTypes.m_aTypes[j];
+                RuntimeCompilerSystem::hot_object& _hot = _pHotObjects->At(i);
 
                 if(/*RuntimeReflection::get_meta(_type, ReflectionFlags_Hot).m_ullTypeID != -1 && */_hot.m_pObject->GetTypeHandle().m_ID == _type.m_ID)
                 {
                     _found = true;
 
-                    Swap(&_hot, _type);
+                    if(!Swap(&_hot, _type))
+                    {
+                        break;
+                    }
 
                     for(size_t k = 0; k < m_aReflectedTypes->Size(); ++k)
                     {
@@ -728,8 +732,17 @@ namespace Duckvil { namespace HotReloader {
         );
     }
 
-    void RuntimeCompilerSystem::Swap(hot_object* _pHotObject, const RuntimeReflection::__duckvil_resource_type_t& _typeHandle)
+    bool RuntimeCompilerSystem::Swap(hot_object* _pHotObject, const RuntimeReflection::__duckvil_resource_type_t& _typeHandle)
     {
+        RuntimeReflection::__duckvil_resource_function_t _serializeFunctionHandle = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_typeHandle, "Serialize");
+
+        if(_serializeFunctionHandle.m_ID == -1)
+        {
+            DUCKVIL_LOG_FATAL(LoggerChannelID::Default, "Hot-reloader swap failed: 'Serialize' function not found!");
+
+            return false;
+        }
+
         RuntimeSerializer::Serializer _serializer;
 
         void* _oldObject = DUCKVIL_TRACK_KEEPER_GET_OBJECT(_pHotObject->m_pObject);
@@ -747,7 +760,6 @@ namespace Duckvil { namespace HotReloader {
 
         m_pRuntimeReflectionEventPool->Remove<RuntimeReflection::PrepareObjectEvent>();
 
-        RuntimeReflection::__duckvil_resource_function_t _serializeFunctionHandle = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_typeHandle, "Serialize");
         RuntimeReflection::__function_t _func = RuntimeReflection::get_function(_typeHandle, _serializeFunctionHandle);
 
         _serializer.SetLoading(true);
@@ -760,6 +772,8 @@ namespace Duckvil { namespace HotReloader {
         m_pEventPool->Broadcast(SwapEvent{ _oldObject, _pHotObject->m_pObject, m_sModuleName });
 
         m_objectsHeap.Free(_oldObject);
+
+        return true;
     }
 
     void RuntimeCompilerSystem::GenerateReflection(const std::filesystem::path& _CWD, const std::filesystem::path& _file, bool _bIsAbsolute)

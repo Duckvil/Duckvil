@@ -311,7 +311,7 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
 
         void GenerateReflection(const std::filesystem::path& _CWD, const std::filesystem::path& _file = "", bool _bIsAbsolute = false);
 
-        void Swap(RuntimeCompilerSystem::hot_object* _pHotObject, const RuntimeReflection::__duckvil_resource_type_t& _typeHandle);
+        bool Swap(RuntimeCompilerSystem::hot_object* _pHotObject, const RuntimeReflection::__duckvil_resource_type_t& _typeHandle);
 
         void AddHotObject(const RuntimeCompilerSystem::hot_object& _hotObject);
 
