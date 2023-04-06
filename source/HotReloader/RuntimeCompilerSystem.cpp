@@ -456,6 +456,7 @@ namespace Duckvil { namespace HotReloader {
         (m_pCompiler->*m_fnInternalCompilerAddInclude->m_fnFunction)((_externalPath / "json" / "include").string());
         (m_pCompiler->*m_fnInternalCompilerAddInclude->m_fnFunction)(_generatedIncludePath.string());
         (m_pCompiler->*m_fnInternalCompilerAddInclude->m_fnFunction)((_externalPath / "glm").string());
+        (m_pCompiler->*m_fnInternalCompilerAddInclude->m_fnFunction)((_externalPath / "xbyak").string());
 
 #ifdef DUCKVIL_PLATFORM_WINDOWS
         (m_pCompiler->*m_fnInternalCompilerAddDefine->m_fnFunction)("DUCKVIL_PLATFORM_WINDOWS");
@@ -467,6 +468,8 @@ namespace Duckvil { namespace HotReloader {
         (m_pCompiler->*m_fnInternalCompilerAddDefine->m_fnFunction)("DUCKVIL_RUNTIME_COMPILE");
         (m_pCompiler->*m_fnInternalCompilerAddDefine->m_fnFunction)("DUCKVIL_COMPILE_REFLECTION_SOURCE");
         (m_pCompiler->*m_fnInternalCompilerAddDefine->m_fnFunction)(std::string("DUCKVIL_OUTPUT=\"") + DUCKVIL_OUTPUT + "\"");
+        (m_pCompiler->*m_fnInternalCompilerAddDefine->m_fnFunction)(std::string("DUCKVIL_CWD=\"") + DUCKVIL_CWD + "\"");
+        (m_pCompiler->*m_fnInternalCompilerAddDefine->m_fnFunction)(std::string("DUCKVIL_PROJECTS_PATH=\"") + DUCKVIL_PROJECTS_PATH + "\"");
 
         (m_pCompiler->*m_fnInternalCompilerAddLibraryPath->m_fnFunction)(DUCKVIL_OUTPUT);
 
@@ -475,6 +478,7 @@ namespace Duckvil { namespace HotReloader {
         (m_pCompiler->*m_fnInternalCompilerAddLibrary->m_fnFunction)("UniTestFramework.lib");
         (m_pCompiler->*m_fnInternalCompilerAddLibrary->m_fnFunction)("PlugNPlay.lib");
         (m_pCompiler->*m_fnInternalCompilerAddLibrary->m_fnFunction)("flecs_static.lib");
+        (m_pCompiler->*m_fnInternalCompilerAddLibrary->m_fnFunction)("RuntimeReflectionStatic.lib");
 #else
 #ifdef DUCKVIL_PLATFORM_LINUX
         (m_pCompiler->*m_fnInternalCompilerAddLibrary->m_fnFunction)("Utils.a");
