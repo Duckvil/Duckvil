@@ -58,14 +58,17 @@ static inline void* duckvil_dynamic_array_resize(Duckvil::Memory::ftable* _pMemo
 
     if(_pArray)
     {
+        // TODO: Should not be like that, but something is wrong with this resize, temp fix
+#ifdef TRACY_ENABLE
         char* _cpy = _pAllocator->m_sName;
         _pAllocator->m_sName = nullptr;
-
+#endif
         const size_t _currentSize = (_data->m_ullCapacity * _ullSize) + sizeof(__duckvil_dynamic_array);
         
         _data = (__duckvil_dynamic_array*)_pMemoryInterface->m_fnFreeListReallocate_(_pAllocator, DUCKVIL_DYNAMIC_ARRAY_HEAD(_pArray), _currentSize, _newSize, alignof(__duckvil_dynamic_array));
-        
+#ifdef TRACY_ENABLE
         _pAllocator->m_sName = _cpy;
+#endif
     }
     else
     {
