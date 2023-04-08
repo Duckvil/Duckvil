@@ -133,7 +133,7 @@ void generate_plugin_info(std::ofstream& _file, const uint32_t& _uiIndex, const 
     // _file << "DUCKVIL_EXPORT const char* DUCKVIL_MODULE_NAME = \"duckvil_" << _moduleName << "_module\";\n";
 }
 
-nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil::Parser::__lexer_ftable* _pLexerFTable, Duckvil::RuntimeReflection::__generator_ftable* _pGeneratorFTable, const std::filesystem::path& _cwd, const std::filesystem::path& _path, const std::filesystem::path& _currentModule, uint32_t _index, bool _bGenerate = false)
+nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil::Parser::__lexer_ftable* _pLexerFTable, Duckvil::Parser::__lexer_data* _pLexerData, Duckvil::RuntimeReflection::__generator_ftable* _pGeneratorFTable, const std::filesystem::path& _cwd, const std::filesystem::path& _path, const std::filesystem::path& _currentModule, uint32_t _index, bool _bGenerate = false)
 {
     if(_path.extension() != ".h")
     {
@@ -141,11 +141,6 @@ nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil
     }
 
     nlohmann::json _jFile;
-
-    Duckvil::Parser::__lexer_data _data;
-
-    _pLexerFTable->load_file(&_data, _path.string().c_str());
-
     Duckvil::Parser::__ast _astData;
 
     _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_EXPORT", &Duckvil::Utils::user_define_behavior });
@@ -168,7 +163,7 @@ nlohmann::json process_file(Duckvil::Parser::__ast_ftable* _pAST_FTable, Duckvil
     _astData.m_sFile = _relativePath;
     _astData.m_sPath = _cwd / "include";
 
-    _pAST_FTable->ast_generate(&_astData, _pLexerFTable, _data);
+    _pAST_FTable->ast_generate(&_astData, _pLexerFTable, *_pLexerData);
     // _ast->ast_print(_astData);
 
     for(auto& _reflectionModule : _aModules)
@@ -444,6 +439,12 @@ int main(int argc, char* argv[])
 
 	auto _dbPath = std::filesystem::path(_CWD) / "__generated_reflection__";
 
+    Duckvil::Parser::__lexer_data _lexerData;
+
+    _lexerFtable->init(&_lexerData);
+
+    _lexerData.m_pConfig->AddInclude(_dbPath.string());
+
     _dbPath /= "reflection_db.json";
 
     if(_argumentsParser[Options::FILE].m_bIsSet)
@@ -491,9 +492,9 @@ int main(int argc, char* argv[])
             auto _lastIndex = _f->at("index").get<uint32_t>();
             auto _jFile = process_file(_ast, _lexerFtable, &_lexerData, _generatorFtable, _CWD, _cwd / "include" / _file, _f->at("name").get<std::string>(), _lastIndex, _f->at("hash").get<std::string>() != _fileMD5 || _argumentsParser[Options::FORCE].m_bIsSet);
 
-        _jFile["hash"] = _fileMD5;
+            _jFile["hash"] = _fileMD5;
 
-        _f->update(_jFile);
+            _f->update(_jFile);
         }
 
         std::ofstream _oJson(_dbPath);
@@ -622,7 +623,7 @@ int main(int argc, char* argv[])
                 // Not found
                 // Need to be generated and added
 
-                auto _jFile = process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _path, _currentModule, _index, true);
+                auto _jFile = process_file(_ast, _lexerFtable, &_lexerData, _generatorFtable, _CWD, _path, _currentModule, _index, true);
 
                 _jFile["hash"] = _fileMD5;
 
@@ -634,7 +635,7 @@ int main(int argc, char* argv[])
             {
                 // Found but need to be generated and updated or forced
 
-                auto _jFile = process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _path, _currentModule, _index, true);
+                auto _jFile = process_file(_ast, _lexerFtable, &_lexerData, _generatorFtable, _CWD, _path, _currentModule, _index, true);
 
                 _jFile["hash"] = _fileMD5;
 

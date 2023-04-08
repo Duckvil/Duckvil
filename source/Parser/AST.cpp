@@ -2855,6 +2855,8 @@ namespace Duckvil { namespace Parser {
 
     void ast_generate_cppast(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data& _lexerData)
     {
+        const auto& _config = *static_cast<Parser::compile_config*>(_lexerData.m_pConfig);
+
         _pAST->m_pCurrentScope = &_pAST->m_main;
         _pAST->m_pPendingScope = nullptr;
         _pAST->m_currentAccess = __ast_access::__ast_access_not_specified;
@@ -2863,10 +2865,6 @@ namespace Duckvil { namespace Parser {
         cppast::cpp_entity_index _index;
 
         custom<cppast::libclang_parser> _parser(type_safe::ref(_index));
-        compile_config _config;
-
-        _config.fast_preprocessing(true);
-        _config.set_flags(cppast::cpp_standard::cpp_2a);
 
         try
         {

@@ -217,4 +217,14 @@ namespace Duckvil { namespace Parser {
         remove_comments_in_macro_ = b;
     }
 
+    void compile_config::AddInclude(const std::string& _sInclude)
+    {
+        add_include_dir(_sInclude);
+    }
+
+    void compile_config::AddMacroDefinition(const std::string& _sName, const std::string& _sDefinition)
+    {
+        do_add_macro_definition(_sName, _sDefinition);
+    }
+
 }}

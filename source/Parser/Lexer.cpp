@@ -2,6 +2,8 @@
 
 #include <fstream>
 
+#include "Parser/config.h"
+
 namespace Duckvil { namespace Parser {
 
     void load_file(__lexer_data* _pData, const char _sFilename[DUCKVIL_TOKENIZER_MAX_FILENAME_LENGTH])
@@ -126,6 +128,18 @@ namespace Duckvil { namespace Parser {
         return _data.m_bSpace;
     }
 
+    IConfig* init(__lexer_data* _pData)
+    {
+        auto _config = new compile_config();
+
+        _pData->m_pConfig = _config;
+
+        _config->fast_preprocessing(true);
+        _config->set_flags(cppast::cpp_standard::cpp_2a);
+
+        return _config;
+    }
+
 }}
 
 Duckvil::Parser::__lexer_ftable* duckvil_lexer_init()
@@ -135,6 +149,7 @@ Duckvil::Parser::__lexer_ftable* duckvil_lexer_init()
     _ftable.load_file = &Duckvil::Parser::load_file;
     _ftable.next_token = &Duckvil::Parser::next_token;
     _ftable.space = &Duckvil::Parser::space;
+    _ftable.init = &Duckvil::Parser::init;
 
     return &_ftable;
 }

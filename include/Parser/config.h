@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Parser/iconfig.h"
+
 #include "cppast/compile_config.hpp"
 #include "cppast/libclang_parser.hpp"
 
@@ -10,7 +12,7 @@ namespace Duckvil { namespace Parser {
         struct compile_config_access;
     }
 
-    class compile_config final : public cppast::compile_config
+    class compile_config final : public IConfig, public cppast::compile_config
     {
     private:
         bool is_valid_binary(const std::string& binary);
@@ -42,6 +44,9 @@ namespace Duckvil { namespace Parser {
         void write_preprocessed(bool b) noexcept;
         void fast_preprocessing(bool b) noexcept;
         void remove_comments_in_macro(bool b) noexcept;
+
+    	void AddInclude(const std::string& _sInclude) override;
+    	void AddMacroDefinition(const std::string& _sName, const std::string& _sDefinition) override;
     };
 
 }}

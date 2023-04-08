@@ -7,6 +7,8 @@
 
 #include "Memory/Memory.h"
 
+#include "Parser/iconfig.h"
+
 #define DUCKVIL_TOKENIZER_MAX_FILENAME_LENGTH 256
 
 namespace Duckvil { namespace Parser {
@@ -48,6 +50,8 @@ namespace Duckvil { namespace Parser {
         bool m_bSpace;
         bool m_bNewLine;
         bool m_bEnd;
+
+        IConfig* m_pConfig;
     };
 
     struct __lexer_ftable
@@ -55,6 +59,7 @@ namespace Duckvil { namespace Parser {
         void (*load_file)(__lexer_data* _pData, const char _sFilename[DUCKVIL_TOKENIZER_MAX_FILENAME_LENGTH]);
         bool (*next_token)(__lexer_data* _pData, std::string* _pToken);
         bool (*space)(const __lexer_data& _data);
+        IConfig* (*init)(__lexer_data* _pData);
     };
 
 }}
