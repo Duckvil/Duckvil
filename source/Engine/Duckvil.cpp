@@ -471,10 +471,9 @@ namespace Duckvil {
 
         {
             auto _types = RuntimeReflection::get_types(_pData->m_heap);
-
-            {
                 auto _runtimeCompilerType = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>();
 
+            {
                 RuntimeReflection::ReflectedType _type(RuntimeReflection::ReflectedType::Tag<HotReloader::RuntimeCompilerSystem>{});
 
                 HotReloader::RuntimeCompilerSystem::user_data* _actionData =
@@ -575,6 +574,12 @@ namespace Duckvil {
             for(uint32_t i = 0; i < _types.Size(); ++i)
             {
                 const RuntimeReflection::__duckvil_resource_type_t& _typeHandle = _types[i];
+
+                if(_runtimeCompilerType.m_ID == _typeHandle.m_ID)
+                {
+                    continue;
+                }
+
                 const RuntimeReflection::ReflectedType _type(_typeHandle);
                 auto _autoInstantiateMetaFlag = _type.GetMeta(ReflectionFlags::ReflectionFlags_AutoInstantiate);
                 auto _spawnableVariant = _type.GetMeta(Editor::ReflectionFlag::Spwanable);
