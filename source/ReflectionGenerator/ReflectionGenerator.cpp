@@ -291,8 +291,9 @@ int main(int argc, char* argv[])
     }
 
     bool _isSingleModule = _argumentsParser[Options::SINGLE_MODULE].m_bIsSet;
+    auto _CWD = _argumentsParser[Options::CWD].m_sResult;
 
-    printf("CWD: %s\n", _argumentsParser[Options::CWD].m_sResult);
+    printf("CWD: %s\n", _CWD);
 
     if(_argumentsParser[Options::IS_ABSOLUTE].m_bIsSet)
     {
@@ -441,12 +442,14 @@ int main(int argc, char* argv[])
         }
     }
 
-    const auto& _dbPath = std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / "reflection_db.json";
+	auto _dbPath = std::filesystem::path(_CWD) / "__generated_reflection__";
+
+    _dbPath /= "reflection_db.json";
 
     if(_argumentsParser[Options::FILE].m_bIsSet)
     {
         std::filesystem::path _file; // _argumentsParser[Options::FILE].m_sResult;
-        std::filesystem::path _cwd = _argumentsParser[Options::CWD].m_sResult;
+        std::filesystem::path _cwd = _CWD;
 
         if(_argumentsParser[Options::IS_RELATIVE].m_bIsSet)
         {
@@ -472,20 +475,26 @@ int main(int argc, char* argv[])
         _iJson.close();
 
         auto _f = _dbJ["files2"].find(_file.string());
+        const auto& _fileMD5 = md5(load_file_as_string((_cwd / "include" / _file).string()));
 
         if(_f == _dbJ["files2"].end())
         {
-            // Print some message about file not exists
+            auto _lastIndex = _dbJ["files2"].back()["index"].get<uint32_t>();
+            auto _jFile = process_file(_ast, _lexerFtable, &_lexerData, _generatorFtable, _CWD, _cwd / "include" / _file, _currentModule, _lastIndex + 1, true);
 
-            return 0;
+            _jFile["hash"] = _fileMD5;
+
+            _dbJ["files2"].push_back(nlohmann::json::object_t::value_type(_file.string(), _jFile));
         }
-
-        const auto& _fileMD5 = md5(load_file_as_string((_cwd / "include" / _file).string()));
-        auto _jFile = process_file(_ast, _lexerFtable, _generatorFtable, _argumentsParser[Options::CWD].m_sResult, _cwd / "include" / _file, _f->at("name").get<std::string>(), _f->at("index").get<uint32_t>(), _f->at("hash").get<std::string>() != _fileMD5 || _argumentsParser[Options::FORCE].m_bIsSet);
+        else
+        {
+            auto _lastIndex = _f->at("index").get<uint32_t>();
+            auto _jFile = process_file(_ast, _lexerFtable, &_lexerData, _generatorFtable, _CWD, _cwd / "include" / _file, _f->at("name").get<std::string>(), _lastIndex, _f->at("hash").get<std::string>() != _fileMD5 || _argumentsParser[Options::FORCE].m_bIsSet);
 
         _jFile["hash"] = _fileMD5;
 
         _f->update(_jFile);
+        }
 
         std::ofstream _oJson(_dbPath);
 
@@ -533,18 +542,18 @@ int main(int argc, char* argv[])
             }
 
         // Remove old files if exists
-            if(!std::filesystem::exists(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "include" / _it.key()))
+            if(!std::filesystem::exists(std::filesystem::path(_CWD) / "include" / _it.key()))
             {
                 _modulesChanged.push_back(_p.string());
 
-                const auto& _gfcpp = std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / _it->at("generated_cpp").get<std::string>();
+                const auto& _gfcpp = std::filesystem::path(_CWD) / "__generated_reflection__" / _it->at("generated_cpp").get<std::string>();
 
                 if(std::filesystem::exists(_gfcpp))
                 {
                     std::filesystem::remove(_gfcpp);
                 }
 
-                const auto& _gfh = std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / _it->at("generated_h").get<std::string>();
+                const auto& _gfh = std::filesystem::path(_CWD) / "__generated_reflection__" / _it->at("generated_h").get<std::string>();
 
                 if(std::filesystem::exists(_gfh))
                 {
@@ -553,14 +562,14 @@ int main(int argc, char* argv[])
             }
         }
 
-        for(auto& _path : std::filesystem::recursive_directory_iterator(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "include"))
+        for(auto& _path : std::filesystem::recursive_directory_iterator(std::filesystem::path(_CWD) / "include"))
         {
             if(!_path.path().has_extension() || _path.path().extension() != ".h")
             {
                 continue;
             }
 
-            const auto& _a = std::filesystem::relative(_path.path(), std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "include");
+            const auto& _a = std::filesystem::relative(_path.path(), std::filesystem::path(_CWD) / "include");
             const auto& _fileMD5 = md5(load_file_as_string(_path.path().string()));
             auto _f = _dbJ["files2"].find(_a.string());
 
@@ -583,7 +592,7 @@ int main(int argc, char* argv[])
             {
                 if(_moduleChanged)
                 {
-                    std::ofstream _file(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / _lastModule / "plugin_info.cpp");
+                    std::ofstream _file(std::filesystem::path(_CWD) / "__generated_reflection__" / _lastModule / "plugin_info.cpp");
 
                     generate_plugin_info(_file, _index, _lastModule);
 
@@ -648,7 +657,7 @@ int main(int argc, char* argv[])
             _lastModule = ".";
         }
 
-        std::ofstream _file(std::filesystem::path(_argumentsParser[Options::CWD].m_sResult) / "__generated_reflection__" / _lastModule / "plugin_info.cpp");
+        std::ofstream _file(std::filesystem::path(_CWD) / "__generated_reflection__" / _lastModule / "plugin_info.cpp");
 
         generate_plugin_info(_file, _index, _lastModule);
 
