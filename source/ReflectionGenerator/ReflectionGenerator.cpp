@@ -533,6 +533,17 @@ int main(int argc, char* argv[])
 
         std::vector<std::string> _modulesChanged;
 
+        const auto& _isSingleModuleFound = _dbJ.find("isSingleModule");
+
+        if(_isSingleModuleFound != _dbJ.end())
+        {
+            _isSingleModule = _isSingleModuleFound.value().get<bool>();
+        }
+        else
+        {
+            _dbJ["isSingleModule"] = _isSingleModule;
+        }
+
         for(auto _it = _dbJ["files2"].begin(); _it != _dbJ["files2"].end(); ++_it)
         {
             auto _p = std::filesystem::path(_it.key());

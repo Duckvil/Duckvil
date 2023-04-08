@@ -121,7 +121,7 @@ namespace Duckvil {
 
         HotReloader::RuntimeCompilerSystem* m_pRuntimeCompiler;
         system::UpdateCallback m_fnRuntimeCompilerUpdate;
-        system::InitCallback m_fnRuntimeCompilerInit;
+        bool (ISystem::*m_fnRuntimeCompilerInit)(bool);
 
         // __logger_ftable* m_pLogger;
         // __logger_data* m_pLoggerData;

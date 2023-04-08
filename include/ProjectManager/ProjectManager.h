@@ -50,10 +50,10 @@ namespace Duckvil { namespace ProjectManager {
         double m_dOneSecond;
 
         typedef void (ISystem::*UpdateCallback)(double _dDelta);
-        typedef bool (ISystem::*InitCallback)(const std::vector<std::filesystem::path>&);
+        typedef bool (ISystem::*InitCallback)();
 
         HotReloader::RuntimeCompilerSystem* m_pRuntimeCompilerSystem;
-        data::InitCallback m_fnRuntimeCompilerInit;
+        bool (ISystem::*m_fnRuntimeCompilerInit)(const std::vector<std::filesystem::path>&, bool);
         data::UpdateCallback m_fnRuntimeCompilerUpdate;
         Memory::FreeList m_objectsHeap;
     };

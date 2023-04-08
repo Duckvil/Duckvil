@@ -503,7 +503,7 @@ namespace Duckvil {
                 (static_cast<Event::Pool<Event::mode::immediate>*>(_pData->m_pRuntimeReflectionData->m_pEvents))->Add<RuntimeReflection::TrackedObjectCreatedEvent>(_pData->m_pRuntimeCompiler);
 
                 _pData->m_fnRuntimeCompilerUpdate = _type.GetFunctionCallbackM<ISystem, double>("Update")->m_fnFunction;
-                _pData->m_fnRuntimeCompilerInit = _type.GetFunctionCallbackMR<bool, ISystem>("Init")->m_fnFunction;
+                _pData->m_fnRuntimeCompilerInit = _type.GetFunctionCallbackMR<bool, ISystem, bool>("Init")->m_fnFunction;
 
                 _type.InvokeM<const Memory::FreeList&>("SetObjectsHeap", _pData->m_pRuntimeCompiler, _pData->m_objectsHeap);
                 _type.InvokeM<Memory::Vector<PlugNPlay::__module_information>*>("SetModules", _pData->m_pRuntimeCompiler, &_pData->m_aLoadedModules);
@@ -639,7 +639,7 @@ namespace Duckvil {
             _pData->m_pEditor->m_fnPostInit(_pData->m_pEditorData, _pData->m_pEditor, &_pData->m_eventPool, _pData->m_pRuntimeCompiler);
 #endif
 
-            if(!(_pData->m_pRuntimeCompiler->*_pData->m_fnRuntimeCompilerInit)())
+            if(!(_pData->m_pRuntimeCompiler->*_pData->m_fnRuntimeCompilerInit)(false))
             {
                 return false;
             }

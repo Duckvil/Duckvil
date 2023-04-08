@@ -381,14 +381,14 @@ namespace Duckvil { namespace HotReloader {
 
     }
 
-    bool RuntimeCompilerSystem::Init()
+    bool RuntimeCompilerSystem::Init(bool _bIsSingleModule)
     {
         m_pFileWatcher->Watch(std::filesystem::path(DUCKVIL_CWD) / "include");
 
-        return Init({ std::filesystem::path(DUCKVIL_CWD) / "source" });
+        return Init({ std::filesystem::path(DUCKVIL_CWD) / "source" }, _bIsSingleModule);
     }
 
-    bool RuntimeCompilerSystem::Init(const std::vector<std::filesystem::path>& _sDirectoriesToWatch)
+    bool RuntimeCompilerSystem::Init(const std::vector<std::filesystem::path>& _sDirectoriesToWatch, bool _bIsSingleModule)
     {
         m_pThreadData = *static_cast<Thread::pool_data**>(RuntimeReflection::get_meta_value_ptr(RuntimeReflection::get_type("__data", { "Duckvil" }), "Thread"));
 
@@ -526,6 +526,8 @@ namespace Duckvil { namespace HotReloader {
             m_pLexerFTable = _lexer_init();
         }
 
+        m_bIsSingleModule = _bIsSingleModule;
+
         return true;
     }
 
@@ -601,7 +603,7 @@ namespace Duckvil { namespace HotReloader {
 
             std::string _generatedFilename = _filename + ".generated.cpp";
             std::filesystem::path _generatedFile = m_CWD / "__generated_reflection__" / _relativePath / _generatedFilename;
-            std::filesystem::path _pluginFile = m_CWD / "__generated_reflection__" / *_relativePath.begin() / "plugin_info.cpp";
+            std::filesystem::path _pluginFile = m_CWD / "__generated_reflection__" / (m_bIsSingleModule ? "." : *_relativePath.begin()) / "plugin_info.cpp";
             std::filesystem::path _externalPath = std::filesystem::path(DUCKVIL_OUTPUT).parent_path() / "external";
 
             RuntimeCompiler::Options _options = {};

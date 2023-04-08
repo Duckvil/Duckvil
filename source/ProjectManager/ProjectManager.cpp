@@ -474,7 +474,7 @@ namespace Duckvil { namespace ProjectManager {
             (static_cast<Event::Pool<Event::mode::immediate>*>(RuntimeReflection::get_current().m_pReflectionData->m_pEvents))->Add<RuntimeReflection::TrackedObjectCreatedEvent>(_pData->m_pRuntimeCompilerSystem);
 
             _pData->m_fnRuntimeCompilerUpdate = _type.GetFunctionCallbackM<ISystem, double>("Update")->m_fnFunction;
-            _pData->m_fnRuntimeCompilerInit = _type.GetFunctionCallbackMR<bool, ISystem, const std::vector<std::filesystem::path>&>("Init")->m_fnFunction;
+            _pData->m_fnRuntimeCompilerInit = _type.GetFunctionCallbackMR<bool, ISystem, const std::vector<std::filesystem::path>&, bool>("Init")->m_fnFunction;
 
             _type.InvokeM<const Memory::FreeList&>("SetObjectsHeap", _pData->m_pRuntimeCompilerSystem, _pData->m_objectsHeap);
             // _type.Invoke<Memory::Vector<PlugNPlay::__module_information>*>("SetModules", _pData->m_pRuntimeCompilerSystem, &_pData->m_aLoadedModules);
@@ -484,7 +484,7 @@ namespace Duckvil { namespace ProjectManager {
                 {
                     std::filesystem::path(_projectCWD.m_sText) / "source",
                     std::filesystem::path(_projectCWD.m_sText) / "include"
-                }
+                }, true
             ))
             {
                 throw std::exception();
@@ -582,7 +582,7 @@ namespace Duckvil { namespace ProjectManager {
         _process.m_fnInit(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), &_processData);
         _process.m_fnSetup(&_processData);
 
-        _process.m_fnWrite(&_processData, std::string((std::filesystem::path(DUCKVIL_OUTPUT) / "ReflectionGenerator.exe -CWD ").string() + _projectPath + "\n_COMPLETION_TOKEN_\n").c_str());
+        _process.m_fnWrite(&_processData, std::string((std::filesystem::path(DUCKVIL_OUTPUT) / "ReflectionGenerator.exe -CWD ").string() + _projectPath + " -single\n_COMPLETION_TOKEN_\n").c_str());
         _process.m_fnWait(&_processData);
         _process.m_fnStop(&_processData);
 

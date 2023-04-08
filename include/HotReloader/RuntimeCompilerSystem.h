@@ -278,6 +278,7 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
         Event::Pool<Event::mode::buffered> m_eventPool;
 
         std::filesystem::path m_CWD;
+        bool m_bIsSingleModule;
 
         void Compile(const std::string& _sFile, void (*_fnSwap)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), const RuntimeCompiler::Options& _compileOptions = { });
 
@@ -297,8 +298,8 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
 
         std::filesystem::path m_path;
 
-        bool Init();
-        bool Init(const std::vector<std::filesystem::path>& _sDirectoriesToWatch);
+        bool Init(bool _bIsSingleModule = false);
+        bool Init(const std::vector<std::filesystem::path>& _sDirectoriesToWatch, bool _bIsSingleModule = false);
         void Update(double _dDelta);
 
         void InitEditor(void* _pImguiContext);
