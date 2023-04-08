@@ -40,6 +40,11 @@ namespace {$projectName} {
 	{
 		_pPMEventPool->AddA<Duckvil::ProjectManager::AddScriptEvent>([&](const Duckvil::ProjectManager::AddScriptEvent& _e)
 		{
+			if(!static_cast<Duckvil::Project::Script*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_e.m_pTrackKeepedScript))->Init())
+			{
+				return;
+			}
+
 			if(m_pScripts.Full())
 			{
 				m_pScripts.Resize(m_pScripts.Size() * 2);

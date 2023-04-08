@@ -620,8 +620,17 @@ namespace Duckvil {
                     {
                         RuntimeReflection::ReflectedType _systemType(_system.m_type);
 
-                        _system.m_fnUpdateCallback = _systemType.GetFunctionCallbackM<ISystem, double>("Update")->m_fnFunction;
-                        _system.m_fnInitCallback = _systemType.GetFunctionCallbackMR<bool, ISystem>("Init")->m_fnFunction;
+                        auto _updateCallback = _systemType.GetFunctionCallbackM<ISystem, double>("Update")->m_fnFunction;
+                        auto _initCallback = _systemType.GetFunctionCallbackMR<bool, ISystem>("Init")->m_fnFunction;
+                        void* _newObject = _event.m_pTrackKeeper->GetObject();
+
+                        if(!(static_cast<ISystem*>(_newObject)->*_initCallback)())
+                        {
+                            continue;
+                        }
+
+                        _system.m_fnUpdateCallback = _updateCallback;
+                        _system.m_fnInitCallback = _initCallback;
                     }
                 }
             });
