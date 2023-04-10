@@ -370,13 +370,13 @@ namespace Duckvil { namespace Editor {
                                 {
                                     _inheritance += "public ";
                                     _inheritance += _systems[n];
-                                }
 
                                 if(n < sizeof(_selection) / sizeof(_selection[0]) - 1)
                                 {
                                     _inheritance += ", ";
                                 }
                             }
+                        }
                         }
 
                         TemplateEngine::generate(
