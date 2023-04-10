@@ -45,6 +45,18 @@ _namespaces.push_back("Duckvil");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
 {
+_namespaces.push_back("PlugNPlay");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+_namespaces.pop_back();
+}
+_namespaces.pop_back();
+}
+{
+_namespaces.push_back("Duckvil");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+{
 _namespaces.push_back("RuntimeReflection");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
@@ -485,6 +497,7 @@ _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___m
 _property = record_property<std::size_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__type_t, m_ullTypeID), "m_ullTypeID");
 _property = record_property<char*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__type_t, m_sTypeName), "m_sTypeName");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_resource_type_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__type_t, m_uiSlotIndex), "m_uiSlotIndex");
+_property = record_property<PlugNPlay::__module_information const*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__type_t, m_pModule), "m_pModule");
 _namespaces.pop_back();
 _namespaces.push_back("__duckvil_slot_array___type_t");
 _ntype = record_type(_data, _namespaces);

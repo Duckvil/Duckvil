@@ -348,6 +348,7 @@ _property = record_property<Duckvil::Parser::__ast_preprocessor*>(_data, _type, 
 _property = record_property<std::vector<user_define>>(_data, _type, offsetof(Duckvil::Parser::__ast, m_aUserDefines), "m_aUserDefines");
 _property = record_property<bool>(_data, _type, offsetof(Duckvil::Parser::__ast, m_bPendingIfdef), "m_bPendingIfdef");
 _property = record_property<std::filesystem::path>(_data, _type, offsetof(Duckvil::Parser::__ast, m_sFile), "m_sFile");
+_property = record_property<std::filesystem::path>(_data, _type, offsetof(Duckvil::Parser::__ast, m_sPath), "m_sPath");
 _property = record_property<std::vector<__ast_template>>(_data, _type, offsetof(Duckvil::Parser::__ast, m_aTemplates), "m_aTemplates");
 _namespaces.pop_back();
 _namespaces.push_back("__ast_ftable");

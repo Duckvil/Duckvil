@@ -243,6 +243,7 @@ _property = record_property<Duckvil::Memory::ftable::_fixed_vector_resize_>(_dat
 _property = record_property<Duckvil::Memory::ftable::_fixed_vector_size_>(_data, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedVectorSize_), "m_fnFixedVectorSize_");
 _property = record_property<Duckvil::Memory::ftable::_fixed_vector_capacity_>(_data, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedVectorCapacity_), "m_fnFixedVectorCapacity_");
 _property = record_property<Duckvil::Memory::ftable::_fixed_vector_erase_>(_data, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedVectorErase_), "m_fnFixedVectorErase_");
+_property = record_property<Duckvil::Memory::ftable::_fixed_vector_copy_>(_data, _type, offsetof(Duckvil::Memory::ftable, m_fnFixedVectorCopy_), "m_fnFixedVectorCopy_");
 _property = record_property<Duckvil::Memory::ftable::_byte_buffer_will_fit>(_data, _type, offsetof(Duckvil::Memory::ftable, m_fnByteBufferWillFit_), "m_fnByteBufferWillFit_");
 _property = record_property<Duckvil::Memory::ftable::_byte_buffer_clear>(_data, _type, offsetof(Duckvil::Memory::ftable, m_fnByteBufferClear_), "m_fnByteBufferClear_");
 _property = record_property<Duckvil::Memory::ftable::_byte_buffer_resize>(_data, _type, offsetof(Duckvil::Memory::ftable, m_fnByteBufferResize_), "m_fnByteBufferResize_");

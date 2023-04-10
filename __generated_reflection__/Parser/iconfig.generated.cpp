@@ -1,9 +1,9 @@
-#include "Utils/UUID.h"
+#include "Parser/iconfig.h"
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(12)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(2)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -22,27 +22,31 @@ std::vector<const char*> _namespaces;
 _namespaces.push_back("Duckvil");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
-_namespaces.push_back("UUID");
+{
+_namespaces.push_back("Parser");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
-using namespace Duckvil;
-_type = record_type<Duckvil::UUID>(_data, "UUID");
+_namespaces.push_back("IConfig");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+using namespace Duckvil::Parser;
+_type = record_type<Duckvil::Parser::IConfig>(_data, "IConfig");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
-_constructor = record_constructor<Duckvil::UUID>(_data, _type);
-_constructor = record_constructor<Duckvil::UUID, char const*>(_data, _type);
-_destructor = record_destructor<Duckvil::UUID>(_data, _type);
-_function = record_function<Duckvil::UUID, void, char*>(_data, _type, &Duckvil::UUID::GetBytes, "GetBytes");
-_function = record_function<Duckvil::UUID, size_t>(_data, _type, &Duckvil::UUID::Hash, "Hash");
+record_namespace(_data, _type, "Parser");
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
+_function = record_function<Duckvil::Parser::IConfig, void, std::string const&>(_data, _type, &Duckvil::Parser::IConfig::AddInclude, "AddInclude");
+_function = record_function<Duckvil::Parser::IConfig, void, std::string const&, std::string const&>(_data, _type, &Duckvil::Parser::IConfig::AddMacroDefinition, "AddMacroDefinition");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Utils/UUID.h", 12);
+_namespaces.pop_back();
+}
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Parser/iconfig.h", 2);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 12;
+return 2;
 }
 #endif

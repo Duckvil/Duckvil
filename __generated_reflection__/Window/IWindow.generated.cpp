@@ -42,6 +42,8 @@ _function = record_function<Duckvil::Window::IWindow, void*>(_data, _type, &Duck
 _function = record_function<Duckvil::Window::IWindow, void>(_data, _type, &Duckvil::Window::IWindow::PopulateEvents, "PopulateEvents");
 _function = record_function<Duckvil::Window::IWindow, void, int, int, bool>(_data, _type, &Duckvil::Window::IWindow::SetMousePosition, "SetMousePosition");
 _function = record_function<Duckvil::Window::IWindow, void, void(*)(void*)>(_data, _type, &Duckvil::Window::IWindow::SetProcessEventsCallback, "SetProcessEventsCallback");
+_function = record_function<Duckvil::Window::IWindow, uint32_t>(_data, _type, &Duckvil::Window::IWindow::GetWidth, "GetWidth");
+_function = record_function<Duckvil::Window::IWindow, uint32_t>(_data, _type, &Duckvil::Window::IWindow::GetHeight, "GetHeight");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

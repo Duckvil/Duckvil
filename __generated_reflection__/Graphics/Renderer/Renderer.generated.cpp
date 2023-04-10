@@ -42,6 +42,9 @@ _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Graphics::Rend
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Graphics::Renderer::renderer_op_code::renderer_op_code_clear_attachment, "renderer_op_code_clear_attachment");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Graphics::Renderer::renderer_op_code::renderer_op_code_viewport, "renderer_op_code_viewport");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Graphics::Renderer::renderer_op_code::renderer_op_code_read_pixel, "renderer_op_code_read_pixel");
+_enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Graphics::Renderer::renderer_op_code::renderer_op_code_fbo_read_pixel, "renderer_op_code_fbo_read_pixel");
+_enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Graphics::Renderer::renderer_op_code::renderer_op_code_frame_buffer_reader_read, "renderer_op_code_frame_buffer_reader_read");
+_enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Graphics::Renderer::renderer_op_code::renderer_op_code_frame_buffer_reader_update, "renderer_op_code_frame_buffer_reader_update");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Graphics::Renderer::renderer_op_code::renderer_op_code_none, "renderer_op_code_none");
 _enum = record_enum<Duckvil::Graphics::Renderer::uniform_type>(_data, _ntype, "uniform_type");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Graphics::Renderer::uniform_type::uniform_type_int, "uniform_type_int");
@@ -238,6 +241,18 @@ record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMe
 _property = record_property<uint32_t*>(_data, _type, offsetof(Duckvil::Graphics::Renderer::__duckvil_slot_array_uniform, m_indices), "m_indices");
 _property = record_property<Duckvil::Graphics::Renderer::uniform*>(_data, _type, offsetof(Duckvil::Graphics::Renderer::__duckvil_slot_array_uniform, m_data), "m_data");
 _namespaces.pop_back();
+_namespaces.push_back("__duckvil_slot_array_frame_buffer_reader");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+_type = record_type<Duckvil::Graphics::Renderer::__duckvil_slot_array_frame_buffer_reader>(_data, "__duckvil_slot_array_frame_buffer_reader");
+_recordedTypes.push_back(_type);
+record_namespace(_data, _type, "Duckvil");
+record_namespace(_data, _type, "Graphics");
+record_namespace(_data, _type, "Renderer");
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
+_property = record_property<uint32_t*>(_data, _type, offsetof(Duckvil::Graphics::Renderer::__duckvil_slot_array_frame_buffer_reader, m_indices), "m_indices");
+_property = record_property<Duckvil::Graphics::Renderer::frame_buffer_reader*>(_data, _type, offsetof(Duckvil::Graphics::Renderer::__duckvil_slot_array_frame_buffer_reader, m_data), "m_data");
+_namespaces.pop_back();
 _namespaces.push_back("renderer_data");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
@@ -253,6 +268,7 @@ _property = record_property<Duckvil::Graphics::Renderer::__duckvil_slot_array_te
 _property = record_property<Duckvil::Graphics::Renderer::__duckvil_slot_array_framebuffer>(_data, _type, offsetof(Duckvil::Graphics::Renderer::renderer_data, m_fbo), "m_fbo");
 _property = record_property<Duckvil::Graphics::Renderer::__duckvil_slot_array_vertex_array_object>(_data, _type, offsetof(Duckvil::Graphics::Renderer::renderer_data, m_vao), "m_vao");
 _property = record_property<Duckvil::Graphics::Renderer::__duckvil_slot_array_uniform>(_data, _type, offsetof(Duckvil::Graphics::Renderer::renderer_data, m_uniform), "m_uniform");
+_property = record_property<Duckvil::Graphics::Renderer::__duckvil_slot_array_frame_buffer_reader>(_data, _type, offsetof(Duckvil::Graphics::Renderer::renderer_data, m_frameBufferReader), "m_frameBufferReader");
 _property = record_property<Duckvil::Graphics::Renderer::command_buffer>(_data, _type, offsetof(Duckvil::Graphics::Renderer::renderer_data, m_pCommandBuffer), "m_pCommandBuffer");
 _property = record_property<Memory::free_list_allocator*>(_data, _type, offsetof(Duckvil::Graphics::Renderer::renderer_data, m_pAllocator), "m_pAllocator");
 _property = record_property<flecs::world*>(_data, _type, offsetof(Duckvil::Graphics::Renderer::renderer_data, m_ecs), "m_ecs");
@@ -271,6 +287,7 @@ _property = record_property<void(*)(Memory::ftable*,Duckvil::Graphics::Renderer:
 _property = record_property<void(*)(Memory::ftable*,Duckvil::Graphics::Renderer::renderer_data*)>(_data, _type, offsetof(Duckvil::Graphics::Renderer::renderer_ftable, m_fnSubmitCommandBuffer), "m_fnSubmitCommandBuffer");
 _property = record_property<void(*)()>(_data, _type, offsetof(Duckvil::Graphics::Renderer::renderer_ftable, m_fnBindAsRenderTarget), "m_fnBindAsRenderTarget");
 _property = record_property<uint32_t(*)(Memory::ftable*,Memory::free_list_allocator*,Duckvil::Graphics::Renderer::renderer_data*,char const*,char const*)>(_data, _type, offsetof(Duckvil::Graphics::Renderer::renderer_ftable, m_fnCreateShader), "m_fnCreateShader");
+_property = record_property<uint32_t(*)(Memory::ftable*,Memory::free_list_allocator*,Duckvil::Graphics::Renderer::renderer_data*,uint32_t,uint32_t,frame_buffer_reader::Format,frame_buffer_reader::Type)>(_data, _type, offsetof(Duckvil::Graphics::Renderer::renderer_ftable, m_fnCreateFrameBufferReader), "m_fnCreateFrameBufferReader");
 _property = record_property<uint32_t(*)(Memory::ftable*,Memory::free_list_allocator*,Duckvil::Graphics::Renderer::renderer_data*,Duckvil::Graphics::Renderer::texture_descriptor const&)>(_data, _type, offsetof(Duckvil::Graphics::Renderer::renderer_ftable, m_fnCreateTexture), "m_fnCreateTexture");
 _property = record_property<uint32_t(*)(Memory::ftable*,Memory::free_list_allocator*,Duckvil::Graphics::Renderer::renderer_data*,Duckvil::Graphics::Renderer::texture_object_descriptor const&)>(_data, _type, offsetof(Duckvil::Graphics::Renderer::renderer_ftable, m_fnCreateTextureObject), "m_fnCreateTextureObject");
 _property = record_property<uint32_t(*)(Memory::ftable*,Memory::free_list_allocator*,Duckvil::Graphics::Renderer::renderer_data*,Duckvil::Graphics::Renderer::framebuffer_descriptor const&)>(_data, _type, offsetof(Duckvil::Graphics::Renderer::renderer_ftable, m_fnCreateFramebuffer), "m_fnCreateFramebuffer");

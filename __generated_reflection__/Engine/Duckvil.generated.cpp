@@ -31,7 +31,7 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 0);
 _property = record_property<RuntimeReflection::__duckvil_resource_type_t>(_data, _type, offsetof(Duckvil::system, m_type), "m_type");
-_property = record_property<Duckvil::ISystem*>(_data, _type, offsetof(Duckvil::system, m_pObject), "m_pObject");
+_property = record_property<void*>(_data, _type, offsetof(Duckvil::system, m_pObject), "m_pObject");
 _property = record_property<bool>(_data, _type, offsetof(Duckvil::system, m_bIsHot), "m_bIsHot");
 _property = record_property<Duckvil::system::UpdateCallback>(_data, _type, offsetof(Duckvil::system, m_fnUpdateCallback), "m_fnUpdateCallback");
 _property = record_property<Duckvil::system::InitCallback>(_data, _type, offsetof(Duckvil::system, m_fnInitCallback), "m_fnInitCallback");
@@ -59,7 +59,7 @@ _property = record_property<Memory::ThreadsafeVector<duckvil_recorderd_types>>(_
 _property = record_property<Memory::Vector<PlugNPlay::__module_information>>(_data, _type, offsetof(Duckvil::__data, m_aLoadedModules), "m_aLoadedModules");
 _property = record_property<HotReloader::RuntimeCompilerSystem*>(_data, _type, offsetof(Duckvil::__data, m_pRuntimeCompiler), "m_pRuntimeCompiler");
 _property = record_property<Duckvil::system::UpdateCallback>(_data, _type, offsetof(Duckvil::__data, m_fnRuntimeCompilerUpdate), "m_fnRuntimeCompilerUpdate");
-_property = record_property<Duckvil::system::InitCallback>(_data, _type, offsetof(Duckvil::__data, m_fnRuntimeCompilerInit), "m_fnRuntimeCompilerInit");
+_property = record_property<bool(Duckvil::ISystem::*)(bool)>(_data, _type, offsetof(Duckvil::__data, m_fnRuntimeCompilerInit), "m_fnRuntimeCompilerInit");
 _property = record_property<Duckvil::__logger_channel_data*>(_data, _type, offsetof(Duckvil::__data, m_pLoggerChannelData), "m_pLoggerChannelData");
 _property = record_property<Duckvil::__logger_channel_ftable*>(_data, _type, offsetof(Duckvil::__data, m_pLoggerChannel), "m_pLoggerChannel");
 _property = record_property<Thread::pool_ftable*>(_data, _type, offsetof(Duckvil::__data, m_pThread), "m_pThread");

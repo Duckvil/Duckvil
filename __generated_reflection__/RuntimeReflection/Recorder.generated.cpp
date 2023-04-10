@@ -27,7 +27,7 @@ record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMe
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_resource_type_t*>(_data, _type, offsetof(duckvil_recorderd_types, m_aTypes), "m_aTypes");
 _property = record_property<size_t>(_data, _type, offsetof(duckvil_recorderd_types, m_ullCount), "m_ullCount");
 _property = record_property<char const*>(_data, _type, offsetof(duckvil_recorderd_types, m_sFile), "m_sFile");
-_property = record_property<Duckvil::PlugNPlay::__module_information*>(_data, _type, offsetof(duckvil_recorderd_types, m_pModule), "m_pModule");
+_property = record_property<Duckvil::PlugNPlay::__module_information const*>(_data, _type, offsetof(duckvil_recorderd_types, m_pModule), "m_pModule");
 _property = record_property<uint32_t>(_data, _type, offsetof(duckvil_recorderd_types, m_uiRecorderID), "m_uiRecorderID");
 _namespaces.pop_back();
 _namespaces.push_back("duckvil_runtime_reflection_recorder_stuff");
@@ -77,6 +77,17 @@ _namespaces.push_back("remove_all");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
 _namespaces.pop_back();
+_namespaces.push_back("recorders_count_getter_not_found");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+_type = record_type<Duckvil::RuntimeReflection::recorders_count_getter_not_found>(_data, "recorders_count_getter_not_found");
+_recordedTypes.push_back(_type);
+record_namespace(_data, _type, "Duckvil");
+record_namespace(_data, _type, "RuntimeReflection");
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 8);
+record_inheritance<std::exception>(_data, _type, __protection::__protection_public);
+_constructor = record_constructor<Duckvil::RuntimeReflection::recorders_count_getter_not_found>(_data, _type);
+_namespaces.pop_back();
 _namespaces.push_back("__recorder_ftable");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
@@ -103,6 +114,8 @@ _property = record_property<Duckvil::RuntimeReflection::__duckvil_resource_meta_
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_resource_ntype_t(*)(duckvil_runtime_reflection_recorder_stuff const&,std::vector<const char *> const&)>(_data, _type, offsetof(Duckvil::RuntimeReflection::__recorder_ftable, m_fnRecordNType), "m_fnRecordNType");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_resource_enum_t(*)(duckvil_runtime_reflection_recorder_stuff const&,Duckvil::RuntimeReflection::__duckvil_resource_ntype_t,std::size_t,char const*,std::size_t)>(_data, _type, offsetof(Duckvil::RuntimeReflection::__recorder_ftable, m_fnRecordNEnum), "m_fnRecordNEnum");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_resource_enum_element_t(*)(duckvil_runtime_reflection_recorder_stuff const&,Duckvil::RuntimeReflection::__duckvil_resource_ntype_t,Duckvil::RuntimeReflection::__duckvil_resource_enum_t,void*,std::size_t,char const*,std::size_t)>(_data, _type, offsetof(Duckvil::RuntimeReflection::__recorder_ftable, m_fnRecordNEnumElement), "m_fnRecordNEnumElement");
+_property = record_property<duckvil_recorderd_types(*)(duckvil_runtime_reflection_recorder_stuff const&,PlugNPlay::__module_information const&,RuntimeReflection::RecordFunction)>(_data, _type, offsetof(Duckvil::RuntimeReflection::__recorder_ftable, m_fnRecordFile), "m_fnRecordFile");
+_property = record_property<Memory::Vector<duckvil_recorderd_types>(*)(duckvil_runtime_reflection_recorder_stuff const&,PlugNPlay::__module const&,PlugNPlay::__module_information const&,Memory::FreeList const&)>(_data, _type, offsetof(Duckvil::RuntimeReflection::__recorder_ftable, m_fnRecordModule), "m_fnRecordModule");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
