@@ -76,7 +76,12 @@ namespace Duckvil {
 
             _pData->m_pLoggerChannel = _loggerInit();
 
-            logger_make_current({ _pData->_loggerFTable, _pData->_loggerData, _pData->m_pLoggerChannel });
+            logger_make_current(logger_context
+    		{
+	            .m_logger = _pData->_loggerFTable,
+	            .m_loggerData = _pData->_loggerData,
+	            .m_pLoggerChannel = _pData->m_pLoggerChannel
+    		});
         }
 
         static std::string _outLog = (std::filesystem::path(DUCKVIL_OUTPUT) / "log.log").string();
@@ -101,11 +106,13 @@ namespace Duckvil {
 
             _pModule->get(_loadedModule, "duckvil_plugin_make_current_logger_context", reinterpret_cast<void**>(&make_current_logger_context));
 
-            if(make_current_logger_context != nullptr)
+            if(make_current_logger_context == nullptr)
             {
+                continue;
+            }
+
                 make_current_logger_context(logger_get_current());
             }
-        }
 
         return true;
     }

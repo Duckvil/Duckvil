@@ -14,6 +14,7 @@ namespace Duckvil {
         // static Memory::Vector<__logger_channel_data> _loggers;
 
         _heap.Allocate(_data._loggers, 1);
+        _heap.Allocate(_data.m_aChannels, 1);
 
         duckvil_runtime_reflection_recorder_stuff _stuff =
         {
@@ -25,8 +26,6 @@ namespace Duckvil {
 
         RuntimeReflection::record_meta(_stuff, _loggerType.GetHandle(), "EventPool", _eventPool);
         RuntimeReflection::record_meta(_stuff, _loggerType.GetHandle(), "Loggers", _data._loggers);
-
-        _heap.Allocate(_data.m_aChannels, 1);
 
         return _data;
     }
