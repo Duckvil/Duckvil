@@ -230,6 +230,28 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
                     //     _process.m_fnCleanup(_userData->m_pRuntimeCompiler->m_heap.GetMemoryInterface(), _userData->m_pRuntimeCompiler->m_heap.GetAllocator(), &_processData);
                     // }
                 }
+                else if(_file.extension() == ".cpp")
+                {
+                    const auto& _typeHandle = RuntimeReflection::get_type<RuntimeCompilerSystem>();
+                    const auto& _funcHandle = RuntimeReflection::get_function_handle<
+                        const std::string&,
+                        const RuntimeCompiler::Options&
+                    >(
+                        _typeHandle,
+                        "CompileT"
+                    );
+
+                    RuntimeReflection::invoke_member<
+                        const std::string&,
+                        const RuntimeCompiler::Options&
+                    >(
+                        _typeHandle,
+                        _funcHandle,
+                        _userData->m_pRuntimeCompiler,
+                        _file.string(),
+                        RuntimeCompiler::Options()
+                    );
+                }
             }
         }
 
