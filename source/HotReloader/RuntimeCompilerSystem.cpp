@@ -561,6 +561,7 @@ namespace Duckvil { namespace HotReloader {
     {
         ImGui::Begin("RuntimeCompilerSystem");
 
+        ImGui::Text("CWD: %s", m_CWD.string().c_str());
         ImGui::Text("Hot types:");
 
         for(uint32_t i = 0; i < m_aHotObjects.Size(); ++i)
@@ -846,6 +847,13 @@ namespace Duckvil { namespace HotReloader {
 
     void RuntimeCompilerSystem::OnEvent(const RuntimeReflection::TrackedObjectCreatedEvent& _event)
     {
+        auto _type = RuntimeReflection::get_type(_event.m_pTrackKeeper->GetTypeHandle());
+
+        if(m_CWD.compare(std::filesystem::path(_type.m_pModule->m_sPath.m_sText).parent_path()) != 0)
+        {
+            return;
+        }
+
         RuntimeReflection::__duckvil_resource_function_t _a = RuntimeReflection::get_function_handle<RuntimeSerializer::ISerializer*>(_event.m_pTrackKeeper->GetTypeHandle(), "Serialize");
         RuntimeReflection::__function_t _func = RuntimeReflection::get_function(_event.m_pTrackKeeper->GetTypeHandle(), _a);
 

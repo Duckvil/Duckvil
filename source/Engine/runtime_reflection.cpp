@@ -38,58 +38,37 @@ namespace Duckvil {
         for(uint32_t i = 0; i < _pData->m_aLoadedModules.Size(); ++i)
         {
             PlugNPlay::__module_information& _loadedModule = _pData->m_aLoadedModules[i];
-            RuntimeReflection::GetRecordersCountFunction get_recorder_count = nullptr;
-            void (*make_current_runtime_reflection_context)(const duckvil_frontend_reflection_context&);
-            void (*make_current_heap_context)(const Memory::free_list_context&);
-            void (*make_current_ecs_context)();
 
-            make_current_runtime_reflection_context = nullptr;
-            make_current_heap_context = nullptr;
+            try
+            {
+                printf("RuntimeReflection: Loading %s\n", _loadedModule.m_sName.m_sText);
 
-            printf("RuntimeReflection: Loading %s\n", _loadedModule.m_sName.m_sText);
+                Memory::Vector<duckvil_recorderd_types> _types = _stuff._pFunctions->m_fnRecordModule(_stuff, _module, _loadedModule, _pData->m_heap);
 
-            _module.get(_loadedModule, "duckvil_get_runtime_reflection_recorders_count", reinterpret_cast<void**>(&get_recorder_count));
+                for(uint32_t _i = 0; _i < _types.Size(); ++_i)
+                {
+                    if(_pData->m_aRecordedTypes.Full())
+                    {
+                        _pData->m_aRecordedTypes.Resize(_pData->m_aRecordedTypes.Size() * 2);
+                    }
+
+                    _pData->m_aRecordedTypes.Allocate(_types[_i]);
+                }
+            }
+            catch(const RuntimeReflection::recorders_count_getter_not_found& _e)
+            {
+                printf("RuntimeReflection: Skipping %s\n", _loadedModule.m_sName.m_sText);
+
+	            continue;
+            }
+
+            void (*make_current_runtime_reflection_context)(const duckvil_frontend_reflection_context&) = nullptr;
+            void (*make_current_heap_context)(const Memory::free_list_context&) = nullptr;
+            void (*make_current_ecs_context)() = nullptr;
+
             _module.get(_loadedModule, "duckvil_plugin_make_current_runtime_reflection_context", reinterpret_cast<void**>(&make_current_runtime_reflection_context));
             _module.get(_loadedModule, "duckvil_plugin_make_current_heap_context", reinterpret_cast<void**>(&make_current_heap_context));
             _module.get(_loadedModule, "duckvil_plugin_make_current_ecs_context", reinterpret_cast<void**>(&make_current_ecs_context));
-
-            if(get_recorder_count == nullptr)
-            {
-                // DUCKVIL_LOG_INFO_("No recorder for %s", _loadedModule.m_sName.m_sText);
-
-                printf("RuntimeReflection: Skipping %s\n", _loadedModule.m_sName.m_sText);
-
-                continue;
-            }
-
-            // DUCKVIL_LOG_INFO_("Module %s is present", _loadedModule.m_sName.m_sText);
-
-            uint32_t _recordersCount = get_recorder_count();
-
-            for(uint32_t j = 0; j < _recordersCount; ++j)
-            {
-                RuntimeReflection::RecordFunction record = nullptr;
-
-                _module.get(_loadedModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(j)).c_str(), reinterpret_cast<void**>(&record));
-
-                if(record == nullptr)
-                {
-                    // TODO: Should return false?
-
-                    continue;
-                }
-
-                duckvil_recorderd_types _types = record(_stuff);
-
-                _types.m_pModule = &_loadedModule;
-
-                if(_pData->m_aRecordedTypes.Full())
-                {
-                    _pData->m_aRecordedTypes.Resize(_pData->m_aRecordedTypes.Size() * 2);
-                }
-
-                _pData->m_aRecordedTypes.Allocate(_types);
-            }
 
             if(make_current_runtime_reflection_context != nullptr)
             {

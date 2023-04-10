@@ -24,7 +24,7 @@ struct duckvil_recorderd_types
     Duckvil::RuntimeReflection::__duckvil_resource_type_t* m_aTypes;
     size_t m_ullCount;
     const char* m_sFile;
-    Duckvil::PlugNPlay::__module_information* m_pModule;
+    const Duckvil::PlugNPlay::__module_information* m_pModule;
     uint32_t m_uiRecorderID;
 };
 
@@ -353,6 +353,15 @@ namespace Duckvil { namespace RuntimeReflection {
         _arguments.Allocate(_arg);
     }
 
+    struct recorders_count_getter_not_found : public std::exception
+    {
+        recorders_count_getter_not_found() :
+			exception("recorders count getter not found")
+        {
+	        
+        }
+    };
+
     struct __recorder_ftable
     {
         DUCKVIL_RESOURCE(type_t) (*m_fnRecordType)(const duckvil_runtime_reflection_recorder_stuff& _data, std::size_t _ullTypeID, const char* _sTypeName, std::size_t _ullLength);
@@ -374,6 +383,9 @@ namespace Duckvil { namespace RuntimeReflection {
         DUCKVIL_RESOURCE(ntype_t) (*m_fnRecordNType)(const duckvil_runtime_reflection_recorder_stuff& _data, const std::vector<const char*>& _aNamespaces);
         DUCKVIL_RESOURCE(enum_t) (*m_fnRecordNEnum)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(ntype_t) _owner, std::size_t _ullTypeID, const char* _sName, std::size_t _ullLength);
         DUCKVIL_RESOURCE(enum_element_t) (*m_fnRecordNEnumElement)(const duckvil_runtime_reflection_recorder_stuff& _data, DUCKVIL_RESOURCE(ntype_t) _owner, DUCKVIL_RESOURCE(enum_t) _enum, void* _pValue, std::size_t _ullTypeSize, const char* _sName, std::size_t _ullLength);
+
+        duckvil_recorderd_types (*m_fnRecordFile)(const duckvil_runtime_reflection_recorder_stuff& _stuff, const PlugNPlay::__module_information& _module, RuntimeReflection::RecordFunction _fnRecorder);
+        Memory::Vector<duckvil_recorderd_types> (*m_fnRecordModule)(const duckvil_runtime_reflection_recorder_stuff& _stuff, const PlugNPlay::__module& _moduleTable, const PlugNPlay::__module_information& _module, const Memory::FreeList& _heap);
     };
 
     template <typename Type, std::size_t Length>

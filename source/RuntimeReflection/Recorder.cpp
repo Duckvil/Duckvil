@@ -836,6 +836,63 @@ namespace Duckvil { namespace RuntimeReflection {
         return _handle;
     }
 
+    duckvil_recorderd_types record(const duckvil_runtime_reflection_recorder_stuff& _stuff, const PlugNPlay::__module_information& _module, RuntimeReflection::RecordFunction _fnRecorder)
+    {
+        duckvil_recorderd_types _types = _fnRecorder(_stuff);
+
+        _types.m_pModule = &_module;
+
+        uint32_t _index = 0;
+
+        while(_index < _types.m_ullCount)
+        {
+            auto _type = DUCKVIL_SLOT_ARRAY_GET_POINTER(_stuff._pData->m_aTypes, _types.m_aTypes[_index].m_ID);
+
+            _type->m_pModule = &_module;
+
+            _index++;
+        }
+
+        return _types;
+    }
+
+    Memory::Vector<duckvil_recorderd_types> record_module(const duckvil_runtime_reflection_recorder_stuff& _stuff, const PlugNPlay::__module& _moduleTable, const PlugNPlay::__module_information& _module, const Memory::FreeList& _heap)
+    {
+        RuntimeReflection::GetRecordersCountFunction get_recorder_count = nullptr;
+
+        _moduleTable.get(_module, "duckvil_get_runtime_reflection_recorders_count", reinterpret_cast<void**>(&get_recorder_count));
+
+        if(get_recorder_count == nullptr)
+        {
+            throw recorders_count_getter_not_found();
+        }
+
+        const uint32_t _recordersCount = get_recorder_count();
+        
+        Memory::Vector<duckvil_recorderd_types> _res(_heap.GetMemoryInterface(), _heap.GetAllocator(), _recordersCount);
+
+        for(uint32_t j = 0; j < _recordersCount; ++j)
+        {
+            RuntimeReflection::RecordFunction record = nullptr;
+
+            _moduleTable.get(_module, (std::string("duckvil_runtime_reflection_record_") + std::to_string(j)).c_str(), reinterpret_cast<void**>(&record));
+
+            if(record == nullptr)
+            {
+                continue;
+            }
+
+            if(_res.Full())
+            {
+                _res.Resize(_res.Size() * 2);
+            }
+
+            _res.Allocate(_stuff._pFunctions->m_fnRecordFile(_stuff, _module, record));
+        }
+
+        return _res;
+    }
+
 }}
 
 Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_recorder_init()
@@ -860,6 +917,9 @@ Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_record
     _functions.m_fnRecordNType = &Duckvil::RuntimeReflection::record_ntype;
     _functions.m_fnRecordNEnum = &Duckvil::RuntimeReflection::record_enum;
     _functions.m_fnRecordNEnumElement = &Duckvil::RuntimeReflection::record_enum_element;
+
+    _functions.m_fnRecordFile = &Duckvil::RuntimeReflection::record;
+    _functions.m_fnRecordModule = &Duckvil::RuntimeReflection::record_module;
 
     return &_functions;
 }

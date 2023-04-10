@@ -51,6 +51,12 @@ struct duckvil_frontend_reflection_context
     Duckvil::RuntimeReflection::__recorder_ftable* m_pRecorder = nullptr;
 };
 
+namespace Duckvil::PlugNPlay {
+
+    struct __module_information;
+
+}
+
 namespace Duckvil { namespace RuntimeReflection {
 
     DUCKVIL_RESOURCE_DECLARE(type_t);
@@ -205,6 +211,8 @@ namespace Duckvil { namespace RuntimeReflection {
         std::size_t m_ullTypeID;
         char* m_sTypeName;
         DUCKVIL_RESOURCE(type_t) m_uiSlotIndex;
+
+        const PlugNPlay::__module_information* m_pModule;
     });
 
     slot(__ntype_t,

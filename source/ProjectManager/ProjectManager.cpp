@@ -415,7 +415,7 @@ namespace Duckvil { namespace ProjectManager {
                 continue;
             }
 
-            duckvil_recorderd_types _types = record(_stuff);
+            duckvil_recorderd_types _types = _stuff._pFunctions->m_fnRecordFile(_stuff, _project.m_module, record);
 
             if(_project.m_aTypes.Full())
             {
