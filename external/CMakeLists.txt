@@ -24,6 +24,9 @@ if(NOT DUCKVIL_CICD)
     add_subdirectory(xbyak)
     add_subdirectory(assimp)
     add_subdirectory(json)
+
+    set(BUILD_SHARED_LIBS FALSE)
+
     add_subdirectory(cppast)
 
     if(${DUCKVIL_TRACY_PROFILER})
