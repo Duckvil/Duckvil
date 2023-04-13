@@ -79,13 +79,11 @@ namespace Duckvil { namespace HotReloader {
 
         PlugNPlay::module_init(&_module);
 
-        PlugNPlay::__module_information _testModule(_sModuleFilename, DUCKVIL_SWAP_OUTPUT);
-        uint32_t (*get_recorder_index)();
-        RuntimeReflection::RecordFunction record = nullptr;
+        PlugNPlay::__module_information _loadedModule(_sModuleFilename, DUCKVIL_SWAP_OUTPUT);
 
-        _module.load(&_testModule);
+        _module.load(&_loadedModule);
 
-        if(_testModule.m_pModule == nullptr)
+        if(_loadedModule.m_pModule == nullptr)
         {
             printf("Failed to load hot module!\n");
 
@@ -93,23 +91,6 @@ namespace Duckvil { namespace HotReloader {
         }
 
         FrameMarkEnd("LoadModule");
-
-        FrameMarkStart("PrepareForSwap");
-        void (*make_current_runtime_reflection_context)(const duckvil_frontend_reflection_context&);
-        void (*make_current_logger_context)(const logger_context&);
-
-        _module.get(_testModule, "duckvil_get_recorder_index", reinterpret_cast<void**>(&get_recorder_index));
-        _module.get(_testModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(get_recorder_index())).c_str(), reinterpret_cast<void**>(&record));
-        _module.get(_testModule, "duckvil_plugin_make_current_runtime_reflection_context", reinterpret_cast<void**>(&make_current_runtime_reflection_context));
-        _module.get(_testModule, "duckvil_plugin_make_current_logger_context", reinterpret_cast<void**>(&make_current_logger_context));
-
-        FrameMarkStart("SetupContexts");
-
-        make_current_runtime_reflection_context(RuntimeReflection::get_current());
-        make_current_logger_context(logger_get_current());
-
-        FrameMarkEnd("SetupContexts");
-        FrameMarkStart("RecordTypeReflection");
 
         duckvil_runtime_reflection_recorder_stuff _stuff =
         {
@@ -119,57 +100,67 @@ namespace Duckvil { namespace HotReloader {
             ._pData = RuntimeReflection::get_current().m_pReflectionData
         };
 
-        duckvil_recorderd_types _types = record(_stuff);
+        void (*make_current_runtime_reflection_context)(const duckvil_frontend_reflection_context&) = nullptr;
+        void (*make_current_heap_context)(const Memory::free_list_context&) = nullptr;
+        void (*make_current_ecs_context)() = nullptr;
+        uint32_t (*get_recorder_index)() = nullptr;
+        RuntimeReflection::RecordFunction _record = nullptr;
 
+        _module.get(_loadedModule, "duckvil_plugin_make_current_runtime_reflection_context", reinterpret_cast<void**>(&make_current_runtime_reflection_context));
+        _module.get(_loadedModule, "duckvil_plugin_make_current_heap_context", reinterpret_cast<void**>(&make_current_heap_context));
+        _module.get(_loadedModule, "duckvil_plugin_make_current_ecs_context", reinterpret_cast<void**>(&make_current_ecs_context));
+        _module.get(_loadedModule, "duckvil_get_recorder_index", reinterpret_cast<void**>(&get_recorder_index));
+        _module.get(_loadedModule, (std::string("duckvil_runtime_reflection_record_") + std::to_string(get_recorder_index())).c_str(), reinterpret_cast<void**>(&_record));
+
+        FrameMarkStart("RecordTypeReflection");
+        duckvil_recorderd_types _types = _stuff._pFunctions->m_fnRecordFile(_stuff, _loadedModule, _record);
         FrameMarkEnd("RecordTypeReflection");
 
-        FrameMarkEnd("PrepareForSwap");
-        DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Swapping objects");
-        FrameMarkStart("Swapping");
-
-        m_eventPool.Broadcast(InternalSwapEvent{ &m_aHotObjects, _types, _fnSwap });
-
-        FrameMarkEnd("Swapping");
-        DUCKVIL_LOG_INFO(LoggerChannelID::Default, "Swapping objects finished");
+        m_eventPool.Broadcast(InternalSwapEvent
+            {
+                .m_pHotObjects = &m_aHotObjects,
+                .m_recordedTypes = _types,
+                .m_fnSwap = _fnSwap
+            });
     }
 
     void try_swap(RuntimeCompilerSystem* _pRCS, Memory::Vector<RuntimeCompilerSystem::hot_object>* _pHotObjects, duckvil_recorderd_types& _newTypes)
-                {
+    {
         if(!_pRCS->Swap(_pHotObjects, _newTypes))
-                    {
-                        for(size_t j = 0; j < _newTypes.m_ullCount; ++j)
-                        {
-                            const Duckvil::RuntimeReflection::__duckvil_resource_type_t& _typeInfo = _newTypes.m_aTypes[j];
-                            RuntimeReflection::ReflectedType _type(_typeInfo);
-                            auto _autoInstantiateMetaFlag = _type.GetMeta(Duckvil::ReflectionFlags::ReflectionFlags_AutoInstantiate);
+        {
+            for(size_t j = 0; j < _newTypes.m_ullCount; ++j)
+            {
+                const Duckvil::RuntimeReflection::__duckvil_resource_type_t& _typeInfo = _newTypes.m_aTypes[j];
+                RuntimeReflection::ReflectedType _type(_typeInfo);
+                auto _autoInstantiateMetaFlag = _type.GetMeta(Duckvil::ReflectionFlags::ReflectionFlags_AutoInstantiate);
 
-                            if((!_type.Inherits<Editor::Widget>() && !_type.Inherits<ISystem>()) ||
-                                (_autoInstantiateMetaFlag.m_pData != nullptr && !*static_cast<bool*>(_autoInstantiateMetaFlag.m_pData)))
-                            {
-                                continue;
+                if((!_type.Inherits<Editor::Widget>() && !_type.Inherits<ISystem>()) ||
+                    (_autoInstantiateMetaFlag.m_pData != nullptr && !*static_cast<bool*>(_autoInstantiateMetaFlag.m_pData)))
+                {
+                    continue;
                 }
 
                 auto _constructors = RuntimeReflection::get_constructors(_pRCS->m_heap, { _typeInfo.m_ID });
 
-                            for(/*const auto& _constructorHandle : _constructors*/ uint32_t i = 0; i < _constructors.Size(); ++i)
-                            {
-                                const auto& _constructorHandle = _constructors[i];
-                                const auto& _constructor = RuntimeReflection::get_constructor({ _typeInfo.m_ID }, _constructorHandle);
-                                uint32_t _constructorArgumentsCount = DUCKVIL_SLOT_ARRAY_SIZE(_constructor.m_arguments);
+                for(/*const auto& _constructorHandle : _constructors*/ uint32_t i = 0; i < _constructors.Size(); ++i)
+                {
+                    const auto& _constructorHandle = _constructors[i];
+                    const auto& _constructor = RuntimeReflection::get_constructor({ _typeInfo.m_ID }, _constructorHandle);
+                    uint32_t _constructorArgumentsCount = DUCKVIL_SLOT_ARRAY_SIZE(_constructor.m_arguments);
 
-                                RuntimeDependencyInjector _fap(5 + _constructorArgumentsCount);
+                    RuntimeDependencyInjector _fap(5 + _constructorArgumentsCount);
 
                     _fap.Push(_pRCS->m_heap.GetMemoryInterface());
                     _fap.Push(_pRCS->m_heap.GetAllocator());
-                                _fap.Push(RuntimeReflection::get_current().m_pReflection);
-                                _fap.Push(RuntimeReflection::get_current().m_pReflectionData);
-                                _fap.Push(true);
+                    _fap.Push(RuntimeReflection::get_current().m_pReflection);
+                    _fap.Push(RuntimeReflection::get_current().m_pReflectionData);
+                    _fap.Push(true);
 
-                                _fap.Call(_constructor.m_pData);
-                                _fap.getCode<void*(*)()>()();
-                            }
-                        }
-                    }
+                    _fap.Call(_constructor.m_pData);
+                    _fap.getCode<void*(*)()>()();
+                }
+            }
+        }
     }
 
     void RuntimeCompilerSystem::HotReload(const Utils::string& _sModuleFilename)
@@ -186,7 +177,6 @@ namespace Duckvil { namespace HotReloader {
     bool RuntimeCompilerSystem::Swap(Memory::Vector<RuntimeCompilerSystem::hot_object>* _pHotObjects, duckvil_recorderd_types& _newTypes)
     {
         bool _found = false;
-
         
 	    for(size_t j = 0; j < _newTypes.m_ullCount; ++j)
 	    {
@@ -223,8 +213,8 @@ namespace Duckvil { namespace HotReloader {
                         }
                     }
                 }
-        }
             }
+        }
 
         return _found;
     }

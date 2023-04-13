@@ -21,11 +21,7 @@ namespace {$projectName} {
         {$scriptName}();
         ~{$scriptName}();
 
-        bool Init();
-        void Update(double _dDelta);
-
-        void InitEditor(void* _pImguiContext);
-        void OnDraw();
+        {$headerFunctions}
     };
 
 }

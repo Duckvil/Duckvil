@@ -166,73 +166,7 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
             {
                 printf("Created: %s\n", _file.string().c_str());
 
-                if(_file.extension() == ".h")
-                {
-                    const auto& _typeHandle = RuntimeReflection::get_type<RuntimeCompilerSystem>();
-                    const auto& _funcHandle = RuntimeReflection::get_function_handle<
-                            const std::filesystem::path&,
-                            const std::filesystem::path&,
-                            bool
-                        >(
-                            _typeHandle,
-                            "GenerateReflection"
-                        );
-
-                    const auto& _getCWDHandle = RuntimeReflection::get_function_handle(_typeHandle, "GetCWD");
-                    const auto& _cwd = RuntimeReflection::invoke_member_result<const std::filesystem::path&>(_typeHandle, _getCWDHandle, _userData->m_pRuntimeCompiler);
-
-                    RuntimeReflection::invoke_member<
-                        const std::filesystem::path&,
-                        const std::filesystem::path&,
-                        bool
-                    >(
-                        _typeHandle,
-                        _funcHandle,
-                        _userData->m_pRuntimeCompiler,
-                        _cwd,
-                        "",     // Regenerate whole reflection
-                        true
-                    );
-
-                    // PlugNPlay::__module _module;
-                    // Process::ftable _process;
-                    // Process::data _processData;
-
-                    // PlugNPlay::module_init(&_module);
-
-                    // PlugNPlay::__module_information _processModuleInfo("Process");
-
-                    // _module.load(&_processModuleInfo);
-
-                    // void (*_duckvilProcessInit)(Process::ftable* _pFTable);
-
-                    // _module.get(_processModuleInfo, "duckvil_process_init", reinterpret_cast<void**>(&_duckvilProcessInit));
-
-                    // _duckvilProcessInit(&_process);
-
-                    // _process.m_fnInit(_userData->m_pRuntimeCompiler->m_heap.GetMemoryInterface(), _userData->m_pRuntimeCompiler->m_heap.GetAllocator(), &_processData);
-                    // _process.m_fnSetup(&_processData);
-
-                    // // if(_status == HotReloader::FileWatcher::FileStatus_Modified)
-                    // // {
-                    // //     _process.m_fnWrite(&_processData, std::string((std::filesystem::path(DUCKVIL_OUTPUT) / "ReflectionGenerator.exe -CWD ").string() + _data->m_loadedProject.m_sPath + " -is_absolute -file " + _file + "\n_COMPLETION_TOKEN_\n").c_str());
-                    // // }
-                    // // else if(_status == HotReloader::FileWatcher::FileStatus_Created)
-                    // // {
-                    // //     _process.m_fnWrite(&_processData, std::string((std::filesystem::path(DUCKVIL_OUTPUT) / "ReflectionGenerator.exe -CWD ").string() + _data->m_loadedProject.m_sPath + "\n_COMPLETION_TOKEN_\n").c_str());
-                    // // }
-
-                    // _process.m_fnWrite(&_processData, std::string((std::filesystem::path(DUCKVIL_OUTPUT) / "ReflectionGenerator.exe -CWD ").string() + _data->m_loadedProject.m_sPath + "\n_COMPLETION_TOKEN_\n").c_str());
-
-                    // _process.m_fnWait(&_processData);
-                    // _process.m_fnStop(&_processData);
-
-                    // if(_process.m_fnTerminate(&_processData))
-                    // {
-                    //     _process.m_fnCleanup(_userData->m_pRuntimeCompiler->m_heap.GetMemoryInterface(), _userData->m_pRuntimeCompiler->m_heap.GetAllocator(), &_processData);
-                    // }
-                }
-                else if(_file.extension() == ".cpp")
+                if(_file.extension() == ".cpp")
                 {
                     const auto& _typeHandle = RuntimeReflection::get_type<RuntimeCompilerSystem>();
                     const auto& _funcHandle = RuntimeReflection::get_function_handle<

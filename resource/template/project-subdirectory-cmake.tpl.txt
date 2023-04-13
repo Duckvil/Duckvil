@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.16)
 
+FILE(GLOB GENERATED_SRC_FILES ${CMAKE_SOURCE_DIR}/__generated_reflection__/{$subdir}/*.cpp)
+FILE(GLOB SOURCE_FILES *.cpp)
+
 target_sources(
 {$projectName} PRIVATE
-# BEGIN FILES
-{{if file}}
-"{$file}"
-{{endif}}
-# END FILES
+${SOURCE_FILES}
+${GENERATED_SRC_FILES}
 )
 
 # BEGIN SUBDIRECTORIES

@@ -17,17 +17,16 @@ namespace Duckvil { namespace Editor {
 #ifdef DUCKVIL_PLATFORM_WINDOWS
     bool execute_command(const char* _sProgram, const char* _sCurrentDirectory, const char* args)
     {
-        STARTUPINFOA startupInfo;
-        PROCESS_INFORMATION procInfo;
+        STARTUPINFO startupInfo = { 0 };
+        PROCESS_INFORMATION procInfo = { 0 };
 
-        memset(&startupInfo, 0, sizeof(startupInfo));
-        memset(&procInfo, 0, sizeof(procInfo));
+        startupInfo.cb = sizeof(startupInfo);
 
         std::string cmdLine(_sProgram);
 
         cmdLine.append(" ") += args;
 
-        if(!CreateProcessA(0, const_cast<char*>(cmdLine.c_str()), 0, 0, FALSE, 0, 0, _sCurrentDirectory, &startupInfo, &procInfo))
+        if(!CreateProcess(0, const_cast<char*>(cmdLine.c_str()), 0, 0, FALSE, 0, 0, _sCurrentDirectory, &startupInfo, &procInfo))
         {
             return false;
         }
@@ -71,6 +70,155 @@ namespace Duckvil { namespace Editor {
     void ContentExplorerWidget::InitEditor(void* _pImguiContext)
     {
         ImGui::SetCurrentContext(static_cast<ImGuiContext*>(_pImguiContext));
+    }
+
+    bool create_class(const Utils::string& _sDuckvilCWD, const Utils::string& _sFilename, const Utils::string& _sRelativePath, const Utils::string& _sProjectPath, const Utils::string& _sProjectName, const Utils::string& _sClassName, const std::map<Utils::string, Utils::string>& _aParameters)
+    {
+        std::filesystem::create_directories((_sProjectPath / "source" / _sRelativePath).m_sText);
+        std::filesystem::create_directories((_sProjectPath / "include" / _sRelativePath).m_sText);
+        std::filesystem::create_directories((_sProjectPath / "__generated_reflection__" / _sRelativePath).m_sText);
+
+        std::ofstream _generatedReflectionHeaderFile(_sProjectPath / "__generated_reflection__" / _sRelativePath / _sFilename + ".generated.h");
+
+        _generatedReflectionHeaderFile.flush();
+        _generatedReflectionHeaderFile.close();
+
+        std::map<Utils::string, Utils::string> _params;
+
+        _params.insert(std::make_pair("projectName", _sProjectName));
+        _params.insert(std::make_pair("scriptName", _sClassName));
+        _params.insert(std::make_pair("headerFile", _sRelativePath / _sFilename));
+
+        _params.insert(_aParameters.begin(), _aParameters.end());
+
+        TemplateEngine::generate(
+            {
+                { _sDuckvilCWD / "resource/template/project/new-project-script.tpl.h", _sProjectPath / "include" / _sRelativePath / _sFilename + ".h" },
+                { _sDuckvilCWD / "resource/template/project/new-project-script.tpl.cpp", _sProjectPath / "source" / _sRelativePath / _sFilename + ".cpp" },
+            },
+            _params
+        );
+
+        if(std::filesystem::exists((_sProjectPath / "source" / _sRelativePath / "CMakeLists.txt").m_sText))
+        {
+            std::vector<std::string> _lines;
+
+            {
+                std::ifstream _cmakeFile((_sProjectPath / "source" / _sRelativePath / "CMakeLists.txt").m_sText);
+                std::string _line;
+
+                while(getline(_cmakeFile, _line))
+                {
+                    if(_line == "# END FILES")
+                    {
+                        _lines.push_back(("\"" + _sFilename + ".cpp\"").m_sText);
+                        _lines.push_back(("\"${CMAKE_SOURCE_DIR}/__generated_reflection__/" + _sRelativePath / _sFilename + ".generated.cpp\"").m_sText);
+                    }
+
+                    _lines.push_back(_line);
+                }
+
+                _cmakeFile.close();
+            }
+
+            {
+                std::ofstream _cmakeFile((_sProjectPath / "source" / _sRelativePath / "CMakeLists.txt").m_sText, std::ofstream::trunc);
+
+                for(const std::string& _line : _lines)
+                {
+                    _cmakeFile << _line << "\n";
+                }
+
+                _cmakeFile.flush();
+                _cmakeFile.close();
+            }
+        }
+        else
+        {
+            TemplateEngine::generate(
+                {
+                    { _sDuckvilCWD / "resource/template/project-subdirectory-cmake.tpl.txt", (_sProjectPath / "source" / _sRelativePath / "CMakeLists.txt").m_sText }
+                },
+                {
+                    { "subdir", _sRelativePath },
+                    { "projectName", _sProjectName }
+                }
+            );
+        }
+
+        if(!execute_command("CMake", (_sProjectPath / "build").m_sText, "-DDUCKVIL_GENERATE_REFLECTION=ON .."))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    std::map<Utils::string, Utils::string> process_inheritance(bool* _pSelection, uint32_t _u32Count, const char** _ppSystems, const Utils::string& _sClassName)
+    {
+        std::map<Utils::string, Utils::string> _params;
+
+        std::string _inheritance;
+        std::string _headerFunctions;
+        std::string _sourceFunctions;
+
+        bool _anySelection = false;
+
+        for (int n = 0; n < _u32Count; n++)
+        {
+            if(!_pSelection[n])
+            {
+                continue;
+            }
+
+            _anySelection = true;
+
+            break;
+        }
+
+        if(_anySelection)
+        {
+            _inheritance = " : ";
+
+            for(int n = 0; n < _u32Count; n++)
+            {
+                if(!_pSelection[n])
+                {
+                    continue;
+                }
+
+                _inheritance += "public ";
+                _inheritance += _ppSystems[n];
+
+                if(n < _u32Count - 1)
+                {
+                    _inheritance += ", ";
+                }
+
+                if(n == 1)
+                {
+                    _headerFunctions +=
+                        """bool Init();\n"""
+                        """void Update();""";
+                    _sourceFunctions +=
+                        """bool " + _sClassName + "::Init()\n"""
+                        """{\n"""
+                        """    return true;\n"""
+                        """}\n"""
+                        """\n"""
+                        """void " + _sClassName + "::Update()\n"""
+                        """{\n"""
+                        """    printf(\"AAA\\n\");\n"""
+                        """}""";
+                }
+            }
+        }
+
+        _params["inheritance"] = _inheritance;
+        _params["headerFunctions"] = _headerFunctions;
+        _params["sourceFunctions"] = _sourceFunctions;
+
+        return _params;
     }
 
     void ContentExplorerWidget::OnDraw()
@@ -214,6 +362,7 @@ namespace Duckvil { namespace Editor {
 
                 if(ImGui::BeginPopup("##content_browser_create_directory_popup"))
                 {
+                    static Utils::string _duckvilCWD = DUCKVIL_CWD;
                     static char _name[32] = { 0 };
 
                     ImGui::InputText("Name", _name, 32);
@@ -257,11 +406,9 @@ namespace Duckvil { namespace Editor {
                         }
                         else
                         {
-                            Utils::string _cwd = DUCKVIL_CWD;
-
                             TemplateEngine::generate(
                                 {
-                                    { _cwd / "resource/template/project-subdirectory-cmake.tpl.txt", _parentPath / "CMakeLists.txt" }
+                                    { _duckvilCWD / "resource/template/project-subdirectory-cmake.tpl.txt", _parentPath / "CMakeLists.txt" }
                                 },
                                 {
                                     { "subdirectory", _name },
@@ -291,6 +438,7 @@ namespace Duckvil { namespace Editor {
 
                 if(ImGui::BeginPopupModal("##content_browser_create_class_popup", &_createClassModalOpen))
                 {
+                    static Utils::string _duckvilCWD = DUCKVIL_CWD;
                     static char _className[32] = { 0 };
                     static char _fileName[32] = { 0 };
                     static bool _selection[] = { false, false };
@@ -327,8 +475,6 @@ namespace Duckvil { namespace Editor {
 
                     if(ImGui::Button("Create"))
                     {
-                        std::string _inheritance;
-                        Utils::string _cwd = DUCKVIL_CWD;
                         Utils::string _iFileName(strcmp(_fileName, "") != 0 ? _fileName : _className);
 
                         std::string _rModulePath = std::filesystem::relative(m_sPath.m_sText, m_sProjectPath.m_sText).string();
@@ -345,104 +491,10 @@ namespace Duckvil { namespace Editor {
 
                         _rModulePath = Utils::replace_all(_rModulePath, "\\", "/");
 
-                        std::filesystem::create_directories((m_sProjectPath / "source" / _rModulePath).m_sText);
-                        std::filesystem::create_directories((m_sProjectPath / "include" / _rModulePath).m_sText);
-
-                        bool _anySelection = false;
-
-                        for(int n = 0; n < sizeof(_selection) / sizeof(_selection[0]); n++)
+                        if(create_class(_duckvilCWD, _iFileName, _rModulePath, m_sProjectPath, m_sProjectName, _className, process_inheritance(_selection, sizeof(_selection) / sizeof(_selection[0]), _systems, _className)))
                         {
-                            if(_selection[n])
-                            {
-                                _anySelection = true;
-
-                                break;
-                            }
+                            _close = true;
                         }
-
-                        if(_anySelection)
-                        {
-                            _inheritance = " : ";
-
-                            for(int n = 0; n < sizeof(_selection) / sizeof(_selection[0]); n++)
-                            {
-                                if(_selection[n])
-                                {
-                                    _inheritance += "public ";
-                                    _inheritance += _systems[n];
-
-                                if(n < sizeof(_selection) / sizeof(_selection[0]) - 1)
-                                {
-                                    _inheritance += ", ";
-                                }
-                            }
-                        }
-                        }
-
-                        TemplateEngine::generate(
-                            {
-                                { _cwd / "resource/template/project/new-project-script.tpl.h", m_sProjectPath / "include" / _rModulePath / _iFileName + ".h" },
-                                { _cwd / "resource/template/project/new-project-script.tpl.cpp", m_sProjectPath / "source" / _rModulePath / _iFileName + ".cpp" },
-                            },
-                            {
-                                { "projectName", m_sProjectName },
-                                { "scriptName", _iFileName },
-                                { "inheritance", _inheritance },
-                                { "headerFile", _rModulePath + "/" + _iFileName }
-                            }
-                        );
-
-                        if(std::filesystem::exists((m_sProjectPath / "source" / _rModulePath / "CMakeLists.txt").m_sText))
-                        {
-                            std::vector<std::string> _lines;
-
-                            {
-                                std::ifstream _cmakeFile((m_sProjectPath / "source" / _rModulePath / "CMakeLists.txt").m_sText);
-                                std::string _line;
-
-                                while(getline(_cmakeFile, _line))
-                                {
-                                    if(_line == "# END FILES")
-                                    {
-                                        _lines.push_back(("\"" + _iFileName + ".cpp\"").m_sText);
-                                        _lines.push_back(("\"${CMAKE_SOURCE_DIR}/__generated_reflection__/" + _rModulePath + "/" + _iFileName + ".generated.cpp\"").m_sText);
-                                    }
-
-                                    _lines.push_back(_line);
-                                }
-
-                                _cmakeFile.close();
-                            }
-
-                            {
-                                std::ofstream _cmakeFile((m_sProjectPath / "source" / _rModulePath / "CMakeLists.txt").m_sText, std::ofstream::trunc);
-
-                                for(const std::string& _line : _lines)
-                                {
-                                    _cmakeFile << _line << "\n";
-                                }
-
-                                _cmakeFile.close();
-                            }
-                        }
-                        else
-                        {
-                            Utils::string _cwd = DUCKVIL_CWD;
-
-                            TemplateEngine::generate(
-                                {
-                                    { _cwd / "resource/template/project-subdirectory-cmake.tpl.txt", (m_sProjectPath / "source" / _rModulePath / "CMakeLists.txt").m_sText }
-                                },
-                                {
-                                    { "file", _iFileName + ".cpp\"\n\"${CMAKE_SOURCE_DIR}/__generated_reflection__/" + _rModulePath + "/" + _iFileName + ".generated.cpp" },
-                                    { "projectName", m_sProjectName }
-                                }
-                            );
-                        }
-
-                        execute_command("CMake", (m_sProjectPath / "build").m_sText, "..");
-
-                        _close = true;
                     }
 
                     ImGui::EndPopup();
