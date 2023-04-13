@@ -2,6 +2,9 @@
 
 #include "tracy/Tracy.hpp"
 
+#include "RuntimeReflection/ReflectionTypeRecordedEvent.h"
+#include "RuntimeReflection/ReflectionFileRecordedEvent.h"
+
 namespace Duckvil { namespace RuntimeReflection {
 
     DUCKVIL_RESOURCE(type_t) record_type(const duckvil_runtime_reflection_recorder_stuff& _data, std::size_t _ullTypeID, const char* _sTypeName, std::size_t _ullLength)
@@ -850,8 +853,12 @@ namespace Duckvil { namespace RuntimeReflection {
 
             _type->m_pModule = &_module;
 
+            static_cast<Duckvil::Event::Pool<Duckvil::Event::mode::immediate>*>(_stuff._pData->m_pEvents)->Broadcast(ReflectionTypeRecordedEvent{ _type->m_uiSlotIndex });
+
             _index++;
         }
+
+        static_cast<Duckvil::Event::Pool<Duckvil::Event::mode::immediate>*>(_stuff._pData->m_pEvents)->Broadcast(ReflectionFileRecordedEvent(_types));
 
         return _types;
     }
