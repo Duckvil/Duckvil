@@ -101,6 +101,8 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
             }
         };
 
+        friend void try_swap(RuntimeCompilerSystem*, Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&);
+
         static void Action(const std::filesystem::path& _file, FileWatcher::FileStatus _status, void* _pUserData)
         {
             user_data* _userData = (user_data*)_pUserData;
@@ -306,7 +308,7 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
 
         void HotReload(const Utils::string& _sModuleFilename, void (*_fnSwap)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&));
         void HotReload(const Utils::string& _sModuleFilename);
-        void Swap(Memory::Vector<RuntimeCompilerSystem::hot_object>* _pHotObjects, duckvil_recorderd_types& _newTypes);
+        bool Swap(Memory::Vector<RuntimeCompilerSystem::hot_object>* _pHotObjects, duckvil_recorderd_types& _newTypes);
 
     public:
         RuntimeCompilerSystem(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEventPool, Event::Pool<Event::mode::immediate>* _pRuntimeReflectionEventPool, FileWatcher::ActionCallback _fnAction, void* _pActionData);
