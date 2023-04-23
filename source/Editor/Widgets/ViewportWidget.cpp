@@ -410,27 +410,27 @@ namespace Duckvil { namespace Editor {
         {
             if(_mousePos.x >= ImGui::GetWindowPos().x + ImGui::GetWindowSize().x)
             {
-                m_pWindowEventPool->Broadcast(Window::SetMousePositionEvent{ (int)ImGui::GetWindowPos().x + 1, (int)_mousePos.y, true });
+                _mousePos = ImVec2(ImGui::GetWindowPos().x + 1, _mousePos.y);
 
-                _mousePos = ImGui::GetMousePos();
+                m_pWindowEventPool->Broadcast(Window::SetMousePositionEvent{ (int)_mousePos.x, (int)_mousePos.y, true });
             }
             else if(_mousePos.x <= ImGui::GetWindowPos().x)
             {
-                m_pWindowEventPool->Broadcast(Window::SetMousePositionEvent{ (int)ImGui::GetWindowPos().x + (int)ImGui::GetWindowSize().x - 1, (int)_mousePos.y, true });
+                _mousePos = ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowSize().x - 1, _mousePos.y);
 
-                _mousePos = ImGui::GetMousePos();
+                m_pWindowEventPool->Broadcast(Window::SetMousePositionEvent{ (int)_mousePos.x, (int)_mousePos.y, true });
             }
             else if(_mousePos.y >= ImGui::GetWindowPos().y + ImGui::GetWindowSize().y)
             {
-                m_pWindowEventPool->Broadcast(Window::SetMousePositionEvent{ (int)_mousePos.x, (int)ImGui::GetWindowPos().y + 1, true });
+                _mousePos = ImVec2(_mousePos.x, ImGui::GetWindowPos().y + 1);
 
-                _mousePos = ImGui::GetMousePos();
+                m_pWindowEventPool->Broadcast(Window::SetMousePositionEvent{ (int)_mousePos.x, (int)_mousePos.y, true });
             }
             else if(_mousePos.y <= ImGui::GetWindowPos().y)
             {
-                m_pWindowEventPool->Broadcast(Window::SetMousePositionEvent{ (int)_mousePos.x, (int)ImGui::GetWindowPos().y + (int)ImGui::GetWindowSize().y - 1, true });
+                _mousePos = ImVec2(_mousePos.x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y - 1); // ImGui::GetMousePos();
 
-                _mousePos = ImGui::GetMousePos();
+                m_pWindowEventPool->Broadcast(Window::SetMousePositionEvent{ (int)_mousePos.x, (int)_mousePos.y, true });
             }
             else
             {
@@ -438,8 +438,13 @@ namespace Duckvil { namespace Editor {
 
                 if(_mousePos.x != _newMousePos.x || _mousePos.y != _newMousePos.y)
                 {
-                    m_viewport.m_rotation = glm::normalize(glm::angleAxis((_newMousePos.y - _mousePos.y) * (float)m_dDelta * 4, m_viewport.m_rotation * glm::vec3(1, 0, 0)) *
-                        glm::angleAxis((_newMousePos.x - _mousePos.x) * (float)m_dDelta * 4, glm::vec3(0, 1, 0))) * m_viewport.m_rotation;
+                    float _delta = static_cast<float>(m_dDelta);
+                    auto _x = ImVec2(_newMousePos.x * _delta, _newMousePos.y * _delta);
+                    auto _y = ImVec2(_mousePos.x * _delta, _mousePos.y * _delta);
+                    const float _speed = 0.1f;
+
+                    m_viewport.m_rotation = glm::normalize(glm::angleAxis((_x.y - _y.y) * _speed, m_viewport.m_rotation * glm::vec3(1, 0, 0)) *
+                        glm::angleAxis((_x.x - _y.x) * _speed, glm::vec3(0, 1, 0))) * m_viewport.m_rotation;
 
                     _looked = true;
                 }
