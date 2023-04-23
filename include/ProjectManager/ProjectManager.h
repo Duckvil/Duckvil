@@ -56,6 +56,8 @@ namespace Duckvil { namespace ProjectManager {
         bool (ISystem::*m_fnRuntimeCompilerInit)(const std::vector<std::filesystem::path>&, bool);
         data::UpdateCallback m_fnRuntimeCompilerUpdate;
         Memory::FreeList m_objectsHeap;
+
+        DependencyInjection::IDependencyResolver* m_pDependencyResolver;
     };
 
     DUCKVIL_CLASS(Duckvil::DependencyInjection::INJECTABLE)

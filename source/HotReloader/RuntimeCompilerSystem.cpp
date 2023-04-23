@@ -133,6 +133,7 @@ namespace Duckvil { namespace HotReloader {
                 const Duckvil::RuntimeReflection::__duckvil_resource_type_t& _typeInfo = _newTypes.m_aTypes[j];
                 RuntimeReflection::ReflectedType _type(_typeInfo);
                 auto _autoInstantiateMetaFlag = _type.GetMeta(Duckvil::ReflectionFlags::ReflectionFlags_AutoInstantiate);
+                auto _constructors = RuntimeReflection::get_constructors(_pRCS->m_heap, { _typeInfo.m_ID });
 
                 if((!_type.Inherits<Editor::Widget>() && !_type.Inherits<ISystem>()) ||
                     (_autoInstantiateMetaFlag.m_pData != nullptr && !*static_cast<bool*>(_autoInstantiateMetaFlag.m_pData)))
@@ -140,24 +141,16 @@ namespace Duckvil { namespace HotReloader {
                     continue;
                 }
 
-                auto _constructors = RuntimeReflection::get_constructors(_pRCS->m_heap, { _typeInfo.m_ID });
-
-                for(/*const auto& _constructorHandle : _constructors*/ uint32_t i = 0; i < _constructors.Size(); ++i)
+                for(uint32_t i = 0; i < _constructors.Size(); ++i)
                 {
-                    const auto& _constructorHandle = _constructors[i];
-                    const auto& _constructor = RuntimeReflection::get_constructor({ _typeInfo.m_ID }, _constructorHandle);
-                    uint32_t _constructorArgumentsCount = DUCKVIL_SLOT_ARRAY_SIZE(_constructor.m_arguments);
+                    void* _object = nullptr;
 
-                    RuntimeDependencyInjector _fap(5 + _constructorArgumentsCount);
+	                if(_pRCS->m_pDependencyResolver->Resolve(_type.GetHandle(), _constructors[i], &_object, true))
+                    {
+                        // Called the constructor
 
-                    _fap.Push(_pRCS->m_heap.GetMemoryInterface());
-                    _fap.Push(_pRCS->m_heap.GetAllocator());
-                    _fap.Push(RuntimeReflection::get_current().m_pReflection);
-                    _fap.Push(RuntimeReflection::get_current().m_pReflectionData);
-                    _fap.Push(true);
-
-                    _fap.Call(_constructor.m_pData);
-                    _fap.getCode<void*(*)()>()();
+                        break;
+                    }
                 }
             }
         }
@@ -224,11 +217,13 @@ namespace Duckvil { namespace HotReloader {
         Event::Pool<Event::mode::immediate>* _pEventPool,
         Event::Pool<Event::mode::immediate>* _pRuntimeReflectionEventPool,
         FileWatcher::ActionCallback _fnAction,
-        void* _pActionData
+        void* _pActionData,
+        DependencyInjection::IDependencyResolver* _pResolver
     ) :
         m_heap(_heap),
         m_pEventPool(_pEventPool),
-        m_pRuntimeReflectionEventPool(_pRuntimeReflectionEventPool)
+        m_pRuntimeReflectionEventPool(_pRuntimeReflectionEventPool),
+		m_pDependencyResolver(_pResolver)
     {
         _heap.Allocate(m_aHotObjects, 1);
         _heap.Allocate(m_aModules, 1);
@@ -244,7 +239,7 @@ namespace Duckvil { namespace HotReloader {
 
         m_pCompiler = static_cast<RuntimeCompiler::Compiler*>(
             RuntimeReflection::create<
-                const Memory::FreeList&
+            const Memory::FreeList&
             >(
                 _heap.GetMemoryInterface(),
                 _heap.GetAllocator(),
@@ -254,7 +249,7 @@ namespace Duckvil { namespace HotReloader {
                 false,
                 _heap
             )
-        );
+            );
 
         PlugNPlay::__module _module;
 
@@ -292,6 +287,18 @@ namespace Duckvil { namespace HotReloader {
             RuntimeReflection::get_function_callback_mr<const std::vector<std::string>&, RuntimeCompiler::Compiler>(m_compilerTypeHandle, "GetLibraries");
 
         (m_pCompiler->*m_fnInternalCompilerSetup->m_fnFunction)();
+    }
+
+    RuntimeCompilerSystem::RuntimeCompilerSystem(
+        const Memory::FreeList& _heap,
+        Event::Pool<Event::mode::immediate>* _pEventPool,
+        Event::Pool<Event::mode::immediate>* _pRuntimeReflectionEventPool,
+        FileWatcher::ActionCallback _fnAction,
+        void* _pActionData
+    ) :
+		RuntimeCompilerSystem(_heap, _pEventPool, _pRuntimeReflectionEventPool, _fnAction, _pActionData, nullptr)
+    {
+		
     }
 
     RuntimeCompilerSystem::RuntimeCompilerSystem(

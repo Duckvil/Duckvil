@@ -448,14 +448,16 @@ namespace Duckvil { namespace ProjectManager {
                 Event::Pool<Event::mode::immediate>*,
                 Event::Pool<Event::mode::immediate>*,
                 HotReloader::FileWatcher::ActionCallback,
-                void*
+                void*,
+				DependencyInjection::IDependencyResolver*
             >(
                 (const Memory::FreeList&)_pData->m_heap,
                 (const Memory::FreeList&)_pData->m_heap,
                 _pData->m_pEngineEventPool,
                 static_cast<Event::Pool<Event::mode::immediate>*>(RuntimeReflection::get_current().m_pReflectionData->m_pEvents),
                 HotReloader::RuntimeCompilerSystem::Action,
-                static_cast<void*>(_actionData)
+                static_cast<void*>(_actionData),
+                _pData->m_pDependencyResolver
             );
 
             _actionData->m_pRuntimeCompiler = _pData->m_pRuntimeCompilerSystem;

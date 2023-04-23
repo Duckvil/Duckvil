@@ -214,7 +214,7 @@ namespace Duckvil {
 
         _pData->m_pWindow = static_cast<Window::IWindow*>(_windowType.Create<Event::Pool<Event::mode::buffered>*>(_pData->m_heap, &_pData->m_windowEventPool));
 
-        _pData->m_pWindow->Create("Duckvil", 1920, 1080);
+        _pData->m_pWindow->Create("Duckvil", 2560, 1440);
     }
 #endif
 
@@ -478,7 +478,14 @@ namespace Duckvil {
 
         {
             auto _types = RuntimeReflection::get_types(_pData->m_heap);
-                auto _runtimeCompilerType = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>();
+        	auto _runtimeCompilerType = RuntimeReflection::get_type<HotReloader::RuntimeCompilerSystem>();
+
+            // _pData->m_pDependencyInjector = _pData->m_heap.Allocate<DependencyInjection::
+
+            const auto& _diTypeHandle = RuntimeReflection::get_type<DependencyInjection::DependencyResolver>();
+            RuntimeReflection::ReflectedType _diType(_diTypeHandle);
+
+            _pData->m_pDependencyInjector = static_cast<DependencyInjection::IDependencyResolver*>(_diType.Create<const Memory::FreeList&, Event::Pool<Event::mode::immediate>*>(_pData->m_heap, _pData->m_heap, &_pData->m_eventPool));
 
             {
                 RuntimeReflection::ReflectedType _type(RuntimeReflection::ReflectedType::Tag<HotReloader::RuntimeCompilerSystem>{});
@@ -491,14 +498,16 @@ namespace Duckvil {
                     Event::Pool<Event::mode::immediate>*,
                     Event::Pool<Event::mode::immediate>*,
                     HotReloader::FileWatcher::ActionCallback,
-                    void*
+                    void*,
+                    DependencyInjection::IDependencyResolver*
                 >(
                     (const Memory::FreeList&)_pData->m_heap,
                     (const Memory::FreeList&)_pData->m_heap,
                     &_pData->m_eventPool,
                     static_cast<Event::Pool<Event::mode::immediate>*>(_pData->m_pRuntimeReflectionData->m_pEvents),
                     HotReloader::RuntimeCompilerSystem::Action,
-                    static_cast<void*>(_actionData)
+                    static_cast<void*>(_actionData),
+                    _pData->m_pDependencyInjector
                 );
 
                 _actionData->m_pRuntimeCompiler = _pData->m_pRuntimeCompiler;
@@ -516,13 +525,6 @@ namespace Duckvil {
                 _type.InvokeM<Memory::Vector<PlugNPlay::__module_information>*>("SetModules", _pData->m_pRuntimeCompiler, &_pData->m_aLoadedModules);
                 _type.InvokeM<Memory::ThreadsafeVector<duckvil_recorderd_types>*>("SetReflectedTypes", _pData->m_pRuntimeCompiler, &_pData->m_aRecordedTypes);
             }
-
-            // _pData->m_pDependencyInjector = _pData->m_heap.Allocate<DependencyInjection::
-
-            const auto& _diTypeHandle = RuntimeReflection::get_type<DependencyInjection::DependencyResolver>();
-            RuntimeReflection::ReflectedType _diType(_diTypeHandle);
-
-            _pData->m_pDependencyInjector = static_cast<DependencyInjection::IDependencyResolver*>(_diType.Create<const Memory::FreeList&, Event::Pool<Event::mode::immediate>*>(_pData->m_heap, _pData->m_heap, &_pData->m_eventPool));
 
             _pData->m_pDependencyInjector->Register(_pData->m_pRuntimeCompiler);
             _pData->m_pDependencyInjector->Register<Memory::FreeList>(Utils::lambda([&](const RuntimeReflection::__duckvil_resource_type_t& _typeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, const RuntimeReflection::__duckvil_resource_argument_t& _argumentHandle) -> void*
@@ -654,6 +656,8 @@ namespace Duckvil {
 
         _pData->m_eventPool.AddA<ProjectManager::LoadProjectEvent>([_pData](ProjectManager::LoadProjectEvent& _event)
         {
+        	_pData->m_projectManagerData.m_pDependencyResolver = _pData->m_pDependencyInjector;
+
             _pData->m_projectManager.m_fnLoadProject(&_pData->m_projectManagerData, _event.m_sProjectName, Utils::string(DUCKVIL_PROJECTS_PATH) / _event.m_sProjectName / "bin");
         });
 

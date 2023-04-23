@@ -36,6 +36,7 @@
 #include "Utils/RuntimeDependencyInjector.h"
 
 #include "DependencyInjection/ReflectionModule.h"
+#include "DependencyInjection/IDependencyResolver.h"
 
 #include "HotReloader/RuntimeCompilerSystem.generated.h"
 
@@ -60,7 +61,7 @@ DUCKVIL_RUNTIME_REFLECTION_PAUSE
 
 DUCKVIL_RUNTIME_REFLECTION_RESUME
 
-    DUCKVIL_CLASS(Duckvil::ReflectionFlags::ReflectionFlags_EngineSystem, Duckvil::ReflectionFlags_AutoInstantiate = false, Duckvil::DependencyInjection::INJECTABLE)
+    DUCKVIL_CLASS(Duckvil::ReflectionFlags::ReflectionFlags_EngineSystem, Duckvil::DependencyInjection::INJECTABLE)
     class RuntimeCompilerSystem : public ISystem, public Editor::Widget
     {
 		DUCKVIL_GENERATED_BODY
@@ -238,6 +239,8 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
         std::filesystem::path m_CWD;
         bool m_bIsSingleModule;
 
+        DependencyInjection::IDependencyResolver* m_pDependencyResolver;
+
         void Compile(const std::string& _sFile, void (*_fnSwap)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&), const RuntimeCompiler::Options& _compileOptions = { });
 
         void HotReload(const Utils::string& _sModuleFilename, void (*_fnSwap)(Memory::Vector<RuntimeCompilerSystem::hot_object>*, duckvil_recorderd_types&));
@@ -245,6 +248,7 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
         bool Swap(Memory::Vector<RuntimeCompilerSystem::hot_object>* _pHotObjects, duckvil_recorderd_types& _newTypes);
 
     public:
+        RuntimeCompilerSystem(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEventPool, Event::Pool<Event::mode::immediate>* _pRuntimeReflectionEventPool, FileWatcher::ActionCallback _fnAction, void* _pActionData, DependencyInjection::IDependencyResolver* _pResolver);
         RuntimeCompilerSystem(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEventPool, Event::Pool<Event::mode::immediate>* _pRuntimeReflectionEventPool, FileWatcher::ActionCallback _fnAction, void* _pActionData);
         RuntimeCompilerSystem(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEventPool, Event::Pool<Event::mode::immediate>* _pRuntimeReflectionEventPool);
         ~RuntimeCompilerSystem();
