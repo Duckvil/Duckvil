@@ -56,12 +56,40 @@ namespace Duckvil { namespace DependencyInjection {
     bool DependencyResolver::Resolve(const RuntimeReflection::__duckvil_resource_type_t& _clientTypeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, void** _ppResolvedObject, bool _bHot)
     {
         RuntimeReflection::__constructor_t _constructor = RuntimeReflection::get_constructor(_clientTypeHandle, _constructorHandle);
-
         uint32_t _constructorArgumentsCount = DUCKVIL_SLOT_ARRAY_SIZE(_constructor.m_arguments);
 
         if(_constructorArgumentsCount == 0)
         {
-            return false;
+            const auto& _constructors = RuntimeReflection::get_constructors(m_heap, _clientTypeHandle);
+
+	        for(const auto& _consHandle : _constructors)
+	        {
+	            RuntimeReflection::__constructor_t _cons = RuntimeReflection::get_constructor(_clientTypeHandle, _consHandle);
+
+	            if(DUCKVIL_SLOT_ARRAY_SIZE(_cons.m_arguments) > 0)
+	            {
+	                return false;
+	            }
+	        }
+
+            RuntimeDependencyInjector _fap(5);
+
+            _fap.Push(m_heap.GetMemoryInterface());
+            _fap.Push(m_heap.GetAllocator());
+            _fap.Push(RuntimeReflection::get_current().m_pReflection);
+            _fap.Push(RuntimeReflection::get_current().m_pReflectionData);
+            _fap.Push(_bHot);
+
+            _fap.Call(_constructor.m_pData);
+
+            void* _resolvedObject = _fap.Execute();
+
+            if(_ppResolvedObject != nullptr)
+            {
+                *_ppResolvedObject = _resolvedObject;
+            }
+
+            return true;
         }
         
         RuntimeDependencyInjector _fap(5 + _constructorArgumentsCount);
