@@ -23,6 +23,8 @@
 
 #include "Engine/Events/RequestSystemEvent.h"
 
+#include "Engine/Events/ComponentAttachedEvent.h"
+
 namespace Duckvil { namespace Editor {
 
     static void draw_vec3(const char* _sLabel, glm::vec3& _value)
@@ -92,8 +94,11 @@ namespace Duckvil { namespace Editor {
                     {
                         const auto& _func = _funcs[_k];
 
-                        if(strcmp(_func.GetName(), "Draw") == 0)
+                        if(strcmp(_func.GetName(), "Draw") != 0)
                         {
+                            continue;
+                        }
+
                             const auto& _args = _func.GetArguments(m_heap);
 
                             if(_args.Size() == 2)
@@ -130,7 +135,6 @@ namespace Duckvil { namespace Editor {
                                     _initEditorFunc.InvokeS(_pImguiContext);
 
                                     break;
-                                }
                             }
                         }
                     }
@@ -415,11 +419,12 @@ namespace Duckvil { namespace Editor {
                 {
                     if(m_selectedEntity.m_entity != 0)
                     {
+                        const Component& _component = m_aFunctions[m_iCurrentComponentItem];
                         Entity _e = m_pEntityFactory->LookupComponent(m_aComponents[m_iCurrentComponentItem]);
 
                         m_selectedEntity.Add(_e);
 
-                        m_selectedEntity.GetMut<ScriptComponent>()->m_pScripts = m_heap.GetMemoryInterface()->m_fnFreeListAllocateFixedVectorAllocator(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), 8, 8);
+                        m_pEntityFactory->GetEventPool()->Broadcast(ComponentAttachedEvent{ m_selectedEntity, _component.m_typeHandle });
                     }
 
                     ImGui::CloseCurrentPopup();

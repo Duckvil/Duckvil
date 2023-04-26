@@ -51,6 +51,8 @@
 
 #include "Engine/runtime_reflection.h"
 
+#include "Engine/Events/ComponentAttachedEvent.h"
+
 namespace Duckvil {
 
     bool init_logger(__data* _pData, PlugNPlay::__module* _pModule)
@@ -730,6 +732,19 @@ namespace Duckvil {
                     }
                 )
             );
+
+            _pData->m_entityFactory.GetEventPool()->Add(
+                Utils::lambda(
+                    [_pData, _raw](const ComponentAttachedEvent& _e)
+                    {
+                        if(!_e.m_entity.Has<ScriptComponent>())
+                        {
+                            return;
+                        }
+
+                        _e.m_entity.GetMut<ScriptComponent>()->m_pScripts = _pData->m_heap.GetMemoryInterface()->m_fnFreeListAllocateFixedVectorAllocator(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), 8, 8);
+                    }
+                ));
 
             _pData->m_rendererQuery = _pData->m_ecs.query<Graphics::TransformComponent>();
             _pData->m_scriptsQuery = _pData->m_ecs.query<ScriptComponent>();
