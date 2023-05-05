@@ -2,11 +2,11 @@
 
 #include "RuntimeReflection/Markers.h"
 
-#define HotReloader_RuntimeCompilerSystem_h_66_REFLECTION_MODULE_DUMMY 
-#define HotReloader_RuntimeCompilerSystem_h_66_REFLECTION_MODULE_CASTER \
+#define HotReloader_RuntimeCompilerSystem_h_67_REFLECTION_MODULE_DUMMY 
+#define HotReloader_RuntimeCompilerSystem_h_67_REFLECTION_MODULE_CASTER \
 public: \
 static void* Cast(void* _pObject) { return static_cast<RuntimeCompilerSystem*>(_pObject); }
-#define HotReloader_RuntimeCompilerSystem_h_66_REFLECTION_MODULE_RUNTIME_COMPILER \
+#define HotReloader_RuntimeCompilerSystem_h_67_REFLECTION_MODULE_RUNTIME_COMPILER \
 public: \
 void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\
@@ -31,14 +31,16 @@ _pSerializer->SerializeProperty("m_fnInternalCompilerAddFlag2", m_fnInternalComp
 _pSerializer->SerializeProperty("m_eventPool", m_eventPool); \
 _pSerializer->SerializeProperty("m_CWD", m_CWD); \
 _pSerializer->SerializeProperty("m_bIsSingleModule", m_bIsSingleModule); \
+_pSerializer->SerializeProperty("m_pDependencyResolver", m_pDependencyResolver); \
 _pSerializer->SerializeProperty("m_aHotObjects", m_aHotObjects); \
 _pSerializer->SerializeProperty("m_aModules", m_aModules); \
 _pSerializer->SerializeProperty("m_path", m_path); \
+ISystem::Serialize(_pSerializer); \
 }
-#define HotReloader_RuntimeCompilerSystem_h_66_GENERATED_BODY \
-HotReloader_RuntimeCompilerSystem_h_66_REFLECTION_MODULE_DUMMY \
-HotReloader_RuntimeCompilerSystem_h_66_REFLECTION_MODULE_CASTER \
-HotReloader_RuntimeCompilerSystem_h_66_REFLECTION_MODULE_RUNTIME_COMPILER
+#define HotReloader_RuntimeCompilerSystem_h_67_GENERATED_BODY \
+HotReloader_RuntimeCompilerSystem_h_67_REFLECTION_MODULE_DUMMY \
+HotReloader_RuntimeCompilerSystem_h_67_REFLECTION_MODULE_CASTER \
+HotReloader_RuntimeCompilerSystem_h_67_REFLECTION_MODULE_RUNTIME_COMPILER
 
 #undef DUCKVIL_CURRENT_FILE_ID
 #define DUCKVIL_CURRENT_FILE_ID HotReloader_RuntimeCompilerSystem_h

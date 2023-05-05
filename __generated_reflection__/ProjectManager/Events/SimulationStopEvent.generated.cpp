@@ -1,9 +1,9 @@
-#include "RuntimeReflection/TrackedObjectCreatedEvent.h"
+#include "ProjectManager/Events/SimulationStopEvent.h"
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(14)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(4)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -23,29 +23,28 @@ _namespaces.push_back("Duckvil");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
 {
-_namespaces.push_back("RuntimeReflection");
+_namespaces.push_back("ProjectManager");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
-_namespaces.push_back("TrackedObjectCreatedEvent");
+_namespaces.push_back("SimulationStopEvent");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
-using namespace Duckvil::RuntimeReflection;
-_type = record_type<Duckvil::RuntimeReflection::TrackedObjectCreatedEvent>(_data, "TrackedObjectCreatedEvent");
+using namespace Duckvil::ProjectManager;
+_type = record_type<Duckvil::ProjectManager::SimulationStopEvent>(_data, "SimulationStopEvent");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
-record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 14);
-_property = record_property<HotReloader::ITrackKeeper*>(_data, _type, offsetof(Duckvil::RuntimeReflection::TrackedObjectCreatedEvent, m_pTrackKeeper), "m_pTrackKeeper");
+record_namespace(_data, _type, "ProjectManager");
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 4);
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "RuntimeReflection/TrackedObjectCreatedEvent.h", 14);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "ProjectManager/Events/SimulationStopEvent.h", 4);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 14;
+return 4;
 }
 #endif

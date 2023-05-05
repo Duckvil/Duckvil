@@ -52,7 +52,7 @@
         "DependencyInjection\\DependencyInjection.h": {
             "generated_cpp": "DependencyInjection\\DependencyInjection.generated.cpp",
             "generated_h": "DependencyInjection\\DependencyInjection.generated.h",
-            "hash": "edc8c84a5e2141236d4a0169c397c32f",
+            "hash": "e4857b5846eeac9111db65116df32f41",
             "index": 0,
             "name": "DependencyInjection"
         },
@@ -241,7 +241,7 @@
         "Editor\\Widgets\\ViewportWidget.h": {
             "generated_cpp": "Editor\\Widgets\\ViewportWidget.generated.cpp",
             "generated_h": "Editor\\Widgets\\ViewportWidget.generated.h",
-            "hash": "d449db8178b2998aa8c03d9f05f2d1a7",
+            "hash": "91c29f298a2d4a27837384aaeed5779f",
             "index": 19,
             "name": "Editor"
         },
@@ -266,88 +266,95 @@
             "index": 2,
             "name": "Engine"
         },
+        "Engine\\Events\\ComponentAttachedEvent.h": {
+            "generated_cpp": "Engine\\Events\\ComponentAttachedEvent.generated.cpp",
+            "generated_h": "Engine\\Events\\ComponentAttachedEvent.generated.h",
+            "hash": "10207a45880958a90d29a256a1da9599",
+            "index": 3,
+            "name": "Engine"
+        },
         "Engine\\Events\\EntityCreatedEvent.h": {
             "generated_cpp": "Engine\\Events\\EntityCreatedEvent.generated.cpp",
             "generated_h": "Engine\\Events\\EntityCreatedEvent.generated.h",
             "hash": "a7ac79dd7ad665d3400ffd58e3a47732",
-            "index": 3,
+            "index": 4,
             "name": "Engine"
         },
         "Engine\\Events\\EntityDestroyedEvent.h": {
             "generated_cpp": "Engine\\Events\\EntityDestroyedEvent.generated.cpp",
             "generated_h": "Engine\\Events\\EntityDestroyedEvent.generated.h",
             "hash": "1fdb7362a1358f982e0b3af168336047",
-            "index": 4,
+            "index": 5,
             "name": "Engine"
         },
         "Engine\\Events\\InjectConstructorArgumentEvent.h": {
             "generated_cpp": "Engine\\Events\\InjectConstructorArgumentEvent.generated.cpp",
             "generated_h": "Engine\\Events\\InjectConstructorArgumentEvent.generated.h",
             "hash": "7f8f5f2dfc3761ec380d070f0093d894",
-            "index": 5,
+            "index": 6,
             "name": "Engine"
         },
         "Engine\\Events\\RequestSystemEvent.h": {
             "generated_cpp": "Engine\\Events\\RequestSystemEvent.generated.cpp",
             "generated_h": "Engine\\Events\\RequestSystemEvent.generated.h",
             "hash": "e3d69bfade78391aad21f662709531ad",
-            "index": 6,
+            "index": 7,
             "name": "Engine"
         },
         "Engine\\ISystem.h": {
             "generated_cpp": "Engine\\ISystem.generated.cpp",
             "generated_h": "Engine\\ISystem.generated.h",
             "hash": "28a524e65a9d96d88787eee471828873",
-            "index": 7,
+            "index": 8,
             "name": "Engine"
         },
         "Engine\\ReflectionFlags.h": {
             "generated_cpp": "Engine\\ReflectionFlags.generated.cpp",
             "generated_h": "Engine\\ReflectionFlags.generated.h",
             "hash": "7ff9348074fe37cb7b8c54d026bbd145",
-            "index": 8,
+            "index": 9,
             "name": "Engine"
         },
         "Engine\\ReflectionModules\\DummyReflectionModule.h": {
             "generated_cpp": "Engine\\ReflectionModules\\DummyReflectionModule.generated.cpp",
             "generated_h": "Engine\\ReflectionModules\\DummyReflectionModule.generated.h",
             "hash": "f6a9d8b682e3c51d33af5349751e2e5e",
-            "index": 9,
+            "index": 10,
             "name": "Engine"
         },
         "Engine\\ReflectionModules\\NamedArgumentsReflectionModule.h": {
             "generated_cpp": "Engine\\ReflectionModules\\NamedArgumentsReflectionModule.generated.cpp",
             "generated_h": "Engine\\ReflectionModules\\NamedArgumentsReflectionModule.generated.h",
             "hash": "04756a4402c5a99bbb9630595095f3cc",
-            "index": 10,
+            "index": 11,
             "name": "Engine"
         },
         "Engine\\ScriptComponent.h": {
             "generated_cpp": "Engine\\ScriptComponent.generated.cpp",
             "generated_h": "Engine\\ScriptComponent.generated.h",
             "hash": "c4f7e3dc489f650cf0f36a6c4abf2388",
-            "index": 12,
+            "index": 13,
             "name": "Engine"
         },
         "Engine\\Time.h": {
             "generated_cpp": "Engine\\Time.generated.cpp",
             "generated_h": "Engine\\Time.generated.h",
             "hash": "965b90ba6999acc6c503fd302932179f",
-            "index": 13,
+            "index": 14,
             "name": "Engine"
         },
         "Engine\\UUIDComponent.h": {
             "generated_cpp": "Engine\\UUIDComponent.generated.cpp",
             "generated_h": "Engine\\UUIDComponent.generated.h",
             "hash": "005fd5866f7558a7e1e119b625c69052",
-            "index": 14,
+            "index": 15,
             "name": "Engine"
         },
         "Engine\\runtime_reflection.h": {
             "generated_cpp": "Engine\\runtime_reflection.generated.cpp",
             "generated_h": "Engine\\runtime_reflection.generated.h",
             "hash": "559b3eed87814ebde415c2c13c5980e3",
-            "index": 11,
+            "index": 12,
             "name": "Engine"
         },
         "Event\\BufferedPool.h": {
@@ -500,7 +507,7 @@
         "HotReloader\\RuntimeCompilerSystem.h": {
             "generated_cpp": "HotReloader\\RuntimeCompilerSystem.generated.cpp",
             "generated_h": "HotReloader\\RuntimeCompilerSystem.generated.h",
-            "hash": "644716623340d43bec5a5b415e58746e",
+            "hash": "7a069ea5a861e0dff8401145eba6b62c",
             "index": 11,
             "name": "HotReloader"
         },
@@ -952,25 +959,39 @@
             "index": 2,
             "name": "ProjectManager"
         },
+        "ProjectManager\\Events\\SimulationStartEvent.h": {
+            "generated_cpp": "ProjectManager\\Events\\SimulationStartEvent.generated.cpp",
+            "generated_h": "ProjectManager\\Events\\SimulationStartEvent.generated.h",
+            "hash": "a64ebaf9207e3ba6b731194caa391b79",
+            "index": 3,
+            "name": "ProjectManager"
+        },
+        "ProjectManager\\Events\\SimulationStopEvent.h": {
+            "generated_cpp": "ProjectManager\\Events\\SimulationStopEvent.generated.cpp",
+            "generated_h": "ProjectManager\\Events\\SimulationStopEvent.generated.h",
+            "hash": "08d50734c33054b9e9ea3dee3b34e564",
+            "index": 4,
+            "name": "ProjectManager"
+        },
         "ProjectManager\\Project.h": {
             "generated_cpp": "ProjectManager\\Project.generated.cpp",
             "generated_h": "ProjectManager\\Project.generated.h",
             "hash": "4ae6af1a6c6d7dc67dcc79f7d439dc4b",
-            "index": 3,
+            "index": 5,
             "name": "ProjectManager"
         },
         "ProjectManager\\ProjectManager.h": {
             "generated_cpp": "ProjectManager\\ProjectManager.generated.cpp",
             "generated_h": "ProjectManager\\ProjectManager.generated.h",
-            "hash": "756b02e70f237b8714c9d5019741b9b8",
-            "index": 4,
+            "hash": "8ad3aadd514324bec68632adc53f20bd",
+            "index": 6,
             "name": "ProjectManager"
         },
         "ProjectManager\\Script.h": {
             "generated_cpp": "ProjectManager\\Script.generated.cpp",
             "generated_h": "ProjectManager\\Script.generated.h",
             "hash": "dd695473c2c22a396532348d7393b9b0",
-            "index": 5,
+            "index": 7,
             "name": "ProjectManager"
         },
         "RayTracer\\Objects.h": {
@@ -1232,39 +1253,53 @@
             "index": 9,
             "name": "RuntimeReflection"
         },
+        "RuntimeReflection\\ReflectionFileRecordedEvent.h": {
+            "generated_cpp": "RuntimeReflection\\ReflectionFileRecordedEvent.generated.cpp",
+            "generated_h": "RuntimeReflection\\ReflectionFileRecordedEvent.generated.h",
+            "hash": "4bc7249648637105903f1675cf94cca9",
+            "index": 10,
+            "name": "RuntimeReflection"
+        },
+        "RuntimeReflection\\ReflectionTypeRecordedEvent.h": {
+            "generated_cpp": "RuntimeReflection\\ReflectionTypeRecordedEvent.generated.cpp",
+            "generated_h": "RuntimeReflection\\ReflectionTypeRecordedEvent.generated.h",
+            "hash": "d68e57d0897a90688aff773afc844022",
+            "index": 11,
+            "name": "RuntimeReflection"
+        },
         "RuntimeReflection\\Resources.h": {
             "generated_cpp": "RuntimeReflection\\Resources.generated.cpp",
             "generated_h": "RuntimeReflection\\Resources.generated.h",
             "hash": "6e1741e02f00e6b6c7435d172b6b1710",
-            "index": 10,
+            "index": 12,
             "name": "RuntimeReflection"
         },
         "RuntimeReflection\\RuntimeReflection.h": {
             "generated_cpp": "RuntimeReflection\\RuntimeReflection.generated.cpp",
             "generated_h": "RuntimeReflection\\RuntimeReflection.generated.h",
             "hash": "186d048be1abfa9ea69d3c686fd86d94",
-            "index": 11,
+            "index": 13,
             "name": "RuntimeReflection"
         },
         "RuntimeReflection\\TrackedObjectCreatedEvent.h": {
             "generated_cpp": "RuntimeReflection\\TrackedObjectCreatedEvent.generated.cpp",
             "generated_h": "RuntimeReflection\\TrackedObjectCreatedEvent.generated.h",
             "hash": "5e70fabf7b227bbb219616b2b893cd28",
-            "index": 12,
+            "index": 14,
             "name": "RuntimeReflection"
         },
         "RuntimeReflection\\Trait.h": {
             "generated_cpp": "RuntimeReflection\\Trait.generated.cpp",
             "generated_h": "RuntimeReflection\\Trait.generated.h",
             "hash": "7c7a8cae060ce3be85ea7e617289ebb5",
-            "index": 13,
+            "index": 15,
             "name": "RuntimeReflection"
         },
         "RuntimeReflection\\util.h": {
             "generated_cpp": "RuntimeReflection\\util.generated.cpp",
             "generated_h": "RuntimeReflection\\util.generated.h",
             "hash": "a134c4461edf938e8a7eab18bd23ab7b",
-            "index": 14,
+            "index": 16,
             "name": "RuntimeReflection"
         },
         "ScriptEngine\\Language.h": {

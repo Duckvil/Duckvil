@@ -16,6 +16,7 @@ _pSerializer->SerializeProperty("m_pRendererData", m_pRendererData); \
 _pSerializer->SerializeProperty("m_oldSize", m_oldSize); \
 _pSerializer->SerializeProperty("m_pWindowEventPool", m_pWindowEventPool); \
 _pSerializer->SerializeProperty("m_pEditorEventPool", m_pEditorEventPool); \
+_pSerializer->SerializeProperty("m_pProjectEventPool", m_pProjectEventPool); \
 _pSerializer->SerializeProperty("m_viewport", m_viewport); \
 _pSerializer->SerializeProperty("m_aKeys", m_aKeys); \
 _pSerializer->SerializeProperty("m_bSkip", m_bSkip); \
@@ -31,6 +32,9 @@ _pSerializer->SerializeProperty("m_viewportBounds", m_viewportBounds); \
 _pSerializer->SerializeProperty("m_bLookingAround", m_bLookingAround); \
 _pSerializer->SerializeProperty("m_dDelta", m_dDelta); \
 _pSerializer->SerializeProperty("m_uiReaderHandle", m_uiReaderHandle); \
+_pSerializer->SerializeProperty("m_bSimulating", m_bSimulating); \
+_pSerializer->SerializeProperty("m_bPaused", m_bPaused); \
+ISystem::Serialize(_pSerializer); \
 }
 #define Editor_Widgets_ViewportWidget_h_47_GENERATED_BODY \
 Editor_Widgets_ViewportWidget_h_47_REFLECTION_MODULE_DUMMY \

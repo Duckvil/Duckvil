@@ -3,7 +3,7 @@
 #include "RuntimeReflection/GeneratedMeta.h"
 
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(10)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(12)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -35,7 +35,7 @@ _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
 _type = record_type<duckvil_frontend_reflection_context>(_data, "duckvil_frontend_reflection_context");
 _recordedTypes.push_back(_type);
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<Duckvil::RuntimeReflection::__ftable*>(_data, _type, offsetof(duckvil_frontend_reflection_context, m_pReflection), "m_pReflection");
 _property = record_property<Duckvil::RuntimeReflection::__data*>(_data, _type, offsetof(duckvil_frontend_reflection_context, m_pReflectionData), "m_pReflectionData");
 _property = record_property<Duckvil::RuntimeReflection::__recorder_ftable*>(_data, _type, offsetof(duckvil_frontend_reflection_context, m_pRecorder), "m_pRecorder");
@@ -68,7 +68,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_resource_type_t>(_data
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_resource_type_t, m_ID), "m_ID");
 _namespaces.pop_back();
 _namespaces.push_back("__duckvil_resource_constructor_t");
@@ -78,7 +78,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_resource_constructor_t
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_resource_constructor_t, m_ID), "m_ID");
 _namespaces.pop_back();
 _namespaces.push_back("__duckvil_resource_destructor_t");
@@ -88,7 +88,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_resource_destructor_t>
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_resource_destructor_t, m_ID), "m_ID");
 _namespaces.pop_back();
 _namespaces.push_back("__duckvil_resource_property_t");
@@ -98,7 +98,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_resource_property_t>(_
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_resource_property_t, m_ID), "m_ID");
 _namespaces.pop_back();
 _namespaces.push_back("__duckvil_resource_namespace_t");
@@ -108,7 +108,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_resource_namespace_t>(
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_resource_namespace_t, m_ID), "m_ID");
 _namespaces.pop_back();
 _namespaces.push_back("__duckvil_resource_inheritance_t");
@@ -118,7 +118,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_resource_inheritance_t
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_resource_inheritance_t, m_ID), "m_ID");
 _namespaces.pop_back();
 _namespaces.push_back("__duckvil_resource_function_t");
@@ -128,7 +128,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_resource_function_t>(_
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_resource_function_t, m_ID), "m_ID");
 _namespaces.pop_back();
 _namespaces.push_back("__duckvil_resource_variant_t");
@@ -138,7 +138,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_resource_variant_t>(_d
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_resource_variant_t, m_ID), "m_ID");
 _namespaces.pop_back();
 _namespaces.push_back("__duckvil_resource_meta_t");
@@ -148,7 +148,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_resource_meta_t>(_data
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_resource_meta_t, m_ID), "m_ID");
 _namespaces.pop_back();
 _namespaces.push_back("__duckvil_resource_argument_t");
@@ -158,7 +158,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_resource_argument_t>(_
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_resource_argument_t, m_ID), "m_ID");
 _namespaces.pop_back();
 _namespaces.push_back("__duckvil_resource_enum_t");
@@ -168,7 +168,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_resource_enum_t>(_data
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_resource_enum_t, m_ID), "m_ID");
 _namespaces.pop_back();
 _namespaces.push_back("__duckvil_resource_enum_element_t");
@@ -178,7 +178,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_resource_enum_element_
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_resource_enum_element_t, m_ID), "m_ID");
 _namespaces.pop_back();
 _namespaces.push_back("__duckvil_resource_ntype_t");
@@ -188,7 +188,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_resource_ntype_t>(_dat
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_resource_ntype_t, m_ID), "m_ID");
 _namespaces.pop_back();
 _enum = record_enum<Duckvil::RuntimeReflection::__protection>(_data, _ntype, "__protection");
@@ -210,7 +210,7 @@ _type = record_type<Duckvil::RuntimeReflection::__variant>(_data, "__variant");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _constructor = record_constructor<Duckvil::RuntimeReflection::__variant>(_data, _type);
 _property = record_property<std::size_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__variant, m_ullSize), "m_ullSize");
 _property = record_property<std::size_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__variant, m_ullTypeID), "m_ullTypeID");
@@ -224,7 +224,7 @@ _type = record_type<Duckvil::RuntimeReflection::__variant_t>(_data, "__variant_t
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<Duckvil::RuntimeReflection::__variant>(_data, _type, offsetof(Duckvil::RuntimeReflection::__variant_t, m_variant), "m_variant");
 _property = record_property<Duckvil::RuntimeReflection::__variant_owner>(_data, _type, offsetof(Duckvil::RuntimeReflection::__variant_t, m_owner), "m_owner");
 _namespaces.pop_back();
@@ -235,7 +235,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_slot_array___variant_t
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___variant_t, m_indices), "m_indices");
 _property = record_property<Duckvil::RuntimeReflection::__variant_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___variant_t, m_data), "m_data");
 _namespaces.pop_back();
@@ -246,7 +246,7 @@ _type = record_type<Duckvil::RuntimeReflection::__meta_t>(_data, "__meta_t");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_resource_variant_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__meta_t, m_key), "m_key");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_resource_variant_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__meta_t, m_value), "m_value");
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__meta_t, m_uiOwner), "m_uiOwner");
@@ -258,7 +258,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_slot_array___meta_t>(_
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___meta_t, m_indices), "m_indices");
 _property = record_property<Duckvil::RuntimeReflection::__meta_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___meta_t, m_data), "m_data");
 _namespaces.pop_back();
@@ -269,7 +269,7 @@ _type = record_type<Duckvil::RuntimeReflection::__argument_t>(_data, "__argument
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<std::size_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__argument_t, m_ullTypeID), "m_ullTypeID");
 _property = record_property<Duckvil::RuntimeReflection::property_traits>(_data, _type, offsetof(Duckvil::RuntimeReflection::__argument_t, m_traits), "m_traits");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___meta_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__argument_t, m_metas), "m_metas");
@@ -281,7 +281,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_slot_array___argument_
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___argument_t, m_indices), "m_indices");
 _property = record_property<Duckvil::RuntimeReflection::__argument_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___argument_t, m_data), "m_data");
 _namespaces.pop_back();
@@ -292,7 +292,7 @@ _type = record_type<Duckvil::RuntimeReflection::__constructor_t>(_data, "__const
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___argument_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__constructor_t, m_arguments), "m_arguments");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___meta_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__constructor_t, m_metas), "m_metas");
 _property = record_property<std::size_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__constructor_t, m_ullTypeID), "m_ullTypeID");
@@ -306,7 +306,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_slot_array___construct
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___constructor_t, m_indices), "m_indices");
 _property = record_property<Duckvil::RuntimeReflection::__constructor_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___constructor_t, m_data), "m_data");
 _namespaces.pop_back();
@@ -317,7 +317,7 @@ _type = record_type<Duckvil::RuntimeReflection::__destructor_t>(_data, "__destru
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___meta_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__destructor_t, m_metas), "m_metas");
 _property = record_property<uint8_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__destructor_t, m_pData), "m_pData");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_resource_type_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__destructor_t, m_owner), "m_owner");
@@ -329,7 +329,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_slot_array___destructo
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___destructor_t, m_indices), "m_indices");
 _property = record_property<Duckvil::RuntimeReflection::__destructor_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___destructor_t, m_data), "m_data");
 _namespaces.pop_back();
@@ -340,7 +340,7 @@ _type = record_type<Duckvil::RuntimeReflection::__property_t>(_data, "__property
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___meta_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__property_t, m_metas), "m_metas");
 _property = record_property<std::size_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__property_t, m_ullTypeID), "m_ullTypeID");
 _property = record_property<char*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__property_t, m_sName), "m_sName");
@@ -355,7 +355,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_slot_array___property_
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___property_t, m_indices), "m_indices");
 _property = record_property<Duckvil::RuntimeReflection::__property_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___property_t, m_data), "m_data");
 _namespaces.pop_back();
@@ -366,7 +366,7 @@ _type = record_type<Duckvil::RuntimeReflection::__namespace_t>(_data, "__namespa
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<char*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__namespace_t, m_sNamespaceName), "m_sNamespaceName");
 _namespaces.pop_back();
 _namespaces.push_back("__duckvil_slot_array___namespace_t");
@@ -376,7 +376,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_slot_array___namespace
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___namespace_t, m_indices), "m_indices");
 _property = record_property<Duckvil::RuntimeReflection::__namespace_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___namespace_t, m_data), "m_data");
 _namespaces.pop_back();
@@ -387,7 +387,7 @@ _type = record_type<Duckvil::RuntimeReflection::__inheritance_t>(_data, "__inher
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<std::size_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__inheritance_t, m_ullInheritanceTypeID), "m_ullInheritanceTypeID");
 _property = record_property<Duckvil::RuntimeReflection::__protection>(_data, _type, offsetof(Duckvil::RuntimeReflection::__inheritance_t, m_protection), "m_protection");
 _namespaces.pop_back();
@@ -398,7 +398,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_slot_array___inheritan
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___inheritance_t, m_indices), "m_indices");
 _property = record_property<Duckvil::RuntimeReflection::__inheritance_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___inheritance_t, m_data), "m_data");
 _namespaces.pop_back();
@@ -409,7 +409,7 @@ _type = record_type<Duckvil::RuntimeReflection::__function_t>(_data, "__function
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___meta_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__function_t, m_metas), "m_metas");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___argument_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__function_t, m_arguments), "m_arguments");
 _property = record_property<Duckvil::RuntimeReflection::__ifunction*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__function_t, m_pFunction), "m_pFunction");
@@ -426,7 +426,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_slot_array___function_
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___function_t, m_indices), "m_indices");
 _property = record_property<Duckvil::RuntimeReflection::__function_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___function_t, m_data), "m_data");
 _namespaces.pop_back();
@@ -437,7 +437,7 @@ _type = record_type<Duckvil::RuntimeReflection::__enum_element_t>(_data, "__enum
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___meta_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__enum_element_t, m_metas), "m_metas");
 _property = record_property<void*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__enum_element_t, m_pValue), "m_pValue");
 _property = record_property<char*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__enum_element_t, m_sName), "m_sName");
@@ -449,7 +449,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_slot_array___enum_elem
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___enum_element_t, m_indices), "m_indices");
 _property = record_property<Duckvil::RuntimeReflection::__enum_element_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___enum_element_t, m_data), "m_data");
 _namespaces.pop_back();
@@ -460,7 +460,7 @@ _type = record_type<Duckvil::RuntimeReflection::__enum_t>(_data, "__enum_t");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___meta_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__enum_t, m_metas), "m_metas");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___enum_element_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__enum_t, m_elements), "m_elements");
 _property = record_property<std::size_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__enum_t, m_ullTypeID), "m_ullTypeID");
@@ -473,7 +473,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_slot_array___enum_t>(_
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___enum_t, m_indices), "m_indices");
 _property = record_property<Duckvil::RuntimeReflection::__enum_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___enum_t, m_data), "m_data");
 _namespaces.pop_back();
@@ -484,7 +484,7 @@ _type = record_type<Duckvil::RuntimeReflection::__type_t>(_data, "__type_t");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___constructor_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__type_t, m_constructors), "m_constructors");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___destructor_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__type_t, m_destructors), "m_destructors");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___property_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__type_t, m_properties), "m_properties");
@@ -506,7 +506,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_slot_array___type_t>(_
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___type_t, m_indices), "m_indices");
 _property = record_property<Duckvil::RuntimeReflection::__type_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___type_t, m_data), "m_data");
 _namespaces.pop_back();
@@ -517,7 +517,7 @@ _type = record_type<Duckvil::RuntimeReflection::__ntype_t>(_data, "__ntype_t");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___property_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__ntype_t, m_properties), "m_properties");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___namespace_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__ntype_t, m_namespaces), "m_namespaces");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___function_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__ntype_t, m_functions), "m_functions");
@@ -532,7 +532,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_slot_array___ntype_t>(
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___ntype_t, m_indices), "m_indices");
 _property = record_property<Duckvil::RuntimeReflection::__ntype_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___ntype_t, m_data), "m_data");
 _namespaces.pop_back();
@@ -543,7 +543,7 @@ _type = record_type<Duckvil::RuntimeReflection::__object_t>(_data, "__object_t")
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___variant_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__object_t, m_variantKeys), "m_variantKeys");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___variant_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__object_t, m_variantValues), "m_variantValues");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___meta_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__object_t, m_metas), "m_metas");
@@ -556,7 +556,7 @@ _type = record_type<Duckvil::RuntimeReflection::__duckvil_slot_array___object_t>
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<uint32_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___object_t, m_indices), "m_indices");
 _property = record_property<Duckvil::RuntimeReflection::__object_t*>(_data, _type, offsetof(Duckvil::RuntimeReflection::__duckvil_slot_array___object_t, m_data), "m_data");
 _namespaces.pop_back();
@@ -567,7 +567,7 @@ _type = record_type<Duckvil::RuntimeReflection::__data>(_data, "__data");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___type_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__data, m_aTypes), "m_aTypes");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___ntype_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__data, m_aNTypes), "m_aNTypes");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_slot_array___object_t>(_data, _type, offsetof(Duckvil::RuntimeReflection::__data, m_aObjects), "m_aObjects");
@@ -581,7 +581,7 @@ _type = record_type<Duckvil::RuntimeReflection::__ftable>(_data, "__ftable");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 10);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
 _property = record_property<Duckvil::RuntimeReflection::__data*(*)(Memory::ftable*,Memory::free_list_allocator*,Duckvil::RuntimeReflection::__ftable*)>(_data, _type, offsetof(Duckvil::RuntimeReflection::__ftable, m_fnInit), "m_fnInit");
 _property = record_property<duckvil_frontend_reflection_context*(*)(Memory::ftable*,Memory::free_list_allocator*,Duckvil::RuntimeReflection::__ftable*,Duckvil::RuntimeReflection::__data*)>(_data, _type, offsetof(Duckvil::RuntimeReflection::__ftable, m_fnCreateContext), "m_fnCreateContext");
 _property = record_property<Duckvil::RuntimeReflection::__duckvil_resource_type_t(*)(Duckvil::RuntimeReflection::__data*,char const*,std::size_t)>(_data, _type, offsetof(Duckvil::RuntimeReflection::__ftable, m_fnGetTypeHandleByName), "m_fnGetTypeHandleByName");
@@ -669,11 +669,11 @@ _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "RuntimeReflection/Resources.h", 10);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "RuntimeReflection/Resources.h", 12);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 10;
+return 12;
 }
 #endif

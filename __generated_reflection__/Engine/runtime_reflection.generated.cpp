@@ -3,7 +3,7 @@
 #include "RuntimeReflection/GeneratedMeta.h"
 
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(11)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(12)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -24,11 +24,11 @@ _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/runtime_reflection.h", 11);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/runtime_reflection.h", 12);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 11;
+return 12;
 }
 #endif

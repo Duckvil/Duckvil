@@ -3,7 +3,7 @@
 #include "RuntimeReflection/GeneratedMeta.h"
 
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(3)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(5)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -34,7 +34,7 @@ _type = record_type<Duckvil::ProjectManager::project>(_data, "project");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "ProjectManager");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 5);
 _property = record_property<Memory::ThreadsafeVector<duckvil_recorderd_types>>(_data, _type, offsetof(Duckvil::ProjectManager::project, m_aTypes), "m_aTypes");
 _property = record_property<void*>(_data, _type, offsetof(Duckvil::ProjectManager::project, m_pObject), "m_pObject");
 _property = record_property<Utils::string>(_data, _type, offsetof(Duckvil::ProjectManager::project, m_sPath), "m_sPath");
@@ -47,11 +47,11 @@ _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "ProjectManager/Project.h", 3);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "ProjectManager/Project.h", 5);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 3;
+return 5;
 }
 #endif

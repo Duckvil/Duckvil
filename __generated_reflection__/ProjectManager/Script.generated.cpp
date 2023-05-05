@@ -3,7 +3,7 @@
 #include "RuntimeReflection/GeneratedMeta.h"
 
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(5)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(7)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -34,7 +34,7 @@ _type = record_type<Duckvil::Project::Script>(_data, "Script");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Project");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 5);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 7);
 _function = record_function<Duckvil::Project::Script, bool>(_data, _type, &Duckvil::Project::Script::Init, "Init");
 _function = record_function<Duckvil::Project::Script, void>(_data, _type, &Duckvil::Project::Script::Update, "Update");
 _namespaces.pop_back();
@@ -42,11 +42,11 @@ _namespaces.pop_back();
 }
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "ProjectManager/Script.h", 5);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "ProjectManager/Script.h", 7);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 5;
+return 7;
 }
 #endif
