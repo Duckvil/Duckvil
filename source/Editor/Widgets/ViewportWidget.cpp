@@ -18,6 +18,9 @@
 
 #include "ImGuizmo/ImGuizmo.h"
 
+#include "ProjectManager/Events/SimulationStartEvent.h"
+#include "ProjectManager/Events/SimulationStopEvent.h"
+
 namespace Duckvil { namespace Editor {
 
     void decompose(const glm::mat4& m, glm::vec3& pos, glm::quat& rot, glm::vec3& scale)
@@ -40,14 +43,17 @@ namespace Duckvil { namespace Editor {
 
     }
 
-    ViewportWidget::ViewportWidget(const Memory::FreeList& _heap, Event::Pool<Event::mode::buffered>* _pWindowEventPool, Network::IServer* _pServer, Network::IClient* _pClient, Event::Pool<Event::mode::immediate>* _pEditorEventPool, flecs::world* _pECS, EntityFactory* _pEntityFactory) :
+    ViewportWidget::ViewportWidget(const Memory::FreeList& _heap, Event::Pool<Event::mode::buffered>* _pWindowEventPool, Network::IServer* _pServer, Network::IClient* _pClient, Event::Pool<Event::mode::immediate>* _pEditorEventPool, flecs::world* _pECS, EntityFactory* _pEntityFactory, Event::Pool<Event::mode::immediate>* _pProjectEventPool) :
         m_heap(_heap),
         m_pWindowEventPool(_pWindowEventPool),
         m_pClient(_pClient),
         m_pServer(_pServer),
         m_pEditorEventPool(_pEditorEventPool),
         m_pECS(_pECS),
-        m_pEntityFactory(_pEntityFactory)
+        m_pEntityFactory(_pEntityFactory),
+        m_pProjectEventPool(_pProjectEventPool),
+		m_bSimulating(false),
+		m_bPaused(false)
     {
         _pEditorEventPool->Add<EntitySelectedEvent>(this, &ViewportWidget::OnEvent);
         _pEditorEventPool->Add<EntityDestroyedEvent>(this, &ViewportWidget::OnEvent);
@@ -186,6 +192,15 @@ namespace Duckvil { namespace Editor {
         }
     }
 
+    void AlignForWidth(float width, float alignment = 0.5f)
+	{
+	    float avail = ImGui::GetContentRegionAvail().x;
+	    float off = (avail - width) * alignment;
+
+	    if(off > 0.0f)
+	        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+	}
+
     void ViewportWidget::OnDraw()
     {
         ZoneScopedN("Viewport draw");
@@ -295,6 +310,63 @@ namespace Duckvil { namespace Editor {
             reset(&m_viewport);
 
             m_oldSize = _size;
+        }
+
+        ImGuiStyle& style = ImGui::GetStyle();
+
+        float width = 0.0f;
+        
+        if(m_bSimulating)
+        {
+            width += ImGui::CalcTextSize("Stop").x;
+            width += style.ItemSpacing.x;
+            width += ImGui::CalcTextSize("Pause").x;
+
+            if(m_bPaused)
+            {
+                width += style.ItemSpacing.x;
+                width += ImGui::CalcTextSize("Resume").x;
+            }
+
+            AlignForWidth(width);
+
+            if(ImGui::Button("Stop"))
+            {
+                m_bSimulating = false;
+
+                m_pProjectEventPool->Broadcast(ProjectManager::SimulationStopEvent{});
+            }
+
+            ImGui::SameLine();
+
+            if(ImGui::Button("Pause"))
+            {
+                m_bPaused = true;
+            }
+
+            if(m_bPaused)
+            {
+	            ImGui::SameLine();
+
+	            if(ImGui::Button("Resume"))
+	            {
+	                m_bPaused = false;
+	            }
+            }
+        }
+        else
+        {
+            width += ImGui::CalcTextSize("Start").x;
+
+            AlignForWidth(width);
+
+	        if(ImGui::Button("Start"))
+	        {
+                m_bSimulating = true;
+                m_bPaused = false;
+
+                m_pProjectEventPool->Broadcast(ProjectManager::SimulationStartEvent{});
+	        }
         }
 
         uint32_t* _texture = (uint32_t*)m_pRenderer->m_fnGetTextures(m_pRendererData, m_viewport.m_fboTextureObject);

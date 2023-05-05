@@ -581,6 +581,19 @@ namespace Duckvil {
 
                     return false;
 				}));
+            _pData->m_pDependencyInjector->Register(&(_pData->m_projectManagerData.m_projectManagerEventPool), Utils::lambda([&](const RuntimeReflection::__duckvil_resource_type_t& _typeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, const RuntimeReflection::__duckvil_resource_argument_t& _argumentHandle)
+                {
+                    static const size_t _immediateEventPoolTypeID = typeid(Event::Pool<Event::mode::immediate>).hash_code();
+
+                    const RuntimeReflection::__argument_t& _arg = RuntimeReflection::get_argument(_typeHandle, _constructorHandle, _argumentHandle);
+
+                    if(RuntimeReflection::meta_has_value(_typeHandle, _constructorHandle, _argumentHandle, "Project") && _immediateEventPoolTypeID == _arg.m_ullTypeID)
+                    {
+                        return true;
+                    }
+
+                    return false;
+                }));
 
             for(uint32_t i = 0; i < _types.Size(); ++i)
             {

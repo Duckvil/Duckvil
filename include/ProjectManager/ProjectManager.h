@@ -58,6 +58,9 @@ namespace Duckvil { namespace ProjectManager {
         Memory::FreeList m_objectsHeap;
 
         DependencyInjection::IDependencyResolver* m_pDependencyResolver;
+
+        bool m_bSimulating;
+        bool m_bPaused;
     };
 
     DUCKVIL_CLASS(Duckvil::DependencyInjection::INJECTABLE)

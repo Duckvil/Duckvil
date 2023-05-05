@@ -75,6 +75,7 @@ namespace Duckvil { namespace Editor {
 
         Event::Pool<Event::mode::buffered>* m_pWindowEventPool;
         Event::Pool<Event::mode::immediate>* m_pEditorEventPool;
+        Event::Pool<Event::mode::immediate>* m_pProjectEventPool;
 
         viewport m_viewport;
 
@@ -105,11 +106,14 @@ namespace Duckvil { namespace Editor {
         uint32_t m_uiReaderHandle;
 #endif
 
+        bool m_bSimulating;
+        bool m_bPaused;
+
         void SpwanPlayer(uint32_t _uiID);
 
     public:
         ViewportWidget();
-        ViewportWidget(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Window") Event::Pool<Event::mode::buffered>* _pWindowEventPool, Network::IServer* _pServer, Network::IClient* _pClient, DUCKVIL_ARGUMENT("Editor") Event::Pool<Event::mode::immediate>* _pEditorEventPool, flecs::world* _pECS, EntityFactory* _pEntityFactory);
+        ViewportWidget(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Window") Event::Pool<Event::mode::buffered>* _pWindowEventPool, Network::IServer* _pServer, Network::IClient* _pClient, DUCKVIL_ARGUMENT("Editor") Event::Pool<Event::mode::immediate>* _pEditorEventPool, flecs::world* _pECS, EntityFactory* _pEntityFactory, DUCKVIL_ARGUMENT("Project") Event::Pool<Event::mode::immediate>* _pProjectEventPool);
         ~ViewportWidget();
 
         bool Init();

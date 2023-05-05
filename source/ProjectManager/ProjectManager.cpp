@@ -23,6 +23,9 @@
 
 #include "Engine/Events/RequestSystemEvent.h"
 
+#include "ProjectManager/Events/SimulationStartEvent.h"
+#include "ProjectManager/Events/SimulationStopEvent.h"
+
 #undef GetObject
 #undef max
 
@@ -228,6 +231,8 @@ namespace Duckvil { namespace ProjectManager {
         _pData->m_pEngineEventPool = _pEngineEventPool;
 
         _pData->m_bLoaded = false;
+        _pData->m_bSimulating = false;
+        _pData->m_bPaused = false;
 
         _pData->m_dOneSecond = 0;
 
@@ -526,6 +531,20 @@ namespace Duckvil { namespace ProjectManager {
 
         _pData->m_pEngineEventPool->Broadcast(OnLoadEvent{ _project });
 
+        _pData->m_projectManagerEventPool.AddA<SimulationStartEvent>([_pData](const SimulationStartEvent& _event)
+	        {
+        		printf("Simulation started!\n");
+
+                _pData->m_bSimulating = true;
+	        });
+
+        _pData->m_projectManagerEventPool.AddA<SimulationStopEvent>([_pData](const SimulationStopEvent& _event)
+	        {
+                printf("Simulation stopped!\n");
+
+                _pData->m_bSimulating = false;
+	        });
+
         return _project;
     }
 
@@ -617,7 +636,10 @@ namespace Duckvil { namespace ProjectManager {
                 (_pData->m_pRuntimeCompilerSystem->*_pData->m_fnRuntimeCompilerUpdate)(_dDelta);
             }
 
+            if(_pData->m_bSimulating)
+            {
             _pData->m_fnUpdateProject->Invoke(_pData->m_loadedProject.m_pObject);
+        }
         }
 
         if(_pData->m_dOneSecond >= 1)
