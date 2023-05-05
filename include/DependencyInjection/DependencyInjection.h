@@ -18,6 +18,7 @@ namespace Duckvil { namespace DependencyInjection {
         Event::Pool<Event::mode::immediate>* m_pEngineEventPool;
 
         const Dependency& FindDependency(size_t _ullTypeID, RuntimeReflection::__duckvil_resource_type_t* _pTypeHandle = nullptr);
+    	Memory::Vector<Dependency> FindDependencies(size_t _ullTypeID, RuntimeReflection::__duckvil_resource_type_t* _pTypeHandle = nullptr);
         
     public:
         DependencyResolver(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEngineEventPool);

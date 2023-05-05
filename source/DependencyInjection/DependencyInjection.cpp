@@ -28,6 +28,30 @@ namespace Duckvil { namespace DependencyInjection {
         throw DependencyNotFound();
     }
 
+    Memory::Vector<DependencyResolver::Dependency> DependencyResolver::FindDependencies(size_t _ullTypeID, RuntimeReflection::__duckvil_resource_type_t* _pTypeHandle)
+    {
+        Memory::Vector<DependencyResolver::Dependency> _dependencies;
+
+        m_heap.Allocate(_dependencies, 1);
+
+	    for(const auto& _dependency : m_aDependencies)
+        {
+            if(_dependency.m_ullTypeID != _ullTypeID)
+            {
+                continue;
+            }
+
+            if(_dependencies.Full())
+            {
+                _dependencies.Resize(_dependencies.Size() * 2);
+            }
+
+            _dependencies.Allocate(_dependency);
+        }
+
+        return _dependencies;
+    }
+
     DependencyResolver::DependencyResolver(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEngineEventPool) :
 		m_pEngineEventPool(_pEngineEventPool)
     {
@@ -107,52 +131,70 @@ namespace Duckvil { namespace DependencyInjection {
             if(_argument.m_traits & RuntimeReflection::property_traits::is_pointer)
             {
 	            // Pointer
+                
+                const auto& _dependencies = FindDependencies(_argument.m_ullTypeID);
+                bool _resolved = false;
 
-                RuntimeReflection::__duckvil_resource_type_t _typeHandle;
-
-                const Dependency& _dependency = FindDependency(_argument.m_ullTypeID, &_typeHandle);
-
-                if(_dependency.m_scope == Scope::SINGLETON)
+                for(uint32_t _i = 0; _i < _dependencies.Size(); ++_i)
                 {
-	                if(_dependency.m_fnOnInject != nullptr && !_dependency.m_fnOnInject(_clientTypeHandle, _constructorHandle, { i }))
+                    const Dependency& _dependency = _dependencies[_i];
+
+                    if(_dependency.m_scope == Scope::SINGLETON)
 	                {
-	                    // Call events
+		                if(_dependency.m_fnOnInject != nullptr)
+		                {
+                            if(_dependency.m_fnOnInject(_clientTypeHandle, _constructorHandle, { i }))
+                            {
+                                _fap.Push(_dependency.m_pData);
 
-	                    InjectConstructorArgumentEvent::Info _info;
+                                _resolved = true;
 
-	                    _info.m_uiArgumentIndex = i;
-	                    _info.m_constructorHandle = _constructorHandle;
-	                    _info.m_typeHandle = _clientTypeHandle;
+                                break;
+                            }
+		                }
+                        else
+                        {
+                            _fap.Push(_dependency.m_pData);
 
-	                    InjectConstructorArgumentEvent _e(&_fap, _info, _argument);
+                            _resolved = true;
 
-	                    m_pEngineEventPool->Broadcast(_e);
-
-	                    if(!_e.m_bSuccess)
-	                    {
-	                        auto _type = RuntimeReflection::get_type(_argument.m_ullTypeID);
-
-	                        throw std::exception("Could not resolve dependency");
-	                    }
-
-		                continue;
+                            break;
+                        }
 	                }
-
-	                /*if(_dependency.m_scope != Scope::SINGLETON)
+	                else if(_dependency.m_scope == Scope::TRANSIENT)
 	                {
-	                    throw std::exception("Not implemented");
-	                }*/
+		                if(_dependency.m_fnFactory != nullptr)
+		                {
+	                        void* _data = _dependency.m_fnFactory(_clientTypeHandle, _constructorHandle, { i });
 
-	                _fap.Push(_dependency.m_pData);
+	                        _fap.Push(_data);
+
+                            _resolved = true;
+
+                            break;
+		                }
+	                }
                 }
-                else if(_dependency.m_scope == Scope::TRANSIENT)
-                {
-	                if(_dependency.m_fnFactory != nullptr)
-	                {
-                        void* _data = _dependency.m_fnFactory(_clientTypeHandle, _constructorHandle, { i });
 
-                        _fap.Push(_data);
-	                }
+                if(!_resolved)
+                {
+                    InjectConstructorArgumentEvent::Info _info;
+
+                    _info.m_uiArgumentIndex = i;
+                    _info.m_constructorHandle = _constructorHandle;
+                    _info.m_typeHandle = _clientTypeHandle;
+
+                    InjectConstructorArgumentEvent _e(&_fap, _info, _argument);
+
+                    m_pEngineEventPool->Broadcast(_e);
+
+					if(!_e.m_bSuccess)
+                    {
+                        auto _typeHandle = RuntimeReflection::get_type(_argument.m_ullTypeID);
+                        auto _type = RuntimeReflection::get_type(_typeHandle);
+
+                        throw std::exception("Could not resolve dependency");
+                    }
                 }
             }
             else
