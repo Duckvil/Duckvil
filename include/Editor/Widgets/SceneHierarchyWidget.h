@@ -10,7 +10,7 @@
 
 #include "Event/ImmediatePool.h"
 
-#include "Engine/EntityFactory.h"
+#include "ECS/EntityFactory.h"
 
 #include "Editor/Events/EntitySelectedEvent.h"
 
@@ -30,12 +30,12 @@ namespace Duckvil { namespace Editor {
 
         const Event::Pool<Event::mode::immediate>* m_pEditorEventPool;
 
-        EntityFactory* m_pEntityFactory;
+        ECS::EntityFactory* m_pEntityFactory;
 
-        Entity m_selectedEntity;
+        ECS::Entity m_selectedEntity;
 
     public:
-        SceneHierarchyWidget(const Memory::FreeList& _heap, flecs::world* _pECS, DUCKVIL_ARGUMENT("Editor") Event::Pool<Event::mode::immediate>* _pEditorEventPool, EntityFactory* _pEntityFactory);
+        SceneHierarchyWidget(const Memory::FreeList& _heap, flecs::world* _pECS, DUCKVIL_ARGUMENT("Editor") Event::Pool<Event::mode::immediate>* _pEditorEventPool, ECS::EntityFactory* _pEntityFactory);
         ~SceneHierarchyWidget();
 
         void InitEditor(void* _pImguiContext);

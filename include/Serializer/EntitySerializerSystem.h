@@ -7,7 +7,7 @@
 
 #include "nlohmann/json.hpp"
 
-#include "Engine/EntityFactory.h"
+#include "ECS/EntityFactory.h"
 
 namespace Duckvil { namespace Serializer {
 
@@ -20,21 +20,21 @@ namespace Duckvil { namespace Serializer {
         Event::Pool<Event::mode::immediate>* m_pEngineEventPool;
         Event::Pool<Event::mode::immediate>* m_pEntityFactoryEventPool;
 
-        Memory::Vector<Entity> m_entities;
+        Memory::Vector<ECS::Entity> m_entities;
 
-        EntityFactory* m_pEntityFactory;
+        ECS::EntityFactory* m_pEntityFactory;
 
-        nlohmann::json Serialize(const Entity& _entity);
-        void Deserialize(const nlohmann::json& _jEntity, Entity& _entity);
+        nlohmann::json Serialize(const ECS::Entity& _entity);
+        void Deserialize(const nlohmann::json& _jEntity, ECS::Entity& _entity);
 
     public:
-        EntitySerializerSystem(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Engine") Event::Pool<Event::mode::immediate>* _pEngineEventPool, EntityFactory* _pEntityFactory);
+        EntitySerializerSystem(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Engine") Event::Pool<Event::mode::immediate>* _pEngineEventPool, ECS::EntityFactory* _pEntityFactory);
         ~EntitySerializerSystem();
 
         bool Init();
         void Update(double _dDelta);
 
-        void Load(const std::filesystem::path& _sFile, void (*_fn)(Entity& _entity) = nullptr);
+        void Load(const std::filesystem::path& _sFile, void (*_fn)(ECS::Entity& _entity) = nullptr);
         void Save(const std::filesystem::path& _sFile);
 
         void OnEvent(EntityCreatedEvent& _event);

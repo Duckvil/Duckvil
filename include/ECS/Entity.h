@@ -2,10 +2,9 @@
 
 #include "flecs/flecs.h"
 
-#define DUCKVIL_RUNTIME_REFLECTION_PAUSE
-#define DUCKVIL_RUNTIME_REFLECTION_RESUME
+namespace Duckvil { namespace ECS {
 
-namespace Duckvil {
+    class EntityFactory;
 
     class Entity
     {
@@ -104,4 +103,4 @@ namespace Duckvil {
         }
     };
 
-}
+}}

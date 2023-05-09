@@ -8,13 +8,13 @@
 
 #include "Engine/Events/EntityDestroyedEvent.h"
 
-#include "Engine/EntityFactory.h"
+#include "ECS/EntityFactory.h"
 
 #include "Graphics/TransformComponent.h"
 
 namespace Duckvil { namespace Editor {
 
-    SceneHierarchyWidget::SceneHierarchyWidget(const Memory::FreeList& _heap, flecs::world* _pECS, Event::Pool<Event::mode::immediate>* _pEditorEventPool, EntityFactory* _pEntityFactory) :
+    SceneHierarchyWidget::SceneHierarchyWidget(const Memory::FreeList& _heap, flecs::world* _pECS, Event::Pool<Event::mode::immediate>* _pEditorEventPool, ECS::EntityFactory* _pEntityFactory) :
         m_pECS(_pECS),
         m_pEditorEventPool(_pEditorEventPool),
         m_pEntityFactory(_pEntityFactory)
@@ -49,8 +49,8 @@ namespace Duckvil { namespace Editor {
         {
             if(ImGui::MenuItem("Create Entity"))
             {
-                Entity _e = m_pEntityFactory->Make(
-                    [](Entity& _entity)
+                ECS::Entity _e = m_pEntityFactory->Make(
+                    [](ECS::Entity& _entity)
                     {
                         _entity.Add<UUIDComponent>();
 
@@ -75,7 +75,7 @@ namespace Duckvil { namespace Editor {
 
                 if(ImGui::Selectable(std::to_string(_uuid.m_uuid.Hash()).c_str(), m_selectedEntity.m_entity == _e))
                 {
-                    m_pEditorEventPool->Broadcast(EntitySelectedEvent{ EntityFactory::Clone(_e) });
+                    m_pEditorEventPool->Broadcast(EntitySelectedEvent{ ECS::EntityFactory::Clone(_e) });
                 }
 
                 if(ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Right))
@@ -95,7 +95,7 @@ namespace Duckvil { namespace Editor {
 
                 m_selectedEntity.m_entity.disable();
 
-                m_selectedEntity = Entity();
+                m_selectedEntity = ECS::Entity();
             }
 
             ImGui::EndPopup();

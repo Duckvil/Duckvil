@@ -32,7 +32,7 @@ namespace Duckvil { namespace Editor {
         ImGui::DragFloat3(_sLabel, &_value[0], 0.1f);
     }
 
-    EntityInspectorWidget::EntityInspectorWidget(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEditorEventPool, EntityFactory* _pEntityFactory, Event::Pool<Event::mode::immediate>* _pEngineEventPool) :
+    EntityInspectorWidget::EntityInspectorWidget(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEditorEventPool, ECS::EntityFactory* _pEntityFactory, Event::Pool<Event::mode::immediate>* _pEngineEventPool) :
         m_heap(_heap),
         m_pEntityFactory(_pEntityFactory),
         m_pEngineEventPool(_pEngineEventPool)
@@ -116,8 +116,8 @@ namespace Duckvil { namespace Editor {
 
                                     _aa.m_typeHandle = _type.GetHandle();
 
-                                    _aa.m_hasFuncHandle = _type.GetFunctionHandle<const Entity&>("Has");
-                                    _aa.m_getFuncHandle = _type.GetFunctionHandle<const Entity&>("Get");
+                                    _aa.m_hasFuncHandle = _type.GetFunctionHandle<const ECS::Entity&>("Has");
+                                    _aa.m_getFuncHandle = _type.GetFunctionHandle<const ECS::Entity&>("Get");
 
                                     _aa.m_pFunction = _func.GetPointer();
                                     _aa.m_sPropertyName = _prop.GetName();
@@ -246,14 +246,14 @@ namespace Duckvil { namespace Editor {
                     {
                         const Function& _func = _c.m_aFunctions[_j];
 
-                        bool _has = RuntimeReflection::invoke_static_result<bool, const Entity&>(_func.m_typeHandle, _func.m_hasFuncHandle, m_selectedEntity);
+                        bool _has = RuntimeReflection::invoke_static_result<bool, const ECS::Entity&>(_func.m_typeHandle, _func.m_hasFuncHandle, m_selectedEntity);
 
                         if(!_has)
                         {
                             continue;
                         }
 
-                        uint8_t* _componentAddress = RuntimeReflection::invoke_static_result<uint8_t*, const Entity&>(_func.m_typeHandle, _func.m_getFuncHandle, m_selectedEntity);
+                        uint8_t* _componentAddress = RuntimeReflection::invoke_static_result<uint8_t*, const ECS::Entity&>(_func.m_typeHandle, _func.m_getFuncHandle, m_selectedEntity);
 
                         RuntimeDependencyInjector _fap(2);
 
@@ -420,7 +420,7 @@ namespace Duckvil { namespace Editor {
                     if(m_selectedEntity.m_entity != 0)
                     {
                         const Component& _component = m_aFunctions[m_iCurrentComponentItem];
-                        Entity _e = m_pEntityFactory->LookupComponent(m_aComponents[m_iCurrentComponentItem]);
+                        ECS::Entity _e = m_pEntityFactory->LookupComponent(m_aComponents[m_iCurrentComponentItem]);
 
                         m_selectedEntity.Add(_e);
 

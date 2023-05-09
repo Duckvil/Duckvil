@@ -10,7 +10,7 @@
 
 #include "RuntimeReflection/RuntimeReflection.h"
 
-#include "Engine/EntityFactory.h"
+#include "ECS/EntityFactory.h"
 #include "Engine/ReflectionFlags.h"
 
 #include "HotReloader/Events/SwapEvent.h"
@@ -56,7 +56,7 @@ namespace Duckvil { namespace Editor {
             bool (*m_fnDraw)();
         };
 
-        Entity m_selectedEntity;
+        ECS::Entity m_selectedEntity;
 
         Memory::FreeList m_heap;
 
@@ -67,7 +67,7 @@ namespace Duckvil { namespace Editor {
 
         bool m_bPopupOpened;
 
-        EntityFactory* m_pEntityFactory;
+        ECS::EntityFactory* m_pEntityFactory;
 
         std::vector<const char*> m_aComponents;
         int m_iCurrentComponentItem;
@@ -83,7 +83,7 @@ namespace Duckvil { namespace Editor {
         Event::Pool<Event::mode::immediate>* m_pEngineEventPool;
 
     public:
-        EntityInspectorWidget(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Editor") Event::Pool<Event::mode::immediate>* _pEditorEventPool, EntityFactory* _pEntityFactory, DUCKVIL_ARGUMENT("Engine") Event::Pool<Event::mode::immediate>* _pEngineEventPool);
+        EntityInspectorWidget(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Editor") Event::Pool<Event::mode::immediate>* _pEditorEventPool, ECS::EntityFactory* _pEntityFactory, DUCKVIL_ARGUMENT("Engine") Event::Pool<Event::mode::immediate>* _pEngineEventPool);
         ~EntityInspectorWidget();
 
         void InitEditor(void* _pImguiContext);

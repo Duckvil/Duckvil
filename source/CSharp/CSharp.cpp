@@ -53,7 +53,7 @@ namespace Duckvil { namespace CSharp {
     static bool entity_has_component(size_t _ullID, MonoReflectionType* _pComponentType)
     {
         MonoType* _type = mono_reflection_type_get_type(_pComponentType);
-        Entity _entity = CSharp::GetScriptEngine()->GetECS()->FromID(_ullID);
+        ECS::Entity _entity = CSharp::GetScriptEngine()->GetECS()->FromID(_ullID);
 
         return CSharp::GetScriptEngine()->m_aComponentFuncs[_type].m_fnHasComponent(_entity);
     }
@@ -61,49 +61,49 @@ namespace Duckvil { namespace CSharp {
     static bool entity_add_component(size_t _ullID, MonoReflectionType* _pComponentType, void* _pData)
     {
         MonoType* _type = mono_reflection_type_get_type(_pComponentType);
-        Entity _entity = CSharp::GetScriptEngine()->GetECS()->FromID(_ullID);
+        ECS::Entity _entity = CSharp::GetScriptEngine()->GetECS()->FromID(_ullID);
 
         return CSharp::GetScriptEngine()->m_aComponentFuncs[_type].m_fnAddComponent(_entity, _pData);
     }
 
     static void transform_component_set_translation(size_t _ullID, const glm::vec3* _pInTranslation)
     {
-        Entity _entity = CSharp::GetScriptEngine()->GetECS()->FromID(_ullID);
+        ECS::Entity _entity = CSharp::GetScriptEngine()->GetECS()->FromID(_ullID);
 
         _entity.GetMut<Graphics::TransformComponent>()->m_position = *_pInTranslation;
     }
 
     static void transform_component_get_translation(size_t _ullID, glm::vec3* _pOutTranslation)
     {
-        Entity _entity = CSharp::GetScriptEngine()->GetECS()->FromID(_ullID);
+        ECS::Entity _entity = CSharp::GetScriptEngine()->GetECS()->FromID(_ullID);
 
         *_pOutTranslation = _entity.GetMut<Graphics::TransformComponent>()->m_position;
     }
 
     static void transform_component_set_rotation(size_t _ullID, const glm::quat* _pInRotation)
     {
-        Entity _entity = CSharp::GetScriptEngine()->GetECS()->FromID(_ullID);
+        ECS::Entity _entity = CSharp::GetScriptEngine()->GetECS()->FromID(_ullID);
 
         _entity.GetMut<Graphics::TransformComponent>()->m_rotation = *_pInRotation;
     }
 
     static void transform_component_get_rotation(size_t _ullID, glm::quat* _pOutRotation)
     {
-        Entity _entity = CSharp::GetScriptEngine()->GetECS()->FromID(_ullID);
+        ECS::Entity _entity = CSharp::GetScriptEngine()->GetECS()->FromID(_ullID);
 
         *_pOutRotation = _entity.GetMut<Graphics::TransformComponent>()->m_rotation;
     }
 
     static void transform_component_set_scale(size_t _ullID, const glm::vec3* _pInScale)
     {
-        Entity _entity = CSharp::GetScriptEngine()->GetECS()->FromID(_ullID);
+        ECS::Entity _entity = CSharp::GetScriptEngine()->GetECS()->FromID(_ullID);
 
         _entity.GetMut<Graphics::TransformComponent>()->m_scale = *_pInScale;
     }
 
     static void transform_component_get_scale(size_t _ullID, glm::vec3* _pOutScale)
     {
-        Entity _entity = CSharp::GetScriptEngine()->GetECS()->FromID(_ullID);
+        ECS::Entity _entity = CSharp::GetScriptEngine()->GetECS()->FromID(_ullID);
 
         *_pOutScale = _entity.GetMut<Graphics::TransformComponent>()->m_scale;
     }
@@ -240,7 +240,7 @@ namespace Duckvil { namespace CSharp {
         return _assembly;
     }
 
-    CSharp::CSharp(const Memory::FreeList& _heap, EntityFactory* _pEntityFactory, Duckvil::Event::Pool<Duckvil::Event::mode::immediate>* _pEngineEventPool) :
+    CSharp::CSharp(const Memory::FreeList& _heap, ECS::EntityFactory* _pEntityFactory, Duckvil::Event::Pool<Duckvil::Event::mode::immediate>* _pEngineEventPool) :
         m_heap(_heap),
         m_pEntityFactory(_pEntityFactory),
         m_pEngineEventPool(_pEngineEventPool)
@@ -378,12 +378,12 @@ namespace Duckvil { namespace CSharp {
  \
     Function _f; \
  \
-    _f.m_fnHasComponent = [](Entity _entity) \
+    _f.m_fnHasComponent = [](ECS::Entity _entity) \
     { \
         return _entity.Has<name>(); \
     }; \
  \
-    _f.m_fnAddComponent = [](Entity _entity, void* _pData) \
+    _f.m_fnAddComponent = [](ECS::Entity _entity, void* _pData) \
     { \
         if(_pData == nullptr) \
         { \

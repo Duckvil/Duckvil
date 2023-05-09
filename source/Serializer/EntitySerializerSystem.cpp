@@ -11,7 +11,7 @@
 namespace Duckvil { namespace Serializer {
 
     template <typename ComponentType>
-    static void SerializeComponent(nlohmann::json& _jOut, const Entity& _entity)
+    static void SerializeComponent(nlohmann::json& _jOut, const ECS::Entity& _entity)
     {
         if(_entity.Has<ComponentType>())
         {
@@ -33,24 +33,24 @@ namespace Duckvil { namespace Serializer {
         }
     }
 
-    static void SerializeEntity(nlohmann::json& _jOut, const Entity& _entity)
+    static void SerializeEntity(nlohmann::json& _jOut, const ECS::Entity& _entity)
     {
         const auto& _types = RuntimeReflection::get_types();
 
         for(uint32_t _i = 0; _i < _types.Size(); ++_i)
         {
-            const auto& _funcHandle = RuntimeReflection::get_function_handle<nlohmann::json&, const Entity&>({ _i }, "Serialize");
+            const auto& _funcHandle = RuntimeReflection::get_function_handle<nlohmann::json&, const ECS::Entity&>({ _i }, "Serialize");
 
             if(_funcHandle.m_ID == -1)
             {
                 continue;
             }
 
-            RuntimeReflection::invoke_static<nlohmann::json&, const Entity&>({ _i }, _funcHandle, _jOut, _entity);
+            RuntimeReflection::invoke_static<nlohmann::json&, const ECS::Entity&>({ _i }, _funcHandle, _jOut, _entity);
         }
     }
 
-    nlohmann::json EntitySerializerSystem::Serialize(const Entity& _entity)
+    nlohmann::json EntitySerializerSystem::Serialize(const ECS::Entity& _entity)
     {
         nlohmann::json _jEntity;
 
@@ -69,7 +69,7 @@ namespace Duckvil { namespace Serializer {
     }
 
     template <typename ComponentType>
-    static void DeserializeComponent(const nlohmann::json& _jIn, Entity& _entity)
+    static void DeserializeComponent(const nlohmann::json& _jIn, ECS::Entity& _entity)
     {
         const auto& _typeHandle = RuntimeReflection::get_type<ComponentType>();
         const RuntimeReflection::__type_t& _type = RuntimeReflection::get_type(_typeHandle);
@@ -89,24 +89,24 @@ namespace Duckvil { namespace Serializer {
         }
     }
 
-    static void DeserializeEntity(const nlohmann::json& _jIn, Entity& _entity)
+    static void DeserializeEntity(const nlohmann::json& _jIn, ECS::Entity& _entity)
     {
         const auto& _types = RuntimeReflection::get_types();
 
         for(uint32_t _i = 0; _i < _types.Size(); ++_i)
         {
-            const auto& _funcHandle = RuntimeReflection::get_function_handle<const nlohmann::json&, Entity&>({ _i }, "Deserialize");
+            const auto& _funcHandle = RuntimeReflection::get_function_handle<const nlohmann::json&, ECS::Entity&>({ _i }, "Deserialize");
 
             if(_funcHandle.m_ID == -1)
             {
                 continue;
             }
 
-            RuntimeReflection::invoke_static<const nlohmann::json&, Entity&>({ _i }, _funcHandle, _jIn, _entity);
+            RuntimeReflection::invoke_static<const nlohmann::json&, ECS::Entity&>({ _i }, _funcHandle, _jIn, _entity);
         }
     }
 
-    void EntitySerializerSystem::Deserialize(const nlohmann::json& _jEntity, Entity& _entity)
+    void EntitySerializerSystem::Deserialize(const nlohmann::json& _jEntity, ECS::Entity& _entity)
     {
         std::vector<char> _uuidBytes(16);
         _jEntity["uuid"].get_to(_uuidBytes);
@@ -122,7 +122,7 @@ namespace Duckvil { namespace Serializer {
         }
     }
 
-    EntitySerializerSystem::EntitySerializerSystem(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEngineEventPool, EntityFactory* _pEntityFactory) :
+    EntitySerializerSystem::EntitySerializerSystem(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEngineEventPool, ECS::EntityFactory* _pEntityFactory) :
         m_pEngineEventPool(_pEngineEventPool),
         m_pEntityFactory(_pEntityFactory)
     {
@@ -150,7 +150,7 @@ namespace Duckvil { namespace Serializer {
 
     }
 
-    void EntitySerializerSystem::Load(const std::filesystem::path& _sFile, void (*_fn)(Entity& _entity))
+    void EntitySerializerSystem::Load(const std::filesystem::path& _sFile, void (*_fn)(ECS::Entity& _entity))
     {
         std::ifstream _jFile(_sFile);
 
@@ -160,7 +160,7 @@ namespace Duckvil { namespace Serializer {
 
         for(const auto& _jEntity : m_j)
         {
-            Entity _entity = m_pEntityFactory->Make();
+            ECS::Entity _entity = m_pEntityFactory->Make();
 
             Deserialize(_jEntity, _entity);
 

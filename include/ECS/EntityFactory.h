@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Entity.h"
+#include "ECS/Entity.h"
 
 #include "Engine/Events/EntityCreatedEvent.h"
 #include "Engine/Events/InjectConstructorArgumentEvent.h"
@@ -15,12 +15,12 @@
 
 #include "HotReloader/ReflectionFlags.h"
 
-#include "Engine/EntityFactory.generated.h"
+#include "ECS/EntityFactory.generated.h"
 
 #define DUCKVIL_RUNTIME_REFLECTION_PAUSE
 #define DUCKVIL_RUNTIME_REFLECTION_RESUME
 
-namespace Duckvil {
+namespace Duckvil { namespace ECS {
 
     DUCKVIL_CLASS(Duckvil::DependencyInjection::INJECTABLE, Duckvil::HotReloader::NOT_SERIALIZABLE)
     class EntityFactory
@@ -137,4 +137,4 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
         inline Event::Pool<Event::mode::immediate>* GetEventPool() { return &m_eventPool; }
     };
 
-}
+}}

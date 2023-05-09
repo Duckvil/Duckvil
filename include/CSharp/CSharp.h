@@ -10,7 +10,7 @@
 
 #include "CSharp/SharedScript.h"
 
-#include "Engine/EntityFactory.h"
+#include "ECS/EntityFactory.h"
 
 #include "Event/ImmediatePool.h"
 
@@ -48,8 +48,8 @@ namespace Duckvil { namespace CSharp {
     public:
         struct Function
         {
-            typedef bool (*HasComponentCallback)(Entity);
-            typedef bool (*AddComponentCallback)(Entity, void*);
+            typedef bool (*HasComponentCallback)(ECS::Entity);
+            typedef bool (*AddComponentCallback)(ECS::Entity, void*);
 
             HasComponentCallback m_fnHasComponent;
             AddComponentCallback m_fnAddComponent;
@@ -86,7 +86,7 @@ namespace Duckvil { namespace CSharp {
         std::unordered_map<size_t, SharedScript*> m_aSharedScripts;
         std::vector<size_t> m_aSharedScriptsFreeIDs;
 
-        EntityFactory* m_pEntityFactory;
+        ECS::EntityFactory* m_pEntityFactory;
 
         Duckvil::Event::Pool<Duckvil::Event::mode::immediate>* m_pEngineEventPool;
 
@@ -96,7 +96,7 @@ namespace Duckvil { namespace CSharp {
         MonoAssembly* LoadAssembly(const char* _sFilePath);
 
     public:
-        CSharp(const Memory::FreeList& _heap, EntityFactory* _pEntityFactory, DUCKVIL_ARGUMENT("Engine") Duckvil::Event::Pool<Duckvil::Event::mode::immediate>* _pEngineEventPool);
+        CSharp(const Memory::FreeList& _heap, ECS::EntityFactory* _pEntityFactory, DUCKVIL_ARGUMENT("Engine") Duckvil::Event::Pool<Duckvil::Event::mode::immediate>* _pEngineEventPool);
         ~CSharp();
 
         std::unordered_map<MonoType*, Duckvil::CSharp::CSharp::Function> m_aComponentFuncs;
@@ -116,7 +116,7 @@ namespace Duckvil { namespace CSharp {
 
         static Duckvil::CSharp::CSharp::ScriptFieldType MonoTypeToScriptFieldType(void* _pType);
 
-        EntityFactory* GetECS() const
+        ECS::EntityFactory* GetECS() const
         {
             return m_pEntityFactory;
         }

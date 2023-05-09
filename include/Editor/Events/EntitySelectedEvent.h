@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Engine/Entity.h"
+#include "ECS/Entity.h"
 
 namespace Duckvil { namespace Editor {
 
     struct EntitySelectedEvent
     {
-        Entity m_entity;
+        ECS::Entity m_entity;
     };
 
 }}

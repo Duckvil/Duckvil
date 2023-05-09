@@ -29,7 +29,7 @@
 #include "Network/IServer.h"
 
 #include "Engine/UUIDComponent.h"
-#include "Engine/EntityFactory.h"
+#include "ECS/EntityFactory.h"
 
 #include "Editor/Events/EntitySelectedEvent.h"
 #include "Engine/Events/EntityDestroyedEvent.h"
@@ -85,7 +85,7 @@ namespace Duckvil { namespace Editor {
         bool m_bSkip = false;
 
         flecs::world* m_pECS;
-        EntityFactory* m_pEntityFactory;
+        ECS::EntityFactory* m_pEntityFactory;
 
         Network::IConnection::Owner m_owner;
 
@@ -95,7 +95,7 @@ namespace Duckvil { namespace Editor {
         flecs::query<ViewportWidget::NetworkComponent, Graphics::TransformComponent> m_networkQuery;
         flecs::query<UUIDComponent, Graphics::TransformComponent> m_selectQuery;
 
-        Entity m_selectedEntity;
+        ECS::Entity m_selectedEntity;
 
         glm::vec2 m_viewportBounds[2];
 
@@ -113,7 +113,7 @@ namespace Duckvil { namespace Editor {
 
     public:
         ViewportWidget();
-        ViewportWidget(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Window") Event::Pool<Event::mode::buffered>* _pWindowEventPool, Network::IServer* _pServer, Network::IClient* _pClient, DUCKVIL_ARGUMENT("Editor") Event::Pool<Event::mode::immediate>* _pEditorEventPool, flecs::world* _pECS, EntityFactory* _pEntityFactory, DUCKVIL_ARGUMENT("Project") Event::Pool<Event::mode::immediate>* _pProjectEventPool);
+        ViewportWidget(const Memory::FreeList& _heap, DUCKVIL_ARGUMENT("Window") Event::Pool<Event::mode::buffered>* _pWindowEventPool, Network::IServer* _pServer, Network::IClient* _pClient, DUCKVIL_ARGUMENT("Editor") Event::Pool<Event::mode::immediate>* _pEditorEventPool, flecs::world* _pECS, ECS::EntityFactory* _pEntityFactory, DUCKVIL_ARGUMENT("Project") Event::Pool<Event::mode::immediate>* _pProjectEventPool);
         ~ViewportWidget();
 
         bool Init();

@@ -294,7 +294,7 @@ namespace Duckvil {
             static_cast<ScriptEngine::Language*>(
 				RuntimeReflection::create<
 					const Memory::FreeList&,
-					EntityFactory*,
+					ECS::EntityFactory*,
 					Event::Pool<Event::mode::immediate>*
                 >(_pData->m_heap, _CSharpTypeHandle, false, _pData->m_heap, &_pData->m_entityFactory, &_pData->m_eventPool)
 			);
@@ -347,7 +347,7 @@ namespace Duckvil {
                 _event.m_pRequestedSystem = &_pData->m_projectManagerData;
             }
 
-            if(_event.m_typeHandle.m_ID == RuntimeReflection::get_type<EntityFactory>().m_ID)
+            if(_event.m_typeHandle.m_ID == RuntimeReflection::get_type<ECS::EntityFactory>().m_ID)
             {
                 _event.m_pRequestedSystem = &_pData->m_entityFactory;
             }

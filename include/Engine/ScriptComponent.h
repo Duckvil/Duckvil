@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Entity.h"
+#include "ECS/Entity.h"
 
 #include "RuntimeReflection/RuntimeReflection.h"
 #include "RuntimeReflection/Markers.h"
@@ -11,21 +11,17 @@
 
 namespace Duckvil {
 
-DUCKVIL_RUNTIME_REFLECTION_PAUSE
-
     namespace Editor {
 
         class EntityInspectorWidget;
 
     }
 
-DUCKVIL_RUNTIME_REFLECTION_RESUME
-
     class NativeScriptBase
     {
         friend class Editor::EntityInspectorWidget;
     private:
-        Entity m_entity;
+        ECS::Entity m_entity;
         RuntimeReflection::__duckvil_resource_type_t m_typeHandle;
         double m_dDelta;
 
@@ -45,12 +41,12 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
             return true;
         }
 
-        void SetEntity(Entity _entity)
+        void SetEntity(ECS::Entity _entity)
         {
             m_entity = _entity;
         }
 
-        const Entity& GetEntity() const
+        const ECS::Entity& GetEntity() const
         {
             return m_entity;
         }

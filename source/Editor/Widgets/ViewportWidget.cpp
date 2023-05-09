@@ -43,7 +43,7 @@ namespace Duckvil { namespace Editor {
 
     }
 
-    ViewportWidget::ViewportWidget(const Memory::FreeList& _heap, Event::Pool<Event::mode::buffered>* _pWindowEventPool, Network::IServer* _pServer, Network::IClient* _pClient, Event::Pool<Event::mode::immediate>* _pEditorEventPool, flecs::world* _pECS, EntityFactory* _pEntityFactory, Event::Pool<Event::mode::immediate>* _pProjectEventPool) :
+    ViewportWidget::ViewportWidget(const Memory::FreeList& _heap, Event::Pool<Event::mode::buffered>* _pWindowEventPool, Network::IServer* _pServer, Network::IClient* _pClient, Event::Pool<Event::mode::immediate>* _pEditorEventPool, flecs::world* _pECS, ECS::EntityFactory* _pEntityFactory, Event::Pool<Event::mode::immediate>* _pProjectEventPool) :
         m_heap(_heap),
         m_pWindowEventPool(_pWindowEventPool),
         m_pClient(_pClient),
@@ -276,7 +276,7 @@ namespace Duckvil { namespace Editor {
                 {
                     if(_uiValue == 0)
                     {
-                        m_selectedEntity = Entity();
+                        m_selectedEntity = ECS::Entity();
 
                         m_pEditorEventPool->Broadcast(EntitySelectedEvent{ m_selectedEntity });
 
@@ -453,9 +453,9 @@ namespace Duckvil { namespace Editor {
             {
                 if(ImGui::Button("Delete"))
                 {
-                    Entity _entity = m_selectedEntity;
+                    ECS::Entity _entity = m_selectedEntity;
 
-                    m_selectedEntity = Entity();
+                    m_selectedEntity = ECS::Entity();
 
                     m_pEditorEventPool->Broadcast(EntitySelectedEvent{ m_selectedEntity });
 
@@ -720,7 +720,7 @@ namespace Duckvil { namespace Editor {
 
             m_pEntityFactory->Make(
                 Utils::lambda(
-                    [&_uuidBytes](Entity& _entity)
+                    [&_uuidBytes](ECS::Entity& _entity)
                     {
                         _entity.Add(UUIDComponent{ UUID(_uuidBytes) });
 
@@ -794,7 +794,7 @@ namespace Duckvil { namespace Editor {
 
             _msg >> _uuidBytes;
 
-            Entity _entityToDisable;
+            ECS::Entity _entityToDisable;
 
             m_pECS->query<UUIDComponent>().each(
                 [&_uuidBytes, &_entityToDisable, this](flecs::entity _entity, const UUIDComponent& _uuidComponent)
@@ -812,7 +812,7 @@ namespace Duckvil { namespace Editor {
 
             if(_entityToDisable.m_entity == m_selectedEntity.m_entity)
             {
-                m_selectedEntity = Entity();
+                m_selectedEntity = ECS::Entity();
             }
 
             if(_entityToDisable.m_entity.is_valid())
@@ -855,7 +855,7 @@ namespace Duckvil { namespace Editor {
             m_pServer->MessageAllClients(_message);
         }
 
-        m_selectedEntity = Entity();
+        m_selectedEntity = ECS::Entity();
     }
 
     void ViewportWidget::OnEvent(EntityCreatedEvent& _event)

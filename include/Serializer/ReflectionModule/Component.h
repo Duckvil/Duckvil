@@ -82,27 +82,27 @@ namespace Duckvil { namespace Serializer { namespace ReflectionModule {
 
             _hFile << "#include \"Utils/EntitySerializer.h\"\n";
             _hFile << "#include \"Utils/ECS.h\"\n";
-            _hFile << "#include \"Engine/Entity.h\"\n";
+            _hFile << "#include \"ECS/Entity.h\"\n";
             _hFile << "#define " << _fileID << "_" << m_uiGeneratedBodyLine << "_REFLECTION_MODULE_" << m_sReflectionModuleName << " \\\n";
             _hFile <<
-            "static void Serialize(nlohmann::json& _jOut, const Entity& _entity)\\\n"
+            "static void Serialize(nlohmann::json& _jOut, const ECS::Entity& _entity)\\\n"
             "{\\\n"
             "Utils::init_ecs();\\\n"
             "Utils::serialize_component<" + m_sTypeName + ">(_jOut, _entity);\\\n"
             "}\\\n"
             "\\\n"
-            "static void Deserialize(const nlohmann::json& _jIn, Entity& _entity)\\\n"
+            "static void Deserialize(const nlohmann::json& _jIn, ECS::Entity& _entity)\\\n"
             "{\\\n"
             "Utils::init_ecs();\\\n"
             "Utils::deserialize_component<" + m_sTypeName + ">(_jIn, _entity);\\\n"
             "}\\\n"
-            "static bool Has(const Entity& _entity)\\\n"
+            "static bool Has(const ECS::Entity& _entity)\\\n"
             "{\\\n"
             "Utils::init_ecs();\\\n"
             "return _entity.Has<" + m_sTypeName + ">();\\\n"
             "}\\\n"
             "\\\n"
-            "static uint8_t* Get(const Entity& _entity)\\\n"
+            "static uint8_t* Get(const ECS::Entity& _entity)\\\n"
             "{\\\n"
             "Utils::init_ecs();\\\n"
             "return reinterpret_cast<uint8_t*>(_entity.m_entity.get_mut<" + m_sTypeName + ">());\\\n"
@@ -163,7 +163,7 @@ namespace Duckvil { namespace Serializer { namespace ReflectionModule {
                         Parser::__ast_entity_argument _arg;
                         
                         _arg.m_sName = "_entity";
-                        _arg.m_sType = "const Entity&";
+                        _arg.m_sType = "const ECS::Entity&";
                         _arg.m_pParentScope = _func;
 
                         _func->m_aArguments.push_back(_arg);
@@ -196,7 +196,7 @@ namespace Duckvil { namespace Serializer { namespace ReflectionModule {
                         Parser::__ast_entity_argument _arg;
                         
                         _arg.m_sName = "_entity";
-                        _arg.m_sType = "Entity&";
+                        _arg.m_sType = "ECS::Entity&";
                         _arg.m_pParentScope = _func;
 
                         _func->m_aArguments.push_back(_arg);
@@ -219,7 +219,7 @@ namespace Duckvil { namespace Serializer { namespace ReflectionModule {
                         Parser::__ast_entity_argument _arg;
                         
                         _arg.m_sName = "_entity";
-                        _arg.m_sType = "const Entity&";
+                        _arg.m_sType = "const ECS::Entity&";
                         _arg.m_pParentScope = _func;
 
                         _func->m_aArguments.push_back(_arg);
@@ -242,7 +242,7 @@ namespace Duckvil { namespace Serializer { namespace ReflectionModule {
                         Parser::__ast_entity_argument _arg;
                         
                         _arg.m_sName = "_entity";
-                        _arg.m_sType = "const Entity&";
+                        _arg.m_sType = "const ECS::Entity&";
                         _arg.m_pParentScope = _func;
 
                         _func->m_aArguments.push_back(_arg);

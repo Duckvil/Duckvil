@@ -2,7 +2,7 @@
 
 #include "nlohmann/json.hpp"
 
-#include "Engine/Entity.h"
+#include "ECS/Entity.h"
 
 #include "RuntimeReflection/RuntimeReflection.h"
 
@@ -37,7 +37,7 @@ namespace Duckvil { namespace Utils {
     }
 
     template <typename ComponentType>
-    void serialize_component(nlohmann::json& _jOut, const Entity& _entity)
+    void serialize_component(nlohmann::json& _jOut, const ECS::Entity& _entity)
     {
         if(_entity.Has<ComponentType>())
         {
@@ -60,7 +60,7 @@ namespace Duckvil { namespace Utils {
     }
 
     template <typename ComponentType>
-    void deserialize_component(const nlohmann::json& _jIn, Entity& _entity)
+    void deserialize_component(const nlohmann::json& _jIn, ECS::Entity& _entity)
     {
         const auto& _typeHandle = RuntimeReflection::get_type<ComponentType>();
         const RuntimeReflection::__type_t& _type = RuntimeReflection::get_type(_typeHandle);

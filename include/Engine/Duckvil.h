@@ -16,7 +16,7 @@
 #include "Engine/Time.h"
 #include "Engine/ReflectionFlags.h"
 #include "Engine/ISystem.h"
-#include "Engine/Entity.h"
+#include "ECS/Entity.h"
 
 #include "HotReloader/RuntimeCompilerSystem.h"
 
@@ -60,7 +60,7 @@
 #include "Network/IServer.h"
 #include "Network/IClient.h"
 
-#include "Engine/EntityFactory.h"
+#include "ECS/EntityFactory.h"
 
 #include "Serializer/EntitySerializerSystem.h"
 
@@ -150,7 +150,7 @@ namespace Duckvil {
         Graphics::Renderer::renderer_data m_pRendererData;
 
         flecs::world m_ecs;
-        EntityFactory m_entityFactory;
+        ECS::EntityFactory m_entityFactory;
 
         flecs::query<Graphics::TransformComponent> m_rendererQuery;
         flecs::query<ScriptComponent> m_scriptsQuery;
