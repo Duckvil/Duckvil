@@ -3,7 +3,7 @@
 #include "RuntimeReflection/GeneratedMeta.h"
 
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(15)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(13)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -29,7 +29,7 @@ using namespace Duckvil;
 _type = record_type<Duckvil::UUIDComponent>(_data, "UUIDComponent");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 15);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 13);
 _property = record_property<Duckvil::UUID>(_data, _type, offsetof(Duckvil::UUIDComponent, m_uuid), "m_uuid");
 _function = record_function<void, void*>(_data, _type, &Duckvil::UUIDComponent::InitEditor, "InitEditor");
 _function = record_function<void, char const*, Duckvil::UUID*>(_data, _type, &Duckvil::UUIDComponent::Draw, "Draw");
@@ -40,11 +40,11 @@ record_meta(_data, _type, _function, Duckvil::RuntimeReflection::GeneratedMeta::
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/UUIDComponent.h", 15);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/UUIDComponent.h", 13);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 15;
+return 13;
 }
 #endif

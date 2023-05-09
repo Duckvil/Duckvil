@@ -3,7 +3,7 @@
 #include "RuntimeReflection/GeneratedMeta.h"
 
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(5)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(3)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -29,16 +29,16 @@ using namespace Duckvil;
 _type = record_type<Duckvil::EntityDestroyedEvent>(_data, "EntityDestroyedEvent");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 5);
-_property = record_property<Duckvil::Entity>(_data, _type, offsetof(Duckvil::EntityDestroyedEvent, m_entity), "m_entity");
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
+_property = record_property<ECS::Entity>(_data, _type, offsetof(Duckvil::EntityDestroyedEvent, m_entity), "m_entity");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/Events/EntityDestroyedEvent.h", 5);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/Events/EntityDestroyedEvent.h", 3);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 5;
+return 3;
 }
 #endif

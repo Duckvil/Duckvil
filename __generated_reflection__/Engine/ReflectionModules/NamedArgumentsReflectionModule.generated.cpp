@@ -3,7 +3,7 @@
 #include "RuntimeReflection/GeneratedMeta.h"
 
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(11)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(9)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -29,7 +29,7 @@ using namespace Duckvil;
 _type = record_type<Duckvil::NamedArgumentsReflectionModule>(_data, "NamedArgumentsReflectionModule");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 11);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 9);
 record_meta(_data, _type, ReflectionFlags::ReflectionFlags_ReflectionModule, true);
 _property = record_property<char const*>(_data, _type, offsetof(Duckvil::NamedArgumentsReflectionModule, m_sReflectionModuleName), "m_sReflectionModuleName");
 _constructor = record_constructor<Duckvil::NamedArgumentsReflectionModule, Memory::FreeList const&, RuntimeReflection::__ftable*, RuntimeReflection::__data*>(_data, _type);
@@ -51,7 +51,7 @@ _type = record_type<Duckvil::NamedArgumentsReflectionModule::argument>(_data, "a
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "NamedArgumentsReflectionModule");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 11);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 9);
 _property = record_property<std::string>(_data, _type, offsetof(Duckvil::NamedArgumentsReflectionModule::argument, m_sName), "m_sName");
 _property = record_property<std::string>(_data, _type, offsetof(Duckvil::NamedArgumentsReflectionModule::argument, m_sType), "m_sType");
 _property = record_property<std::string>(_data, _type, offsetof(Duckvil::NamedArgumentsReflectionModule::argument, m_sValue), "m_sValue");
@@ -63,7 +63,7 @@ _type = record_type<Duckvil::NamedArgumentsReflectionModule::function>(_data, "f
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "NamedArgumentsReflectionModule");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 11);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 9);
 _property = record_property<std::string>(_data, _type, offsetof(Duckvil::NamedArgumentsReflectionModule::function, m_sName), "m_sName");
 _property = record_property<std::string>(_data, _type, offsetof(Duckvil::NamedArgumentsReflectionModule::function, m_sReturnType), "m_sReturnType");
 _property = record_property<std::vector<NamedArgumentsReflectionModule::argument>>(_data, _type, offsetof(Duckvil::NamedArgumentsReflectionModule::function, m_aArguments), "m_aArguments");
@@ -75,7 +75,7 @@ _type = record_type<Duckvil::NamedArgumentsReflectionModule::Context>(_data, "Co
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "NamedArgumentsReflectionModule");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 11);
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 9);
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::NamedArgumentsReflectionModule::Context, m_uiGeneratedBodyLine), "m_uiGeneratedBodyLine");
 _property = record_property<bool>(_data, _type, offsetof(Duckvil::NamedArgumentsReflectionModule::Context, m_bIsStruct), "m_bIsStruct");
 _property = record_property<std::string>(_data, _type, offsetof(Duckvil::NamedArgumentsReflectionModule::Context, m_sTypeName), "m_sTypeName");
@@ -85,11 +85,11 @@ _property = record_property<std::vector<NamedArgumentsReflectionModule::function
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/ReflectionModules/NamedArgumentsReflectionModule.h", 11);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/ReflectionModules/NamedArgumentsReflectionModule.h", 9);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 11;
+return 9;
 }
 #endif

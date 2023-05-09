@@ -37,7 +37,7 @@ record_namespace(_data, _type, "CSharp");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 0);
 record_inheritance<ScriptEngine::Language>(_data, _type, __protection::__protection_public);
 _function = record_function<Duckvil::CSharp::CSharp*>(_data, _type, &Duckvil::CSharp::CSharp::GetScriptEngine, "GetScriptEngine");
-_constructor = record_constructor<Duckvil::CSharp::CSharp, Memory::FreeList const&, Duckvil::EntityFactory*, Duckvil::Event::Pool<Duckvil::Event::mode::immediate>*>(_data, _type);
+_constructor = record_constructor<Duckvil::CSharp::CSharp, Memory::FreeList const&, ECS::EntityFactory*, Duckvil::Event::Pool<Duckvil::Event::mode::immediate>*>(_data, _type);
 record_meta(_data, _type, _constructor, 2, "Engine", true);
 _destructor = record_destructor<Duckvil::CSharp::CSharp>(_data, _type);
 _property = record_property<std::unordered_map<MonoType *, Duckvil::CSharp::CSharp::Function>>(_data, _type, offsetof(Duckvil::CSharp::CSharp, m_aComponentFuncs), "m_aComponentFuncs");
@@ -51,7 +51,7 @@ _function = record_function<Duckvil::CSharp::CSharp, MonoObject*, void*>(_data, 
 _function = record_function<Duckvil::CSharp::CSharp, Duckvil::CSharp::SharedScript*, RuntimeReflection::__duckvil_resource_type_t const&>(_data, _type, &Duckvil::CSharp::CSharp::Create, "Create");
 _function = record_function<Duckvil::CSharp::CSharp, void, size_t*, Duckvil::CSharp::SharedScript*>(_data, _type, &Duckvil::CSharp::CSharp::Register, "Register");
 _function = record_function<Duckvil::CSharp::CSharp::ScriptFieldType, void*>(_data, _type, &Duckvil::CSharp::CSharp::MonoTypeToScriptFieldType, "MonoTypeToScriptFieldType");
-_function = record_function<Duckvil::CSharp::CSharp, Duckvil::EntityFactory*>(_data, _type, &Duckvil::CSharp::CSharp::GetECS, "GetECS");
+_function = record_function<Duckvil::CSharp::CSharp, ECS::EntityFactory*>(_data, _type, &Duckvil::CSharp::CSharp::GetECS, "GetECS");
 _function = record_function<Duckvil::CSharp::CSharp, MonoDomain*>(_data, _type, &Duckvil::CSharp::CSharp::GetAppDomain, "GetAppDomain");
 _function = record_function<Duckvil::CSharp::CSharp, MonoDomain*>(_data, _type, &Duckvil::CSharp::CSharp::GetRootDomain, "GetRootDomain");
 _function = record_function<Duckvil::CSharp::CSharp, Duckvil::CSharp::SharedScript*, size_t>(_data, _type, &Duckvil::CSharp::CSharp::GetSharedScript, "GetSharedScript");

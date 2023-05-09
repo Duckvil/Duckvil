@@ -37,7 +37,7 @@ record_namespace(_data, _type, "Editor");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 11);
 record_meta(_data, _type, ReflectionFlags_AutoEventsAdding, true);
 record_inheritance<Widget>(_data, _type, __protection::__protection_public);
-_constructor = record_constructor<Duckvil::Editor::EntityInspectorWidget, Memory::FreeList const&, Event::Pool<Event::mode::immediate>*, Duckvil::EntityFactory*, Event::Pool<Event::mode::immediate>*>(_data, _type);
+_constructor = record_constructor<Duckvil::Editor::EntityInspectorWidget, Memory::FreeList const&, Event::Pool<Event::mode::immediate>*, ECS::EntityFactory*, Event::Pool<Event::mode::immediate>*>(_data, _type);
 record_meta(_data, _type, _constructor, 1, "Editor", true);
 record_meta(_data, _type, _constructor, 3, "Engine", true);
 _destructor = record_destructor<Duckvil::Editor::EntityInspectorWidget>(_data, _type);

@@ -3,7 +3,7 @@
 #include "RuntimeReflection/GeneratedMeta.h"
 
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(3)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(1)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -29,17 +29,17 @@ using namespace Duckvil;
 _type = record_type<Duckvil::ComponentAttachedEvent>(_data, "ComponentAttachedEvent");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
-record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
-_property = record_property<Duckvil::Entity>(_data, _type, offsetof(Duckvil::ComponentAttachedEvent, m_entity), "m_entity");
+record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
+_property = record_property<ECS::Entity>(_data, _type, offsetof(Duckvil::ComponentAttachedEvent, m_entity), "m_entity");
 _property = record_property<RuntimeReflection::__duckvil_resource_type_t>(_data, _type, offsetof(Duckvil::ComponentAttachedEvent, m_typeHandle), "m_typeHandle");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/Events/ComponentAttachedEvent.h", 3);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/Events/ComponentAttachedEvent.h", 1);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 3;
+return 1;
 }
 #endif

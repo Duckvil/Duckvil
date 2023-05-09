@@ -3,7 +3,7 @@
 #include "RuntimeReflection/GeneratedMeta.h"
 
 
-DUCKVIL_RUNTIME_REFLECTION_RECORD(9)
+DUCKVIL_RUNTIME_REFLECTION_RECORD(7)
 {
 using namespace Duckvil::RuntimeReflection;
 using namespace Duckvil;
@@ -30,11 +30,11 @@ _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::ReflectionFlag
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::ReflectionFlags::ReflectionFlags_AutoInstantiate, "ReflectionFlags_AutoInstantiate");
 _namespaces.pop_back();
 }
-return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/ReflectionFlags.h", 9);
+return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/ReflectionFlags.h", 7);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE
 DUCKVIL_EXPORT uint32_t duckvil_get_recorder_index()
 {
-return 9;
+return 7;
 }
 #endif
