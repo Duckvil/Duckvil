@@ -10,6 +10,9 @@
 
 namespace Sandbox {
 
+    namespace Test = Duckvil::CSharp;
+    using Test2 = Duckvil::CSharp::ReflectionFlags;
+
     class TestSharedScript : public Duckvil::CSharp::SharedScript
     {
         DUCKVIL_CS_FUNCTION(void,Say,{int a;})
@@ -22,12 +25,12 @@ namespace Sandbox {
         TestSharedScript();
         ~TestSharedScript();
 
-        DUCKVIL_VARIABLE(CSharp::ReflectionFlags::EXPOSE_TO_CSHARP)
+        DUCKVIL_VARIABLE(Test::ReflectionFlags::EXPOSE_TO_CSHARP)
         int _an_a;
 
         bool Init() override;
 
-        DUCKVIL_FUNCTION(CSharp::ReflectionFlags::EXPOSE_TO_CSHARP)
+        DUCKVIL_FUNCTION(Test2::EXPOSE_TO_CSHARP)
         void HelloFrom(int a);
 
         

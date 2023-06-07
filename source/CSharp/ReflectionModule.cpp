@@ -1,5 +1,9 @@
 #include "CSharp/ReflectionModule.h"
 
+#include "CSharp/ReflectionFlags.h"
+
+#include "Utils/AST.h"
+
 namespace Duckvil { namespace CSharp {
 
     void recursive(ReflectionModule* _pData, const Parser::__ast& _ast, Parser::__ast_entity* _entity);
@@ -11,7 +15,7 @@ namespace Duckvil { namespace CSharp {
         m_pRuntimeReflection(_pReflection),
         m_heap(_heap)
     {
-
+        
     }
 
     ReflectionModule::~ReflectionModule()
@@ -173,7 +177,10 @@ namespace Duckvil { namespace CSharp {
 
                 for (const auto& _meta : _func->m_aMeta)
                 {
-                    if (_meta.m_sKey == "CSharp::ReflectionFlags::EXPOSE_TO_CSHARP")
+                    auto _metaKey = _meta.m_sKey;
+                    auto _resolved = Utils::ast_resolve_namespace(DUCKVIL_TO_STRING(Duckvil::CSharp::ReflectionFlags::EXPOSE_TO_CSHARP), _metaKey, _child);
+
+                    if (_resolved)
                     {
                         _found = true;
 
@@ -235,7 +242,10 @@ namespace Duckvil { namespace CSharp {
 
                 for (const auto& _meta : _var->m_aMeta)
                 {
-                    if (_meta.m_sKey == "CSharp::ReflectionFlags::EXPOSE_TO_CSHARP")
+                    auto _metaKey = _meta.m_sKey;
+                    auto _resolved = Utils::ast_resolve_namespace(DUCKVIL_TO_STRING(Duckvil::CSharp::ReflectionFlags::EXPOSE_TO_CSHARP), _metaKey, _child);
+
+                    if (_resolved)
                     {
                         _found = true;
 
