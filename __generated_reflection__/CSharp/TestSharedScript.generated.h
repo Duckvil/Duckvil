@@ -2,7 +2,7 @@
 
 #include "RuntimeReflection/Markers.h"
 
-#define CSharp_TestSharedScript_h_18_REFLECTION_MODULE_CSHARP \
+#define CSharp_TestSharedScript_h_21_REFLECTION_MODULE_CSHARP \
 public:\
 MonoClassField* m_pCSharpField_a;\
 void a(int _v);\
@@ -29,22 +29,21 @@ m_pCSharpObject = _pObject;\
 }\
 static void  csharp_internal_HelloFrom(size_t _ullSharedScriptID, int a);\
 void InternalInit() override;
-#define CSharp_TestSharedScript_h_18_REFLECTION_MODULE_DUMMY 
-#define CSharp_TestSharedScript_h_18_REFLECTION_MODULE_CASTER \
+#define CSharp_TestSharedScript_h_21_REFLECTION_MODULE_DUMMY 
+#define CSharp_TestSharedScript_h_21_REFLECTION_MODULE_CASTER \
 public: \
 static void* Cast(void* _pObject) { return static_cast<TestSharedScript*>(_pObject); }
-#define CSharp_TestSharedScript_h_0_REFLECTION_MODULE_RUNTIME_COMPILER \
+#define CSharp_TestSharedScript_h_21_REFLECTION_MODULE_RUNTIME_COMPILER \
 public: \
 void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
 {\
+_pSerializer->SerializeProperty("_an_a", _an_a); \
 }
-#define CSharp_TestSharedScript_h_18_GENERATED_BODY \
-CSharp_TestSharedScript_h_18_REFLECTION_MODULE_CSHARP \
-CSharp_TestSharedScript_h_18_REFLECTION_MODULE_DUMMY \
-CSharp_TestSharedScript_h_18_REFLECTION_MODULE_CASTER
-
-#define CSharp_TestSharedScript_h_0_GENERATED_BODY \
-CSharp_TestSharedScript_h_0_REFLECTION_MODULE_RUNTIME_COMPILER
+#define CSharp_TestSharedScript_h_21_GENERATED_BODY \
+CSharp_TestSharedScript_h_21_REFLECTION_MODULE_CSHARP \
+CSharp_TestSharedScript_h_21_REFLECTION_MODULE_DUMMY \
+CSharp_TestSharedScript_h_21_REFLECTION_MODULE_CASTER \
+CSharp_TestSharedScript_h_21_REFLECTION_MODULE_RUNTIME_COMPILER
 
 #undef DUCKVIL_CURRENT_FILE_ID
 #define DUCKVIL_CURRENT_FILE_ID CSharp_TestSharedScript_h
