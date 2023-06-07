@@ -10,6 +10,7 @@
 #include "cppast/cpp_namespace.hpp"
 #include "cppast/cpp_variable.hpp"
 #include "cppast/cpp_preprocessor.hpp"
+#include "cppast/cpp_type_alias.hpp"
 
 #include "Utils/Utils.h"
 
@@ -2853,6 +2854,40 @@ namespace Duckvil { namespace Parser {
         return _pScope;
     }
 
+    __ast_entity* process_entity(__ast* _pAST, const cppast::cpp_namespace_alias& _entity, cppast::cpp_access_specifier_kind _access, const cppast::cpp_entity_index& _index)
+    {
+        auto _scope = new __ast_entity_namespace_alias();
+
+        _scope->m_sName = _entity.name();
+        _scope->m_sTarget = _entity.target().name();
+        _scope->m_pParentScope = _pAST->m_pCurrentScope;
+
+        _pAST->m_pCurrentScope->m_aNamepaceAliases.push_back(_scope);
+
+        return nullptr;
+    }
+
+    __ast_entity* process_entity(__ast* _pAST, const cppast::cpp_type_alias& _entity, cppast::cpp_access_specifier_kind _access, const cppast::cpp_entity_index& _index)
+    {
+        auto _a = _entity.underlying_type().kind();
+
+        if (_a != cppast::cpp_type_kind::user_defined_t)
+        {
+            return nullptr;
+        }
+
+        auto _scope = new __ast_entity_type_alias();
+
+        _scope->m_sName = _entity.name();
+        auto& x = (cppast::cpp_user_defined_type&)_entity.underlying_type();
+
+        _scope->m_sTarget = x.entity().name();
+
+        _pAST->m_pCurrentScope->m_aTypeAliases.push_back(_scope);
+
+        return nullptr;
+    }
+
     void ast_generate_cppast(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data& _lexerData)
     {
         const auto& _config = *static_cast<Parser::compile_config*>(_lexerData.m_pConfig);
@@ -2960,6 +2995,14 @@ namespace Duckvil { namespace Parser {
                     case cppast::cpp_entity_kind::destructor_t:
                     {
                         _scope = process_entity(_pAST, new __ast_entity_destructor(), reinterpret_cast<const cppast::cpp_destructor&>(e), info.access);
+                    } break;
+                    case cppast::cpp_entity_kind::namespace_alias_t:
+                    {
+                        _scope = process_entity(_pAST, reinterpret_cast<const cppast::cpp_namespace_alias&>(e), info.access, _index);
+                    } break;
+                    case cppast::cpp_entity_kind::type_alias_t:
+                    {
+                        _scope = process_entity(_pAST, reinterpret_cast<const cppast::cpp_type_alias&>(e), info.access, _index);
                     } break;
                     default:
                         printf("%s\n", e.name().c_str());

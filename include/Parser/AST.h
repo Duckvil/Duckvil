@@ -34,6 +34,8 @@ namespace Duckvil { namespace Parser {
         __ast_entity_type_typedef,
         __ast_entity_type_callback_typedef,
         __ast_entity_type_define,
+        __ast_entity_namespace_alias,
+        __ast_entity_type_alias,
         __ast_entity_type_undefined
     };
 
@@ -127,6 +129,30 @@ namespace Duckvil { namespace Parser {
         std::vector<__ast_meta> m_aMeta;
         std::vector<std::string> m_aNeededDefines;
         __ast_preprocessor m_aNeededDefines2;
+        std::vector<__ast_entity*> m_aNamepaceAliases;
+        std::vector<__ast_entity*> m_aTypeAliases;
+    };
+
+    struct __ast_entity_namespace_alias : public __ast_entity
+    {
+        __ast_entity_namespace_alias(__ast_entity_type _scopeType = __ast_entity_type::__ast_entity_namespace_alias)
+        {
+
+        }
+
+        std::string m_sName;
+        std::string m_sTarget;
+    };
+
+    struct __ast_entity_type_alias : public __ast_entity
+    {
+        __ast_entity_type_alias(__ast_entity_type _scopeType = __ast_entity_type::__ast_entity_type_alias)
+        {
+
+        }
+
+        std::string m_sName;
+        std::string m_sTarget;
     };
 
     struct __ast_entity_define : public __ast_entity
