@@ -376,6 +376,12 @@ namespace Duckvil { namespace RuntimeReflection {
     void generate_structure(__generator_data* _pData, const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, std::ofstream& _file)
     {
         const Parser::__ast_entity_structure* _casted = static_cast<const Parser::__ast_entity_structure*>(_pEntity);
+
+        if (_casted->m_bIsForwardDeclaration)
+        {
+            return;
+        }
+
         const Parser::__ast_entity_structure* _parent = _casted;
         std::string _additionalNamespace;
 

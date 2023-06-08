@@ -2504,6 +2504,19 @@ namespace Duckvil { namespace Parser {
             break;
         }
 
+        if (!cppast::is_definition(_entity))
+        {
+            _pScope->m_bIsForwardDeclaration = true;
+
+            _pAST->m_pCurrentScope->m_aScopes.push_back(_pScope);
+
+            return nullptr;
+        }
+        else
+        {
+            _pScope->m_bIsForwardDeclaration = false;
+        }
+
         for(const auto& _base : _entity.bases())
         {
             __ast_inheritance _inh;
