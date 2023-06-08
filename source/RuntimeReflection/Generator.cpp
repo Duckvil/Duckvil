@@ -27,8 +27,26 @@ namespace Duckvil { namespace RuntimeReflection {
         return _res;
     }
 
+    bool has_ignore_flag(const Parser::__ast_entity* _pEntity)
+    {
+        for (auto _meta : _pEntity->m_aMeta)
+        {
+            if (_meta.m_sKey == "Ignore" && _meta.m_sValue == "true")
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     void generate_inheritance(const Parser::__ast& _ast, const Parser::__ast_entity_structure* _pEntity, std::ofstream& _file)
     {
+        if (has_ignore_flag(_pEntity))
+        {
+            return;
+        }
+
         for(const Parser::__ast_inheritance& _inheritance : _pEntity->m_aInheritance)
         {
             _file << "record_inheritance<" << _inheritance.m_sName << ">(_data, _type, ";
@@ -50,6 +68,11 @@ namespace Duckvil { namespace RuntimeReflection {
 
     void generate_constructor(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
+        if (has_ignore_flag(_pEntity))
+        {
+            return;
+        }
+
         const Parser::__ast_entity_constructor* _castedConstructor = static_cast<const Parser::__ast_entity_constructor*>(_pEntity);
         bool _skip = false;
 
@@ -124,6 +147,11 @@ namespace Duckvil { namespace RuntimeReflection {
 
     void generate_destructor(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
+        if (has_ignore_flag(_pEntity))
+        {
+            return;
+        }
+
         const Parser::__ast_entity_destructor* _castedDestructor = static_cast<const Parser::__ast_entity_destructor*>(_pEntity);
 
         _file << "_destructor = record_destructor<" + _sNamespace + _pParentEntity->m_sName;
@@ -137,6 +165,11 @@ namespace Duckvil { namespace RuntimeReflection {
 
     void generate_variable(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
+        if (has_ignore_flag(_pEntity))
+        {
+            return;
+        }
+
         const Parser::__ast_entity_variable* _castedVariable = static_cast<const Parser::__ast_entity_variable*>(_pEntity);
         bool _skip = false;
 
@@ -217,6 +250,11 @@ namespace Duckvil { namespace RuntimeReflection {
 
     void generate_callback(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
+        if (has_ignore_flag(_pEntity))
+        {
+            return;
+        }
+
         const Parser::__ast_entity_callback* _castedCallback = static_cast<const Parser::__ast_entity_callback*>(_pEntity);
         bool _skip = false;
 
@@ -265,6 +303,11 @@ namespace Duckvil { namespace RuntimeReflection {
 
     void generate_function(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
+        if (has_ignore_flag(_pEntity))
+        {
+            return;
+        }
+
         const Parser::__ast_entity_function* _castedFunction = static_cast<const Parser::__ast_entity_function*>(_pEntity);
         bool _skip = false;
 
@@ -353,6 +396,11 @@ namespace Duckvil { namespace RuntimeReflection {
 
     void generate_enum(const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, const Parser::__ast_entity_structure* _pParentEntity, std::ofstream& _file, const std::string& _sNamespace)
     {
+        if (has_ignore_flag(_pEntity))
+        {
+            return;
+        }
+
         const Parser::__ast_entity_enum* _castedEnum = static_cast<const Parser::__ast_entity_enum*>(_pEntity);
 
         for(const auto& _define : _castedEnum->m_aNeededDefines)
@@ -375,6 +423,11 @@ namespace Duckvil { namespace RuntimeReflection {
 
     void generate_structure(__generator_data* _pData, const Parser::__ast& _ast, const Parser::__ast_entity* _pEntity, std::ofstream& _file)
     {
+        if (has_ignore_flag(_pEntity))
+        {
+            return;
+        }
+
         const Parser::__ast_entity_structure* _casted = static_cast<const Parser::__ast_entity_structure*>(_pEntity);
 
         if (_casted->m_bIsForwardDeclaration)
