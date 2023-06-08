@@ -112,7 +112,7 @@ namespace Duckvil { namespace Event {
         Memory::Vector<imember_const_event*> m_aMemberConstEvents;
 
         RuntimeReflection::__data* m_pReflectionData;
-        RuntimeReflection::__ftable* m_pReflection;
+        const RuntimeReflection::__ftable* m_pReflection;
 
     public:
         Channel()
@@ -120,7 +120,7 @@ namespace Duckvil { namespace Event {
 
         }
 
-        Channel(const Memory::FreeList& _heap, RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pReflectionData) :
+        Channel(const Memory::FreeList& _heap, const RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pReflectionData) :
             m_pReflectionData(_pReflectionData),
             m_pReflection(_pReflection)
         {

@@ -210,9 +210,9 @@ DUCKVIL_RUNTIME_REFLECTION_RESUME
         Event::Pool<Event::mode::immediate>* m_pRuntimeReflectionEventPool;
 
     // RuntimeReflection generator
-        RuntimeReflection::__generator_ftable* m_pReflectionGenerator;
-        Parser::__ast_ftable* m_pAST_FTable;
-        Parser::__lexer_ftable* m_pLexerFTable;
+        const RuntimeReflection::__generator_ftable* m_pReflectionGenerator;
+        const Parser::__ast_ftable* m_pAST_FTable;
+        const Parser::__lexer_ftable* m_pLexerFTable;
 
         Thread::pool_ftable* m_pThread;
         Thread::pool_data* m_pThreadData;

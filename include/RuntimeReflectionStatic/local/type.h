@@ -4,10 +4,10 @@
 
 namespace Duckvil { namespace RuntimeReflection {
 
-    DUCKVIL_RESOURCE(type_t) get_type(__ftable* _pFTable, __data* _pData, const std::size_t& _ullTypeID);
+    DUCKVIL_RESOURCE(type_t) get_type(const __ftable* _pFTable, __data* _pData, const std::size_t& _ullTypeID);
 
     template <typename Type>
-    DUCKVIL_RESOURCE(type_t) get_type(__ftable* _pFTable, __data* _pData)
+    DUCKVIL_RESOURCE(type_t) get_type(const __ftable* _pFTable, __data* _pData)
     {
         static const std::size_t& _typeID = typeid(Type).hash_code();
 
@@ -15,7 +15,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <std::size_t Length>
-    DUCKVIL_RESOURCE(type_t) get_type(__ftable* _pFTable, __data* _pData, const char (&_sName)[Length])
+    DUCKVIL_RESOURCE(type_t) get_type(const __ftable* _pFTable, __data* _pData, const char (&_sName)[Length])
     {
         return _pFTable->m_fnGetTypeHandleByName(_pData, _sName, Length);
     }
@@ -49,20 +49,20 @@ namespace Duckvil { namespace RuntimeReflection {
 
     DUCKVIL_RESOURCE(type_t) get_type(__data* _pData, const char* _sName, const std::vector<const char*>& _aNamespaces);
 
-    const __type_t& get_type(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle);
+    const __type_t& get_type(const __ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle);
 
-    Memory::Vector<DUCKVIL_RESOURCE(type_t)> get_types(__ftable* _pReflection, __data* _pData, const Memory::FreeList& _heap);
+    Memory::Vector<DUCKVIL_RESOURCE(type_t)> get_types(const __ftable* _pReflection, __data* _pData, const Memory::FreeList& _heap);
 
-    bool inherits(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(type_t) _typeHandle2);
+    bool inherits(const __ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(type_t) _typeHandle2);
 
     template <typename Type>
-    bool inherits(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle)
+    bool inherits(const __ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle)
     {
         return _pReflection->m_fnInheritsByTypeID(_pData, _typeHandle, typeid(Type).hash_code());
     }
 
-    DUCKVIL_RESOURCE(ntype_t) get_type(__ftable* _pReflection, __data* _pData, const std::vector<const char*>& _aNamespaces);
+    DUCKVIL_RESOURCE(ntype_t) get_type(const __ftable* _pReflection, __data* _pData, const std::vector<const char*>& _aNamespaces);
 
-    const __ntype_t& get_type(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle);
+    const __ntype_t& get_type(const __ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle);
 
 }}

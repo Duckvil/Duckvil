@@ -26,7 +26,7 @@ namespace Duckvil { namespace Utils { namespace Graphics {
 		
 	}
 
-	FrameBufferReader::FrameBufferReader(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, uint32_t _u32TargetWidth, uint32_t _u32TargetHeight, Format _format, Type _type) :
+	FrameBufferReader::FrameBufferReader(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, uint32_t _u32TargetWidth, uint32_t _u32TargetHeight, Format _format, Type _type) :
         m_u32TargetWidth(_u32TargetWidth),
         m_u32TargetHeight(_u32TargetHeight),
 	    m_format(_format),

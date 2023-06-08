@@ -902,7 +902,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
 }}
 
-Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_recorder_init()
+const Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_recorder_init()
 {
     static Duckvil::RuntimeReflection::__recorder_ftable _functions = { 0 };
 

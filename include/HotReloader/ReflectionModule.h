@@ -42,7 +42,7 @@ namespace Duckvil { namespace HotReloader {
     private:
 
     public:
-        RuntimeCompilerReflectionModule(const Memory::FreeList& _heap, RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData) :
+        RuntimeCompilerReflectionModule(const Memory::FreeList& _heap, const RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData) :
             m_pRuntimeReflectionData(_pRuntimeReflectionData),
             m_pRuntimeReflection(_pReflection),
             m_heap(_heap)
@@ -56,7 +56,7 @@ namespace Duckvil { namespace HotReloader {
         }
 
         RuntimeReflection::__data* m_pRuntimeReflectionData;
-        RuntimeReflection::__ftable* m_pRuntimeReflection;
+        const RuntimeReflection::__ftable* m_pRuntimeReflection;
         Memory::FreeList m_heap;
 
         std::filesystem::path m_sFile;
@@ -135,7 +135,7 @@ namespace Duckvil { namespace HotReloader {
 	        {
 	            if(_meta.m_sKey == DUCKVIL_TO_STRING(Duckvil::HotReloader::NOT_SERIALIZABLE))
 	            {
-	            	_serializable = _meta.m_sValue != "false";
+	            	_serializable = _meta.m_sValue == "false";
 
 	                break;
 	            }

@@ -95,7 +95,7 @@ namespace Duckvil {
         duckvil_memory_debug_info* m_pMemoryDebugger;
 #endif
 
-        Memory::ftable* m_pMemory;
+        const Memory::ftable* m_pMemory;
         Memory::free_list_allocator* m_pHeap;
 
         Memory::FreeList m_heap; // General use memory
@@ -186,7 +186,7 @@ namespace Duckvil {
 
     struct __ftable
     {
-        bool (*init)(Duckvil::__data* _pData, Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator);
+        bool (*init)(Duckvil::__data* _pData, const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator);
         bool (*start)(Duckvil::__data* _pData, Duckvil::__ftable* _pFTable);
         bool (*stop)(Duckvil::__data* _pData, Duckvil::__ftable* _pFTable);
         void (*update)(Duckvil::__data* _pData, Duckvil::__ftable* _pFTable);
@@ -194,6 +194,6 @@ namespace Duckvil {
 
 }
 
-typedef Duckvil::__ftable* (*duckvil_init_callback)();
+typedef const Duckvil::__ftable* (*duckvil_init_callback)();
 
-DUCKVIL_EXPORT Duckvil::__ftable* duckvil_init();
+DUCKVIL_EXPORT const Duckvil::__ftable* duckvil_init();

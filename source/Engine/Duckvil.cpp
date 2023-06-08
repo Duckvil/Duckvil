@@ -230,7 +230,7 @@ namespace Duckvil {
         _pData->m_aRecordedTypes = Memory::ThreadsafeVector<duckvil_recorderd_types>(_pData->m_heap);
     }
 
-    bool init(__data* _pData, Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator)
+    bool init(__data* _pData, const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator)
     {
         TracyMessageL("Initializing engine");
 
@@ -1071,7 +1071,7 @@ namespace Duckvil {
 
 }
 
-Duckvil::__ftable* duckvil_init()
+const Duckvil::__ftable* duckvil_init()
 {
     static Duckvil::__ftable _ftable = { 0 };
 

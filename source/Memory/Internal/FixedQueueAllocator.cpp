@@ -89,7 +89,7 @@ namespace Duckvil { namespace Memory {
     }
 
     // Should be here?
-    void impl_fixed_queue_resize(ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_queue_allocator** _pAllocator, std::size_t _ullNewSize)
+    void impl_fixed_queue_resize(const ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_queue_allocator** _pAllocator, std::size_t _ullNewSize)
     {
         if(_pParentAllocator->m_ullCapacity < _ullNewSize + _pParentAllocator->m_ullUsed)
         {

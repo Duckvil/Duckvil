@@ -699,7 +699,7 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             std::ofstream _hFile(_sHeaderPath);
 
-            _fnGenerate(_hFile, _sFile, _pUserData);
+            _fnGenerate(_hFile, _sFile, _pUserData, _ftableReflection);
 
             _hFile << "\n";
             _sFile << "\n";
@@ -743,7 +743,7 @@ namespace Duckvil { namespace RuntimeReflection {
 
 }}
 
-Duckvil::RuntimeReflection::__generator_ftable* duckvil_runtime_reflection_generator_init()
+const Duckvil::RuntimeReflection::__generator_ftable* duckvil_runtime_reflection_generator_init()
 {
     static Duckvil::RuntimeReflection::__generator_ftable _ftable = { 0 };
 

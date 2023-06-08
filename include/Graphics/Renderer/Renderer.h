@@ -193,29 +193,29 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
 
     struct renderer_ftable
     {
-        bool (*m_fnInit)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, Window::IWindow* _pWindow, renderer_data* _pData);
-        void (*m_fnUpdate)(Memory::ftable* _pMemoryInterface, renderer_data* _pData);
-        void (*m_fnSubmitCommandBuffer)(Memory::ftable* _pMemoryInterface, renderer_data* _pData);
+        bool (*m_fnInit)(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, Window::IWindow* _pWindow, renderer_data* _pData);
+        void (*m_fnUpdate)(const Memory::ftable* _pMemoryInterface, renderer_data* _pData);
+        void (*m_fnSubmitCommandBuffer)(const Memory::ftable* _pMemoryInterface, renderer_data* _pData);
 
         void (*m_fnBindAsRenderTarget)();
 
-        uint32_t (*m_fnCreateShader)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const char* _sVertexFilename, const char* _sFragmentFilename);
-        uint32_t (*m_fnCreateFrameBufferReader)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiTargetWidth, uint32_t _uiTargetHeight, frame_buffer_reader::Format _format, frame_buffer_reader::Type _type);
-    	uint32_t (*m_fnCreateTexture)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const texture_descriptor& _descriptor);
-        uint32_t (*m_fnCreateTextureObject)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const texture_object_descriptor& _descriptor);
-        uint32_t (*m_fnCreateFramebuffer)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const framebuffer_descriptor& _descriptor);
-        uint32_t (*m_fnCreateVAO)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const vertex_array_object_descriptor& _descriptor);
+        uint32_t (*m_fnCreateShader)(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const char* _sVertexFilename, const char* _sFragmentFilename);
+        uint32_t (*m_fnCreateFrameBufferReader)(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiTargetWidth, uint32_t _uiTargetHeight, frame_buffer_reader::Format _format, frame_buffer_reader::Type _type);
+    	uint32_t (*m_fnCreateTexture)(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const texture_descriptor& _descriptor);
+        uint32_t (*m_fnCreateTextureObject)(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const texture_object_descriptor& _descriptor);
+        uint32_t (*m_fnCreateFramebuffer)(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const framebuffer_descriptor& _descriptor);
+        uint32_t (*m_fnCreateVAO)(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const vertex_array_object_descriptor& _descriptor);
 
-        void (*m_fnDestroyTexture)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiID);
-        void (*m_fnDestroyFramebuffer)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiID);
+        void (*m_fnDestroyTexture)(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiID);
+        void (*m_fnDestroyFramebuffer)(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiID);
 
-        uint32_t (*m_fnGetUniformLocation)(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiID, const char* _sName);
+        uint32_t (*m_fnGetUniformLocation)(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiID, const char* _sName);
 
         void* (*m_fnGetTexture)(renderer_data* _pData, uint32_t _uiID);
         GLuint* (*m_fnGetTextures)(renderer_data* _pData, uint32_t _uiID);
     };
 
-    static inline void bind_shader(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _shaderID)
+    static inline void bind_shader(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _shaderID)
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_bind_shader,
             {
@@ -224,7 +224,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         );
     }
 
-    static inline void bind_texture(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _textureID, uint32_t _unit)
+    static inline void bind_texture(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _textureID, uint32_t _unit)
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_bind_texture,
             {
@@ -234,7 +234,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         );
     }
 
-    static inline void bind_texture_object(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _textureObjectID, uint32_t _textureID)
+    static inline void bind_texture_object(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _textureObjectID, uint32_t _textureID)
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_bind_texture_object,
             {
@@ -244,7 +244,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         );
     }
 
-    static inline void bind_framebuffer(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _framebufferID)
+    static inline void bind_framebuffer(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _framebufferID)
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_bind_framebuffer,
             {
@@ -253,7 +253,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         );
     }
 
-    static inline void read_pixel_colors(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t m_uiAttachmentIndex, uint32_t _uiX, uint32_t _uiY, void (*_fnCallback)(uint32_t _uiValue))
+    static inline void read_pixel_colors(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t m_uiAttachmentIndex, uint32_t _uiX, uint32_t _uiY, void (*_fnCallback)(uint32_t _uiValue))
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_read_pixel,
             {
@@ -265,7 +265,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         );
     }
 
-    static inline void read_pixel(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t m_uiAttachmentIndex, uint32_t _uiX, uint32_t _uiY, uint32_t _uiFBO, void (*_fnCallback)(uint32_t _uiValue))
+    static inline void read_pixel(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t m_uiAttachmentIndex, uint32_t _uiX, uint32_t _uiY, uint32_t _uiFBO, void (*_fnCallback)(uint32_t _uiValue))
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_fbo_read_pixel,
             {
@@ -278,7 +278,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         );
     }
 
-    static inline void draw(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _vaoID)
+    static inline void draw(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _vaoID)
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_draw,
             {
@@ -287,7 +287,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         );
     }
 
-    static inline void clear_color(Memory::ftable* _pMemoryInterface, renderer_data* _pData, const glm::vec4& _color = glm::vec4(0, 0, 0, 0))
+    static inline void clear_color(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, const glm::vec4& _color = glm::vec4(0, 0, 0, 0))
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_clear_color,
         {
@@ -295,7 +295,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         });
     }
 
-    static inline void clear(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _mask)
+    static inline void clear(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _mask)
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_clear,
         {
@@ -303,7 +303,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         });
     }
 
-    static inline void clear_attachment(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiTextureID, GLenum _format, GLenum _type, void* _pValue)
+    static inline void clear_attachment(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiTextureID, GLenum _format, GLenum _type, void* _pValue)
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_clear_attachment,
         {
@@ -314,7 +314,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         });
     }
 
-    static inline void viewport(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiWidth, uint32_t _uiHeight)
+    static inline void viewport(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiWidth, uint32_t _uiHeight)
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_viewport,
         {
@@ -323,7 +323,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         });
     }
 
-    static inline void set_uniform(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const int& _value)
+    static inline void set_uniform(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const int& _value)
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_set_uniform,
         {
@@ -333,7 +333,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         });
     }
 
-    static inline void set_uniform(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const float& _value)
+    static inline void set_uniform(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const float& _value)
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_set_uniform,
         {
@@ -343,7 +343,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         });
     }
 
-    static inline void set_uniform(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const glm::vec2& _value)
+    static inline void set_uniform(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const glm::vec2& _value)
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_set_uniform,
         {
@@ -353,7 +353,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         });
     }
 
-    static inline void set_uniform(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const glm::vec3& _value)
+    static inline void set_uniform(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const glm::vec3& _value)
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_set_uniform,
         {
@@ -363,7 +363,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         });
     }
 
-    static inline void set_uniform(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const glm::vec4& _value)
+    static inline void set_uniform(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const glm::vec4& _value)
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_set_uniform,
         {
@@ -373,7 +373,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         });
     }
 
-    static inline void set_uniform(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const glm::mat4& _value)
+    static inline void set_uniform(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiLocation, const glm::mat4& _value)
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_set_uniform,
         {
@@ -383,7 +383,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         });
     }
 
-    static inline void frame_buffer_reader_read(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiHandle, uint32_t _uiFBOHandle, uint32_t _uiSourceWidth, uint32_t _uiSourceHeight, uint8_t _u8Attachment)
+    static inline void frame_buffer_reader_read(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiHandle, uint32_t _uiFBOHandle, uint32_t _uiSourceWidth, uint32_t _uiSourceHeight, uint8_t _u8Attachment)
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_frame_buffer_reader_read,
         {
@@ -395,7 +395,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         });
     }
 
-    static inline void frame_buffer_reader_update(Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiHandle, void (*_fnCallback)(void* _pTextureData, uint32_t _uiWidth, uint32_t _uiHeight, uint32_t _uiOffset))
+    static inline void frame_buffer_reader_update(const Memory::ftable* _pMemoryInterface, renderer_data* _pData, uint32_t _uiHandle, void (*_fnCallback)(void* _pTextureData, uint32_t _uiWidth, uint32_t _uiHeight, uint32_t _uiOffset))
     {
         DUCKVIL_RENDERER_PUSH_COMMAND(_pMemoryInterface, _pData->m_pAllocator, (&_pData->m_pCommandBuffer), renderer_op_code_frame_buffer_reader_update,
         {
@@ -434,4 +434,4 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
 
 }}}
 
-DUCKVIL_EXPORT Duckvil::Graphics::Renderer::renderer_ftable* duckvil_graphics_renderer_init();
+DUCKVIL_EXPORT const Duckvil::Graphics::Renderer::renderer_ftable* duckvil_graphics_renderer_init();

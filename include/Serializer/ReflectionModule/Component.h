@@ -22,7 +22,7 @@ namespace Duckvil { namespace Serializer { namespace ReflectionModule {
     private:
 
     public:
-        Component(const Memory::FreeList& _heap, RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData)
+        Component(const Memory::FreeList& _heap, const RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData)
         {
             m_bIsValid = false;
             m_uiGeneratedBodyLine = -1;

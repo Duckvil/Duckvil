@@ -19,14 +19,14 @@ namespace Duckvil { namespace RuntimeCompiler {
 
         _module.load(&_processModuleInfo);
 
-        void (*_duckvilProcessInit)(Process::ftable* _pFTable);
+        const Process::ftable* (*_duckvilProcessInit)();
 
         _module.get(_processModuleInfo, "duckvil_process_init", (void**)&_duckvilProcessInit);
 
-        _duckvilProcessInit(&m_processFTable);
+        m_processFTable = _duckvilProcessInit();
 
-        m_processFTable.m_fnInit(_heap.GetMemoryInterface(), _heap.GetAllocator(), &m_processData);
-        m_processFTable.m_fnSetup(&m_processData);
+        m_processFTable->m_fnInit(_heap.GetMemoryInterface(), _heap.GetAllocator(), &m_processData);
+        m_processFTable->m_fnSetup(&m_processData);
     }
 
     Compiler::~Compiler()
@@ -37,7 +37,7 @@ namespace Duckvil { namespace RuntimeCompiler {
     bool Compiler::Setup()
     {
 #ifdef DUCKVIL_PLATFORM_WINDOWS
-        m_pCompiler = new WindowsCompiler(m_processFTable, &m_processData);
+        m_pCompiler = new WindowsCompiler(*m_processFTable, &m_processData);
 
         return true;
 #else

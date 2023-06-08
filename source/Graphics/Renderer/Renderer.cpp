@@ -80,7 +80,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         return _shader;
     }
 
-    uint32_t impl_renderer_create_shader(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const char* _sVertexFilename, const char* _sFragmentFilename)
+    uint32_t impl_renderer_create_shader(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const char* _sVertexFilename, const char* _sFragmentFilename)
     {
         GLuint _program = glCreateProgram();
         GLuint _shaders[2] = { create_shader(load_shader(_sVertexFilename), GL_VERTEX_SHADER), create_shader(load_shader(_sFragmentFilename), GL_FRAGMENT_SHADER) };
@@ -107,7 +107,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         );
     }
 
-    uint32_t impl_renderer_create_frame_buffer_reader(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiTargetWidth, uint32_t _uiTargetHeight, frame_buffer_reader::Format _format, frame_buffer_reader::Type _type)
+    uint32_t impl_renderer_create_frame_buffer_reader(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiTargetWidth, uint32_t _uiTargetHeight, frame_buffer_reader::Format _format, frame_buffer_reader::Type _type)
     {
         frame_buffer_reader _buffer(_pMemoryInterface, _pAllocator, _uiTargetWidth, _uiTargetHeight, _format, _type);
 
@@ -119,7 +119,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         );
     }
 
-    uint32_t impl_renderer_create_texture(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const texture_descriptor& _descriptor)
+    uint32_t impl_renderer_create_texture(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const texture_descriptor& _descriptor)
     {
         GLuint _texture = -1;
 
@@ -142,7 +142,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         );
     }
 
-    uint32_t impl_renderer_create_texture_object(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const texture_object_descriptor& _descriptor)
+    uint32_t impl_renderer_create_texture_object(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const texture_object_descriptor& _descriptor)
     {
         GLuint* _texture = static_cast<GLuint*>(_pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(GLuint) * _descriptor.m_uiCount, 8));
 
@@ -166,7 +166,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         );
     }
 
-    uint32_t impl_renderer_create_framebuffer(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const framebuffer_descriptor& _descriptor)
+    uint32_t impl_renderer_create_framebuffer(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const framebuffer_descriptor& _descriptor)
     {
         GLuint _framebuffer = -1;
         GLuint _renderbuffer = -1;
@@ -223,7 +223,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         );
     }
 
-    uint32_t impl_renderer_create_vao(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const vertex_array_object_descriptor& _descriptor)
+    uint32_t impl_renderer_create_vao(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, const vertex_array_object_descriptor& _descriptor)
     {
         GLuint _vao = -1;
         uint32_t _drawCount = 0;
@@ -276,7 +276,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     }
 
-    uint32_t impl_renderer_get_uniform_location(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiID, const char* _sName)
+    uint32_t impl_renderer_get_uniform_location(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiID, const char* _sName)
     {
         const auto& _shader = DUCKVIL_SLOT_ARRAY_GET(_pData->m_shader, _uiID);
         const auto& _uniformLocation = glGetUniformLocation(_shader, _sName);
@@ -296,19 +296,19 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         return _textureObject->m_pTexture;
     }
 
-    void impl_renderer_destroy_texture(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiID)
+    void impl_renderer_destroy_texture(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiID)
     {
         glDeleteTextures(1, &_uiID);
     }
 
-    void impl_renderer_destroy_framebuffer(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiID)
+    void impl_renderer_destroy_framebuffer(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, renderer_data* _pData, uint32_t _uiID)
     {
         glDeleteFramebuffers(1, &_uiID);
     }
 
 
 
-    bool impl_renderer_init(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, Window::IWindow* _pWindow, renderer_data* _pData)
+    bool impl_renderer_init(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, Window::IWindow* _pWindow, renderer_data* _pData)
     {
         _pData->m_shader = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, shader);
         _pData->m_texture = DUCKVIL_SLOT_ARRAY_NEW(_pMemoryInterface, _pAllocator, texture);
@@ -340,7 +340,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         return true;
     }
 
-    void impl_renderer_submit_command_buffer(Memory::ftable* _pMemoryInterface, renderer_data* _pData)
+    void impl_renderer_submit_command_buffer(const Memory::ftable* _pMemoryInterface, renderer_data* _pData)
     {
         Memory::byte_buffer_seek_to_begin(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands);
 
@@ -618,7 +618,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         //_pData->m_pCommandBuffer.m_uiCommandCount = 0;
     }
 
-    void impl_renderer_update(Memory::ftable* _pMemoryInterface, renderer_data* _pData)
+    void impl_renderer_update(const Memory::ftable* _pMemoryInterface, renderer_data* _pData)
     {
         {
             ZoneScopedN("Submit renderer command buffer");
@@ -635,7 +635,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
 
 }}}
 
-Duckvil::Graphics::Renderer::renderer_ftable* duckvil_graphics_renderer_init()
+const Duckvil::Graphics::Renderer::renderer_ftable* duckvil_graphics_renderer_init()
 {
     static Duckvil::Graphics::Renderer::renderer_ftable _result = { 0 };
 

@@ -406,7 +406,7 @@ namespace Duckvil { namespace HotReloader {
                     _module.m_pObject =
                         Duckvil::RuntimeReflection::create<
                             const Duckvil::Memory::FreeList&,
-                            Duckvil::RuntimeReflection::__ftable*,
+                            const Duckvil::RuntimeReflection::__ftable*,
                             Duckvil::RuntimeReflection::__data*
                         >(
                             m_heap.GetMemoryInterface(),
@@ -508,7 +508,7 @@ namespace Duckvil { namespace HotReloader {
         _module.load(&_parser);
 
         {
-            RuntimeReflection::__generator_ftable* (*_runtime_reflection_generator)();
+            const RuntimeReflection::__generator_ftable* (*_runtime_reflection_generator)();
 
             _module.get(_reflectionModule, "duckvil_runtime_reflection_generator_init", reinterpret_cast<void**>(&_runtime_reflection_generator));
 
@@ -516,8 +516,8 @@ namespace Duckvil { namespace HotReloader {
         }
 
         {
-            Parser::__lexer_ftable* (*_lexer_init)();
-            Parser::__ast_ftable* (*_ast_init)();
+            const Parser::__lexer_ftable* (*_lexer_init)();
+            const Parser::__ast_ftable* (*_ast_init)();
 
             _module.get(_parser, "duckvil_lexer_init", reinterpret_cast<void**>(&_lexer_init));
             _module.get(_parser, "duckvil_ast_init", reinterpret_cast<void**>(&_ast_init));
@@ -782,7 +782,6 @@ namespace Duckvil { namespace HotReloader {
     void RuntimeCompilerSystem::GenerateReflection(const std::filesystem::path& _CWD, const std::filesystem::path& _file, bool _bIsAbsolute)
     {
         PlugNPlay::__module _module;
-        Process::ftable _process;
         Process::data _processData;
 
         PlugNPlay::module_init(&_module);
@@ -791,22 +790,22 @@ namespace Duckvil { namespace HotReloader {
 
         _module.load(&_processModuleInfo);
 
-        void (*_duckvilProcessInit)(Process::ftable* _pFTable);
+        const Process::ftable* (*_duckvilProcessInit)();
 
         _module.get(_processModuleInfo, "duckvil_process_init", reinterpret_cast<void**>(&_duckvilProcessInit));
 
-        _duckvilProcessInit(&_process);
+        const Process::ftable* _process = _duckvilProcessInit();
 
-        _process.m_fnInit(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), &_processData);
-        _process.m_fnSetup(&_processData);
+        _process->m_fnInit(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), &_processData);
+        _process->m_fnSetup(&_processData);
 
-        _process.m_fnWrite(&_processData, std::string((std::filesystem::path(DUCKVIL_OUTPUT) / "ReflectionGenerator.exe -CWD ").string() + _CWD.string() + (_file != "" ? (" -file " + _file.string() + (_bIsAbsolute ? " -is_absolute" : " -is_relative")) : "") + "\n_COMPLETION_TOKEN_\n").c_str());
-        _process.m_fnWait(&_processData);
-        _process.m_fnStop(&_processData);
+        _process->m_fnWrite(&_processData, std::string((std::filesystem::path(DUCKVIL_OUTPUT) / "ReflectionGenerator.exe -CWD ").string() + _CWD.string() + (_file != "" ? (" -file " + _file.string() + (_bIsAbsolute ? " -is_absolute" : " -is_relative")) : "") + "\n_COMPLETION_TOKEN_\n").c_str());
+        _process->m_fnWait(&_processData);
+        _process->m_fnStop(&_processData);
 
-        if(_process.m_fnTerminate(&_processData))
+        if(_process->m_fnTerminate(&_processData))
         {
-            _process.m_fnCleanup(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), &_processData);
+            _process->m_fnCleanup(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), &_processData);
         }
     }
 

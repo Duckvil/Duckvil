@@ -222,7 +222,7 @@ namespace Duckvil { namespace Memory {
         return _memory;
     }
 
-    queue_allocator* impl_free_list_allocate_queue_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize)
+    queue_allocator* impl_free_list_allocate_queue_allocator(const ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize)
     {
         constexpr std::size_t ALLOCATOR_SIZE = sizeof(queue_allocator);
 
@@ -244,7 +244,7 @@ namespace Duckvil { namespace Memory {
         return _allocator;
     }
 
-    fixed_queue_allocator* impl_free_list_allocate_fixed_queue_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
+    fixed_queue_allocator* impl_free_list_allocate_fixed_queue_allocator(const ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
         constexpr std::size_t ALLOCATOR_SIZE = sizeof(fixed_queue_allocator);
         fixed_queue_allocator* _allocator = static_cast<fixed_queue_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, ALLOCATOR_SIZE + _ullSize, alignof(fixed_queue_allocator)));
@@ -266,7 +266,7 @@ namespace Duckvil { namespace Memory {
         return _allocator;
     }
 
-    free_list_allocator* impl_free_list_allocate_free_list_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize)
+    free_list_allocator* impl_free_list_allocate_free_list_allocator(const ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize)
     {
         constexpr std::size_t ALLOCATOR_SIZE = sizeof(free_list_allocator);
         free_list_allocator* _allocator = static_cast<free_list_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, ALLOCATOR_SIZE + _ullSize, alignof(free_list_allocator)));
@@ -302,7 +302,7 @@ namespace Duckvil { namespace Memory {
         return _allocator;
     }
 
-    fixed_vector_allocator* impl_free_list_allocate_fixed_vector_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
+    fixed_vector_allocator* impl_free_list_allocate_fixed_vector_allocator(const ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
         constexpr std::size_t ALLOCATOR_SIZE = sizeof(fixed_vector_allocator);
         fixed_vector_allocator* _allocator = static_cast<fixed_vector_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, ALLOCATOR_SIZE + _ullSize, alignof(fixed_vector_allocator)));
@@ -322,7 +322,7 @@ namespace Duckvil { namespace Memory {
         return _allocator;
     }
 
-    fixed_stack_allocator* impl_free_list_allocate_fixed_stack_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
+    fixed_stack_allocator* impl_free_list_allocate_fixed_stack_allocator(const ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
         constexpr std::size_t ALLOCATOR_SIZE = sizeof(fixed_stack_allocator);
         fixed_stack_allocator* _allocator = static_cast<fixed_stack_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, ALLOCATOR_SIZE + _ullSize, alignof(fixed_stack_allocator)));
@@ -342,7 +342,7 @@ namespace Duckvil { namespace Memory {
         return _allocator;
     }
 
-    fixed_array_allocator* impl_free_list_allocate_fixed_array_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
+    fixed_array_allocator* impl_free_list_allocate_fixed_array_allocator(const ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize)
     {
         constexpr std::size_t ALLOCATOR_SIZE = sizeof(fixed_array_allocator);
         fixed_array_allocator* _allocator = static_cast<fixed_array_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, ALLOCATOR_SIZE + _ullSize, alignof(fixed_array_allocator)));
@@ -362,7 +362,7 @@ namespace Duckvil { namespace Memory {
         return _allocator;
     }
 
-    byte_buffer_allocator* impl_free_list_allocate_byte_buffer_allocator(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize)
+    byte_buffer_allocator* impl_free_list_allocate_byte_buffer_allocator(const ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize)
     {
         constexpr std::size_t ALLOCATOR_SIZE = sizeof(byte_buffer_allocator);
         byte_buffer_allocator* _allocator = static_cast<byte_buffer_allocator*>(_pMemory->m_fnFreeListAllocate_(_pAllocator, ALLOCATOR_SIZE + _ullSize, alignof(byte_buffer_allocator)));

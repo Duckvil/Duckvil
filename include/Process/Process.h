@@ -19,16 +19,16 @@ namespace Duckvil { namespace Process {
 
     struct ftable
     {
-        void (*m_fnInit)(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator, data* _pData);
+        void (*m_fnInit)(const Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator, data* _pData);
         bool (*m_fnSetup)(data* _pData);
         void (*m_fnStart)(data* _pData);
         void (*m_fnStop)(data* _pData);
         void (*m_fnWait)(data* _pData);
         void (*m_fnWrite)(data* _pData, const char* _csMessage);
         bool (*m_fnTerminate)(data* _pData);
-        void (*m_fnCleanup)(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator, data* _pData);
+        void (*m_fnCleanup)(const Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator, data* _pData);
     };
 
 }}
 
-DUCKVIL_EXPORT void duckvil_process_init(Duckvil::Process::ftable* _pFTable);
+DUCKVIL_EXPORT const Duckvil::Process::ftable* duckvil_process_init();

@@ -49,6 +49,7 @@ namespace Duckvil { namespace Network {
 
     public:
 DUCKVIL_RUNTIME_REFLECTION_PAUSE
+        DUCKVIL_CONSTRUCTOR(Ignore)
         Connection(IConnection::Owner _owner, asio::io_context& _context, asio::ip::tcp::socket _socket, tsqueue<OwnedMessage>& _qIn);
 DUCKVIL_RUNTIME_REFLECTION_RESUME
         ~Connection();

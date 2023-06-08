@@ -12,70 +12,70 @@
 
 #define DUCKVIL_META_UTIL(name, type, type2) \
     template <typename KeyType> \
-    static inline DUCKVIL_RESOURCE(variant_t) get_meta_value_handle(__ftable* _pReflection, __data* _pData, type, const KeyType& _key) \
+    static inline DUCKVIL_RESOURCE(variant_t) get_meta_value_handle(const __ftable* _pReflection, __data* _pData, type, const KeyType& _key) \
     { \
         return _pReflection->m_fnGet ## name ## MetaHandle(_pData, type2, &_key, sizeof(KeyType), typeid(KeyType).hash_code()); \
     } \
  \
     template <typename ValueType, typename KeyType> \
-    static inline const ValueType& get_meta_value(__ftable* _pReflection, __data* _pData, type, const KeyType& _key) \
+    static inline const ValueType& get_meta_value(const __ftable* _pReflection, __data* _pData, type, const KeyType& _key) \
     { \
         return *(ValueType*)_pReflection->m_fnGet ## name ## MetaValue(_pData, type2, &_key, sizeof(KeyType), typeid(KeyType).hash_code()); \
     } \
  \
     template <typename KeyType> \
-    static inline void* get_meta_value_ptr(__ftable* _pReflection, __data* _pData, type, const KeyType& _key) \
+    static inline void* get_meta_value_ptr(const __ftable* _pReflection, __data* _pData, type, const KeyType& _key) \
     { \
         return _pReflection->m_fnGet ## name ## MetaValue(_pData, type2, &_key, sizeof(KeyType), typeid(KeyType).hash_code()); \
     } \
  \
     template <typename KeyType> \
-    static inline const __variant& get_meta(__ftable* _pReflection, __data* _pData, type, const KeyType& _key) \
+    static inline const __variant& get_meta(const __ftable* _pReflection, __data* _pData, type, const KeyType& _key) \
     { \
         return _pReflection->m_fnGet ## name ## MetaVariant(_pData, type2, &_key, sizeof(KeyType), typeid(KeyType).hash_code()); \
     } \
  \
 	template <typename KeyType> \
-    static inline const __variant& get_meta(__ftable* _pReflection, __data* _pData, type) \
+    static inline const __variant& get_meta(const __ftable* _pReflection, __data* _pData, type) \
     { \
         return _pReflection->m_fnGet ## name ## MetaVariant(_pData, type2, nullptr, sizeof(KeyType), typeid(KeyType).hash_code()); \
     } \
  \
     template <std::size_t Length> \
-    static inline DUCKVIL_RESOURCE(variant_t) get_meta_value_handle(__ftable* _pReflection, __data* _pData, type, const char (&_key)[Length]) \
+    static inline DUCKVIL_RESOURCE(variant_t) get_meta_value_handle(const __ftable* _pReflection, __data* _pData, type, const char (&_key)[Length]) \
     { \
         return _pReflection->m_fnGet ## name ## MetaHandle(_pData, type2, _key, Length, CONST_CHAR_POINTER_ID); \
     } \
  \
     template <std::size_t Length> \
-    static inline const __variant& get_meta(__ftable* _pReflection, __data* _pData, type, const char (&_key)[Length]) \
+    static inline const __variant& get_meta(const __ftable* _pReflection, __data* _pData, type, const char (&_key)[Length]) \
     { \
         return _pReflection->m_fnGet ## name ## MetaVariant(_pData, type2, _key, Length, CONST_CHAR_POINTER_ID); \
     } \
  \
-    static inline const __meta_t& get_meta(__ftable* _pReflection, __data* _pData, type, DUCKVIL_RESOURCE(meta_t) _handle) \
+    static inline const __meta_t& get_meta(const __ftable* _pReflection, __data* _pData, type, DUCKVIL_RESOURCE(meta_t) _handle) \
     { \
         return _pReflection->m_fnGet ## name ## MetaByHandle(_pData, type2, _handle); \
     } \
  \
     template <typename ValueType, std::size_t Length> \
-    static inline const ValueType& get_meta_value(__ftable* _pReflection, __data* _pData, type, const char (&_key)[Length]) \
+    static inline const ValueType& get_meta_value(const __ftable* _pReflection, __data* _pData, type, const char (&_key)[Length]) \
     { \
         return *(ValueType*)_pReflection->m_fnGet ## name ## MetaValue(_pData, type2, _key, Length, CONST_CHAR_POINTER_ID); \
     } \
  \
     template <std::size_t Length> \
-    static inline void* get_meta_value_ptr(__ftable* _pReflection, __data* _pData, type, const char (&_key)[Length]) \
+    static inline void* get_meta_value_ptr(const __ftable* _pReflection, __data* _pData, type, const char (&_key)[Length]) \
     { \
         return _pReflection->m_fnGet ## name ## MetaValue(_pData, type2, _key, Length, CONST_CHAR_POINTER_ID); \
     } \
  \
-    static inline Memory::Vector<DUCKVIL_RESOURCE(meta_t)> get_metas(const Memory::FreeList& _heap, __ftable* _pReflection, __data* _pData, type) \
+    static inline Memory::Vector<DUCKVIL_RESOURCE(meta_t)> get_metas(const Memory::FreeList& _heap, const __ftable* _pReflection, __data* _pData, type) \
     { \
         return _pReflection->m_fnGet ## name ## Metas(_heap, _pData, type2); \
     } \
  \
-    static inline Memory::Vector<DUCKVIL_RESOURCE(meta_t)> get_metas(__ftable* _pReflection, __data* _pData, type) \
+    static inline Memory::Vector<DUCKVIL_RESOURCE(meta_t)> get_metas(const __ftable* _pReflection, __data* _pData, type) \
     { \
         const Memory::free_list_context& _heapContext = Memory::heap_get_current(); \
         return get_metas(_heapContext.m_heap, _pReflection, _pData, type2); \
@@ -165,7 +165,7 @@ namespace Duckvil { namespace RuntimeReflection {
     DUCKVIL_META_UTIL(FunctionArgument, DUCKVIL_META_CAT(DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(function_t) _functionHandle, uint32_t _uiArgumentIndex), DUCKVIL_META_CAT(_typeHandle, _functionHandle, _uiArgumentIndex));
 
     template <typename KeyType, typename ValueType>
-    static inline DUCKVIL_RESOURCE(meta_t) add_object_meta(__ftable* _pReflection, __data* _pData, Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, void* _pObject, const KeyType& _key, const ValueType& _value)
+    static inline DUCKVIL_RESOURCE(meta_t) add_object_meta(const __ftable* _pReflection, __data* _pData, Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, void* _pObject, const KeyType& _key, const ValueType& _value)
     {
         return _pReflection->m_fnAddObjectMeta(
             _pData,

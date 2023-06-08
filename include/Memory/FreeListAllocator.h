@@ -6,7 +6,7 @@
 
 namespace Duckvil { namespace Memory {
 
-    static inline void* free_list_allocate(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment)
+    static inline void* free_list_allocate(const ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, uint8_t _ucAlignment)
     {
         return _pMemory->m_fnFreeListAllocate_(_pAllocator, _ullSize, _ucAlignment);
     }
@@ -46,13 +46,13 @@ namespace Duckvil { namespace Memory {
 
 
     template <typename Type, typename... Args>
-    static inline Type* free_list_emplace_back(ftable* _pMemory, free_list_allocator* _pAllocator, Args&&... _vData)
+    static inline Type* free_list_emplace_back(const ftable* _pMemory, free_list_allocator* _pAllocator, Args&&... _vData)
     {
         return new(free_list_allocate(_pMemory, _pAllocator, sizeof(Type), alignof(Type))) Type(std::forward<Args>(_vData)...);
     }
 
     template <typename Type>
-    static inline Type* free_list_allocate(ftable* _pMemory, free_list_allocator* _pAllocator, const Type& _data)
+    static inline Type* free_list_allocate(const ftable* _pMemory, free_list_allocator* _pAllocator, const Type& _data)
     {
         if constexpr (std::is_trivially_copy_constructible<Type>::value)
         {
@@ -69,20 +69,20 @@ namespace Duckvil { namespace Memory {
     }
 
     template <typename Type>
-    static inline Type* free_list_allocate(ftable* _pMemory, free_list_allocator* _pAllocator, Type&& _data)
+    static inline Type* free_list_allocate(const ftable* _pMemory, free_list_allocator* _pAllocator, Type&& _data)
     {
         return free_list_emplace_back<Type>(_pMemory, _pAllocator, std::move(_data));
     }
 
 
 
-    static inline void free_list_free(ftable* _pMemory, free_list_allocator* _pAllocator, void* _pPointer)
+    static inline void free_list_free(const ftable* _pMemory, free_list_allocator* _pAllocator, void* _pPointer)
     {
         _pMemory->m_fnFreeListFree_(_pAllocator, _pPointer);
     }
 
     template <typename Type>
-    static inline void free_list_free(ftable* _pMemory, free_list_allocator* _pAllocator, Type* _pPointer)
+    static inline void free_list_free(const ftable* _pMemory, free_list_allocator* _pAllocator, Type* _pPointer)
     {
         if(std::is_base_of<allocator, Type>::value)
         {

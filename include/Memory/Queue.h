@@ -63,7 +63,7 @@ namespace Duckvil { namespace Memory {
             free_list_free(_pThis->m_pMemoryInterface, (free_list_allocator*)_pAllocator, _pThis->m_pContainer);
         }
 
-        static void free_list_resize(ftable* _pMemoryInterface, SContainer* _pThis, std::size_t _ullNewSize)
+        static void free_list_resize(const ftable* _pMemoryInterface, SContainer* _pThis, std::size_t _ullNewSize)
         {
             free_list_allocator* _allocator = (free_list_allocator*)_pThis->m_pAllocator;
 
@@ -76,7 +76,7 @@ namespace Duckvil { namespace Memory {
 
         }
 
-        Queue(ftable* _pMemoryInterface, linear_allocator* _pAllocator, std::size_t _ullCount) :
+        Queue(const ftable* _pMemoryInterface, linear_allocator* _pAllocator, std::size_t _ullCount) :
             SContainer(_pMemoryInterface, _pAllocator)
         {
             this->m_pMemoryInterface = _pMemoryInterface;
@@ -84,7 +84,7 @@ namespace Duckvil { namespace Memory {
             this->m_pContainer = this->m_pMemoryInterface->m_fnLinearAllocateFixedQueueAllocator(_pAllocator, _ullCount * sizeof(Type), sizeof(Type));
         }
 
-        Queue(ftable* _pMemoryInterface, free_list_allocator* _pAllocator, std::size_t _ullCount) :
+        Queue(const ftable* _pMemoryInterface, free_list_allocator* _pAllocator, std::size_t _ullCount) :
             SContainer(_pMemoryInterface, _pAllocator)
         {
             this->m_fnCopy = &free_list_copy;

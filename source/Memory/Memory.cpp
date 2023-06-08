@@ -82,7 +82,7 @@ namespace Duckvil { namespace Memory {
 
 }}
 
-Duckvil::Memory::ftable* duckvil_memory_init()
+const Duckvil::Memory::ftable* duckvil_memory_init()
 {
     using namespace Duckvil::Memory;
 

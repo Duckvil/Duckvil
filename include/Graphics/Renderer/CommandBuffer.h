@@ -10,7 +10,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         uint32_t m_uiCommandCount;
     };
 
-    inline static command_buffer command_buffer_new(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator)
+    inline static command_buffer command_buffer_new(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator)
     {
         command_buffer _commandBuffer = { 0 };
 
@@ -20,7 +20,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
     }
 
     template <typename Type>
-    inline static void command_buffer_write(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, command_buffer* _pCommandBuffer, const Type& _value)
+    inline static void command_buffer_write(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, command_buffer* _pCommandBuffer, const Type& _value)
     {
         if(!Memory::byte_buffer_will_fit<Type>(_pMemoryInterface, _pCommandBuffer->m_pCommands))
         {
@@ -30,7 +30,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
         Memory::byte_buffer_write(_pMemoryInterface, _pCommandBuffer->m_pCommands, _value);
     }
 
-    inline static void command_buffer_clear(Memory::ftable* _pMemoryInterface, command_buffer* _pCommandBuffer)
+    inline static void command_buffer_clear(const Memory::ftable* _pMemoryInterface, command_buffer* _pCommandBuffer)
     {
         Memory::byte_buffer_clear(_pMemoryInterface, _pCommandBuffer->m_pCommands);
     }

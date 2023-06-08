@@ -4,7 +4,7 @@
 
 namespace Duckvil { namespace RuntimeReflection {
 
-    DUCKVIL_RESOURCE(type_t) get_type(__ftable* _pFTable, __data* _pData, const std::size_t& _ullTypeID)
+    DUCKVIL_RESOURCE(type_t) get_type(const __ftable* _pFTable, __data* _pData, const std::size_t& _ullTypeID)
     {
         return _pFTable->m_fnGetTypeHandleByTypeID(_pData, _ullTypeID);
     }
@@ -44,27 +44,27 @@ namespace Duckvil { namespace RuntimeReflection {
         return { DUCKVIL_SLOT_ARRAY_INVALID_HANDLE };
     }
 
-    const __type_t& get_type(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle)
+    const __type_t& get_type(const __ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle)
     {
         return _pReflection->m_fnGetTypeByHandle(_pData, _typeHandle);
     }
 
-    Memory::Vector<DUCKVIL_RESOURCE(type_t)> get_types(__ftable* _pReflection, __data* _pData, const Memory::FreeList& _heap)
+    Memory::Vector<DUCKVIL_RESOURCE(type_t)> get_types(const __ftable* _pReflection, __data* _pData, const Memory::FreeList& _heap)
     {
         return _pReflection->m_fnGetTypes(_pData, _heap.GetMemoryInterface(), _heap.GetAllocator());
     }
 
-    DUCKVIL_RESOURCE(ntype_t) get_type(__ftable* _pReflection, __data* _pData, const std::vector<const char*>& _aNamespaces)
+    DUCKVIL_RESOURCE(ntype_t) get_type(const __ftable* _pReflection, __data* _pData, const std::vector<const char*>& _aNamespaces)
     {
         return _pReflection->m_fnGetNTypeHandleByNamespaces(_pData, _aNamespaces);
     }
 
-    const __ntype_t& get_type(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle)
+    const __ntype_t& get_type(const __ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(ntype_t) _typeHandle)
     {
         return _pReflection->m_fnGetNTypeByHandle(_pData, _typeHandle);
     }
 
-    bool inherits(__ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(type_t) _typeHandle2)
+    bool inherits(const __ftable* _pReflection, __data* _pData, DUCKVIL_RESOURCE(type_t) _typeHandle, DUCKVIL_RESOURCE(type_t) _typeHandle2)
     {
         return _pReflection->m_fnInheritsByHandle(_pData, _typeHandle, _typeHandle2);
     }

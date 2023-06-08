@@ -30,13 +30,13 @@ struct duckvil_recorderd_types
 
 struct duckvil_runtime_reflection_recorder_stuff
 {
-    Duckvil::Memory::ftable* _pMemoryInterface;
+    const Duckvil::Memory::ftable* _pMemoryInterface;
     Duckvil::Memory::free_list_allocator* _pAllocator;
-    Duckvil::RuntimeReflection::__recorder_ftable* _pFunctions;
+    const Duckvil::RuntimeReflection::__recorder_ftable* _pFunctions;
     Duckvil::RuntimeReflection::__data* _pData;
 };
 
-static inline duckvil_recorderd_types duckvil_recorded_types_create(Duckvil::Memory::ftable *_pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, const std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t>& _aRecordedTypes, const char* _sFilename, uint32_t _uiRecorderID)
+static inline duckvil_recorderd_types duckvil_recorded_types_create(const Duckvil::Memory::ftable *_pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, const std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t>& _aRecordedTypes, const char* _sFilename, uint32_t _uiRecorderID)
 {
     duckvil_recorderd_types _res = {};
 
@@ -110,7 +110,7 @@ namespace Duckvil { namespace RuntimeReflection {
     using GetRecordersCountFunction = uint32_t (*)();
 
     template <typename Type, typename... Args>
-    void* create_object(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __ftable* _pReflection, __data* _pData, bool _bTracked, Args... _vArgs)
+    void* create_object(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, const __ftable* _pReflection, __data* _pData, bool _bTracked, Args... _vArgs)
     {
         void* _address = _pMemoryInterface->m_fnFreeListAllocate_(_pAllocator, sizeof(Type), alignof(Type));
 
@@ -164,7 +164,7 @@ namespace Duckvil { namespace RuntimeReflection {
     }
 
     template <typename Type>
-    void destroy_object(Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, __ftable* _pReflection, __data* _pData, bool _bTracked, void* _pObject)
+    void destroy_object(const Memory::ftable* _pMemoryInterface, Memory::free_list_allocator* _pAllocator, const __ftable* _pReflection, __data* _pData, bool _bTracked, void* _pObject)
     {
         ((Type*)_pObject)->~Type();
 
@@ -571,6 +571,6 @@ namespace Duckvil { namespace RuntimeReflection {
 
 }}
 
-typedef Duckvil::RuntimeReflection::__recorder_ftable* (*duckvil_runtime_reflection_recorder_init_callback)();
+typedef const Duckvil::RuntimeReflection::__recorder_ftable* (*duckvil_runtime_reflection_recorder_init_callback)();
 
-DUCKVIL_EXPORT Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_recorder_init();
+DUCKVIL_EXPORT const Duckvil::RuntimeReflection::__recorder_ftable* duckvil_runtime_reflection_recorder_init();

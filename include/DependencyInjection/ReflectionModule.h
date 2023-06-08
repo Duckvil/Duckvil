@@ -33,11 +33,11 @@ namespace Duckvil { namespace DependencyInjection {
     private:
 
     public:
-        ReflectionModule(const Memory::FreeList& _heap, RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData);
+        ReflectionModule(const Memory::FreeList& _heap, const RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData);
         ~ReflectionModule();
 
         RuntimeReflection::__data* m_pRuntimeReflectionData;
-        RuntimeReflection::__ftable* m_pRuntimeReflection;
+        const RuntimeReflection::__ftable* m_pRuntimeReflection;
         Memory::FreeList m_heap;
 
         std::filesystem::path m_sFile;

@@ -4,6 +4,8 @@
 
 #include "Network/Message.h"
 
+#include "RuntimeReflection/Markers.h"
+
 #define DUCKVIL_RUNTIME_REFLECTION_PAUSE
 #define DUCKVIL_RUNTIME_REFLECTION_RESUME
 
@@ -24,6 +26,8 @@ namespace Duckvil { namespace Network {
 DUCKVIL_RUNTIME_REFLECTION_PAUSE
 
     struct IConnection;
+
+    DUCKVIL_STRUCT(Include = "Network/NetworkSystem.h")
     struct NetworkSystem;
 
 DUCKVIL_RUNTIME_REFLECTION_RESUME

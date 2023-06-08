@@ -44,7 +44,7 @@ namespace Duckvil {
     private:
 
     public:
-        DummyReflectionModule(const Memory::FreeList& _heap, RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData) :
+        DummyReflectionModule(const Memory::FreeList& _heap, const RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData) :
             m_pReflection(_pReflection),
             m_pRuntimeReflectionData(_pRuntimeReflectionData),
             m_heap(_heap)
@@ -59,7 +59,7 @@ namespace Duckvil {
 
         Memory::FreeList m_heap;
 
-        RuntimeReflection::__ftable* m_pReflection;
+        const RuntimeReflection::__ftable* m_pReflection;
         RuntimeReflection::__data* m_pRuntimeReflectionData;
 
         std::filesystem::path m_sFile;

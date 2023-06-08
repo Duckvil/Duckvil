@@ -16,6 +16,9 @@
 
 namespace Duckvil { namespace Network {
 
+    DUCKVIL_STRUCT(Include = "Network/NetworkSystem.h")
+    struct NetworkSystem;
+
     class Server : public IServer
     {
     private:

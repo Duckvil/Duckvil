@@ -164,7 +164,7 @@ namespace Duckvil { namespace Memory {
         typedef bool (*_queue_empty_)(queue_allocator* _pAllocator);
         typedef bool (*_queue_full_)(queue_allocator* _pAllocator);
         typedef void (*_queue_clear_)(queue_allocator* _pAllocator);
-        typedef void (*_queue_resize_)(ftable* _pInterface, free_list_allocator* _pParentAllocator, queue_allocator** _pAllocator, std::size_t _ullNewSize);
+        typedef void (*_queue_resize_)(const ftable* _pInterface, free_list_allocator* _pParentAllocator, queue_allocator** _pAllocator, std::size_t _ullNewSize);
         typedef std::size_t (*_queue_size_)(queue_allocator* _pAllocator);
         typedef std::size_t (*_queue_capacity_)(queue_allocator* _pAllocator);
 
@@ -175,7 +175,7 @@ namespace Duckvil { namespace Memory {
         typedef bool (*_fixed_queue_empty_)(fixed_queue_allocator* _pAllocator);
         typedef bool (*_fixed_queue_full_)(fixed_queue_allocator* _pAllocator);
         typedef void (*_fixed_queue_clear_)(fixed_queue_allocator* _pAllocator);
-        typedef void (*_fixed_queue_resize_)(ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_queue_allocator** _pAllocator, std::size_t _ullNewSize);
+        typedef void (*_fixed_queue_resize_)(const ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_queue_allocator** _pAllocator, std::size_t _ullNewSize);
         typedef std::size_t (*_fixed_queue_size_)(fixed_queue_allocator* _pAllocator);
         typedef std::size_t (*_fixed_queue_capacity_)(fixed_queue_allocator* _pAllocator);
 
@@ -204,7 +204,7 @@ namespace Duckvil { namespace Memory {
         typedef bool (*_fixed_vector_empty_)(fixed_vector_allocator* _pAllocator);
         typedef bool (*_fixed_vector_full_)(fixed_vector_allocator* _pAllocator);
         typedef void (*_fixed_vector_clear_)(fixed_vector_allocator* _pAllocator);
-        typedef void (*_fixed_vector_resize_)(ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, std::size_t _ullNewSize);
+        typedef void (*_fixed_vector_resize_)(const ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, std::size_t _ullNewSize);
         typedef std::size_t (*_fixed_vector_size_)(fixed_vector_allocator* _pAllocator);
         typedef std::size_t (*_fixed_vector_capacity_)(fixed_vector_allocator* _pAllocator);
         typedef void (*_fixed_vector_erase_)(fixed_vector_allocator* _pAllocator, uint32_t _uiIndex);
@@ -212,7 +212,7 @@ namespace Duckvil { namespace Memory {
 
         typedef bool (*_byte_buffer_will_fit)(byte_buffer_allocator* _pAllocator, std::size_t _ullSize);
         typedef void (*_byte_buffer_clear)(byte_buffer_allocator* _pAllocator);
-        typedef void (*_byte_buffer_resize)(ftable* _pInterface, free_list_allocator* _pParentAllocator, byte_buffer_allocator** _pAllocator, std::size_t _ullNewSize);
+        typedef void (*_byte_buffer_resize)(const ftable* _pInterface, free_list_allocator* _pParentAllocator, byte_buffer_allocator** _pAllocator, std::size_t _ullNewSize);
         typedef void (*_byte_buffer_seek_to_begin)(byte_buffer_allocator* _pAllocator);
         typedef void (*_byte_buffer_seek_to_end)(byte_buffer_allocator* _pAllocator);
         typedef void (*_byte_buffer_advance)(byte_buffer_allocator* _pAllocator, std::size_t _ullSize);
@@ -226,14 +226,14 @@ namespace Duckvil { namespace Memory {
         typedef fixed_vector_allocator* (*_linear_allocate_fixed_vector_allocator)(linear_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
         typedef byte_buffer_allocator* (*_linear_allocate_byte_buffer_allocator)(linear_allocator* _pAllocator, std::size_t _ullSize);
 
-        typedef queue_allocator* (*_free_list_allocate_queue_allocator)(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize);
-        typedef fixed_queue_allocator* (*_free_list_allocate_fixed_queue_allocator)(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
-        typedef free_list_allocator* (*_free_list_allocate_free_list_allocator)(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize);
-        typedef fixed_vector_allocator* (*_free_list_allocate_fixed_vector_allocator)(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
-        typedef stack_allocator* (*_free_list_allocate_stack_allocator)(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize);
-        typedef fixed_stack_allocator* (*_free_list_allocate_fixed_stack_allocator)(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
-        typedef fixed_array_allocator* (*_free_list_allocate_fixed_array_allocator)(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
-        typedef byte_buffer_allocator* (*_free_list_allocate_byte_buffer_allocator)(ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize);
+        typedef queue_allocator* (*_free_list_allocate_queue_allocator)(const ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize);
+        typedef fixed_queue_allocator* (*_free_list_allocate_fixed_queue_allocator)(const ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef free_list_allocator* (*_free_list_allocate_free_list_allocator)(const ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize);
+        typedef fixed_vector_allocator* (*_free_list_allocate_fixed_vector_allocator)(const ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef stack_allocator* (*_free_list_allocate_stack_allocator)(const ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize);
+        typedef fixed_stack_allocator* (*_free_list_allocate_fixed_stack_allocator)(const ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef fixed_array_allocator* (*_free_list_allocate_fixed_array_allocator)(const ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize, std::size_t _ullTypeSize);
+        typedef byte_buffer_allocator* (*_free_list_allocate_byte_buffer_allocator)(const ftable* _pMemory, free_list_allocator* _pAllocator, std::size_t _ullSize);
 
         _basic_allocate             m_fnBasicAllocate;
         _basic_free                 m_fnBasicFree;
@@ -347,8 +347,8 @@ namespace Duckvil { namespace Memory {
         _free_list_allocate_byte_buffer_allocator       m_fnFreeListAllocateByteBufferAllocator;
     };
 
-    typedef ftable* (*init_callback)();
+    typedef const ftable* (*init_callback)();
 
 }}
 
-DUCKVIL_EXPORT Duckvil::Memory::ftable* duckvil_memory_init();
+DUCKVIL_EXPORT const Duckvil::Memory::ftable* duckvil_memory_init();

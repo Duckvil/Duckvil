@@ -79,7 +79,7 @@ namespace Duckvil { namespace Memory {
         return _pAllocator->m_ullUsed == _pAllocator->m_ullCapacity;
     }
 
-    void impl_fixed_vector_resize(ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, std::size_t _ullNewSize)
+    void impl_fixed_vector_resize(const ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, std::size_t _ullNewSize)
     {
         if(_pParentAllocator->m_ullCapacity < _ullNewSize + _pParentAllocator->m_ullUsed)
         {

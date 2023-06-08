@@ -2904,7 +2904,7 @@ namespace Duckvil { namespace Parser {
         return nullptr;
     }
 
-    void ast_generate_cppast(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data& _lexerData)
+    void ast_generate_cppast(__ast* _pAST, const __lexer_ftable* _pLexer, __lexer_data& _lexerData)
     {
         const auto& _config = *static_cast<Parser::compile_config*>(_lexerData.m_pConfig);
 
@@ -3047,7 +3047,7 @@ namespace Duckvil { namespace Parser {
 
 }}
 
-Duckvil::Parser::__ast_ftable* duckvil_ast_init()
+const Duckvil::Parser::__ast_ftable* duckvil_ast_init()
 {
     static Duckvil::Parser::__ast_ftable _ftable = { 0 };
 

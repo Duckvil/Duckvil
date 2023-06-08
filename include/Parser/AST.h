@@ -345,13 +345,13 @@ namespace Duckvil { namespace Parser {
 
     struct __ast_ftable
     {
-        void (*ast_generate)(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data& _lexerData);
+        void (*ast_generate)(__ast* _pAST, const __lexer_ftable* _pLexer, __lexer_data& _lexerData);
         void (*ast_print)(const __ast& _AST);
     };
 
-    void ast_generate(__ast* _pAST, __lexer_ftable* _pLexer, __lexer_data& _lexerData);
+    void ast_generate(__ast* _pAST, const __lexer_ftable* _pLexer, __lexer_data& _lexerData);
     void ast_print(const __ast& _AST);
 
 }}
 
-DUCKVIL_EXPORT Duckvil::Parser::__ast_ftable* duckvil_ast_init();
+DUCKVIL_EXPORT const Duckvil::Parser::__ast_ftable* duckvil_ast_init();

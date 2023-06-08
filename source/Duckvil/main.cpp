@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
     _module.get(_memoryModule, "duckvil_memory_init", reinterpret_cast<void**>(&duckvil_memory_init));
     _module.get(_engineModule, "duckvil_init", reinterpret_cast<void**>(&duckvil_init));
 
-    Duckvil::Memory::ftable* _memoryInterface = duckvil_memory_init();
+    const Duckvil::Memory::ftable* _memoryInterface = duckvil_memory_init();
 
     Duckvil::Memory::linear_allocator* _mainMemoryAllocator;
 

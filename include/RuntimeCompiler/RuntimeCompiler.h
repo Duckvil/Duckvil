@@ -13,7 +13,7 @@ namespace Duckvil { namespace RuntimeCompiler {
     private:
         ICompiler* m_pCompiler;
 
-        Process::ftable m_processFTable;
+        const Process::ftable* m_processFTable;
         Process::data m_processData;
 
     public:

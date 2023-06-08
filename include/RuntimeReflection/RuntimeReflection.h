@@ -18,6 +18,6 @@
 #include "RuntimeReflectionStatic/local/invoke_static_function.h"
 #include "RuntimeReflectionStatic/local/function.h"
 
-typedef Duckvil::RuntimeReflection::__ftable* (*duckvil_runtime_reflection_init_callback)();
+typedef const Duckvil::RuntimeReflection::__ftable* (*duckvil_runtime_reflection_init_callback)();
 
-DUCKVIL_EXPORT Duckvil::RuntimeReflection::__ftable* duckvil_runtime_reflection_init();
+DUCKVIL_EXPORT const Duckvil::RuntimeReflection::__ftable* duckvil_runtime_reflection_init();

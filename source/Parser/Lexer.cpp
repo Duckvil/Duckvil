@@ -142,7 +142,7 @@ namespace Duckvil { namespace Parser {
 
 }}
 
-Duckvil::Parser::__lexer_ftable* duckvil_lexer_init()
+const Duckvil::Parser::__lexer_ftable* duckvil_lexer_init()
 {
     static Duckvil::Parser::__lexer_ftable _ftable = { 0 };
 

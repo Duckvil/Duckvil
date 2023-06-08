@@ -6,7 +6,7 @@ namespace Duckvil { namespace DependencyInjection {
     void recursive_generate_header(void* _pContext, const std::string& _sFileID, std::ofstream& _file, const char* _sModuleName, RuntimeReflection::GeneratedVector& _aGenerated);
     void recursive_generate_source(void* _pContext, const std::string& _sFileID, std::ofstream& _file, const char* _sModuleName);
 
-    ReflectionModule::ReflectionModule(const Memory::FreeList& _heap, RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData) :
+    ReflectionModule::ReflectionModule(const Memory::FreeList& _heap, const RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData) :
         m_pRuntimeReflection(_pReflection),
         m_pRuntimeReflectionData(_pRuntimeReflectionData),
         m_heap(_heap)

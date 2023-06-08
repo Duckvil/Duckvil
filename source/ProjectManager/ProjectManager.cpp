@@ -585,7 +585,6 @@ namespace Duckvil { namespace ProjectManager {
         );
 
         PlugNPlay::__module _module;
-        Process::ftable _process;
         Process::data _processData;
 
         PlugNPlay::module_init(&_module);
@@ -594,22 +593,22 @@ namespace Duckvil { namespace ProjectManager {
 
         _module.load(&_processModuleInfo);
 
-        void (*_duckvilProcessInit)(Process::ftable* _pFTable);
+        const Process::ftable* (*_duckvilProcessInit)();
 
         _module.get(_processModuleInfo, "duckvil_process_init", reinterpret_cast<void**>(&_duckvilProcessInit));
 
-        _duckvilProcessInit(&_process);
+        const Process::ftable* _process = _duckvilProcessInit();
 
-        _process.m_fnInit(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), &_processData);
-        _process.m_fnSetup(&_processData);
+        _process->m_fnInit(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), &_processData);
+        _process->m_fnSetup(&_processData);
 
-        _process.m_fnWrite(&_processData, std::string((std::filesystem::path(DUCKVIL_OUTPUT) / "ReflectionGenerator.exe -CWD ").string() + _projectPath + " -single\n_COMPLETION_TOKEN_\n").c_str());
-        _process.m_fnWait(&_processData);
-        _process.m_fnStop(&_processData);
+        _process->m_fnWrite(&_processData, std::string((std::filesystem::path(DUCKVIL_OUTPUT) / "ReflectionGenerator.exe -CWD ").string() + _projectPath + " -single\n_COMPLETION_TOKEN_\n").c_str());
+        _process->m_fnWait(&_processData);
+        _process->m_fnStop(&_processData);
 
-        if(_process.m_fnTerminate(&_processData))
+        if(_process->m_fnTerminate(&_processData))
         {
-            _process.m_fnCleanup(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), &_processData);
+            _process->m_fnCleanup(_pData->m_heap.GetMemoryInterface(), _pData->m_heap.GetAllocator(), &_processData);
         }
 
 #ifdef DUCKVIL_PLATFORM_WINDOWS

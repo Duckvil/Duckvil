@@ -39,12 +39,12 @@ namespace Duckvil { namespace DependencyInjection {
 
         }
 
-        virtual bool Register(const Dependency& _dependency) = 0;
+        virtual bool Register(const IDependencyResolver::Dependency& _dependency) = 0;
         
         virtual bool Resolve(const RuntimeReflection::__duckvil_resource_type_t& _typeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, void** _ppResolvedObject = nullptr, bool _bHot = false) = 0;
 
         template <typename Type>
-        bool Register(const Type& _pData, Dependency::OnInjectCallback _fnOnInject = nullptr, Scope _scope = Scope::SINGLETON)
+        bool Register(const Type& _pData, IDependencyResolver::Dependency::OnInjectCallback _fnOnInject = nullptr, Scope _scope = Scope::SINGLETON)
         {
             Dependency _dependency{ .m_scope = _scope, .m_fnOnInject = _fnOnInject };
 
@@ -59,7 +59,7 @@ namespace Duckvil { namespace DependencyInjection {
         }
 
         template <typename Type>
-        bool Register(Type* _pData, Dependency::OnInjectCallback _fnOnInject = nullptr, Scope _scope = Scope::SINGLETON)
+        bool Register(Type* _pData, IDependencyResolver::Dependency::OnInjectCallback _fnOnInject = nullptr, Scope _scope = Scope::SINGLETON)
         {
             Dependency _dependency{ .m_scope = _scope, .m_fnOnInject = _fnOnInject };
 
@@ -74,7 +74,7 @@ namespace Duckvil { namespace DependencyInjection {
         }
 
         template <typename Type>
-        bool Register(Dependency::DependencyFactory _fnFactory, Scope _scope = Scope::SINGLETON)
+        bool Register(IDependencyResolver::Dependency::DependencyFactory _fnFactory, Scope _scope = Scope::SINGLETON)
         {
             Dependency _dependency{ .m_scope = _scope, .m_fnFactory = _fnFactory };
 

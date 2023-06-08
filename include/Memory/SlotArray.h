@@ -16,7 +16,7 @@ DUCKVIL_RUNTIME_REFLECTION_SKIP
         DUCKVIL_DYNAMIC_ARRAY(uint32_t) m_indices = nullptr; \
         DUCKVIL_DYNAMIC_ARRAY(t) m_data = nullptr; \
     }; \
-    static inline __duckvil_slot_array_##t duckvil_slot_array_##t##_new(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator) \
+    static inline __duckvil_slot_array_##t duckvil_slot_array_##t##_new(const Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator) \
     { \
         __duckvil_slot_array_##t _slot_array; \
         _slot_array.m_data = DUCKVIL_DYNAMIC_ARRAY_NEW(_pMemoryInterface, _pAllocator, t); \
@@ -47,7 +47,7 @@ _force_inline uint32_t duckvil_slot_array_find_next_available_index(DUCKVIL_DYNA
     return _index;
 }
 
-_force_inline uint32_t duckvil_slot_array_insert_func(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, void** _ppIndices, void** _ppData, void* _pData, size_t _ullSize, uint32_t* _puiIndex)
+_force_inline uint32_t duckvil_slot_array_insert_func(const Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, void** _ppIndices, void** _ppData, void* _pData, size_t _ullSize, uint32_t* _puiIndex)
 {
     uint32_t _index = duckvil_slot_array_find_next_available_index((uint32_t*)*_ppIndices);
 
@@ -97,7 +97,7 @@ _force_inline uint32_t duckvil_slot_array_insert_func(Duckvil::Memory::ftable* _
     (handle < DUCKVIL_DYNAMIC_ARRAY_SIZE(s.m_indices) && s.m_indices[handle] != -1)
 
 template <typename A, typename B>
-static inline uint32_t duckvil_slot_array_insert(Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, A& _slotArray, B _value)
+static inline uint32_t duckvil_slot_array_insert(const Duckvil::Memory::ftable* _pMemoryInterface, Duckvil::Memory::free_list_allocator* _pAllocator, A& _slotArray, B _value)
 {
     return duckvil_slot_array_insert_func(_pMemoryInterface, _pAllocator, (void**)&(_slotArray.m_indices), (void**)&(_slotArray.m_data), &_value, sizeof(B), nullptr);
 }

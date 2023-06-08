@@ -24,7 +24,7 @@ namespace Duckvil { namespace DependencyInjection {
         DependencyResolver(const Memory::FreeList& _heap, Event::Pool<Event::mode::immediate>* _pEngineEventPool);
         ~DependencyResolver();
 
-        bool Register(const Dependency& _dependency) override;
+        bool Register(const IDependencyResolver::Dependency& _dependency) override;
         bool Resolve(const RuntimeReflection::__duckvil_resource_type_t& _typeHandle, const RuntimeReflection::__duckvil_resource_constructor_t& _constructorHandle, void** _ppResolvedObject = nullptr, bool _bHot = false) override;
     };
 

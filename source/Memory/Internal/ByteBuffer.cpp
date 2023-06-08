@@ -15,7 +15,7 @@ namespace Duckvil { namespace Memory {
         _pAllocator->m_ullUsed = 0;
     }
 
-    void impl_byte_buffer_resize(ftable* _pInterface, free_list_allocator* _pParentAllocator, byte_buffer_allocator** _pAllocator, std::size_t _ullNewSize)
+    void impl_byte_buffer_resize(const ftable* _pInterface, free_list_allocator* _pParentAllocator, byte_buffer_allocator** _pAllocator, std::size_t _ullNewSize)
     {
         if(_pParentAllocator->m_ullCapacity < _ullNewSize + _pParentAllocator->m_ullUsed)
         {

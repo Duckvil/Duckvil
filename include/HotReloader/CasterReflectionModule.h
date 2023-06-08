@@ -41,7 +41,7 @@ namespace Duckvil {
     private:
 
     public:
-        CasterReflectionModule(const Memory::FreeList& _heap, RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData)
+        CasterReflectionModule(const Memory::FreeList& _heap, const RuntimeReflection::__ftable* _pReflection, RuntimeReflection::__data* _pRuntimeReflectionData)
         {
             m_pCurrentContext = nullptr;
         }

@@ -25,7 +25,7 @@ namespace Duckvil { namespace Event {
 
         Memory::FreeList m_heap;
         RuntimeReflection::__data* m_pReflectionData;
-        RuntimeReflection::__ftable* m_pReflection;
+        const RuntimeReflection::__ftable* m_pReflection;
 
     public:
         Pool()

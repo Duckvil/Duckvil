@@ -28,6 +28,9 @@ namespace Duckvil { namespace RuntimeSerializer {
         };
 
         typedef std::map<const char*, const ISerializedValue*, cmp_str> ValueGroup;
+        typedef RuntimeReflection::__function<void(HotReloader::HotObject::*)(RuntimeSerializer::ISerializer*)>* RuntimeReflectionSerializeFunction;
+        template <typename Type>
+        using SerializeFunction = void (Type::*)(RuntimeSerializer::ISerializer*);
 
     private:
         ValueGroup m_serializationMap;
@@ -58,7 +61,7 @@ namespace Duckvil { namespace RuntimeSerializer {
             }
         }
 
-        void Serialize(void* _pHotObject, RuntimeReflection::__function<void(HotReloader::HotObject::*)(RuntimeSerializer::ISerializer*)>* _fnSerialize)
+        void Serialize(void* _pHotObject, Serializer::RuntimeReflectionSerializeFunction _fnSerialize)
         {
             _fnSerialize->Invoke(_pHotObject, this);
         }
@@ -75,13 +78,13 @@ namespace Duckvil { namespace RuntimeSerializer {
         }
 
         template <typename Type>
-        void Serialize(Type* _pHotObject, void (Type::*_fnSerialize)(RuntimeSerializer::ISerializer*))
+        void Serialize(Type* _pHotObject, Serializer::SerializeFunction<Type> _fnSerialize)
         {
             Serialize(_pHotObject, (void*&)_fnSerialize);
         }
 
         template <typename Type>
-        void Serialize(void* _pHotObject, void (Type::*_fnSerialize)(RuntimeSerializer::ISerializer*))
+        void Serialize(void* _pHotObject, Serializer::SerializeFunction<Type> _fnSerialize)
         {
             Serialize(_pHotObject, (void*&)_fnSerialize);
         }

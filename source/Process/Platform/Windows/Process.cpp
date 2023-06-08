@@ -92,7 +92,7 @@ namespace Duckvil { namespace Process {
         }
     }
 
-    void windows_init(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator, data* _pData)
+    void windows_init(const Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator, data* _pData)
     {
         // windows_data* _data = (windows_data*)_pMemory->m_fnFreeListAllocate_(_pAllocator, sizeof(windows_data), alignof(windows_data));
         windows_data* _data = Memory::free_list_allocate<windows_data>(_pMemory, _pAllocator, windows_data{});
@@ -274,7 +274,7 @@ namespace Duckvil { namespace Process {
         return true;
     }
 
-    void windows_cleanup(Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator, data* _pData)
+    void windows_cleanup(const Duckvil::Memory::ftable* _pMemory, Duckvil::Memory::free_list_allocator* _pAllocator, data* _pData)
     {
         Memory::free_list_free(_pMemory, _pAllocator, _pData->m_pImplementationData);
     }

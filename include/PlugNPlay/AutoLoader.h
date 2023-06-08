@@ -18,8 +18,8 @@ namespace Duckvil { namespace PlugNPlay {
         AutoLoader(const std::filesystem::path& _sLoadPath);
         ~AutoLoader();
 
-        void LoadAll(Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, __module_information** _pModules, uint32_t* _pLoaded);
-        void LoadAll(Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, Memory::Vector<__module_information>* _aLoaded);
+        void LoadAll(const Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, __module_information** _pModules, uint32_t* _pLoaded);
+        void LoadAll(const Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, Memory::Vector<__module_information>* _aLoaded);
     };
 
 }}
