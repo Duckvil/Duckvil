@@ -347,8 +347,8 @@ namespace Duckvil { namespace Memory {
         _free_list_allocate_byte_buffer_allocator       m_fnFreeListAllocateByteBufferAllocator;
     };
 
-    typedef const ftable* (*init_callback)();
-
 }}
+
+typedef const Duckvil::Memory::ftable* (*duckvil_memory_init_callback)();
 
 DUCKVIL_EXPORT const Duckvil::Memory::ftable* duckvil_memory_init();

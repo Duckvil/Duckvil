@@ -679,7 +679,7 @@ namespace Duckvil { namespace RuntimeReflection {
         }
     }
 
-    void generate(__generator_data* _pData, const char _sSourcePath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const char _sHeaderPath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const Parser::__ast& _ast, void (*_fnGenerate)(std::ofstream& _hFile, std::ofstream& _sFile, void* _pUserData, const Duckvil::RuntimeReflection::__ftable* _ftableReflection), void* _pUserData, const Duckvil::RuntimeReflection::__ftable* _ftableReflection)
+    void generate(__generator_data* _pData, const char _sSourcePath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const char _sHeaderPath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const Parser::__ast& _ast, void (*_fnGenerate)(std::ofstream& _hFile, std::ofstream& _sFile, void* _pUserData, const Duckvil::RuntimeReflection::__ftable* _ftableReflection, Duckvil::RuntimeReflection::__data* _dataReflection), void* _pUserData, const Duckvil::RuntimeReflection::__ftable* _ftableReflection, Duckvil::RuntimeReflection::__data* _dataReflection)
     {
         if(!std::filesystem::exists(std::filesystem::path(_sHeaderPath).parent_path()))
         {
@@ -699,7 +699,7 @@ namespace Duckvil { namespace RuntimeReflection {
         {
             std::ofstream _hFile(_sHeaderPath);
 
-            _fnGenerate(_hFile, _sFile, _pUserData, _ftableReflection);
+            _fnGenerate(_hFile, _sFile, _pUserData, _ftableReflection, _dataReflection);
 
             _hFile << "\n";
             _sFile << "\n";

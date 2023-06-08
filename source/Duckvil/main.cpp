@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
     _module.load(&_memoryModule);
     _module.load(&_engineModule);
 
-    Duckvil::Memory::init_callback duckvil_memory_init;
+    duckvil_memory_init_callback duckvil_memory_init;
     Duckvil::__ftable* (*duckvil_init)();
 
     _module.get(_memoryModule, "duckvil_memory_init", reinterpret_cast<void**>(&duckvil_memory_init));

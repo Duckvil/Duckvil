@@ -354,4 +354,6 @@ namespace Duckvil { namespace Parser {
 
 }}
 
+typedef const Duckvil::Parser::__ast_ftable* (*duckvil_ast_init_callback)();
+
 DUCKVIL_EXPORT const Duckvil::Parser::__ast_ftable* duckvil_ast_init();

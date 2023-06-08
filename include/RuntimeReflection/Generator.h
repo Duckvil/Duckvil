@@ -35,11 +35,13 @@ namespace Duckvil { namespace RuntimeReflection {
     struct __generator_ftable
     {
         __generator_data* (*init)(Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator);
-        void (*generate)(__generator_data* _pData, const char _sSourcePath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const char _sHeaderPath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const Parser::__ast& _ast, void (*_fnGenerate)(std::ofstream& _hFile, std::ofstream& _sFile, void* _pUserData, const Duckvil::RuntimeReflection::__ftable* _ftableReflection), void* _pUserData, const Duckvil::RuntimeReflection::__ftable* _ftableReflection);
+        void (*generate)(__generator_data* _pData, const char _sSourcePath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const char _sHeaderPath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const Parser::__ast& _ast, void (*_fnGenerate)(std::ofstream& _hFile, std::ofstream& _sFile, void* _pUserData, const Duckvil::RuntimeReflection::__ftable* _ftableReflection, Duckvil::RuntimeReflection::__data* _dataReflection), void* _pUserData, const Duckvil::RuntimeReflection::__ftable* _ftableReflection, Duckvil::RuntimeReflection::__data* _dataReflection);
     };
 
     typedef std::vector<std::pair<uint32_t, std::vector<std::string>>> GeneratedVector;
 
 }}
+
+typedef const Duckvil::RuntimeReflection::__generator_ftable* (*duckvil_runtime_reflection_generator_init_callback)();
 
 DUCKVIL_EXPORT const Duckvil::RuntimeReflection::__generator_ftable* duckvil_runtime_reflection_generator_init();

@@ -64,4 +64,6 @@ namespace Duckvil { namespace Parser {
 
 }}
 
+typedef const Duckvil::Parser::__lexer_ftable* (*duckvil_lexer_init_callback)();
+
 DUCKVIL_EXPORT const Duckvil::Parser::__lexer_ftable* duckvil_lexer_init();

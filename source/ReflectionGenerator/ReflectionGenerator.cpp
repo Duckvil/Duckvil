@@ -45,14 +45,13 @@ struct reflection_module
 
 std::filesystem::path _relativePath;
 Duckvil::Memory::Vector<reflection_module> _aModules;
-Duckvil::RuntimeReflection::__data* _runtimeReflectionData;
 
 struct user_data
 {
     std::filesystem::path m_path;
 };
 
-void generate(std::ofstream& _hFile, std::ofstream& _sFile, void* _pUserData, const Duckvil::RuntimeReflection::__ftable* _ftableReflection)
+void generate(std::ofstream& _hFile, std::ofstream& _sFile, void* _pUserData, const Duckvil::RuntimeReflection::__ftable* _ftableReflection, Duckvil::RuntimeReflection::__data* _dataReflection)
 {
     user_data* _userData = static_cast<user_data*>(_pUserData);
 
@@ -73,7 +72,7 @@ void generate(std::ofstream& _hFile, std::ofstream& _sFile, void* _pUserData, co
             continue;
         }
 
-        Duckvil::RuntimeReflection::invoke_member<std::ofstream&, std::ofstream&, Duckvil::RuntimeReflection::GeneratedVector&>(_ftableReflection, _runtimeReflectionData, _module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _hFile, _sFile, _generated);
+        Duckvil::RuntimeReflection::invoke_member<std::ofstream&, std::ofstream&, Duckvil::RuntimeReflection::GeneratedVector&>(_ftableReflection, _dataReflection, _module.m_typeHandle, _module.m_generateCustomFunctionHandle, _module.m_pObject, _hFile, _sFile, _generated);
     }
 
     for(const auto& _generated2 : _generated)
@@ -132,7 +131,7 @@ void generate_plugin_info(std::ofstream& _file, const uint32_t& _uiIndex, const 
     // _file << "DUCKVIL_EXPORT const char* DUCKVIL_MODULE_NAME = \"duckvil_" << _moduleName << "_module\";\n";
 }
 
-nlohmann::json process_file(const Duckvil::Parser::__ast_ftable* _pAST_FTable, const Duckvil::Parser::__lexer_ftable* _pLexerFTable, Duckvil::Parser::__lexer_data* _pLexerData, const Duckvil::RuntimeReflection::__generator_ftable* _pGeneratorFTable, const Duckvil::RuntimeReflection::__ftable* _ftableReflection, const std::filesystem::path& _cwd, const std::filesystem::path& _path, const std::filesystem::path& _currentModule, uint32_t _index, bool _bGenerate = false)
+nlohmann::json process_file(const Duckvil::Parser::__ast_ftable* _pAST_FTable, const Duckvil::Parser::__lexer_ftable* _pLexerFTable, Duckvil::Parser::__lexer_data* _pLexerData, const Duckvil::RuntimeReflection::__generator_ftable* _pGeneratorFTable, const Duckvil::RuntimeReflection::__ftable* _ftableReflection, Duckvil::RuntimeReflection::__data* _dataReflection, const std::filesystem::path& _cwd, const std::filesystem::path& _path, const std::filesystem::path& _currentModule, uint32_t _index, bool _bGenerate = false)
 {
     if(_path.extension() != ".h")
     {
@@ -172,7 +171,7 @@ nlohmann::json process_file(const Duckvil::Parser::__ast_ftable* _pAST_FTable, c
             continue;
         }
 
-        Duckvil::RuntimeReflection::invoke_member<Duckvil::Parser::__ast*>(_ftableReflection, _runtimeReflectionData, _reflectionModule.m_typeHandle, _reflectionModule.m_processAST_FunctionHandle, _reflectionModule.m_pObject, &_astData);
+        Duckvil::RuntimeReflection::invoke_member<Duckvil::Parser::__ast*>(_ftableReflection, _dataReflection, _reflectionModule.m_typeHandle, _reflectionModule.m_processAST_FunctionHandle, _reflectionModule.m_pObject, &_astData);
     }
 
     _jFile["name"] = _currentModule;
@@ -231,7 +230,7 @@ nlohmann::json process_file(const Duckvil::Parser::__ast_ftable* _pAST_FTable, c
 
     if(_bGenerate)
     {
-        _pGeneratorFTable->generate(&_generatorData, _source.string().c_str(), _header.string().c_str(), _astData, &generate, &_userData, _ftableReflection);
+        _pGeneratorFTable->generate(&_generatorData, _source.string().c_str(), _header.string().c_str(), _astData, &generate, &_userData, _ftableReflection, _dataReflection);
     }
 
     for(auto& _module : _aModules)
@@ -241,7 +240,7 @@ nlohmann::json process_file(const Duckvil::Parser::__ast_ftable* _pAST_FTable, c
             continue;
         }
 
-        Duckvil::RuntimeReflection::invoke_member(_ftableReflection, _runtimeReflectionData, _module.m_typeHandle, _module.m_clearFunctionHandle, _module.m_pObject);
+        Duckvil::RuntimeReflection::invoke_member(_ftableReflection, _dataReflection, _module.m_typeHandle, _module.m_clearFunctionHandle, _module.m_pObject);
     }
 
     return _jFile;
@@ -275,7 +274,7 @@ Duckvil::Utils::CommandArgumentsParser::Descriptor g_pDescriptors[] =
     Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::SINGLE_MODULE, "single")
 };
 
-bool process_single_file(const Duckvil::Utils::CommandArgumentsParser& _cmdParser, const std::filesystem::path& _CWD, const Duckvil::Parser::__ast_ftable& _ftableAST, const Duckvil::Parser::__lexer_ftable& _ftableLexer, Duckvil::Parser::__lexer_data& _dataLexer, const Duckvil::RuntimeReflection::__generator_ftable& _ftableGenerator, const Duckvil::RuntimeReflection::__ftable& _ftableRuntimeReflection)
+bool process_single_file(const Duckvil::Utils::CommandArgumentsParser& _cmdParser, const std::filesystem::path& _CWD, const Duckvil::Parser::__ast_ftable& _ftableAST, const Duckvil::Parser::__lexer_ftable& _ftableLexer, Duckvil::Parser::__lexer_data& _dataLexer, const Duckvil::RuntimeReflection::__generator_ftable& _ftableGenerator, const Duckvil::RuntimeReflection::__ftable& _ftableRuntimeReflection, Duckvil::RuntimeReflection::__data* _dataReflection)
 {
     std::filesystem::path _file; // _argumentsParser[Options::FILE].m_sResult;
     std::filesystem::path _cwd = _CWD;
@@ -311,7 +310,7 @@ bool process_single_file(const Duckvil::Utils::CommandArgumentsParser& _cmdParse
     if (_f == _dbJ["files2"].end())
     {
         auto _lastIndex = _dbJ["files2"].back()["index"].get<uint32_t>();
-        auto _jFile = process_file(&_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _CWD, _cwd / "include" / _file, _currentModule, _lastIndex + 1, true);
+        auto _jFile = process_file(&_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _dataReflection, _CWD, _cwd / "include" / _file, _currentModule, _lastIndex + 1, true);
 
         _jFile["hash"] = _fileMD5;
 
@@ -320,7 +319,7 @@ bool process_single_file(const Duckvil::Utils::CommandArgumentsParser& _cmdParse
     else
     {
         auto _lastIndex = _f->at("index").get<uint32_t>();
-        auto _jFile = process_file(&_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _CWD, _cwd / "include" / _file, _f->at("name").get<std::string>(), _lastIndex, _f->at("hash").get<std::string>() != _fileMD5 || _cmdParser[Options::FORCE].m_bIsSet);
+        auto _jFile = process_file(&_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _dataReflection, _CWD, _cwd / "include" / _file, _f->at("name").get<std::string>(), _lastIndex, _f->at("hash").get<std::string>() != _fileMD5 || _cmdParser[Options::FORCE].m_bIsSet);
 
         _jFile["hash"] = _fileMD5;
 
@@ -336,7 +335,7 @@ bool process_single_file(const Duckvil::Utils::CommandArgumentsParser& _cmdParse
     return true;
 }
 
-bool process_multiple_files(const Duckvil::Utils::CommandArgumentsParser& _cmdParser, const std::filesystem::path& _CWD, const Duckvil::Parser::__ast_ftable& _ftableAST, const Duckvil::Parser::__lexer_ftable& _ftableLexer, Duckvil::Parser::__lexer_data& _dataLexer, const Duckvil::RuntimeReflection::__generator_ftable& _ftableGenerator, const Duckvil::RuntimeReflection::__ftable& _ftableRuntimeReflection)
+bool process_multiple_files(const Duckvil::Utils::CommandArgumentsParser& _cmdParser, const std::filesystem::path& _CWD, const Duckvil::Parser::__ast_ftable& _ftableAST, const Duckvil::Parser::__lexer_ftable& _ftableLexer, Duckvil::Parser::__lexer_data& _dataLexer, const Duckvil::RuntimeReflection::__generator_ftable& _ftableGenerator, const Duckvil::RuntimeReflection::__ftable& _ftableRuntimeReflection, Duckvil::RuntimeReflection::__data* _dataReflection)
 {
     uint32_t _index = 0;
 
@@ -473,7 +472,7 @@ bool process_multiple_files(const Duckvil::Utils::CommandArgumentsParser& _cmdPa
             // Not found
             // Need to be generated and added
 
-            auto _jFile = process_file(&_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _CWD, _path, _currentModule, _index, true);
+            auto _jFile = process_file(&_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _dataReflection, _CWD, _path, _currentModule, _index, true);
 
             _jFile["hash"] = _fileMD5;
 
@@ -485,7 +484,7 @@ bool process_multiple_files(const Duckvil::Utils::CommandArgumentsParser& _cmdPa
         {
             // Found but need to be generated and updated or forced
 
-            auto _jFile = process_file(&_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _CWD, _path, _currentModule, _index, true);
+            auto _jFile = process_file(&_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _dataReflection, _CWD, _path, _currentModule, _index, true);
 
             _jFile["hash"] = _fileMD5;
 
@@ -523,12 +522,12 @@ bool process_multiple_files(const Duckvil::Utils::CommandArgumentsParser& _cmdPa
     return true;
 }
 
-bool initialize_modules(const Duckvil::Memory::FreeList& _heap, const Duckvil::Memory::ftable& _ftableMemory, Duckvil::Memory::free_list_allocator* _pAllocator, const Duckvil::RuntimeReflection::__recorder_ftable& _ftableRecorder, const Duckvil::RuntimeReflection::__ftable& _ftableRuntimeReflection, const Duckvil::PlugNPlay::__module& _module)
+bool initialize_modules(const Duckvil::Memory::FreeList& _heap, const Duckvil::Memory::ftable& _ftableMemory, Duckvil::Memory::free_list_allocator* _pAllocator, const Duckvil::RuntimeReflection::__recorder_ftable& _ftableRecorder, const Duckvil::RuntimeReflection::__ftable& _ftableRuntimeReflection, Duckvil::RuntimeReflection::__data* _dataReflection, const Duckvil::PlugNPlay::__module& _module)
 {
     Duckvil::PlugNPlay::__module_information* _loadedModules;
     uint32_t _loadedModulesCount;
 
-    _runtimeReflectionData->m_pEvents = static_cast<Duckvil::Event::Pool<Duckvil::Event::mode::immediate>*>(_heap.Allocate<Duckvil::Event::Pool<Duckvil::Event::mode::immediate>>(_heap));
+    _dataReflection->m_pEvents = static_cast<Duckvil::Event::Pool<Duckvil::Event::mode::immediate>*>(_heap.Allocate<Duckvil::Event::Pool<Duckvil::Event::mode::immediate>>(_heap));
 
     Duckvil::PlugNPlay::AutoLoader _autoLoader(DUCKVIL_OUTPUT);
 
@@ -557,7 +556,7 @@ bool initialize_modules(const Duckvil::Memory::FreeList& _heap, const Duckvil::M
             ._pMemoryInterface = &_ftableMemory,
             ._pAllocator = _pAllocator,
             ._pFunctions = &_ftableRecorder,
-            ._pData = _runtimeReflectionData
+            ._pData = _dataReflection
         };
 
         for (uint32_t j = 0; j < _recordersCount; ++j)
@@ -578,21 +577,21 @@ bool initialize_modules(const Duckvil::Memory::FreeList& _heap, const Duckvil::M
     }
 
     {
-        auto _types = _ftableRuntimeReflection.m_fnGetTypes(_runtimeReflectionData, &_ftableMemory, _pAllocator); // Duckvil::RuntimeReflection::get_types(_runtimeReflectionData, _memoryInterface, _free_list);
+        auto _types = _ftableRuntimeReflection.m_fnGetTypes(_dataReflection, &_ftableMemory, _pAllocator); // Duckvil::RuntimeReflection::get_types(_runtimeReflectionData, _memoryInterface, _free_list);
 
         for (auto& _typeHandle : _types)
         {
-            const Duckvil::RuntimeReflection::__variant& _variant = Duckvil::RuntimeReflection::get_meta(&_ftableRuntimeReflection, _runtimeReflectionData, _typeHandle, Duckvil::ReflectionFlags::ReflectionFlags_ReflectionModule);
+            const Duckvil::RuntimeReflection::__variant& _variant = Duckvil::RuntimeReflection::get_meta(&_ftableRuntimeReflection, _dataReflection, _typeHandle, Duckvil::ReflectionFlags::ReflectionFlags_ReflectionModule);
 
             if (_variant.m_ullTypeID != std::numeric_limits<std::size_t>::max() && (uint8_t)_variant.m_traits & (uint8_t)Duckvil::RuntimeReflection::property_traits::is_bool)
             {
                 reflection_module _module = {};
 
-                _module.m_pObject = Duckvil::RuntimeReflection::create<const Duckvil::Memory::FreeList&, const Duckvil::RuntimeReflection::__ftable*, Duckvil::RuntimeReflection::__data*>(&_ftableMemory, _pAllocator, &_ftableRuntimeReflection, _runtimeReflectionData, _typeHandle, false, _heap, &_ftableRuntimeReflection, _runtimeReflectionData);
+                _module.m_pObject = Duckvil::RuntimeReflection::create<const Duckvil::Memory::FreeList&, const Duckvil::RuntimeReflection::__ftable*, Duckvil::RuntimeReflection::__data*>(&_ftableMemory, _pAllocator, &_ftableRuntimeReflection, _dataReflection, _typeHandle, false, _heap, &_ftableRuntimeReflection, _dataReflection);
                 _module.m_typeHandle = _typeHandle;
-                _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&, std::ofstream&, Duckvil::RuntimeReflection::GeneratedVector&>(&_ftableRuntimeReflection, _runtimeReflectionData, _typeHandle, "GenerateCustom");
-                _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(&_ftableRuntimeReflection, _runtimeReflectionData, _typeHandle, "Clear");
-                _module.m_processAST_FunctionHandle = Duckvil::RuntimeReflection::get_function_handle<Duckvil::Parser::__ast*>(&_ftableRuntimeReflection, _runtimeReflectionData, _typeHandle, "ProcessAST");
+                _module.m_generateCustomFunctionHandle = Duckvil::RuntimeReflection::get_function_handle<std::ofstream&, std::ofstream&, Duckvil::RuntimeReflection::GeneratedVector&>(&_ftableRuntimeReflection, _dataReflection, _typeHandle, "GenerateCustom");
+                _module.m_clearFunctionHandle = Duckvil::RuntimeReflection::get_function_handle(&_ftableRuntimeReflection, _dataReflection, _typeHandle, "Clear");
+                _module.m_processAST_FunctionHandle = Duckvil::RuntimeReflection::get_function_handle<Duckvil::Parser::__ast*>(&_ftableRuntimeReflection, _dataReflection, _typeHandle, "ProcessAST");
 
                 if (_aModules.Full())
                 {
@@ -611,30 +610,30 @@ bool initialize_modules(const Duckvil::Memory::FreeList& _heap, const Duckvil::M
 
 int main(int argc, char* argv[])
 {
-    Duckvil::Utils::CommandArgumentsParser _argumentsParser(argc, argv);
+    Duckvil::Utils::CommandArgumentsParser _cmdParser(argc, argv);
 
-    if(!_argumentsParser.Parse(g_pDescriptors, DUCKVIL_ARRAY_SIZE(g_pDescriptors)))
+    if(!_cmdParser.Parse(g_pDescriptors, DUCKVIL_ARRAY_SIZE(g_pDescriptors)))
     {
         return 1;
     }
 
-    bool _isSingleModule = _argumentsParser[Options::SINGLE_MODULE].m_bIsSet;
-    auto _CWD = _argumentsParser[Options::CWD].m_sResult;
+    bool _isSingleModule = _cmdParser[Options::SINGLE_MODULE].m_bIsSet;
+    auto _CWD = _cmdParser[Options::CWD].m_sResult;
 
     printf("CWD: %s\n", _CWD);
 
-    if(_argumentsParser[Options::IS_ABSOLUTE].m_bIsSet)
+    if(_cmdParser[Options::IS_ABSOLUTE].m_bIsSet)
     {
         printf("Is absolute\n");
     }
-    else if(_argumentsParser[Options::IS_RELATIVE].m_bIsSet)
+    else if(_cmdParser[Options::IS_RELATIVE].m_bIsSet)
     {
         printf("Is relative\n");
     }
 
-    if(_argumentsParser[Options::FILE].m_bIsSet)
+    if(_cmdParser[Options::FILE].m_bIsSet)
     {
-        printf("File: %s\n", _argumentsParser[Options::FILE].m_sResult);
+        printf("File: %s\n", _cmdParser[Options::FILE].m_sResult);
     }
 
     Duckvil::PlugNPlay::__module _module;
@@ -646,49 +645,41 @@ int main(int argc, char* argv[])
 
     _module.load(&_reflectionModule);
     _module.load(&_memoryModule);
+    _module.load(&_parser);
 
-    Duckvil::Memory::init_callback _fnMemoryInit;
+    duckvil_memory_init_callback _fnMemoryInit;
+    duckvil_lexer_init_callback _lexer_init;
+    duckvil_ast_init_callback _ast_init;
+    duckvil_runtime_reflection_generator_init_callback _runtime_reflection_generator_init;
+    duckvil_runtime_reflection_init_callback _runtimeReflectionInit;
+    duckvil_runtime_reflection_recorder_init_callback _runtimeReflectionRecorderInit;
 
     _module.get(_memoryModule, "duckvil_memory_init", reinterpret_cast<void**>(&_fnMemoryInit));
+    _module.get(_parser, "duckvil_lexer_init", reinterpret_cast<void**>(&_lexer_init));
+    _module.get(_parser, "duckvil_ast_init", reinterpret_cast<void**>(&_ast_init));
+    _module.get(_reflectionModule, "duckvil_runtime_reflection_generator_init", reinterpret_cast<void**>(&_runtime_reflection_generator_init));
+    _module.get(_reflectionModule, "duckvil_runtime_reflection_init", reinterpret_cast<void**>(&_runtimeReflectionInit));
+    _module.get(_reflectionModule, "duckvil_runtime_reflection_recorder_init", reinterpret_cast<void**>(&_runtimeReflectionRecorderInit));
 
     const Duckvil::Memory::ftable* _memoryInterface = _fnMemoryInit();
     Duckvil::Memory::linear_allocator* _mainMemoryAllocator;
 
     _memoryInterface->m_fnBasicAllocate(&_mainMemoryAllocator, 1024 * 1024);
+
     Duckvil::Memory::free_list_allocator* _free_list = _memoryInterface->m_fnLinearAllocateFreeListAllocator(_mainMemoryAllocator, 1000 * 1024);
     Duckvil::Memory::FreeList _heap(_memoryInterface, _free_list);
 
     _heap.Allocate(_aModules, 1);
 
-    _module.load(&_parser);
-
-    const Duckvil::Parser::__lexer_ftable* (*_lexer_init)();
-    const Duckvil::Parser::__ast_ftable* (*_ast_init)();
-
-    _module.get(_parser, "duckvil_lexer_init", reinterpret_cast<void**>(&_lexer_init));
-    _module.get(_parser, "duckvil_ast_init", reinterpret_cast<void**>(&_ast_init));
-
     const Duckvil::Parser::__ast_ftable* _ast = _ast_init();
     const Duckvil::Parser::__lexer_ftable* _lexerFtable = _lexer_init();
-
-    const Duckvil::RuntimeReflection::__generator_ftable* (*_runtime_reflection_generator)();
-
-    _module.get(_reflectionModule, "duckvil_runtime_reflection_generator_init", reinterpret_cast<void**>(&_runtime_reflection_generator));
-
-    duckvil_runtime_reflection_init_callback _runtimeReflectionInit;
-    duckvil_runtime_reflection_recorder_init_callback _runtimeReflectionRecorderInit;
-
-    _module.get(_reflectionModule, "duckvil_runtime_reflection_init", reinterpret_cast<void**>(&_runtimeReflectionInit));
-    _module.get(_reflectionModule, "duckvil_runtime_reflection_recorder_init", reinterpret_cast<void**>(&_runtimeReflectionRecorderInit));
-
     const Duckvil::RuntimeReflection::__ftable* _reflectionFTable = _runtimeReflectionInit();
     const Duckvil::RuntimeReflection::__recorder_ftable* _reflectionRecorderFTable = _runtimeReflectionRecorderInit();
+    const Duckvil::RuntimeReflection::__generator_ftable* _generatorFtable = _runtime_reflection_generator_init();
 
-    _runtimeReflectionData = _reflectionFTable->m_fnInit(_memoryInterface, _free_list, _reflectionFTable);
+    Duckvil::RuntimeReflection::__data* _runtimeReflectionData = _reflectionFTable->m_fnInit(_memoryInterface, _free_list, _reflectionFTable);
 
-    const Duckvil::RuntimeReflection::__generator_ftable* _generatorFtable = _runtime_reflection_generator();
-
-    initialize_modules(_heap, *_memoryInterface, _free_list, *_reflectionRecorderFTable, *_reflectionFTable, _module);
+    initialize_modules(_heap, *_memoryInterface, _free_list, *_reflectionRecorderFTable, *_reflectionFTable, _runtimeReflectionData, _module);
 
     Duckvil::Parser::__lexer_data _lexerData;
 
@@ -696,13 +687,13 @@ int main(int argc, char* argv[])
 
     _lexerData.m_pConfig->AddInclude((std::filesystem::path(_CWD) / "__generated_reflection__").string());
 
-    if(_argumentsParser[Options::FILE].m_bIsSet)
+    if(_cmdParser[Options::FILE].m_bIsSet)
     {
-        process_single_file(_argumentsParser, _CWD, *_ast, *_lexerFtable, _lexerData, *_generatorFtable, *_reflectionFTable);
+        process_single_file(_cmdParser, _CWD, *_ast, *_lexerFtable, _lexerData, *_generatorFtable, *_reflectionFTable, _runtimeReflectionData);
     }
     else
     {
-        process_multiple_files(_argumentsParser, _CWD, *_ast, *_lexerFtable, _lexerData, *_generatorFtable, *_reflectionFTable);
+        process_multiple_files(_cmdParser, _CWD, *_ast, *_lexerFtable, _lexerData, *_generatorFtable, *_reflectionFTable, _runtimeReflectionData);
     }
 
     return 0;
