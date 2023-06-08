@@ -46,7 +46,7 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Memory");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 16);
-_property = record_property<Duckvil::Memory::__free_list_node*>(_data, _type, offsetof(Duckvil::Memory::__free_list_node, m_pNext), "m_pNext");
+_property = record_property<__free_list_node*>(_data, _type, offsetof(Duckvil::Memory::__free_list_node, m_pNext), "m_pNext");
 _property = record_property<std::size_t>(_data, _type, offsetof(Duckvil::Memory::__free_list_node, m_ullSize), "m_ullSize");
 _namespaces.pop_back();
 _namespaces.pop_back();

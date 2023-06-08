@@ -55,11 +55,11 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Editor");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
-_property = record_property<void*(*)(Duckvil::Editor::EditorFTable*,Memory::FreeList const&,Window::IWindow*,Graphics::Renderer::renderer_ftable*,Graphics::Renderer::renderer_data*,Event::Pool<Event::mode::immediate>*,Event::Pool<Event::mode::immediate>*)>(_data, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnInit), "m_fnInit");
+_property = record_property<void*(*)(EditorFTable*,Memory::FreeList const&,Window::IWindow*,Graphics::Renderer::renderer_ftable*,Graphics::Renderer::renderer_data*,Event::Pool<Event::mode::immediate>*,Event::Pool<Event::mode::immediate>*)>(_data, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnInit), "m_fnInit");
 _property = record_property<void(*)(void*,Window::IWindow*)>(_data, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnRender), "m_fnRender");
 _property = record_property<void(*)(void*,Event::Pool<Event::mode::buffered>*)>(_data, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnSetWindowEventPool), "m_fnSetWindowEventPool");
-_property = record_property<void(*)(void*,Duckvil::Editor::EditorFTable*,Event::Pool<Event::mode::immediate>*,HotReloader::RuntimeCompilerSystem*)>(_data, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnPostInit), "m_fnPostInit");
-_property = record_property<void(*)(Duckvil::Editor::ImGuiEditorData*,HotReloader::SwapEvent const&)>(_data, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnHotReloadInit), "m_fnHotReloadInit");
+_property = record_property<void(*)(void*,EditorFTable*,Event::Pool<Event::mode::immediate>*,HotReloader::RuntimeCompilerSystem*)>(_data, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnPostInit), "m_fnPostInit");
+_property = record_property<void(*)(ImGuiEditorData*,HotReloader::SwapEvent const&)>(_data, _type, offsetof(Duckvil::Editor::EditorFTable, m_fnHotReloadInit), "m_fnHotReloadInit");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

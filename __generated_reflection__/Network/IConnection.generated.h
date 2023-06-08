@@ -2,14 +2,6 @@
 
 #include "RuntimeReflection/Markers.h"
 
-#define Network_IConnection_h_0_REFLECTION_MODULE_RUNTIME_COMPILER \
-public: \
-void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
-{\
-}
-#define Network_IConnection_h_0_GENERATED_BODY \
-Network_IConnection_h_0_REFLECTION_MODULE_RUNTIME_COMPILER
-
 #undef DUCKVIL_CURRENT_FILE_ID
 #define DUCKVIL_CURRENT_FILE_ID Network_IConnection_h
 

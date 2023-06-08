@@ -36,7 +36,7 @@ record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "ProjectManager");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
 _property = record_property<Utils::string>(_data, _type, offsetof(Duckvil::ProjectManager::LoadProjectEvent, m_sProjectName), "m_sProjectName");
-_property = record_property<Duckvil::ProjectManager::project*>(_data, _type, offsetof(Duckvil::ProjectManager::LoadProjectEvent, m_pLoadedProject), "m_pLoadedProject");
+_property = record_property<project*>(_data, _type, offsetof(Duckvil::ProjectManager::LoadProjectEvent, m_pLoadedProject), "m_pLoadedProject");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

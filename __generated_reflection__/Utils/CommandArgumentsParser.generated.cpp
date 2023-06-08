@@ -38,7 +38,7 @@ record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMe
 _constructor = record_constructor<Duckvil::Utils::CommandArgumentsParser, int, char*[]>(_data, _type);
 _constructor = record_constructor<Duckvil::Utils::CommandArgumentsParser, int, char const*[]>(_data, _type);
 _destructor = record_destructor<Duckvil::Utils::CommandArgumentsParser>(_data, _type);
-_function = record_function<Duckvil::Utils::CommandArgumentsParser, bool, Duckvil::Utils::CommandArgumentsParser::Descriptor*, std::size_t>(_data, _type, &Duckvil::Utils::CommandArgumentsParser::Parse, "Parse");
+_function = record_function<Duckvil::Utils::CommandArgumentsParser, bool, Descriptor*, std::size_t>(_data, _type, &Duckvil::Utils::CommandArgumentsParser::Parse, "Parse");
 _namespaces.pop_back();
 _namespaces.push_back("Descriptor");
 _ntype = record_type(_data, _namespaces);

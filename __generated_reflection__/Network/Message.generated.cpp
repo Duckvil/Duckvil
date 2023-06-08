@@ -63,6 +63,10 @@ _property = record_property<Duckvil::Network::MessageHeader>(_data, _type, offse
 _property = record_property<std::vector<uint8_t>>(_data, _type, offsetof(Duckvil::Network::Message, m_aBody), "m_aBody");
 _constructor = record_constructor<Duckvil::Network::Message>(_data, _type);
 _namespaces.pop_back();
+_namespaces.push_back("IConnection");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+_namespaces.pop_back();
 _namespaces.push_back("OwnedMessage");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);

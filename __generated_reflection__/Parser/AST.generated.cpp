@@ -234,6 +234,7 @@ _property = record_property<std::vector<__ast_inheritance>>(_data, _type, offset
 _property = record_property<std::vector<__ast_template>>(_data, _type, offsetof(Duckvil::Parser::__ast_entity_structure, m_aTemplates), "m_aTemplates");
 _property = record_property<uint32_t>(_data, _type, offsetof(Duckvil::Parser::__ast_entity_structure, m_uiGeneratedBodyMacroLine), "m_uiGeneratedBodyMacroLine");
 _property = record_property<Duckvil::Parser::__ast_access>(_data, _type, offsetof(Duckvil::Parser::__ast_entity_structure, m_accessLevel), "m_accessLevel");
+_property = record_property<bool>(_data, _type, offsetof(Duckvil::Parser::__ast_entity_structure, m_bIsForwardDeclaration), "m_bIsForwardDeclaration");
 _namespaces.pop_back();
 _namespaces.push_back("__ast_entity_enum");
 _ntype = record_type(_data, _namespaces);
@@ -350,6 +351,10 @@ _property = record_property<std::string>(_data, _type, offsetof(Duckvil::Parser:
 _property = record_property<std::vector<__ast_template>>(_data, _type, offsetof(Duckvil::Parser::__ast_entity_function, m_aTemplates), "m_aTemplates");
 _property = record_property<Duckvil::Parser::__ast_flags>(_data, _type, offsetof(Duckvil::Parser::__ast_entity_function, m_flags), "m_flags");
 _namespaces.pop_back();
+_namespaces.push_back("__ast");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+_namespaces.pop_back();
 _namespaces.push_back("user_define");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
@@ -389,7 +394,7 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Parser");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 0);
-_property = record_property<void(*)(__ast*,__lexer_ftable*,__lexer_data&)>(_data, _type, offsetof(Duckvil::Parser::__ast_ftable, ast_generate), "ast_generate");
+_property = record_property<void(*)(__ast*,__lexer_ftable const*,__lexer_data&)>(_data, _type, offsetof(Duckvil::Parser::__ast_ftable, ast_generate), "ast_generate");
 _property = record_property<void(*)(__ast const&)>(_data, _type, offsetof(Duckvil::Parser::__ast_ftable, ast_print), "ast_print");
 _namespaces.pop_back();
 _namespaces.pop_back();

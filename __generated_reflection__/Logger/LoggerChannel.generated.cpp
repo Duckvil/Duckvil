@@ -33,6 +33,10 @@ _enum = record_enum<Duckvil::__logger_channel_flags>(_data, _ntype, "__logger_ch
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::__logger_channel_flags::__logger_flags_file_output, "__logger_flags_file_output");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::__logger_channel_flags::__logger_flags_console_output, "__logger_flags_console_output");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::__logger_channel_flags::__logger_flags_editor_console_output, "__logger_flags_editor_console_output");
+_namespaces.push_back("__logger_channel_data");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+_namespaces.pop_back();
 _namespaces.push_back("__logger_channel_log_info");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
@@ -48,7 +52,7 @@ _property = record_property<char[256]>(_data, _type, offsetof(Duckvil::__logger_
 _property = record_property<Duckvil::__logger_channel_verbosity>(_data, _type, offsetof(Duckvil::__logger_channel_log_info, m_verbosity), "m_verbosity");
 _property = record_property<Duckvil::__logger_channel_log_flags>(_data, _type, offsetof(Duckvil::__logger_channel_log_info, m_flags), "m_flags");
 _property = record_property<std::time_t>(_data, _type, offsetof(Duckvil::__logger_channel_log_info, m_time), "m_time");
-_property = record_property<Duckvil::__logger_channel_data*>(_data, _type, offsetof(Duckvil::__logger_channel_log_info, m_pOwner), "m_pOwner");
+_property = record_property<__logger_channel_data*>(_data, _type, offsetof(Duckvil::__logger_channel_log_info, m_pOwner), "m_pOwner");
 _namespaces.pop_back();
 _namespaces.push_back("__logger_channel_data");
 _ntype = record_type(_data, _namespaces);
@@ -72,10 +76,10 @@ _type = record_type<Duckvil::__logger_channel_ftable>(_data, "__logger_channel_f
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
-_property = record_property<Duckvil::__logger_channel_data*(*)(Memory::FreeList const&)>(_data, _type, offsetof(Duckvil::__logger_channel_ftable, init), "init");
-_property = record_property<void(*)(Duckvil::__logger_channel_ftable*,Duckvil::__logger_channel_data*,Duckvil::__logger_channel_log_info const&)>(_data, _type, offsetof(Duckvil::__logger_channel_ftable, log), "log");
-_property = record_property<void(*)(Duckvil::__logger_channel_data*,Duckvil::__logger_channel_log_info const&,char*,size_t const)>(_data, _type, offsetof(Duckvil::__logger_channel_ftable, format), "format");
-_property = record_property<void(*)(Duckvil::__logger_channel_ftable*,Duckvil::__logger_channel_data*)>(_data, _type, offsetof(Duckvil::__logger_channel_ftable, dispatch_logs), "dispatch_logs");
+_property = record_property<__logger_channel_data*(*)(Memory::FreeList const&)>(_data, _type, offsetof(Duckvil::__logger_channel_ftable, init), "init");
+_property = record_property<void(*)(__logger_channel_ftable*,__logger_channel_data*,__logger_channel_log_info const&)>(_data, _type, offsetof(Duckvil::__logger_channel_ftable, log), "log");
+_property = record_property<void(*)(__logger_channel_data*,__logger_channel_log_info const&,char*,size_t const)>(_data, _type, offsetof(Duckvil::__logger_channel_ftable, format), "format");
+_property = record_property<void(*)(__logger_channel_ftable*,__logger_channel_data*)>(_data, _type, offsetof(Duckvil::__logger_channel_ftable, dispatch_logs), "dispatch_logs");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

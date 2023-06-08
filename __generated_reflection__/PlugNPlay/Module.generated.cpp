@@ -51,9 +51,9 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "PlugNPlay");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 1);
-_property = record_property<bool(*)(Duckvil::PlugNPlay::__module_information*)>(_data, _type, offsetof(Duckvil::PlugNPlay::__module, load), "load");
-_property = record_property<bool(*)(Duckvil::PlugNPlay::__module_information const&,char const*,void**)>(_data, _type, offsetof(Duckvil::PlugNPlay::__module, get), "get");
-_property = record_property<bool(*)(Duckvil::PlugNPlay::__module_information*)>(_data, _type, offsetof(Duckvil::PlugNPlay::__module, free), "free");
+_property = record_property<bool(*)(__module_information*)>(_data, _type, offsetof(Duckvil::PlugNPlay::__module, load), "load");
+_property = record_property<bool(*)(__module_information const&,char const*,void**)>(_data, _type, offsetof(Duckvil::PlugNPlay::__module, get), "get");
+_property = record_property<bool(*)(__module_information*)>(_data, _type, offsetof(Duckvil::PlugNPlay::__module, free), "free");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

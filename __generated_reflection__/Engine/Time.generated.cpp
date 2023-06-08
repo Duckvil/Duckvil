@@ -40,8 +40,8 @@ _type = record_type<Duckvil::__time_ftable>(_data, "__time_ftable");
 _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 12);
-_property = record_property<bool(*)(Duckvil::__time_data*)>(_data, _type, offsetof(Duckvil::__time_ftable, init), "init");
-_property = record_property<void(*)(Duckvil::__time_data*)>(_data, _type, offsetof(Duckvil::__time_ftable, update), "update");
+_property = record_property<bool(*)(__time_data*)>(_data, _type, offsetof(Duckvil::__time_ftable, init), "init");
+_property = record_property<void(*)(__time_data*)>(_data, _type, offsetof(Duckvil::__time_ftable, update), "update");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

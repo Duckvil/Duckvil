@@ -42,9 +42,9 @@ _function = record_function<Duckvil::Network::Client, bool, std::string const&, 
 _function = record_function<Duckvil::Network::Client, void>(_data, _type, &Duckvil::Network::Client::Disconnect, "Disconnect");
 _function = record_function<Duckvil::Network::Client, bool>(_data, _type, &Duckvil::Network::Client::IsConnected, "IsConnected");
 _function = record_function<Duckvil::Network::Client, void>(_data, _type, &Duckvil::Network::Client::Update, "Update");
-_function = record_function<Duckvil::Network::Client, void, Duckvil::Network::NetworkSystem*>(_data, _type, &Duckvil::Network::Client::AddSystem, "AddSystem");
-_function = record_function<Duckvil::Network::Client, tsqueue<Duckvil::Network::OwnedMessage>&>(_data, _type, &Duckvil::Network::Client::Incoming, "Incoming");
-_function = record_function<Duckvil::Network::Client, void, Duckvil::Network::Message const&>(_data, _type, &Duckvil::Network::Client::Send, "Send");
+_function = record_function<Duckvil::Network::Client, void, NetworkSystem*>(_data, _type, &Duckvil::Network::Client::AddSystem, "AddSystem");
+_function = record_function<Duckvil::Network::Client, tsqueue<OwnedMessage>&>(_data, _type, &Duckvil::Network::Client::Incoming, "Incoming");
+_function = record_function<Duckvil::Network::Client, void, Message const&>(_data, _type, &Duckvil::Network::Client::Send, "Send");
 _function = record_function<Duckvil::Network::Client, uint32_t>(_data, _type, &Duckvil::Network::Client::GetID, "GetID");
 _namespaces.pop_back();
 _namespaces.pop_back();

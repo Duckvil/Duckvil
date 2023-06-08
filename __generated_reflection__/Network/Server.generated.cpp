@@ -2,6 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
+#include "Network/NetworkSystem.h"
 
 DUCKVIL_RUNTIME_REFLECTION_RECORD(7)
 {
@@ -26,6 +27,10 @@ _recordedNTypes.push_back(_ntype);
 _namespaces.push_back("Network");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
+_namespaces.push_back("NetworkSystem");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+_namespaces.pop_back();
 _namespaces.push_back("Server");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
@@ -42,11 +47,12 @@ _function = record_function<Duckvil::Network::Server, bool>(_data, _type, &Duckv
 _function = record_function<Duckvil::Network::Server, void>(_data, _type, &Duckvil::Network::Server::Stop, "Stop");
 _function = record_function<Duckvil::Network::Server, void, size_t, bool>(_data, _type, &Duckvil::Network::Server::Update, "Update");
 _function = record_function<Duckvil::Network::Server, void>(_data, _type, &Duckvil::Network::Server::WaitForConnection, "WaitForConnection");
-_function = record_function<Duckvil::Network::Server, void, std::shared_ptr<IConnection>, Duckvil::Network::Message const&>(_data, _type, &Duckvil::Network::Server::MessageClient, "MessageClient");
-_function = record_function<Duckvil::Network::Server, void, Duckvil::Network::Message const&, std::shared_ptr<IConnection>>(_data, _type, &Duckvil::Network::Server::MessageAllClients, "MessageAllClients");
+_function = record_function<Duckvil::Network::Server, void, std::shared_ptr<IConnection>, Message const&>(_data, _type, &Duckvil::Network::Server::MessageClient, "MessageClient");
+_function = record_function<Duckvil::Network::Server, void, Message const&, std::shared_ptr<IConnection>>(_data, _type, &Duckvil::Network::Server::MessageAllClients, "MessageAllClients");
+_function = record_function<Duckvil::Network::Server, void, NetworkSystem*>(_data, _type, &Duckvil::Network::Server::AddSystem, "AddSystem");
 _function = record_function<Duckvil::Network::Server, bool, std::shared_ptr<IConnection>>(_data, _type, &Duckvil::Network::Server::OnClientConnect, "OnClientConnect");
 _function = record_function<Duckvil::Network::Server, void, std::shared_ptr<IConnection>>(_data, _type, &Duckvil::Network::Server::OnClientDisconnect, "OnClientDisconnect");
-_function = record_function<Duckvil::Network::Server, void, std::shared_ptr<IConnection>, Duckvil::Network::Message&>(_data, _type, &Duckvil::Network::Server::OnMessage, "OnMessage");
+_function = record_function<Duckvil::Network::Server, void, std::shared_ptr<IConnection>, Message&>(_data, _type, &Duckvil::Network::Server::OnMessage, "OnMessage");
 _function = record_function<Duckvil::Network::Server, void, std::shared_ptr<IConnection>>(_data, _type, &Duckvil::Network::Server::OnClientValidated, "OnClientValidated");
 _namespaces.pop_back();
 _namespaces.pop_back();

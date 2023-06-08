@@ -75,7 +75,7 @@ _property = record_property<bool>(_data, _type, offsetof(Duckvil::Parser::__lexe
 _property = record_property<bool>(_data, _type, offsetof(Duckvil::Parser::__lexer_data, m_bSpace), "m_bSpace");
 _property = record_property<bool>(_data, _type, offsetof(Duckvil::Parser::__lexer_data, m_bNewLine), "m_bNewLine");
 _property = record_property<bool>(_data, _type, offsetof(Duckvil::Parser::__lexer_data, m_bEnd), "m_bEnd");
-_property = record_property<Duckvil::Parser::IConfig*>(_data, _type, offsetof(Duckvil::Parser::__lexer_data, m_pConfig), "m_pConfig");
+_property = record_property<IConfig*>(_data, _type, offsetof(Duckvil::Parser::__lexer_data, m_pConfig), "m_pConfig");
 _namespaces.pop_back();
 _namespaces.push_back("__lexer_ftable");
 _ntype = record_type(_data, _namespaces);
@@ -85,10 +85,10 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Parser");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 3);
-_property = record_property<void(*)(Duckvil::Parser::__lexer_data*,char const[256])>(_data, _type, offsetof(Duckvil::Parser::__lexer_ftable, load_file), "load_file");
-_property = record_property<bool(*)(Duckvil::Parser::__lexer_data*,std::string*)>(_data, _type, offsetof(Duckvil::Parser::__lexer_ftable, next_token), "next_token");
-_property = record_property<bool(*)(Duckvil::Parser::__lexer_data const&)>(_data, _type, offsetof(Duckvil::Parser::__lexer_ftable, space), "space");
-_property = record_property<Duckvil::Parser::IConfig*(*)(Duckvil::Parser::__lexer_data*)>(_data, _type, offsetof(Duckvil::Parser::__lexer_ftable, init), "init");
+_property = record_property<void(*)(__lexer_data*,char const[256])>(_data, _type, offsetof(Duckvil::Parser::__lexer_ftable, load_file), "load_file");
+_property = record_property<bool(*)(__lexer_data*,std::string*)>(_data, _type, offsetof(Duckvil::Parser::__lexer_ftable, next_token), "next_token");
+_property = record_property<bool(*)(__lexer_data const&)>(_data, _type, offsetof(Duckvil::Parser::__lexer_ftable, space), "space");
+_property = record_property<IConfig*(*)(__lexer_data*)>(_data, _type, offsetof(Duckvil::Parser::__lexer_ftable, init), "init");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

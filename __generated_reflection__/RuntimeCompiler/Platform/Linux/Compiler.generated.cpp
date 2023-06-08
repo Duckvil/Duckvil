@@ -38,10 +38,10 @@ record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMe
 record_inheritance<ICompiler>(_data, _type, __protection::__protection_public);
 _constructor = record_constructor<Duckvil::RuntimeCompiler::LinuxCompiler, Process::ftable const&, Process::data*>(_data, _type);
 _destructor = record_destructor<Duckvil::RuntimeCompiler::LinuxCompiler>(_data, _type);
-_function = record_function<Duckvil::RuntimeCompiler::LinuxCompiler, void, std::vector<std::string> const&, Duckvil::RuntimeCompiler::Options const&>(_data, _type, &Duckvil::RuntimeCompiler::LinuxCompiler::Compile, "Compile");
+_function = record_function<Duckvil::RuntimeCompiler::LinuxCompiler, void, std::vector<std::string> const&, Options const&>(_data, _type, &Duckvil::RuntimeCompiler::LinuxCompiler::Compile, "Compile");
 _function = record_function<Duckvil::RuntimeCompiler::LinuxCompiler, void, std::string const&>(_data, _type, &Duckvil::RuntimeCompiler::LinuxCompiler::AddDefine, "AddDefine");
 _function = record_function<Duckvil::RuntimeCompiler::LinuxCompiler, void, std::string const&>(_data, _type, &Duckvil::RuntimeCompiler::LinuxCompiler::AddFlag, "AddFlag");
-_function = record_function<Duckvil::RuntimeCompiler::LinuxCompiler, void, Duckvil::RuntimeCompiler::Flag>(_data, _type, &Duckvil::RuntimeCompiler::LinuxCompiler::AddFlag, "AddFlag");
+_function = record_function<Duckvil::RuntimeCompiler::LinuxCompiler, void, Flag>(_data, _type, &Duckvil::RuntimeCompiler::LinuxCompiler::AddFlag, "AddFlag");
 _function = record_function<Duckvil::RuntimeCompiler::LinuxCompiler, void, std::string const&>(_data, _type, &Duckvil::RuntimeCompiler::LinuxCompiler::AddInclude, "AddInclude");
 _function = record_function<Duckvil::RuntimeCompiler::LinuxCompiler, void, std::string const&>(_data, _type, &Duckvil::RuntimeCompiler::LinuxCompiler::AddLibraryPath, "AddLibraryPath");
 _function = record_function<Duckvil::RuntimeCompiler::LinuxCompiler, void, std::string const&>(_data, _type, &Duckvil::RuntimeCompiler::LinuxCompiler::AddLibrary, "AddLibrary");

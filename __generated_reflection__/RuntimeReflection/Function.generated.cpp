@@ -114,6 +114,10 @@ _namespaces.push_back("__function");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
 _namespaces.pop_back();
+_namespaces.push_back("__function");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+_namespaces.pop_back();
 _namespaces.pop_back();
 }
 _namespaces.pop_back();

@@ -3,7 +3,7 @@
         "CSharp\\CSharp.h": {
             "generated_cpp": "CSharp\\CSharp.generated.cpp",
             "generated_h": "CSharp\\CSharp.generated.h",
-            "hash": "e8b2d0ff8c3d0df863a19a7da3c6f2df",
+            "hash": "1cdc79cf413416230be539d90e892631",
             "index": 0,
             "name": "CSharp"
         },
@@ -31,7 +31,7 @@
         "CSharp\\ReflectionModule.h": {
             "generated_cpp": "CSharp\\ReflectionModule.generated.cpp",
             "generated_h": "CSharp\\ReflectionModule.generated.h",
-            "hash": "ead7ed061ae2f2e9268ad6ea54226e38",
+            "hash": "904795b6d9c81766a75a1a35849c72b7",
             "index": 4,
             "name": "CSharp"
         },
@@ -52,7 +52,7 @@
         "DependencyInjection\\DependencyInjection.h": {
             "generated_cpp": "DependencyInjection\\DependencyInjection.generated.cpp",
             "generated_h": "DependencyInjection\\DependencyInjection.generated.h",
-            "hash": "e4857b5846eeac9111db65116df32f41",
+            "hash": "df347e2ae007d8ac97ba0a2f3bfd5bb1",
             "index": 0,
             "name": "DependencyInjection"
         },
@@ -66,7 +66,7 @@
         "DependencyInjection\\IDependencyResolver.h": {
             "generated_cpp": "DependencyInjection\\IDependencyResolver.generated.cpp",
             "generated_h": "DependencyInjection\\IDependencyResolver.generated.h",
-            "hash": "767c862368f99533a3e0fb54445ea5de",
+            "hash": "0c22348e35b4a68de2f3cc59968d94a6",
             "index": 2,
             "name": "DependencyInjection"
         },
@@ -94,7 +94,7 @@
         "DependencyInjection\\ReflectionModule.h": {
             "generated_cpp": "DependencyInjection\\ReflectionModule.generated.cpp",
             "generated_h": "DependencyInjection\\ReflectionModule.generated.h",
-            "hash": "e3d14308a7024ed0a9f1c4aedab52170",
+            "hash": "374a06cc0812ee575cbaf80a797086b1",
             "index": 6,
             "name": "DependencyInjection"
         },
@@ -262,7 +262,7 @@
         "Engine\\Duckvil.h": {
             "generated_cpp": "Engine\\Duckvil.generated.cpp",
             "generated_h": "Engine\\Duckvil.generated.h",
-            "hash": "d4849748e83eadcd6def323604e328b8",
+            "hash": "5a63c7b463242ed27df74e10990fcc76",
             "index": 0,
             "name": "Engine"
         },
@@ -318,14 +318,14 @@
         "Engine\\ReflectionModules\\DummyReflectionModule.h": {
             "generated_cpp": "Engine\\ReflectionModules\\DummyReflectionModule.generated.cpp",
             "generated_h": "Engine\\ReflectionModules\\DummyReflectionModule.generated.h",
-            "hash": "f6a9d8b682e3c51d33af5349751e2e5e",
+            "hash": "8d48d61f0f5466581d482877f91dd4dc",
             "index": 8,
             "name": "Engine"
         },
         "Engine\\ReflectionModules\\NamedArgumentsReflectionModule.h": {
             "generated_cpp": "Engine\\ReflectionModules\\NamedArgumentsReflectionModule.generated.cpp",
             "generated_h": "Engine\\ReflectionModules\\NamedArgumentsReflectionModule.generated.h",
-            "hash": "04756a4402c5a99bbb9630595095f3cc",
+            "hash": "4a3704712cdac93aad6e9e7c2efedb00",
             "index": 9,
             "name": "Engine"
         },
@@ -374,14 +374,14 @@
         "Event\\ImmediateChannel.h": {
             "generated_cpp": "Event\\ImmediateChannel.generated.cpp",
             "generated_h": "Event\\ImmediateChannel.generated.h",
-            "hash": "0c886f0d4ea030f74a29ff9723bdd207",
+            "hash": "da19c6d3730a1d704c7ed4c10fea62eb",
             "index": 2,
             "name": "Event"
         },
         "Event\\ImmediatePool.h": {
             "generated_cpp": "Event\\ImmediatePool.generated.cpp",
             "generated_h": "Event\\ImmediatePool.generated.h",
-            "hash": "923080a7077941b04061f275c29a9aa1",
+            "hash": "0ba53f7b3595127cdf9b132faedba544",
             "index": 3,
             "name": "Event"
         },
@@ -409,14 +409,14 @@
         "Graphics\\Renderer\\CommandBuffer.h": {
             "generated_cpp": "Graphics\\Renderer\\CommandBuffer.generated.cpp",
             "generated_h": "Graphics\\Renderer\\CommandBuffer.generated.h",
-            "hash": "9509af3c1d2667746faea295e33b051c",
+            "hash": "903093d4cc77c263fead2041318bd411",
             "index": 2,
             "name": "Graphics"
         },
         "Graphics\\Renderer\\Renderer.h": {
             "generated_cpp": "Graphics\\Renderer\\Renderer.generated.cpp",
             "generated_h": "Graphics\\Renderer\\Renderer.generated.h",
-            "hash": "11c0b92e32825b2c964352c5edaaa989",
+            "hash": "990d5eb6936135a910ea8a2ab2ebc466",
             "index": 3,
             "name": "Graphics"
         },
@@ -430,7 +430,7 @@
         "HotReloader\\CasterReflectionModule.h": {
             "generated_cpp": "HotReloader\\CasterReflectionModule.generated.cpp",
             "generated_h": "HotReloader\\CasterReflectionModule.generated.h",
-            "hash": "9b2d2c8bb8af0b561c623001539447e4",
+            "hash": "fba433e971db3cd2034e4b02bc94ab92",
             "index": 0,
             "name": "HotReloader"
         },
@@ -500,14 +500,14 @@
         "HotReloader\\ReflectionModule.h": {
             "generated_cpp": "HotReloader\\ReflectionModule.generated.cpp",
             "generated_h": "HotReloader\\ReflectionModule.generated.h",
-            "hash": "4c44a99079f4c4b058be2b6aebdbdba5",
+            "hash": "1928bd9069e201a8346b455a9dded198",
             "index": 10,
             "name": "HotReloader"
         },
         "HotReloader\\RuntimeCompilerSystem.h": {
             "generated_cpp": "HotReloader\\RuntimeCompilerSystem.generated.cpp",
             "generated_h": "HotReloader\\RuntimeCompilerSystem.generated.h",
-            "hash": "7a069ea5a861e0dff8401145eba6b62c",
+            "hash": "c7385d7dd8a48b1991275045a6605420",
             "index": 11,
             "name": "HotReloader"
         },
@@ -542,21 +542,21 @@
         "Memory\\ByteBuffer.h": {
             "generated_cpp": "Memory\\ByteBuffer.generated.cpp",
             "generated_h": "Memory\\ByteBuffer.generated.h",
-            "hash": "30052182ca78ac51f488bb188686880d",
+            "hash": "2614a2c68a16e4e371c964c493286f6f",
             "index": 1,
             "name": "Memory"
         },
         "Memory\\Container.h": {
             "generated_cpp": "Memory\\Container.generated.cpp",
             "generated_h": "Memory\\Container.generated.h",
-            "hash": "8929aa53f433a60fdd3df11df9ee6f20",
+            "hash": "b59a6421bfa12ca217fd06d80d483804",
             "index": 2,
             "name": "Memory"
         },
         "Memory\\DynamicArray.h": {
             "generated_cpp": "Memory\\DynamicArray.generated.cpp",
             "generated_h": "Memory\\DynamicArray.generated.h",
-            "hash": "63632386656d4d35e439d1379d8118e4",
+            "hash": "3ea4f4e681a22b76a255bb8d1c83f7a2",
             "index": 3,
             "name": "Memory"
         },
@@ -570,49 +570,49 @@
         "Memory\\FixedQueueAllocator.h": {
             "generated_cpp": "Memory\\FixedQueueAllocator.generated.cpp",
             "generated_h": "Memory\\FixedQueueAllocator.generated.h",
-            "hash": "f00a01e2d625e65d3e6971496c6eb772",
+            "hash": "c2a8caf55ed83087c564c71dc65f582d",
             "index": 5,
             "name": "Memory"
         },
         "Memory\\FixedStackAllocator.h": {
             "generated_cpp": "Memory\\FixedStackAllocator.generated.cpp",
             "generated_h": "Memory\\FixedStackAllocator.generated.h",
-            "hash": "779205988bafed63e7dee2759d85bc12",
+            "hash": "150d59092ebdc1519099e4ab47974bec",
             "index": 6,
             "name": "Memory"
         },
         "Memory\\FixedVectorAllocator.h": {
             "generated_cpp": "Memory\\FixedVectorAllocator.generated.cpp",
             "generated_h": "Memory\\FixedVectorAllocator.generated.h",
-            "hash": "1a514274434c1c3f1ec5be1f44bcd0f0",
+            "hash": "8254c1e73cd26cae65c7f4d244345529",
             "index": 7,
             "name": "Memory"
         },
         "Memory\\FreeList.h": {
             "generated_cpp": "Memory\\FreeList.generated.cpp",
             "generated_h": "Memory\\FreeList.generated.h",
-            "hash": "258bef59b7d28c86d003d93db4361460",
+            "hash": "842f4a501bd4f224a59b2db4a67aec04",
             "index": 8,
             "name": "Memory"
         },
         "Memory\\FreeListAllocator.h": {
             "generated_cpp": "Memory\\FreeListAllocator.generated.cpp",
             "generated_h": "Memory\\FreeListAllocator.generated.h",
-            "hash": "d08764afea1e71077607901236c80574",
+            "hash": "4441d0096551449a0896935c1cc64637",
             "index": 9,
             "name": "Memory"
         },
         "Memory\\Internal\\Allocator.h": {
             "generated_cpp": "Memory\\Internal\\Allocator.generated.cpp",
             "generated_h": "Memory\\Internal\\Allocator.generated.h",
-            "hash": "f12a001bc536c48c07596bc35e83a1fc",
+            "hash": "bacf9f6999b2897d0a2ebb86aebfc024",
             "index": 10,
             "name": "Memory"
         },
         "Memory\\Internal\\ByteBuffer.h": {
             "generated_cpp": "Memory\\Internal\\ByteBuffer.generated.cpp",
             "generated_h": "Memory\\Internal\\ByteBuffer.generated.h",
-            "hash": "06ea2da2165ad41ddde8ae6dbb3f0a27",
+            "hash": "c1b8f27cbfffc13a740d4b33e6981a48",
             "index": 11,
             "name": "Memory"
         },
@@ -626,7 +626,7 @@
         "Memory\\Internal\\FixedQueueAllocator.h": {
             "generated_cpp": "Memory\\Internal\\FixedQueueAllocator.generated.cpp",
             "generated_h": "Memory\\Internal\\FixedQueueAllocator.generated.h",
-            "hash": "5c2914783d09a9234c1bf95130b90ba8",
+            "hash": "3e35e84febbf11f614f691ad443b0c27",
             "index": 13,
             "name": "Memory"
         },
@@ -640,7 +640,7 @@
         "Memory\\Internal\\FixedVectorAllocator.h": {
             "generated_cpp": "Memory\\Internal\\FixedVectorAllocator.generated.cpp",
             "generated_h": "Memory\\Internal\\FixedVectorAllocator.generated.h",
-            "hash": "70d5f9f6817f04ba6d1146c9055969ac",
+            "hash": "a844ef3760b695adb8198faca36534e2",
             "index": 15,
             "name": "Memory"
         },
@@ -661,7 +661,7 @@
         "Memory\\Internal\\QueueAllocator.h": {
             "generated_cpp": "Memory\\Internal\\QueueAllocator.generated.cpp",
             "generated_h": "Memory\\Internal\\QueueAllocator.generated.h",
-            "hash": "7ecd5a1e1c0f4d2504cb1008c00db748",
+            "hash": "295b8a4113c82547747ad1f71263d2b6",
             "index": 18,
             "name": "Memory"
         },
@@ -689,7 +689,7 @@
         "Memory\\Memory.h": {
             "generated_cpp": "Memory\\Memory.generated.cpp",
             "generated_h": "Memory\\Memory.generated.h",
-            "hash": "66ba82939044703bbb06285304991294",
+            "hash": "c3837eb6947e592c382e976aff8055d7",
             "index": 22,
             "name": "Memory"
         },
@@ -703,7 +703,7 @@
         "Memory\\Queue.h": {
             "generated_cpp": "Memory\\Queue.generated.cpp",
             "generated_h": "Memory\\Queue.generated.h",
-            "hash": "a0209ff399b168b57515189309252417",
+            "hash": "ae7d6b8455bf2cc751fdfbb49972d255",
             "index": 24,
             "name": "Memory"
         },
@@ -717,7 +717,7 @@
         "Memory\\SlotArray.h": {
             "generated_cpp": "Memory\\SlotArray.generated.cpp",
             "generated_h": "Memory\\SlotArray.generated.h",
-            "hash": "3cd64c1afa3c4b84989f0b3843748252",
+            "hash": "351ff1dd5b9e5b842a40dd91c1b062ed",
             "index": 26,
             "name": "Memory"
         },
@@ -738,14 +738,14 @@
         "Memory\\SpecifiedContainer.h": {
             "generated_cpp": "Memory\\SpecifiedContainer.generated.cpp",
             "generated_h": "Memory\\SpecifiedContainer.generated.h",
-            "hash": "a9e5984af064ea89ae882019b8f44edb",
+            "hash": "86d1dd95d49ef0fce453f319c9219e2a",
             "index": 29,
             "name": "Memory"
         },
         "Memory\\SpecifiedResizableContainer.h": {
             "generated_cpp": "Memory\\SpecifiedResizableContainer.generated.cpp",
             "generated_h": "Memory\\SpecifiedResizableContainer.generated.h",
-            "hash": "a845f9f24611eb06475c2a64a9b5b724",
+            "hash": "e82b975ffafa60cd302c7f703878e900",
             "index": 30,
             "name": "Memory"
         },
@@ -780,7 +780,7 @@
         "Memory\\Vector.h": {
             "generated_cpp": "Memory\\Vector.generated.cpp",
             "generated_h": "Memory\\Vector.generated.h",
-            "hash": "4c5db047e3f7f941ae98df3c5a2098b2",
+            "hash": "832a94db1e84cdf5e34b51b74bd7e1e7",
             "index": 35,
             "name": "Memory"
         },
@@ -794,7 +794,7 @@
         "Network\\Connection.h": {
             "generated_cpp": "Network\\Connection.generated.cpp",
             "generated_h": "Network\\Connection.generated.h",
-            "hash": "ab5b9b9f5bf760ec34f6c3054b457cd8",
+            "hash": "48a29c53efe9eef2d51c6c6270c46050",
             "index": 1,
             "name": "Network"
         },
@@ -815,7 +815,7 @@
         "Network\\IServer.h": {
             "generated_cpp": "Network\\IServer.generated.cpp",
             "generated_h": "Network\\IServer.generated.h",
-            "hash": "486e10ada46810f08fff18a57ee77b4c",
+            "hash": "ce11c5860d6eb3dbe4c21a4334d51c6c",
             "index": 4,
             "name": "Network"
         },
@@ -836,7 +836,7 @@
         "Network\\Server.h": {
             "generated_cpp": "Network\\Server.generated.cpp",
             "generated_h": "Network\\Server.generated.h",
-            "hash": "47de87534dd4ed102fb487babd56754b",
+            "hash": "4767a4fbfe08c26eb9b3679bb5ab1b8c",
             "index": 7,
             "name": "Network"
         },
@@ -850,14 +850,14 @@
         "Parser\\AST.h": {
             "generated_cpp": "Parser\\AST.generated.cpp",
             "generated_h": "Parser\\AST.generated.h",
-            "hash": "477a93ae19bab1a160c82e846b6e6f1a",
+            "hash": "7e499c16ac526a8882b24d18022d8e45",
             "index": 0,
             "name": "Parser"
         },
         "Parser\\Lexer.h": {
             "generated_cpp": "Parser\\Lexer.generated.cpp",
             "generated_h": "Parser\\Lexer.generated.h",
-            "hash": "a09e87be6528ccbc1db9db7f5d18526d",
+            "hash": "2c0310db553f5529b991ff1e8264772a",
             "index": 3,
             "name": "Parser"
         },
@@ -885,7 +885,7 @@
         "PlugNPlay\\AutoLoader.h": {
             "generated_cpp": "PlugNPlay\\AutoLoader.generated.cpp",
             "generated_h": "PlugNPlay\\AutoLoader.generated.h",
-            "hash": "7dca741fd13348bd5cdc79076f8e43ff",
+            "hash": "5286c3845e4d696326f68147d8b4d2c7",
             "index": 0,
             "name": "PlugNPlay"
         },
@@ -927,14 +927,14 @@
         "Process\\Platform\\Windows\\Process.h": {
             "generated_cpp": "Process\\Platform\\Windows\\Process.generated.cpp",
             "generated_h": "Process\\Platform\\Windows\\Process.generated.h",
-            "hash": "0de9eac2a01f76e065382375a5f50303",
+            "hash": "3935c1c07c159fe113ed72ecf5c3be12",
             "index": 1,
             "name": "Process"
         },
         "Process\\Process.h": {
             "generated_cpp": "Process\\Process.generated.cpp",
             "generated_h": "Process\\Process.generated.h",
-            "hash": "868aa6f697e8a42cb20f11d8d39fef90",
+            "hash": "b845fd3aed1457ddf139387c45994a51",
             "index": 2,
             "name": "Process"
         },
@@ -1032,7 +1032,7 @@
         "RuntimeCompiler\\RuntimeCompiler.h": {
             "generated_cpp": "RuntimeCompiler\\RuntimeCompiler.generated.cpp",
             "generated_h": "RuntimeCompiler\\RuntimeCompiler.generated.h",
-            "hash": "321a4942af0ac9687245c6868142ae0c",
+            "hash": "56504e36787a08baaa75b8a7f3124895",
             "index": 3,
             "name": "RuntimeCompiler"
         },
@@ -1116,49 +1116,49 @@
         "RuntimeReflectionStatic\\local\\argument.h": {
             "generated_cpp": "RuntimeReflectionStatic\\local\\argument.generated.cpp",
             "generated_h": "RuntimeReflectionStatic\\local\\argument.generated.h",
-            "hash": "950751ea1744c114ac2c184b01c627f3",
+            "hash": "1ccb49c561bc962f339c4afcfa0abf29",
             "index": 11,
             "name": "RuntimeReflectionStatic"
         },
         "RuntimeReflectionStatic\\local\\constructor.h": {
             "generated_cpp": "RuntimeReflectionStatic\\local\\constructor.generated.cpp",
             "generated_h": "RuntimeReflectionStatic\\local\\constructor.generated.h",
-            "hash": "9becfd51732226e61224e8b25dd8c16d",
+            "hash": "8acb730f6d104160c6d1bd146d9e3d0b",
             "index": 12,
             "name": "RuntimeReflectionStatic"
         },
         "RuntimeReflectionStatic\\local\\enum.h": {
             "generated_cpp": "RuntimeReflectionStatic\\local\\enum.generated.cpp",
             "generated_h": "RuntimeReflectionStatic\\local\\enum.generated.h",
-            "hash": "ca474e360e2bbc51fe44a3ee139f6e0e",
+            "hash": "7b22a3c61f49b6080d3aae7c670c1390",
             "index": 13,
             "name": "RuntimeReflectionStatic"
         },
         "RuntimeReflectionStatic\\local\\function.h": {
             "generated_cpp": "RuntimeReflectionStatic\\local\\function.generated.cpp",
             "generated_h": "RuntimeReflectionStatic\\local\\function.generated.h",
-            "hash": "41408a3d6ee2639f89f2d22f517734d2",
+            "hash": "50adcf34c33e53386975ed7c13e78333",
             "index": 14,
             "name": "RuntimeReflectionStatic"
         },
         "RuntimeReflectionStatic\\local\\invoke_member_function.h": {
             "generated_cpp": "RuntimeReflectionStatic\\local\\invoke_member_function.generated.cpp",
             "generated_h": "RuntimeReflectionStatic\\local\\invoke_member_function.generated.h",
-            "hash": "a56b82c7311ccdab58de1af907a53030",
+            "hash": "2db62e387f49b3a8b2883cd7c688441f",
             "index": 15,
             "name": "RuntimeReflectionStatic"
         },
         "RuntimeReflectionStatic\\local\\invoke_static_function.h": {
             "generated_cpp": "RuntimeReflectionStatic\\local\\invoke_static_function.generated.cpp",
             "generated_h": "RuntimeReflectionStatic\\local\\invoke_static_function.generated.h",
-            "hash": "38e1903c46a41cc3f32b686b3a01d397",
+            "hash": "a94e503e6cc15a18c19bcd22f736be55",
             "index": 16,
             "name": "RuntimeReflectionStatic"
         },
         "RuntimeReflectionStatic\\local\\object.h": {
             "generated_cpp": "RuntimeReflectionStatic\\local\\object.generated.cpp",
             "generated_h": "RuntimeReflectionStatic\\local\\object.generated.h",
-            "hash": "d271afd26622452913a66906e8ddf162",
+            "hash": "9293d863a64229deb8ea29cd32e493e8",
             "index": 17,
             "name": "RuntimeReflectionStatic"
         },
@@ -1172,14 +1172,14 @@
         "RuntimeReflectionStatic\\local\\type.h": {
             "generated_cpp": "RuntimeReflectionStatic\\local\\type.generated.cpp",
             "generated_h": "RuntimeReflectionStatic\\local\\type.generated.h",
-            "hash": "fed6b0c654341f7547f0daf4e07fb4b8",
+            "hash": "0297dd9f393fefc18245e1042303eee7",
             "index": 19,
             "name": "RuntimeReflectionStatic"
         },
         "RuntimeReflectionStatic\\local\\variant.h": {
             "generated_cpp": "RuntimeReflectionStatic\\local\\variant.generated.cpp",
             "generated_h": "RuntimeReflectionStatic\\local\\variant.generated.h",
-            "hash": "68381db68165c8c9f2af4d551c911bac",
+            "hash": "ed82d35d53079fc1d2e8226c993c5fcf",
             "index": 20,
             "name": "RuntimeReflectionStatic"
         },
@@ -1200,7 +1200,7 @@
         "RuntimeReflection\\Generator.h": {
             "generated_cpp": "RuntimeReflection\\Generator.generated.cpp",
             "generated_h": "RuntimeReflection\\Generator.generated.h",
-            "hash": "fb07777e2bbc462ed20955a83797dc4b",
+            "hash": "d9538c04c4a2165bab8c81d8d8b6fced",
             "index": 2,
             "name": "RuntimeReflection"
         },
@@ -1221,7 +1221,7 @@
         "RuntimeReflection\\Meta.h": {
             "generated_cpp": "RuntimeReflection\\Meta.generated.cpp",
             "generated_h": "RuntimeReflection\\Meta.generated.h",
-            "hash": "d7b3a734009e60033faf8d39beb22640",
+            "hash": "270f7d80283e1289138bb230050fd1b4",
             "index": 5,
             "name": "RuntimeReflection"
         },
@@ -1242,7 +1242,7 @@
         "RuntimeReflection\\Recorder.h": {
             "generated_cpp": "RuntimeReflection\\Recorder.generated.cpp",
             "generated_h": "RuntimeReflection\\Recorder.generated.h",
-            "hash": "3aac66ece69397e36964db7764b7d25b",
+            "hash": "9928ce7f90dbe484cc2d99bf711b7b63",
             "index": 8,
             "name": "RuntimeReflection"
         },
@@ -1270,14 +1270,14 @@
         "RuntimeReflection\\Resources.h": {
             "generated_cpp": "RuntimeReflection\\Resources.generated.cpp",
             "generated_h": "RuntimeReflection\\Resources.generated.h",
-            "hash": "6e1741e02f00e6b6c7435d172b6b1710",
+            "hash": "1195452ac8143ff27cf9928787786581",
             "index": 12,
             "name": "RuntimeReflection"
         },
         "RuntimeReflection\\RuntimeReflection.h": {
             "generated_cpp": "RuntimeReflection\\RuntimeReflection.generated.cpp",
             "generated_h": "RuntimeReflection\\RuntimeReflection.generated.h",
-            "hash": "186d048be1abfa9ea69d3c686fd86d94",
+            "hash": "ffe6fd72667d3c49b1673164187ce1fd",
             "index": 13,
             "name": "RuntimeReflection"
         },
@@ -1326,7 +1326,7 @@
         "Serializer\\ReflectionModule\\Component.h": {
             "generated_cpp": "Serializer\\ReflectionModule\\Component.generated.cpp",
             "generated_h": "Serializer\\ReflectionModule\\Component.generated.h",
-            "hash": "d5216037a078c0f65effa6eb7233900c",
+            "hash": "d5f9c4ca50fc6ceacb467f0c40ce0f6a",
             "index": 1,
             "name": "Serializer"
         },
@@ -1354,7 +1354,7 @@
         "Serializer\\Runtime\\Serializer.h": {
             "generated_cpp": "Serializer\\Runtime\\Serializer.generated.cpp",
             "generated_h": "Serializer\\Runtime\\Serializer.generated.h",
-            "hash": "7067fc2d80abce91058e07035ccc0369",
+            "hash": "06df9f784f594dc302ba3da5e6cb58d7",
             "index": 5,
             "name": "Serializer"
         },
@@ -1375,7 +1375,7 @@
         "Utils\\AST.h": {
             "generated_cpp": "Utils\\AST.generated.cpp",
             "generated_h": "Utils\\AST.generated.h",
-            "hash": "1e965a5bab5a74ca36c746fde25d0ec7",
+            "hash": "73e6f81610cf315b43c53f3a57e6787c",
             "index": 0,
             "name": "Utils"
         },
@@ -1417,7 +1417,7 @@
         "Utils\\Graphics.h": {
             "generated_cpp": "Utils\\Graphics.generated.cpp",
             "generated_h": "Utils\\Graphics.generated.h",
-            "hash": "741e7de656704df42e1a596ca7513f5c",
+            "hash": "f1018db14388f32bba2a4172061c2ba7",
             "index": 6,
             "name": "Utils"
         },

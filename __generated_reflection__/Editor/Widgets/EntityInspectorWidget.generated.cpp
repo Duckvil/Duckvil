@@ -43,7 +43,7 @@ record_meta(_data, _type, _constructor, 3, "Engine", true);
 _destructor = record_destructor<Duckvil::Editor::EntityInspectorWidget>(_data, _type);
 _function = record_function<Duckvil::Editor::EntityInspectorWidget, void, void*>(_data, _type, &Duckvil::Editor::EntityInspectorWidget::InitEditor, "InitEditor");
 _function = record_function<Duckvil::Editor::EntityInspectorWidget, void>(_data, _type, &Duckvil::Editor::EntityInspectorWidget::OnDraw, "OnDraw");
-_function = record_function<Duckvil::Editor::EntityInspectorWidget, void, Duckvil::Editor::EntitySelectedEvent const&>(_data, _type, &Duckvil::Editor::EntityInspectorWidget::OnEvent, "OnEvent");
+_function = record_function<Duckvil::Editor::EntityInspectorWidget, void, EntitySelectedEvent const&>(_data, _type, &Duckvil::Editor::EntityInspectorWidget::OnEvent, "OnEvent");
 _function = record_function<Duckvil::Editor::EntityInspectorWidget, void, HotReloader::SwapEvent const&>(_data, _type, &Duckvil::Editor::EntityInspectorWidget::OnEvent, "OnEvent");
 _function = record_function<Duckvil::Editor::EntityInspectorWidget, void, ProjectManager::OnLoadEvent const&>(_data, _type, &Duckvil::Editor::EntityInspectorWidget::OnEvent, "OnEvent");
 _function = record_function<void*, void*>(_data, _type, &Duckvil::Editor::EntityInspectorWidget::Cast, "Cast");

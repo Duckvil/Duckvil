@@ -38,7 +38,7 @@ record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMe
 _property = record_property<void(Duckvil::Editor::Widget::*)()>(_data, _type, offsetof(Duckvil::Editor::HotDraw, m_fnDraw), "m_fnDraw");
 _property = record_property<void(Duckvil::Editor::Widget::*)()>(_data, _type, offsetof(Duckvil::Editor::HotDraw, m_fnDrawMainMenu), "m_fnDrawMainMenu");
 _property = record_property<void(Duckvil::Editor::Widget::*)(void*)>(_data, _type, offsetof(Duckvil::Editor::HotDraw, m_fnInit), "m_fnInit");
-_property = record_property<Duckvil::Editor::Widget*>(_data, _type, offsetof(Duckvil::Editor::HotDraw, m_pTrackKeeper), "m_pTrackKeeper");
+_property = record_property<Widget*>(_data, _type, offsetof(Duckvil::Editor::HotDraw, m_pTrackKeeper), "m_pTrackKeeper");
 _property = record_property<RuntimeReflection::__duckvil_resource_type_t>(_data, _type, offsetof(Duckvil::Editor::HotDraw, m_typeHandle), "m_typeHandle");
 _namespaces.pop_back();
 _namespaces.push_back("Draw");

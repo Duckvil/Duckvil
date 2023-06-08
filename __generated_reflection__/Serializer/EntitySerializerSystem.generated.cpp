@@ -46,7 +46,7 @@ _function = record_function<Duckvil::Serializer::EntitySerializerSystem, bool>(_
 _function = record_function<Duckvil::Serializer::EntitySerializerSystem, void, double>(_data, _type, &Duckvil::Serializer::EntitySerializerSystem::Update, "Update");
 _function = record_function<Duckvil::Serializer::EntitySerializerSystem, void, std::filesystem::path const&, void(*)(ECS::Entity&)>(_data, _type, &Duckvil::Serializer::EntitySerializerSystem::Load, "Load");
 _function = record_function<Duckvil::Serializer::EntitySerializerSystem, void, std::filesystem::path const&>(_data, _type, &Duckvil::Serializer::EntitySerializerSystem::Save, "Save");
-_function = record_function<Duckvil::Serializer::EntitySerializerSystem, void, Duckvil::EntityCreatedEvent&>(_data, _type, &Duckvil::Serializer::EntitySerializerSystem::OnEvent, "OnEvent");
+_function = record_function<Duckvil::Serializer::EntitySerializerSystem, void, EntityCreatedEvent&>(_data, _type, &Duckvil::Serializer::EntitySerializerSystem::OnEvent, "OnEvent");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

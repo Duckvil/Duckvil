@@ -35,9 +35,9 @@ _recordedTypes.push_back(_type);
 record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "DependencyInjection");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 4);
-_property = record_property<Duckvil::DependencyInjection::Scope>(_data, _type, offsetof(Duckvil::DependencyInjection::Injectable, m_scope), "m_scope");
+_property = record_property<Scope>(_data, _type, offsetof(Duckvil::DependencyInjection::Injectable, m_scope), "m_scope");
 _constructor = record_constructor<Duckvil::DependencyInjection::Injectable>(_data, _type);
-_constructor = record_constructor<Duckvil::DependencyInjection::Injectable, Duckvil::DependencyInjection::Scope>(_data, _type);
+_constructor = record_constructor<Duckvil::DependencyInjection::Injectable, Scope>(_data, _type);
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

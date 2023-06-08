@@ -18,6 +18,12 @@ DUCKVIL_RESOURCE(ntype_t) _ntype;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_type_t> _recordedTypes;
 std::vector<Duckvil::RuntimeReflection::__duckvil_resource_ntype_t> _recordedNTypes;
 std::vector<const char*> _namespaces;
+{
+_namespaces.push_back("Duckvil");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+_namespaces.pop_back();
+}
 return duckvil_recorded_types_create(_data._pMemoryInterface, _data._pAllocator, _recordedTypes, "Engine/runtime_reflection.h", 10);
 }
 #ifdef DUCKVIL_RUNTIME_COMPILE

@@ -19,9 +19,6 @@ _pSerializer->SerializeProperty("m_sModuleName", m_sModuleName); \
 _pSerializer->SerializeProperty("m_pCompiler", m_pCompiler); \
 _pSerializer->SerializeProperty("m_pEventPool", m_pEventPool); \
 _pSerializer->SerializeProperty("m_pRuntimeReflectionEventPool", m_pRuntimeReflectionEventPool); \
-_pSerializer->SerializeProperty("m_pReflectionGenerator", m_pReflectionGenerator); \
-_pSerializer->SerializeProperty("m_pAST_FTable", m_pAST_FTable); \
-_pSerializer->SerializeProperty("m_pLexerFTable", m_pLexerFTable); \
 _pSerializer->SerializeProperty("m_pThread", m_pThread); \
 _pSerializer->SerializeProperty("m_pThreadData", m_pThreadData); \
 _pSerializer->SerializeProperty("m_aLoadedModules", m_aLoadedModules); \

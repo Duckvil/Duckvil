@@ -38,7 +38,7 @@ record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMe
 record_inheritance<ISerializer>(_data, _type, __protection::__protection_public);
 _constructor = record_constructor<Duckvil::RuntimeSerializer::Serializer>(_data, _type);
 _destructor = record_destructor<Duckvil::RuntimeSerializer::Serializer>(_data, _type);
-_function = record_function<Duckvil::RuntimeSerializer::Serializer, void, void*, RuntimeReflection::__function<void (HotReloader::HotObject::*)(RuntimeSerializer::ISerializer *)>*>(_data, _type, &Duckvil::RuntimeSerializer::Serializer::Serialize, "Serialize");
+_function = record_function<Duckvil::RuntimeSerializer::Serializer, void, void*, Serializer::RuntimeReflectionSerializeFunction>(_data, _type, &Duckvil::RuntimeSerializer::Serializer::Serialize, "Serialize");
 _function = record_function<Duckvil::RuntimeSerializer::Serializer, void, void*, void*>(_data, _type, &Duckvil::RuntimeSerializer::Serializer::Serialize, "Serialize");
 _function = record_function<Duckvil::RuntimeSerializer::Serializer, void>(_data, _type, &Duckvil::RuntimeSerializer::Serializer::Clear, "Clear");
 _function = record_function<Duckvil::RuntimeSerializer::Serializer, void, uint32_t>(_data, _type, &Duckvil::RuntimeSerializer::Serializer::Clear, "Clear");

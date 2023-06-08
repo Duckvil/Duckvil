@@ -37,8 +37,8 @@ record_namespace(_data, _type, "PlugNPlay");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 0);
 _constructor = record_constructor<Duckvil::PlugNPlay::AutoLoader, std::filesystem::path const&>(_data, _type);
 _destructor = record_destructor<Duckvil::PlugNPlay::AutoLoader>(_data, _type);
-_function = record_function<Duckvil::PlugNPlay::AutoLoader, void, Memory::ftable*, Memory::free_list_allocator*, Duckvil::PlugNPlay::__module_information**, uint32_t*>(_data, _type, &Duckvil::PlugNPlay::AutoLoader::LoadAll, "LoadAll");
-_function = record_function<Duckvil::PlugNPlay::AutoLoader, void, Memory::ftable*, Memory::free_list_allocator*, Memory::Vector<__module_information>*>(_data, _type, &Duckvil::PlugNPlay::AutoLoader::LoadAll, "LoadAll");
+_function = record_function<Duckvil::PlugNPlay::AutoLoader, void, Memory::ftable const*, Memory::free_list_allocator*, __module_information**, uint32_t*>(_data, _type, &Duckvil::PlugNPlay::AutoLoader::LoadAll, "LoadAll");
+_function = record_function<Duckvil::PlugNPlay::AutoLoader, void, Memory::ftable const*, Memory::free_list_allocator*, Memory::Vector<__module_information>*>(_data, _type, &Duckvil::PlugNPlay::AutoLoader::LoadAll, "LoadAll");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

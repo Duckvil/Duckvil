@@ -26,6 +26,10 @@ _recordedNTypes.push_back(_ntype);
 _namespaces.push_back("Editor");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
+_namespaces.push_back("EntityInspectorWidget");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+_namespaces.pop_back();
 _namespaces.pop_back();
 }
 _namespaces.push_back("NativeScriptBase");

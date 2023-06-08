@@ -36,9 +36,9 @@ record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Memory");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
 _constructor = record_constructor<Duckvil::Memory::Container>(_data, _type);
-_constructor = record_constructor<Duckvil::Memory::Container, Duckvil::Memory::ftable*, Duckvil::Memory::allocator*>(_data, _type);
-_property = record_property<Duckvil::Memory::ftable*>(_data, _type, offsetof(Duckvil::Memory::Container, m_pMemoryInterface), "m_pMemoryInterface");
-_property = record_property<Duckvil::Memory::allocator*>(_data, _type, offsetof(Duckvil::Memory::Container, m_pAllocator), "m_pAllocator");
+_constructor = record_constructor<Duckvil::Memory::Container, ftable const*, allocator*>(_data, _type);
+_property = record_property<ftable const*>(_data, _type, offsetof(Duckvil::Memory::Container, m_pMemoryInterface), "m_pMemoryInterface");
+_property = record_property<allocator*>(_data, _type, offsetof(Duckvil::Memory::Container, m_pAllocator), "m_pAllocator");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }

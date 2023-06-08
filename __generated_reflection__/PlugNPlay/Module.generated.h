@@ -2,20 +2,6 @@
 
 #include "RuntimeReflection/Markers.h"
 
-#define PlugNPlay_Module_h_0_REFLECTION_MODULE_RUNTIME_COMPILER \
-public: \
-void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
-{\
-}
-#define PlugNPlay_Module_h_0_REFLECTION_MODULE_RUNTIME_COMPILER \
-public: \
-void Serialize(Duckvil::RuntimeSerializer::ISerializer* _pSerializer) \
-{\
-}
-#define PlugNPlay_Module_h_0_GENERATED_BODY \
-PlugNPlay_Module_h_0_REFLECTION_MODULE_RUNTIME_COMPILER \
-PlugNPlay_Module_h_0_REFLECTION_MODULE_RUNTIME_COMPILER
-
 #undef DUCKVIL_CURRENT_FILE_ID
 #define DUCKVIL_CURRENT_FILE_ID PlugNPlay_Module_h
 

@@ -2,6 +2,7 @@
 #include "RuntimeReflection/Recorder.h"
 #include "RuntimeReflection/GeneratedMeta.h"
 
+#include "Network/NetworkSystem.h"
 
 DUCKVIL_RUNTIME_REFLECTION_RECORD(4)
 {
@@ -32,6 +33,14 @@ _enum = record_enum<Duckvil::Network::CommonCommands>(_data, _ntype, "CommonComm
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Network::CommonCommands::Client_Accepted, "Client_Accepted");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Network::CommonCommands::Client_AssignID, "Client_AssignID");
 _enumElement = record_enum_element(_data, _ntype, _enum, Duckvil::Network::CommonCommands::Client_RegisterWithServer, "Client_RegisterWithServer");
+_namespaces.push_back("IConnection");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+_namespaces.pop_back();
+_namespaces.push_back("NetworkSystem");
+_ntype = record_type(_data, _namespaces);
+_recordedNTypes.push_back(_ntype);
+_namespaces.pop_back();
 _namespaces.push_back("IServer");
 _ntype = record_type(_data, _namespaces);
 _recordedNTypes.push_back(_ntype);
@@ -45,8 +54,9 @@ _destructor = record_destructor<Duckvil::Network::IServer>(_data, _type);
 _function = record_function<Duckvil::Network::IServer, bool>(_data, _type, &Duckvil::Network::IServer::Start, "Start");
 _function = record_function<Duckvil::Network::IServer, void>(_data, _type, &Duckvil::Network::IServer::Stop, "Stop");
 _function = record_function<Duckvil::Network::IServer, void, size_t, bool>(_data, _type, &Duckvil::Network::IServer::Update, "Update");
-_function = record_function<Duckvil::Network::IServer, void, std::shared_ptr<IConnection>, Duckvil::Network::Message const&>(_data, _type, &Duckvil::Network::IServer::MessageClient, "MessageClient");
-_function = record_function<Duckvil::Network::IServer, void, Duckvil::Network::Message const&, std::shared_ptr<IConnection>>(_data, _type, &Duckvil::Network::IServer::MessageAllClients, "MessageAllClients");
+_function = record_function<Duckvil::Network::IServer, void, NetworkSystem*>(_data, _type, &Duckvil::Network::IServer::AddSystem, "AddSystem");
+_function = record_function<Duckvil::Network::IServer, void, std::shared_ptr<IConnection>, Message const&>(_data, _type, &Duckvil::Network::IServer::MessageClient, "MessageClient");
+_function = record_function<Duckvil::Network::IServer, void, Message const&, std::shared_ptr<IConnection>>(_data, _type, &Duckvil::Network::IServer::MessageAllClients, "MessageAllClients");
 _function = record_function<Duckvil::Network::IServer, void, std::shared_ptr<IConnection>>(_data, _type, &Duckvil::Network::IServer::OnClientValidated, "OnClientValidated");
 _namespaces.pop_back();
 _namespaces.pop_back();
