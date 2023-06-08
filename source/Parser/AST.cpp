@@ -2467,10 +2467,13 @@ namespace Duckvil { namespace Parser {
 
             return nullptr;
         }
-
-        if(!cppast::is_definition(_entity))
+        else if (_pAST->m_pPendingScope == nullptr && _entity.name().starts_with("__duckvil_struct_"))
         {
             delete _pScope;
+
+            _pAST->m_pPendingScope = new __ast_entity_structure(__ast_structure_type::__ast_structure_type_struct);
+
+            process_attrs(_entity.attributes(), _pAST->m_pPendingScope);
 
             return nullptr;
         }
