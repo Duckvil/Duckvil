@@ -131,7 +131,7 @@ void generate_plugin_info(std::ofstream& _file, const uint32_t& _uiIndex, const 
     // _file << "DUCKVIL_EXPORT const char* DUCKVIL_MODULE_NAME = \"duckvil_" << _moduleName << "_module\";\n";
 }
 
-nlohmann::json process_file(const Duckvil::Parser::__ast_ftable* _pAST_FTable, const Duckvil::Parser::__lexer_ftable* _pLexerFTable, Duckvil::Parser::__lexer_data* _pLexerData, const Duckvil::RuntimeReflection::__generator_ftable* _pGeneratorFTable, const Duckvil::RuntimeReflection::__ftable* _ftableReflection, Duckvil::RuntimeReflection::__data* _dataReflection, const std::filesystem::path& _cwd, const std::filesystem::path& _path, const std::filesystem::path& _currentModule, uint32_t _index, bool _bGenerate = false)
+nlohmann::json process_file(const Duckvil::Parser::__ast_ftable* _pAST_FTable, const Duckvil::Parser::__lexer_ftable* _pLexerFTable, Duckvil::Parser::__lexer_data* _pLexerData, const Duckvil::RuntimeReflection::__generator_ftable* _pGeneratorFTable, const Duckvil::RuntimeReflection::__ftable* _ftableReflection, Duckvil::RuntimeReflection::__data* _dataReflection, const std::filesystem::path& _cwd, const std::filesystem::path& _path, const std::filesystem::path& _currentModule, uint32_t _index)
 {
     if(_path.extension() != ".h")
     {
@@ -228,10 +228,7 @@ nlohmann::json process_file(const Duckvil::Parser::__ast_ftable* _pAST_FTable, c
 
     _userData.m_path = _relativePath;
 
-    if(_bGenerate)
-    {
-        _pGeneratorFTable->generate(&_generatorData, _source.string().c_str(), _header.string().c_str(), _astData, &generate, &_userData, _ftableReflection, _dataReflection);
-    }
+    _pGeneratorFTable->generate(&_generatorData, _source.string().c_str(), _header.string().c_str(), _astData, &generate, &_userData, _ftableReflection, _dataReflection);
 
     for(auto& _module : _aModules)
     {
@@ -274,65 +271,225 @@ Duckvil::Utils::CommandArgumentsParser::Descriptor g_pDescriptors[] =
     Duckvil::Utils::CommandArgumentsParser::Descriptor(Options::SINGLE_MODULE, "single")
 };
 
-bool process_single_file(const Duckvil::Utils::CommandArgumentsParser& _cmdParser, const std::filesystem::path& _CWD, const Duckvil::Parser::__ast_ftable& _ftableAST, const Duckvil::Parser::__lexer_ftable& _ftableLexer, Duckvil::Parser::__lexer_data& _dataLexer, const Duckvil::RuntimeReflection::__generator_ftable& _ftableGenerator, const Duckvil::RuntimeReflection::__ftable& _ftableRuntimeReflection, Duckvil::RuntimeReflection::__data* _dataReflection)
+enum process_result
 {
-    std::filesystem::path _file; // _argumentsParser[Options::FILE].m_sResult;
-    std::filesystem::path _cwd = _CWD;
-    std::filesystem::path _currentModule;
+    not_found,
+    updated,
+    nothing
+};
 
-    if (_cmdParser[Options::IS_RELATIVE].m_bIsSet)
+process_result process_single_file(
+    const Duckvil::Utils::CommandArgumentsParser& _cmdParser,
+    const std::filesystem::path& _CWD,
+    const Duckvil::Parser::__ast_ftable& _ftableAST,
+    const Duckvil::Parser::__lexer_ftable& _ftableLexer,
+    Duckvil::Parser::__lexer_data& _dataLexer,
+    const Duckvil::RuntimeReflection::__generator_ftable& _ftableGenerator,
+    const Duckvil::RuntimeReflection::__ftable& _ftableRuntimeReflection,
+    Duckvil::RuntimeReflection::__data* _dataReflection,
+    nlohmann::json& _dbJ,
+    const std::filesystem::path& _relativeFilePath,
+    std::filesystem::path& _currentModule,
+    nlohmann::json* _pOutValue,
+    nlohmann::json::iterator* a,
+    bool _moduleChanged = false,
+    uint32_t _uiIndex = -1)
+{
+    *a = _dbJ["files2"].find(_relativeFilePath.string());
+    const auto& _currentFileHash = md5(load_file_as_string((_CWD / "include" / _relativeFilePath).string()));
+
+    if (_relativeFilePath.has_parent_path())
     {
-        _file = _cmdParser[Options::FILE].m_sResult;
-    }
-    else if (_cmdParser[Options::IS_ABSOLUTE].m_bIsSet)
-    {
-        auto _x = _cmdParser[Options::FILE].m_sResult;
-        _file = std::filesystem::relative(_x, _cwd / "include");
-    }
-    else
-    {
-        // Print message if file is relative or absolute
+        _currentModule = _relativeFilePath;
 
-        return 0;
-    }
-
-    nlohmann::json _dbJ;
-    const std::filesystem::path& _dbPath = _CWD / "__generated_reflection__" / "reflection_db.json";
-    std::ifstream _iJson(_dbPath);
-
-    _iJson >> _dbJ;
-
-    _iJson.close();
-
-    auto _f = _dbJ["files2"].find(_file.string());
-    const auto& _fileMD5 = md5(load_file_as_string((_cwd / "include" / _file).string()));
-
-    if (_f == _dbJ["files2"].end())
-    {
-        auto _lastIndex = _dbJ["files2"].back()["index"].get<uint32_t>();
-        auto _jFile = process_file(&_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _dataReflection, _CWD, _cwd / "include" / _file, _currentModule, _lastIndex + 1, true);
-
-        _jFile["hash"] = _fileMD5;
-
-        _dbJ["files2"].push_back(nlohmann::json::object_t::value_type(_file.string(), _jFile));
-    }
-    else
-    {
-        auto _lastIndex = _f->at("index").get<uint32_t>();
-        auto _jFile = process_file(&_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _dataReflection, _CWD, _cwd / "include" / _file, _f->at("name").get<std::string>(), _lastIndex, _f->at("hash").get<std::string>() != _fileMD5 || _cmdParser[Options::FORCE].m_bIsSet);
-
-        _jFile["hash"] = _fileMD5;
-
-        _f->update(_jFile);
+        while (_currentModule.has_parent_path())
+        {
+            _currentModule = _currentModule.parent_path();
+        }
     }
 
-    std::ofstream _oJson(_dbPath);
+    if (*a == _dbJ["files2"].end())
+    {
+        uint32_t _biggestIndex = 0;
+        bool _wasOk = false;
+        auto _x = std::find_if(_dbJ["files2"].rbegin(), _dbJ["files2"].rend(), [_currentModule, &_wasOk, &_biggestIndex](const nlohmann::json& _x)
+            {
+                auto _itName = _x.find("name");
+                auto _itIndex = _x.find("index");
+                auto _vName = _itName.value();
+                auto _vIndex = _itIndex.value();
 
-    _oJson << std::setw(4) << _dbJ << std::endl;
+                if (_wasOk && _vName != _currentModule.string())
+                {
+                    return true;
+                }
 
-    _oJson.close();
+                if (_vName == _currentModule.string())
+                {
+                    _wasOk = true;
 
-    return true;
+                    if (_biggestIndex < _vIndex)
+                    {
+                        _biggestIndex = _vIndex;
+                    }
+                }
+
+                return false;
+            });
+
+        uint32_t _lastIndex = -1;
+
+        if (_x == _dbJ["files2"].rend())
+        {
+            _lastIndex = _uiIndex == -1 ? 0 : _uiIndex;
+        }
+        else
+        {
+            _lastIndex = _uiIndex == -1 ? _biggestIndex + 1 : _uiIndex;
+        }
+
+        *_pOutValue = process_file(&_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _dataReflection, _CWD, _CWD / "include" / _relativeFilePath, _currentModule, _lastIndex);
+
+        (*_pOutValue)["hash"] = _currentFileHash;
+
+        if (_uiIndex == -1)
+        {
+            _dbJ["files2"].push_back(nlohmann::json::object_t::value_type(_relativeFilePath.string(), *_pOutValue));
+        }
+
+        return not_found;
+    }
+    else if (_cmdParser[Options::FORCE].m_bIsSet || (*a)->at("hash").get<std::string>() != _currentFileHash || _moduleChanged)
+    {
+        auto _lastIndex = _uiIndex == -1 ? (*a)->at("index").get<uint32_t>() : _uiIndex;
+        *_pOutValue = process_file(&_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _dataReflection, _CWD, _CWD / "include" / _relativeFilePath, (*a)->at("name").get<std::string>(), _lastIndex);
+
+        (*_pOutValue)["hash"] = _currentFileHash;
+        
+        if (_uiIndex != -1)
+        {
+            (*a)->update(*_pOutValue);
+        }
+
+        return updated;
+    }
+
+    return nothing;
+}
+
+bool process_single_file(
+    const Duckvil::Utils::CommandArgumentsParser& _cmdParser,
+    const std::filesystem::path& _CWD,
+    const Duckvil::Parser::__ast_ftable& _ftableAST,
+    const Duckvil::Parser::__lexer_ftable& _ftableLexer,
+    Duckvil::Parser::__lexer_data& _dataLexer,
+    const Duckvil::RuntimeReflection::__generator_ftable& _ftableGenerator,
+    const Duckvil::RuntimeReflection::__ftable& _ftableRuntimeReflection,
+    Duckvil::RuntimeReflection::__data* _dataReflection,
+    const std::filesystem::path& _file,
+    nlohmann::json& _dbJ,
+    nlohmann::json& _dbNewJ,
+    std::filesystem::path& _currentModule,
+    std::filesystem::path& _lastModule,
+    std::vector<std::string>& _modulesChanged,
+    bool* _moduleChanged,
+    bool _isSingleModule,
+    uint32_t& _uiIndex)
+{
+    if (!_file.has_extension() || _file.extension() != ".h")
+    {
+        return false;
+    }
+
+    const auto& _relativeFilePath = std::filesystem::relative(_file, std::filesystem::path(_CWD) / "include");
+
+    if (_relativeFilePath.has_parent_path())
+    {
+        _currentModule = _relativeFilePath;
+
+        while (_currentModule.has_parent_path())
+        {
+            _currentModule = _currentModule.parent_path();
+        }
+    }
+
+    if (_lastModule == "")
+    {
+        _lastModule = _currentModule;
+    }
+
+    if (_lastModule != _currentModule && !_isSingleModule)
+    {
+        if (*_moduleChanged)
+        {
+            std::ofstream _file(std::filesystem::path(_CWD) / "__generated_reflection__" / _lastModule / "plugin_info.cpp");
+
+            generate_plugin_info(_file, _uiIndex, _lastModule);
+
+            _file.close();
+        }
+
+        *_moduleChanged = false;
+
+        _lastModule = _currentModule;
+        _uiIndex = 0;
+    }
+
+    for (auto _it = _modulesChanged.begin(); _it != _modulesChanged.end(); ++_it)
+    {
+        if (_currentModule.string() == *_it)
+        {
+            *_moduleChanged = true;
+
+            _modulesChanged.erase(_it);
+
+            break;
+        }
+    }
+
+    nlohmann::json _outJ;
+    nlohmann::json::iterator _keyJ;
+
+    auto _res = process_single_file(
+        _cmdParser,
+        _CWD,
+        _ftableAST,
+        _ftableLexer,
+        _dataLexer,
+        _ftableGenerator,
+        _ftableRuntimeReflection,
+        _dataReflection,
+        _dbJ,
+        _relativeFilePath,
+        _currentModule,
+        &_outJ,
+        &_keyJ,
+        *_moduleChanged,
+        _uiIndex
+    );
+
+    switch (_res)
+    {
+    case not_found:
+    {
+        _dbNewJ.push_back(nlohmann::json::object_t::value_type(_relativeFilePath.string(), _outJ));
+
+        *_moduleChanged = true;
+    }
+    break;
+    case updated:
+    {
+        _dbNewJ.push_back(nlohmann::json::object_t::value_type(_keyJ.key(), _keyJ.value()));
+    }
+    break;
+    case nothing:
+    {
+        _dbNewJ.push_back(nlohmann::json::object_t::value_type(_keyJ.key(), _keyJ.value()));
+    }
+    break;
+    }
+
+    _uiIndex++;
 }
 
 bool process_multiple_files(const Duckvil::Utils::CommandArgumentsParser& _cmdParser, const std::filesystem::path& _CWD, const Duckvil::Parser::__ast_ftable& _ftableAST, const Duckvil::Parser::__lexer_ftable& _ftableLexer, Duckvil::Parser::__lexer_data& _dataLexer, const Duckvil::RuntimeReflection::__generator_ftable& _ftableGenerator, const Duckvil::RuntimeReflection::__ftable& _ftableRuntimeReflection, Duckvil::RuntimeReflection::__data* _dataReflection)
@@ -414,93 +571,26 @@ bool process_multiple_files(const Duckvil::Utils::CommandArgumentsParser& _cmdPa
 
     for (auto& _path : std::filesystem::recursive_directory_iterator(std::filesystem::path(_CWD) / "include"))
     {
-        if (!_path.path().has_extension() || _path.path().extension() != ".h")
-        {
-            continue;
-        }
-
-        const auto& _a = std::filesystem::relative(_path.path(), std::filesystem::path(_CWD) / "include");
-        const auto& _fileMD5 = md5(load_file_as_string(_path.path().string()));
-        auto _f = _dbJ["files2"].find(_a.string());
-
-        if (_a.has_parent_path())
-        {
-            _currentModule = _a;
-
-            while (_currentModule.has_parent_path())
-            {
-                _currentModule = _currentModule.parent_path();
-            }
-        }
-
-        if (_lastModule == "")
-        {
-            _lastModule = _currentModule;
-        }
-
-        if (_lastModule != _currentModule && !_isSingleModule)
-        {
-            if (_moduleChanged)
-            {
-                std::ofstream _file(std::filesystem::path(_CWD) / "__generated_reflection__" / _lastModule / "plugin_info.cpp");
-
-                generate_plugin_info(_file, _index, _lastModule);
-
-                _file.close();
-            }
-
-            _moduleChanged = false;
-
-            _lastModule = _currentModule;
-            _index = 0;
-        }
-
-        for (auto _it = _modulesChanged.begin(); _it != _modulesChanged.end(); ++_it)
-        {
-            if (_currentModule.string() == *_it)
-            {
-                _moduleChanged = true;
-
-                _modulesChanged.erase(_it);
-
-                break;
-            }
-        }
-
-        if (_f == _dbJ["files2"].end())
-        {
-            // Not found
-            // Need to be generated and added
-
-            auto _jFile = process_file(&_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _dataReflection, _CWD, _path, _currentModule, _index, true);
-
-            _jFile["hash"] = _fileMD5;
-
-            _dbNewJ.push_back(nlohmann::json::object_t::value_type(_a.string(), _jFile));
-
-            _moduleChanged = true;
-        }
-        else if (_cmdParser[Options::FORCE].m_bIsSet || _f->at("hash").get<std::string>() != _fileMD5 || _moduleChanged)
-        {
-            // Found but need to be generated and updated or forced
-
-            auto _jFile = process_file(&_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _dataReflection, _CWD, _path, _currentModule, _index, true);
-
-            _jFile["hash"] = _fileMD5;
-
-            _f->update(_jFile);
-
-            _dbNewJ.push_back(nlohmann::json::object_t::value_type(_f.key(), _f.value()));
-        }
-        else
-        {
-            _dbNewJ.push_back(nlohmann::json::object_t::value_type(_f.key(), _f.value()));
-        }
-
-        _index++;
+        process_single_file(
+            _cmdParser,
+            _CWD,
+            _ftableAST,
+            _ftableLexer,
+            _dataLexer,
+            _ftableGenerator,
+            _ftableRuntimeReflection,
+            _dataReflection,
+            _path.path(),
+            _dbJ,
+            _dbNewJ,
+            _currentModule,
+            _lastModule,
+            _modulesChanged,
+            &_moduleChanged,
+            _isSingleModule,
+            _index
+        );
     }
-
-    _dbJ["files2"] = _dbNewJ;
 
     if (_lastModule.has_extension() || _isSingleModule)
     {
@@ -512,6 +602,8 @@ bool process_multiple_files(const Duckvil::Utils::CommandArgumentsParser& _cmdPa
     generate_plugin_info(_file, _index, _lastModule);
 
     _file.close();
+
+    _dbJ["files2"] = _dbNewJ;
 
     std::ofstream _oJson(_dbPath);
 
@@ -689,7 +781,58 @@ int main(int argc, char* argv[])
 
     if(_cmdParser[Options::FILE].m_bIsSet)
     {
-        process_single_file(_cmdParser, _CWD, *_ast, *_lexerFtable, _lexerData, *_generatorFtable, *_reflectionFTable, _runtimeReflectionData);
+        std::filesystem::path _relativeFilePath;
+
+        if (_cmdParser[Options::IS_RELATIVE].m_bIsSet)
+        {
+            _relativeFilePath = _cmdParser[Options::FILE].m_sResult;
+        }
+        else if (_cmdParser[Options::IS_ABSOLUTE].m_bIsSet)
+        {
+            auto _x = _cmdParser[Options::FILE].m_sResult;
+
+            _relativeFilePath = std::filesystem::relative(_x, std::filesystem::path(_CWD) / "include");
+        }
+        else
+        {
+            // Print message if file is relative or absolute
+
+            return 0;
+        }
+
+        nlohmann::json _dbJ;
+        const std::filesystem::path& _dbPath = std::filesystem::path(_CWD) / "__generated_reflection__" / "reflection_db.json";
+        std::ifstream _iJson(_dbPath);
+
+        _iJson >> _dbJ;
+
+        _iJson.close();
+
+        nlohmann::json _outJ;
+        nlohmann::json::iterator _itOutJ;
+        std::filesystem::path _a;
+
+        process_single_file(
+            _cmdParser,
+            _CWD,
+            *_ast,
+            *_lexerFtable,
+            _lexerData,
+            *_generatorFtable,
+            *_reflectionFTable,
+            _runtimeReflectionData,
+            _dbJ,
+            _relativeFilePath,
+            _a,
+            &_outJ,
+            &_itOutJ
+        );
+
+        std::ofstream _oJson(_dbPath);
+
+        _oJson << std::setw(4) << _dbJ << std::endl;
+
+        _oJson.close();
     }
     else
     {
