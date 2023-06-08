@@ -60,7 +60,7 @@ record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "RuntimeReflection");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 2);
 _property = record_property<__generator_data*(*)(Memory::ftable*,Memory::free_list_allocator*)>(_data, _type, offsetof(Duckvil::RuntimeReflection::__generator_ftable, init), "init");
-_property = record_property<void(*)(__generator_data*,char const[256],char const[256],Parser::__ast const&,void(*)(std::ofstream&,std::ofstream&,void*,Duckvil::RuntimeReflection::__ftable const*),void*,Duckvil::RuntimeReflection::__ftable const*)>(_data, _type, offsetof(Duckvil::RuntimeReflection::__generator_ftable, generate), "generate");
+_property = record_property<void(*)(__generator_data*,char const[256],char const[256],Parser::__ast const&,void(*)(std::ofstream&,std::ofstream&,void*,Duckvil::RuntimeReflection::__ftable const*,Duckvil::RuntimeReflection::__data*),void*,Duckvil::RuntimeReflection::__ftable const*,Duckvil::RuntimeReflection::__data*)>(_data, _type, offsetof(Duckvil::RuntimeReflection::__generator_ftable, generate), "generate");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
