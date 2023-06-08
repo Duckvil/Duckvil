@@ -663,7 +663,23 @@ namespace Duckvil { namespace RuntimeReflection {
         return _data;
     }
 
-    void generate(__generator_data* _pData, const char _sSourcePath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const char _sHeaderPath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const Parser::__ast& _ast, void (*_fnGenerate)(std::ofstream& _hFile, std::ofstream& _sFile, void* _pUserData), void* _pUserData)
+    void add_includes(std::ofstream& _sFile, const Parser::__ast_entity* _pScope)
+    {
+        for (const auto& _m : _pScope->m_aMeta)
+        {
+            if (_m.m_sKey == "Include")
+            {
+                _sFile << "#include " << _m.m_sValue << "\n";
+            }
+        }
+
+        for (const auto& _scope : _pScope->m_aScopes)
+        {
+            add_includes(_sFile, _scope);
+        }
+    }
+
+    void generate(__generator_data* _pData, const char _sSourcePath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const char _sHeaderPath[DUCKVIL_RUNTIME_REFLECTION_GENERATOR_PATH_LENGTH_MAX], const Parser::__ast& _ast, void (*_fnGenerate)(std::ofstream& _hFile, std::ofstream& _sFile, void* _pUserData, const Duckvil::RuntimeReflection::__ftable* _ftableReflection), void* _pUserData, const Duckvil::RuntimeReflection::__ftable* _ftableReflection)
     {
         if(!std::filesystem::exists(std::filesystem::path(_sHeaderPath).parent_path()))
         {
@@ -677,6 +693,8 @@ namespace Duckvil { namespace RuntimeReflection {
         _sFile << "#include \"" << _pData->m_sInclude << "\"\n";
         _sFile << "#include \"RuntimeReflection/Recorder.h\"\n";
         _sFile << "#include \"RuntimeReflection/GeneratedMeta.h\"\n\n";
+
+        add_includes(_sFile, &_ast.m_main);
 
         {
             std::ofstream _hFile(_sHeaderPath);
