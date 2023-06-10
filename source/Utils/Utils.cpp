@@ -5,7 +5,7 @@
 
 namespace Duckvil { namespace Utils {
 
-    void allocate(string* _pString, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, std::size_t _ullLength)
+    void allocate(string* _pString, const Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, std::size_t _ullLength)
     {
         if(_pMemory == nullptr || _pAllocator == nullptr)
         {

@@ -107,8 +107,8 @@ namespace Duckvil {
         logger_ftable _loggerFTable;
         logger_data _loggerData;
 
-        RuntimeReflection::__ftable* m_pRuntimeReflection;
-        RuntimeReflection::__recorder_ftable* m_pRuntimeReflectionRecorder;
+        const RuntimeReflection::__ftable* m_pRuntimeReflection;
+        const RuntimeReflection::__recorder_ftable* m_pRuntimeReflectionRecorder;
         RuntimeReflection::__data* m_pRuntimeReflectionData;
 
         // duckvil_recorderd_types* m_aRecordedTypes;

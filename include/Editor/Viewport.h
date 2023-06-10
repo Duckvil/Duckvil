@@ -50,7 +50,7 @@ namespace Duckvil { namespace Editor {
 
     static void recreate_viewport(
         viewport* _pViewport,
-        Memory::ftable* _pMemory,
+        const Memory::ftable* _pMemory,
         Memory::free_list_allocator* _pAllocator,
         Graphics::Renderer::renderer_ftable* _pRenderer,
         Graphics::Renderer::renderer_data* _pRendererData,
@@ -145,7 +145,7 @@ namespace Duckvil { namespace Editor {
 
     static void setup_viewport(
         viewport* _pViewport,
-        Memory::ftable* _pMemory,
+        const Memory::ftable* _pMemory,
         Memory::free_list_allocator* _pAllocator,
         Graphics::Renderer::renderer_ftable* _pRenderer,
         Graphics::Renderer::renderer_data* _pRendererData,
@@ -214,7 +214,7 @@ namespace Duckvil { namespace Editor {
 
     static void render_viewport(
         viewport* _pViewport,
-        Memory::ftable* _pMemory,
+        const Memory::ftable* _pMemory,
         Memory::free_list_allocator* _pAllocator,
         Graphics::Renderer::renderer_ftable* _pRenderer,
         Graphics::Renderer::renderer_data* _pRendererData)

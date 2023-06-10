@@ -13,7 +13,7 @@ namespace Duckvil { namespace Utils {
 
     struct string;
 
-    void allocate(string* _pString, Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, std::size_t _ullLength);
+    void allocate(string* _pString, const Memory::ftable* _pMemory, Memory::free_list_allocator* _pAllocator, std::size_t _ullLength);
     void allocate(string* _pString, std::size_t _ullLength);
     void allocate(string* _pString, const string& _string);
 
@@ -29,7 +29,7 @@ namespace Duckvil { namespace Utils {
             m_pAllocator = nullptr;
         }
 
-        string(const string& _string, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
+        string(const string& _string, const Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
             m_ullLength(_string.m_ullLength)
         {
             allocate(this, _pMemory, _pAllocator, _string.m_ullLength);
@@ -48,49 +48,49 @@ namespace Duckvil { namespace Utils {
             _string.m_ullLength = 0;
         }
 
-        string(std::size_t _ullLength, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0)
+        string(std::size_t _ullLength, const Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0)
         {
             allocate(this, _pMemory, _pAllocator, _ullLength);
         }
 
-        string(const char* _sText, std::size_t _ullLength, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
+        string(const char* _sText, std::size_t _ullLength, const Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
             string(_ullLength, _pMemory, _pAllocator)
         {
             memcpy(m_sText, _sText, _ullLength);
         }
 
-        string(char* _sText, std::size_t _ullLength, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
+        string(char* _sText, std::size_t _ullLength, const Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
             string(static_cast<const char*>(_sText), _ullLength, _pMemory, _pAllocator)
         {
 
         }
 
-        string(char* _sText, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
+        string(char* _sText, const Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
             string(static_cast<const char*>(_sText), strlen(_sText) + 1, _pMemory, _pAllocator)
         {
 
         }
 
-        string(const char* _sText, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
+        string(const char* _sText, const Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
             string(_sText, strlen(_sText) + 1, _pMemory, _pAllocator)
         {
 
         }
 
         template <std::size_t Length>
-        string(const char (&_sText)[Length], Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
+        string(const char (&_sText)[Length], const Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
             string(_sText, Length, _pMemory, _pAllocator)
         {
 
         }
 
-        string(const std::string& _sText, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
+        string(const std::string& _sText, const Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
             string(_sText.c_str(), _sText.size() + 1, _pMemory, _pAllocator)
         {
 
         }
 
-        string(const std::filesystem::path& _sText, Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
+        string(const std::filesystem::path& _sText, const Memory::ftable* _pMemory = 0, Memory::free_list_allocator* _pAllocator = 0) :
             string(_sText.string(), _pMemory, _pAllocator)
         {
 
@@ -117,7 +117,7 @@ namespace Duckvil { namespace Utils {
 
         char* m_sText;
         std::size_t m_ullLength;
-        Memory::ftable* m_pMemory = 0;
+        const Memory::ftable* m_pMemory = 0;
         Memory::free_list_allocator* m_pAllocator = 0;
 
         template <std::size_t Length>

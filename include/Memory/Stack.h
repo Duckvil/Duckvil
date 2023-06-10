@@ -71,7 +71,7 @@ namespace Duckvil { namespace Memory {
 
         }
 
-        Stack(ftable* _pMemoryInterface, linear_allocator* _pAllocator, std::size_t _ullCount) :
+        Stack(const ftable* _pMemoryInterface, linear_allocator* _pAllocator, std::size_t _ullCount) :
             SContainer(_pMemoryInterface, _pAllocator)
         {
             this->m_pMemoryInterface = _pMemoryInterface;
@@ -80,7 +80,7 @@ namespace Duckvil { namespace Memory {
             this->m_pContainer = this->m_pMemoryInterface->m_fnLinearAllocateFixedStackAllocator(_pAllocator, _ullCount * sizeof(Type), sizeof(Type));
         }
 
-        Stack(ftable* _pMemoryInterface, free_list_allocator* _pAllocator, std::size_t _ullCount) :
+        Stack(const ftable* _pMemoryInterface, free_list_allocator* _pAllocator, std::size_t _ullCount) :
             SContainer(_pMemoryInterface, _pAllocator)
         {
             this->m_fnCopy = &free_list_copy;
