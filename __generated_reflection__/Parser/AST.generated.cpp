@@ -395,7 +395,6 @@ record_namespace(_data, _type, "Duckvil");
 record_namespace(_data, _type, "Parser");
 record_meta(_data, _type, Duckvil::RuntimeReflection::GeneratedMeta::GeneratedMeta_RecorderID, 0);
 _property = record_property<void(*)(__ast*,__lexer_ftable const*,__lexer_data&)>(_data, _type, offsetof(Duckvil::Parser::__ast_ftable, ast_generate), "ast_generate");
-_property = record_property<void(*)(__ast const&)>(_data, _type, offsetof(Duckvil::Parser::__ast_ftable, ast_print), "ast_print");
 _namespaces.pop_back();
 _namespaces.pop_back();
 }
