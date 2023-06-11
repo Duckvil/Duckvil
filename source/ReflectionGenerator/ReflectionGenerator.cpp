@@ -131,7 +131,33 @@ void generate_plugin_info(std::ofstream& _file, const uint32_t& _uiIndex, const 
     // _file << "DUCKVIL_EXPORT const char* DUCKVIL_MODULE_NAME = \"duckvil_" << _moduleName << "_module\";\n";
 }
 
-nlohmann::json process_file(const Duckvil::Parser::__ast_ftable* _pAST_FTable, const Duckvil::Parser::__lexer_ftable* _pLexerFTable, Duckvil::Parser::__lexer_data* _pLexerData, const Duckvil::RuntimeReflection::__generator_ftable* _pGeneratorFTable, const Duckvil::RuntimeReflection::__ftable* _ftableReflection, Duckvil::RuntimeReflection::__data* _dataReflection, const std::filesystem::path& _cwd, const std::filesystem::path& _path, const std::filesystem::path& _currentModule, uint32_t _index)
+void clear(Duckvil::Parser::__ast& _dataAST, Duckvil::Parser::__ast_entity* _pScope)
+{
+	for (auto _scope : _pScope->m_aScopes)
+	{
+        clear(_dataAST, _scope);
+	}
+
+    if (_pScope->m_scopeType == Duckvil::Parser::__ast_entity_type::__ast_entity_type_main)
+    {
+        return;
+    }
+
+    _dataAST.m_heap.Free(_pScope);
+}
+
+nlohmann::json process_file(
+    const Duckvil::Memory::FreeList& _heap,
+    const Duckvil::Parser::__ast_ftable* _pAST_FTable,
+    const Duckvil::Parser::__lexer_ftable* _pLexerFTable,
+    Duckvil::Parser::__lexer_data* _pLexerData,
+    const Duckvil::RuntimeReflection::__generator_ftable* _pGeneratorFTable,
+    const Duckvil::RuntimeReflection::__ftable* _ftableReflection,
+    Duckvil::RuntimeReflection::__data* _dataReflection,
+    const std::filesystem::path& _cwd,
+    const std::filesystem::path& _path,
+    const std::filesystem::path& _currentModule,
+    uint32_t _index)
 {
     if(_path.extension() != ".h")
     {
@@ -140,6 +166,8 @@ nlohmann::json process_file(const Duckvil::Parser::__ast_ftable* _pAST_FTable, c
 
     nlohmann::json _jFile;
     Duckvil::Parser::__ast _astData;
+
+    _astData.m_heap = _heap;
 
     _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "DUCKVIL_EXPORT", &Duckvil::Utils::user_define_behavior });
     _astData.m_aUserDefines.push_back(Duckvil::Parser::user_define{ "slot", &Duckvil::Utils::user_define_behavior });
@@ -240,6 +268,8 @@ nlohmann::json process_file(const Duckvil::Parser::__ast_ftable* _pAST_FTable, c
         Duckvil::RuntimeReflection::invoke_member(_ftableReflection, _dataReflection, _module.m_typeHandle, _module.m_clearFunctionHandle, _module.m_pObject);
     }
 
+	clear(_astData, &_astData.m_main);
+
     return _jFile;
 }
 
@@ -279,6 +309,7 @@ enum process_result
 };
 
 process_result process_single_file(
+    const Duckvil::Memory::FreeList& _heap,
     const Duckvil::Utils::CommandArgumentsParser& _cmdParser,
     const std::filesystem::path& _CWD,
     const Duckvil::Parser::__ast_ftable& _ftableAST,
@@ -348,7 +379,7 @@ process_result process_single_file(
             _lastIndex = _uiIndex == -1 ? _biggestIndex + 1 : _uiIndex;
         }
 
-        *_pOutValue = process_file(&_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _dataReflection, _CWD, _CWD / "include" / _relativeFilePath, _currentModule, _lastIndex);
+        *_pOutValue = process_file(_heap, &_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _dataReflection, _CWD, _CWD / "include" / _relativeFilePath, _currentModule, _lastIndex);
 
         (*_pOutValue)["hash"] = _currentFileHash;
 
@@ -362,7 +393,7 @@ process_result process_single_file(
     else if (_cmdParser[Options::FORCE].m_bIsSet || (*a)->at("hash").get<std::string>() != _currentFileHash || _moduleChanged)
     {
         auto _lastIndex = _uiIndex == -1 ? (*a)->at("index").get<uint32_t>() : _uiIndex;
-        *_pOutValue = process_file(&_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _dataReflection, _CWD, _CWD / "include" / _relativeFilePath, (*a)->at("name").get<std::string>(), _lastIndex);
+        *_pOutValue = process_file(_heap, &_ftableAST, &_ftableLexer, &_dataLexer, &_ftableGenerator, &_ftableRuntimeReflection, _dataReflection, _CWD, _CWD / "include" / _relativeFilePath, (*a)->at("name").get<std::string>(), _lastIndex);
 
         (*_pOutValue)["hash"] = _currentFileHash;
         
@@ -378,6 +409,7 @@ process_result process_single_file(
 }
 
 bool process_single_file(
+    const Duckvil::Memory::FreeList& _heap,
     const Duckvil::Utils::CommandArgumentsParser& _cmdParser,
     const std::filesystem::path& _CWD,
     const Duckvil::Parser::__ast_ftable& _ftableAST,
@@ -451,6 +483,7 @@ bool process_single_file(
     nlohmann::json::iterator _keyJ;
 
     auto _res = process_single_file(
+        _heap,
         _cmdParser,
         _CWD,
         _ftableAST,
@@ -492,7 +525,16 @@ bool process_single_file(
     _uiIndex++;
 }
 
-bool process_multiple_files(const Duckvil::Utils::CommandArgumentsParser& _cmdParser, const std::filesystem::path& _CWD, const Duckvil::Parser::__ast_ftable& _ftableAST, const Duckvil::Parser::__lexer_ftable& _ftableLexer, Duckvil::Parser::__lexer_data& _dataLexer, const Duckvil::RuntimeReflection::__generator_ftable& _ftableGenerator, const Duckvil::RuntimeReflection::__ftable& _ftableRuntimeReflection, Duckvil::RuntimeReflection::__data* _dataReflection)
+bool process_multiple_files(
+    const Duckvil::Memory::FreeList& _heap,
+    const Duckvil::Utils::CommandArgumentsParser& _cmdParser,
+    const std::filesystem::path& _CWD,
+    const Duckvil::Parser::__ast_ftable& _ftableAST,
+    const Duckvil::Parser::__lexer_ftable& _ftableLexer,
+    Duckvil::Parser::__lexer_data& _dataLexer,
+    const Duckvil::RuntimeReflection::__generator_ftable& _ftableGenerator,
+    const Duckvil::RuntimeReflection::__ftable& _ftableRuntimeReflection,
+    Duckvil::RuntimeReflection::__data* _dataReflection)
 {
     uint32_t _index = 0;
 
@@ -572,6 +614,7 @@ bool process_multiple_files(const Duckvil::Utils::CommandArgumentsParser& _cmdPa
     for (auto& _path : std::filesystem::recursive_directory_iterator(std::filesystem::path(_CWD) / "include"))
     {
         process_single_file(
+            _heap,
             _cmdParser,
             _CWD,
             _ftableAST,
@@ -813,6 +856,7 @@ int main(int argc, char* argv[])
         std::filesystem::path _a;
 
         process_single_file(
+            _heap,
             _cmdParser,
             _CWD,
             *_ast,
@@ -836,7 +880,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-        process_multiple_files(_cmdParser, _CWD, *_ast, *_lexerFtable, _lexerData, *_generatorFtable, *_reflectionFTable, _runtimeReflectionData);
+        process_multiple_files(_heap, _cmdParser, _CWD, *_ast, *_lexerFtable, _lexerData, *_generatorFtable, *_reflectionFTable, _runtimeReflectionData);
     }
 
     return 0;

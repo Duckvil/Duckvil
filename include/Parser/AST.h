@@ -2,7 +2,7 @@
 
 #include "Utils/Macro.h"
 
-#include "Memory/Memory.h"
+#include "Memory/FreeList.h"
 
 #include "Parser/Lexer.h"
 
@@ -341,6 +341,7 @@ namespace Duckvil { namespace Parser {
         std::filesystem::path m_sFile;
         std::filesystem::path m_sPath;
         std::vector<__ast_template> m_aTemplates;
+        Memory::FreeList m_heap;
     };
 
     struct __ast_ftable

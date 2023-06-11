@@ -290,9 +290,9 @@ namespace Duckvil { namespace Parser {
     {
         if(_entity.name() == "__duckvil_generated_body__")
         {
-            delete _pScope;
+            _pAST->m_heap.Free(_pScope);
 
-            auto _scope = new __ast_entity_define();
+            auto _scope = _pAST->m_heap.Allocate<__ast_entity_define>();
 
             //_pAST->m_pPendingScope = _scope;
 
@@ -306,9 +306,9 @@ namespace Duckvil { namespace Parser {
         }
         else if(_entity.name().find("__duckvil_csharp_function__") != std::string::npos)
         {
-            delete _pScope;
+            _pAST->m_heap.Free(_pScope);
 
-            auto _scope = new __ast_entity_define();
+            auto _scope = _pAST->m_heap.Allocate<__ast_entity_define>();
 
             //_pAST->m_pPendingScope = _scope;
 
@@ -375,9 +375,9 @@ namespace Duckvil { namespace Parser {
 
     	if(_pAST->m_pPendingScope == nullptr && _entity.name().starts_with("__duckvil_class_"))
         {
-            delete _pScope;
+            _pAST->m_heap.Free(_pScope);
             
-            _pAST->m_pPendingScope = new __ast_entity_structure(__ast_structure_type::__ast_structure_type_class);
+            _pAST->m_pPendingScope = _pAST->m_heap.Allocate<__ast_entity_structure>(__ast_structure_type::__ast_structure_type_class);
             
             process_attrs(_entity.attributes(), _pAST->m_pPendingScope);
 
@@ -385,9 +385,9 @@ namespace Duckvil { namespace Parser {
         }
         else if (_pAST->m_pPendingScope == nullptr && _entity.name().starts_with("__duckvil_struct_"))
         {
-            delete _pScope;
+            _pAST->m_heap.Free(_pScope);
 
-            _pAST->m_pPendingScope = new __ast_entity_structure(__ast_structure_type::__ast_structure_type_struct);
+            _pAST->m_pPendingScope = _pAST->m_heap.Allocate<__ast_entity_structure>(__ast_structure_type::__ast_structure_type_struct);
 
             process_attrs(_entity.attributes(), _pAST->m_pPendingScope);
 
@@ -396,7 +396,7 @@ namespace Duckvil { namespace Parser {
 
         if(_pAST->m_pPendingScope != nullptr)
         {
-            delete _pScope;
+            _pAST->m_heap.Free(_pScope);
 
             _pScope = static_cast<__ast_entity_structure*>(_pAST->m_pPendingScope);
 
@@ -464,7 +464,7 @@ namespace Duckvil { namespace Parser {
     {
         if(_pAST->m_pPendingScope != nullptr)
         {
-            delete _pScope;
+            _pAST->m_heap.Free(_pScope);
 
             _pScope = static_cast<__ast_entity_function*>(_pAST->m_pPendingScope);
 
@@ -508,7 +508,7 @@ namespace Duckvil { namespace Parser {
     {
         if(_pAST->m_pPendingScope != nullptr)
         {
-            delete _pScope;
+            _pAST->m_heap.Free(_pScope);
 
             _pScope = static_cast<__ast_entity_function*>(_pAST->m_pPendingScope);
 
@@ -644,11 +644,11 @@ namespace Duckvil { namespace Parser {
         {
             if(_kind == cppast::cpp_entity_kind::class_template_t || _kind == cppast::cpp_entity_kind::class_template_specialization_t)
             {
-                _pAST->m_pPendingScope = new __ast_entity_structure(__ast_structure_type::__ast_structure_type_class);
+                _pAST->m_pPendingScope = _pAST->m_heap.Allocate<__ast_entity_structure>(__ast_structure_type::__ast_structure_type_class);
             }
             else if(_kind == cppast::cpp_entity_kind::function_template_t || _kind == cppast::cpp_entity_kind::function_template_specialization_t)
             {
-                _pAST->m_pPendingScope = new __ast_entity_function();
+                _pAST->m_pPendingScope = _pAST->m_heap.Allocate<__ast_entity_function>();
             }
             else
             {
@@ -674,11 +674,11 @@ namespace Duckvil { namespace Parser {
         {
             if(_kind == cppast::cpp_entity_kind::class_template_t)
             {
-                _pAST->m_pPendingScope = new __ast_entity_structure(__ast_structure_type::__ast_structure_type_class);
+                _pAST->m_pPendingScope = _pAST->m_heap.Allocate<__ast_entity_structure>(__ast_structure_type::__ast_structure_type_class);
             }
             else if(_kind == cppast::cpp_entity_kind::function_template_t)
             {
-                _pAST->m_pPendingScope = new __ast_entity_function();
+                _pAST->m_pPendingScope = _pAST->m_heap.Allocate<__ast_entity_function>();
             }
             else
             {
@@ -708,7 +708,7 @@ namespace Duckvil { namespace Parser {
 
             _pScope->m_aTemplates.insert(_pScope->m_aTemplates.begin(), _f->m_aTemplates.begin(), _f->m_aTemplates.end());
 
-            delete _pAST->m_pPendingScope;
+            _pAST->m_heap.Free(_pAST->m_pPendingScope);
 
             _pAST->m_pPendingScope = nullptr;
         }
@@ -788,7 +788,7 @@ namespace Duckvil { namespace Parser {
 
     __ast_entity* process_entity(__ast* _pAST, const cppast::cpp_namespace_alias& _entity, cppast::cpp_access_specifier_kind _access, const cppast::cpp_entity_index& _index)
     {
-        auto _scope = new __ast_entity_namespace_alias();
+        auto _scope = _pAST->m_heap.Allocate<__ast_entity_namespace_alias>();
 
         _scope->m_sName = _entity.name();
         _scope->m_sTarget = _entity.target().name();
@@ -808,7 +808,7 @@ namespace Duckvil { namespace Parser {
             return nullptr;
         }
 
-        auto _scope = new __ast_entity_type_alias();
+        auto _scope = _pAST->m_heap.Allocate<__ast_entity_type_alias>();
 
         _scope->m_sName = _entity.name();
         auto& x = (cppast::cpp_user_defined_type&)_entity.underlying_type();
@@ -878,27 +878,27 @@ namespace Duckvil { namespace Parser {
                     {
                     case cppast::cpp_entity_kind::class_t:
                     {
-                        _scope = process_entity(_pAST, new __ast_entity_structure(__ast_structure_type::__ast_structure_type_class), reinterpret_cast<const cppast::cpp_class&>(e), info.access);
+                        _scope = process_entity(_pAST, _pAST->m_heap.Allocate<__ast_entity_structure>(__ast_structure_type::__ast_structure_type_class), reinterpret_cast<const cppast::cpp_class&>(e), info.access);
                     } break;
                     case cppast::cpp_entity_kind::member_function_t:
                     {
-                        _scope = process_entity(_pAST, new __ast_entity_function(), reinterpret_cast<const cppast::cpp_member_function&>(e), info.access, _index);
+                        _scope = process_entity(_pAST, _pAST->m_heap.Allocate<__ast_entity_function>(), reinterpret_cast<const cppast::cpp_member_function&>(e), info.access, _index);
                     } break;
                     case cppast::cpp_entity_kind::function_t:
                     {
-                        _scope = process_entity(_pAST, new __ast_entity_function(), reinterpret_cast<const cppast::cpp_function&>(e), info.access);
+                        _scope = process_entity(_pAST, _pAST->m_heap.Allocate<__ast_entity_function>(), reinterpret_cast<const cppast::cpp_function&>(e), info.access);
                     } break;
                     case cppast::cpp_entity_kind::namespace_t:
                     {
-                        _scope = process_entity(_pAST, new __ast_entity_namespace(), reinterpret_cast<const cppast::cpp_namespace&>(e), info.access);
+                        _scope = process_entity(_pAST, _pAST->m_heap.Allocate<__ast_entity_namespace>(), reinterpret_cast<const cppast::cpp_namespace&>(e), info.access);
                     } break;
                     case cppast::cpp_entity_kind::member_variable_t:
                     {
-                        _scope = process_entity(_pAST, new __ast_entity_variable(), reinterpret_cast<const cppast::cpp_member_variable&>(e), info.access, _index);
+                        _scope = process_entity(_pAST, _pAST->m_heap.Allocate<__ast_entity_variable>(), reinterpret_cast<const cppast::cpp_member_variable&>(e), info.access, _index);
                     } break;
                     case cppast::cpp_entity_kind::enum_t:
                     {
-                        _scope = process_entity(_pAST, new __ast_entity_enum(), reinterpret_cast<const cppast::cpp_enum&>(e), info.access);
+                        _scope = process_entity(_pAST, _pAST->m_heap.Allocate<__ast_entity_enum>(), reinterpret_cast<const cppast::cpp_enum&>(e), info.access);
                     } break;
                     case cppast::cpp_entity_kind::enum_value_t:
                     {
@@ -922,11 +922,11 @@ namespace Duckvil { namespace Parser {
                     } break;
                     case cppast::cpp_entity_kind::constructor_t:
                     {
-                        _scope = process_entity(_pAST, new __ast_entity_constructor(), reinterpret_cast<const cppast::cpp_constructor&>(e), info.access);
+                        _scope = process_entity(_pAST, _pAST->m_heap.Allocate<__ast_entity_constructor>(), reinterpret_cast<const cppast::cpp_constructor&>(e), info.access);
                     } break;
                     case cppast::cpp_entity_kind::destructor_t:
                     {
-                        _scope = process_entity(_pAST, new __ast_entity_destructor(), reinterpret_cast<const cppast::cpp_destructor&>(e), info.access);
+                        _scope = process_entity(_pAST, _pAST->m_heap.Allocate<__ast_entity_destructor>(), reinterpret_cast<const cppast::cpp_destructor&>(e), info.access);
                     } break;
                     case cppast::cpp_entity_kind::namespace_alias_t:
                     {
