@@ -353,13 +353,13 @@ namespace Duckvil { namespace Editor {
                             auto _c = m_selectedEntity.GetMut<ScriptComponent>();
                             const auto& _selectedScript = m_aScripts[m_iCurrentScriptItem];
 
-                            if(m_heap.GetMemoryInterface()->m_fnFixedVectorSize_(_c->m_pScripts) >= m_heap.GetMemoryInterface()->m_fnFixedVectorCapacity_(_c->m_pScripts))
+                            if(m_heap.GetMemoryInterface()->m_fixedVectorContainer.m_fnSize(_c->m_pScripts) >= m_heap.GetMemoryInterface()->m_fixedVectorContainer.m_fnCapacity(_c->m_pScripts))
                             {
-                                m_heap.GetMemoryInterface()->m_fnFixedVectorResize_(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), &_c->m_pScripts, m_heap.GetMemoryInterface()->m_fnFixedVectorCapacity_(_c->m_pScripts) * 2);
+                                m_heap.GetMemoryInterface()->m_fixedVectorContainer.m_fnResize(m_heap.GetMemoryInterface(), m_heap.GetAllocator(), &_c->m_pScripts, m_heap.GetMemoryInterface()->m_fixedVectorContainer.m_fnCapacity(_c->m_pScripts) * 2);
                             }
 
                             auto _s = RuntimeReflection::create(m_heap, _selectedScript.m_typeHandle, true);
-                            auto _s2 = *static_cast<HotReloader::ITrackKeeper**>(m_heap.GetMemoryInterface()->m_fnFixedVectorAllocate_(_c->m_pScripts, &_s, 8, 8));
+                            auto _s2 = *static_cast<HotReloader::ITrackKeeper**>(m_heap.GetMemoryInterface()->m_fixedVectorContainer.m_fnAllocate(_c->m_pScripts, &_s, 8, 8));
                             auto _o = static_cast<NativeScriptBase*>(_s2->GetObject());
 
                             _o->m_typeHandle = _selectedScript.m_typeHandle;

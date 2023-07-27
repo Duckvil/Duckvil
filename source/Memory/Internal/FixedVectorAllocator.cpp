@@ -79,7 +79,7 @@ namespace Duckvil { namespace Memory {
         return _pAllocator->m_ullUsed == _pAllocator->m_ullCapacity;
     }
 
-    void impl_fixed_vector_resize(const ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, std::size_t _ullNewSize)
+    void impl_fixed_vector_resize(const void* _pInterface, free_list_allocator* _pParentAllocator, fixed_vector_allocator** _pAllocator, std::size_t _ullNewSize)
     {
         if(_pParentAllocator->m_ullCapacity < _ullNewSize + _pParentAllocator->m_ullUsed)
         {
@@ -97,7 +97,9 @@ namespace Duckvil { namespace Memory {
 
         // memcpy(_allocator->m_pMemory, (*_pAllocator)->m_pMemory, (*_pAllocator)->m_ullUsed);
 
-        fixed_vector_allocator* _allocator = _pInterface->m_fnFreeListAllocateFixedVectorAllocator(_pInterface, _pParentAllocator, _ullNewSize * (*_pAllocator)->m_ullBlockSize, (*_pAllocator)->m_ullBlockSize);
+        auto _interface = static_cast<const ftable*>(_pInterface);
+
+        fixed_vector_allocator* _allocator = _interface->m_fnFreeListAllocateFixedVectorAllocator(_interface, _pParentAllocator, _ullNewSize * (*_pAllocator)->m_ullBlockSize, (*_pAllocator)->m_ullBlockSize);
 
         _allocator->m_ullUsed = (*_pAllocator)->m_ullUsed;
 
@@ -128,7 +130,7 @@ namespace Duckvil { namespace Memory {
             TracyAllocN(reinterpret_cast<uint8_t*>((*_pAllocator)) + sizeof(fixed_vector_allocator) + (i * (*_pAllocator)->m_ullBlockSize), (*_pAllocator)->m_ullBlockSize, "Vector");
         }
 
-        free_list_free(_pInterface, _pParentAllocator, _ptr);
+        free_list_free(_interface, _pParentAllocator, _ptr);
     }
 
     void impl_fixed_vector_erase(fixed_vector_allocator* _pAllocator, uint32_t _uiIndex)

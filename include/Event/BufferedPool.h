@@ -211,7 +211,7 @@ namespace Duckvil { namespace Event {
             {
                 EventType* _event = static_cast<EventType*>(Memory::fixed_stack_top(m_heap.GetMemoryInterface(), m_pRemaining));
 
-                m_heap.GetMemoryInterface()->m_fnFixedQueueAllocate_(m_pMessages, _event, _event->m_ullMessageTypeSize, _event->m_ucAlignment);
+                m_heap.GetMemoryInterface()->m_fixedQueueContainer.m_fnAllocate(m_pMessages, _event, _event->m_ullMessageTypeSize, _event->m_ucAlignment);
 
                 Memory::fixed_stack_pop(m_heap.GetMemoryInterface(), m_pRemaining);
             }
@@ -247,7 +247,7 @@ namespace Duckvil { namespace Event {
             EventType* _event = static_cast<EventType*>(Memory::fixed_queue_begin(m_heap.GetMemoryInterface(), m_pMessages));
 
             // m_heap.GetMemoryInterface()->m_fnQueueAllocate_(m_pMessages2, _event, _event->m_ullMessageTypeSize, _event->m_ucAlignment);
-            m_heap.GetMemoryInterface()->m_fnFixedStackAllocate_(m_pRemaining, _event, _event->m_ullMessageTypeSize, _event->m_ucAlignment);
+            m_heap.GetMemoryInterface()->m_fixedStackContainer.m_fnAllocate(m_pRemaining, _event, _event->m_ullMessageTypeSize, _event->m_ucAlignment);
 
             Memory::fixed_queue_pop(m_heap.GetMemoryInterface(), m_pMessages);
         }

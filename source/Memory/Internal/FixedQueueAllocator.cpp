@@ -89,14 +89,16 @@ namespace Duckvil { namespace Memory {
     }
 
     // Should be here?
-    void impl_fixed_queue_resize(const ftable* _pInterface, free_list_allocator* _pParentAllocator, fixed_queue_allocator** _pAllocator, std::size_t _ullNewSize)
+    void impl_fixed_queue_resize(const void* _pInterface, free_list_allocator* _pParentAllocator, fixed_queue_allocator** _pAllocator, std::size_t _ullNewSize)
     {
         if(_pParentAllocator->m_ullCapacity < _ullNewSize + _pParentAllocator->m_ullUsed)
         {
             return;
         }
 
-        fixed_queue_allocator* _allocator = _pInterface->m_fnFreeListAllocateFixedQueueAllocator(_pInterface, _pParentAllocator, _ullNewSize * (*_pAllocator)->m_ullBlockSize, (*_pAllocator)->m_ullBlockSize);
+        auto _interface = static_cast<const ftable*>(_pInterface);
+
+        fixed_queue_allocator* _allocator = _interface->m_fnFreeListAllocateFixedQueueAllocator(_interface, _pParentAllocator, _ullNewSize * (*_pAllocator)->m_ullBlockSize, (*_pAllocator)->m_ullBlockSize);
 
         _allocator->m_ullUsed = (*_pAllocator)->m_ullUsed;
         _allocator->m_ullTail = (*_pAllocator)->m_ullTail;
@@ -112,7 +114,7 @@ namespace Duckvil { namespace Memory {
 
         *_pAllocator = _allocator;
 
-        free_list_free(_pInterface, _pParentAllocator, _ptr);
+        free_list_free(_interface, _pParentAllocator, _ptr);
     }
 
     std::size_t impl_fixed_queue_size(fixed_queue_allocator* _pAllocator)

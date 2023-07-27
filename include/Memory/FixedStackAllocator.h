@@ -38,7 +38,7 @@ namespace Duckvil { namespace Memory {
     template <typename Type, typename... Args>
     static inline Type* fixed_stack_emplace_back(const ftable* _pMemory, fixed_stack_allocator* _pAllocator, Args&&... _vData)
     {
-        return new(_pMemory->m_fnFixedStackAllocateSize_(_pAllocator, sizeof(Type), alignof(Type))) Type(std::forward<Args>(_vData)...);
+        return new(_pMemory->m_fixedStackContainer.m_fnAllocateSize(_pAllocator, sizeof(Type), alignof(Type))) Type(std::forward<Args>(_vData)...);
     }
 
     template <typename Type>
@@ -46,7 +46,7 @@ namespace Duckvil { namespace Memory {
     {
         if constexpr (std::is_trivially_copy_constructible<Type>::value)
         {
-            return static_cast<Type*>(_pMemory->m_fnFixedStackAllocate_(_pAllocator, &_data, sizeof(Type), alignof(Type)));
+            return static_cast<Type*>(_pMemory->m_fixedStackContainer.m_fnAllocate(_pAllocator, &_data, sizeof(Type), alignof(Type)));
         }
         else if constexpr (std::is_copy_constructible<Type>::value)
         {
@@ -66,7 +66,7 @@ namespace Duckvil { namespace Memory {
 
     static inline void* fixed_stack_top(const ftable* _pMemory, fixed_stack_allocator* _pAllocator)
     {
-        return _pMemory->m_fnFixedStackTop_(_pAllocator);
+        return _pMemory->m_fixedStackContainer.m_fnTop(_pAllocator);
     }
 
     template <typename Type>
@@ -77,7 +77,7 @@ namespace Duckvil { namespace Memory {
 
     static inline void fixed_stack_pop(const ftable* _pMemory, fixed_stack_allocator* _pAllocator)
     {
-        _pMemory->m_fnFixedStackPop_(_pAllocator);
+        _pMemory->m_fixedStackContainer.m_fnPop(_pAllocator);
     }
 
     template <typename Type>
@@ -92,27 +92,27 @@ namespace Duckvil { namespace Memory {
 
     static inline bool fixed_stack_empty(const ftable* _pMemory, fixed_stack_allocator* _pAllocator)
     {
-        return _pMemory->m_fnFixedStackEmpty_(_pAllocator);
+        return _pMemory->m_fixedStackContainer.m_fnEmpty(_pAllocator);
     }
 
     static inline bool fixed_stack_full(const ftable* _pMemory, fixed_stack_allocator* _pAllocator)
     {
-        return _pMemory->m_fnFixedStackFull_(_pAllocator);
+        return _pMemory->m_fixedStackContainer.m_fnFull(_pAllocator);
     }
 
     static inline std::size_t fixed_stack_size(const ftable* _pMemory, fixed_stack_allocator* _pAllocator)
     {
-        return _pMemory->m_fnFixedStackSize_(_pAllocator);
+        return _pMemory->m_fixedStackContainer.m_fnSize(_pAllocator);
     }
 
     static inline std::size_t fixed_stack_capacity(const ftable* _pMemory, fixed_stack_allocator* _pAllocator)
     {
-        return _pMemory->m_fnFixedStackCapacity_(_pAllocator);
+        return _pMemory->m_fixedStackContainer.m_fnCapacity(_pAllocator);
     }
 
     static inline void fixed_stack_clear(const ftable* _pMemory, fixed_stack_allocator* _pAllocator)
     {
-        _pMemory->m_fnFixedStackClear_(_pAllocator);
+        _pMemory->m_fixedStackContainer.m_fnClear(_pAllocator);
     }
 
 }}

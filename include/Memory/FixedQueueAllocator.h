@@ -19,7 +19,7 @@ namespace Duckvil { namespace Memory {
     template <typename Type, typename... Args>
     static inline Type* fixed_queue_emplace_back(const ftable* _pMemory, fixed_queue_allocator* _pAllocator, Args&&... _vData)
     {
-        return new(_pMemory->m_fnFixedQueueAllocateSize_(_pAllocator, sizeof(Type), alignof(Type))) Type(std::forward<Args>(_vData)...);
+        return new(_pMemory->m_fixedQueueContainer.m_fnAllocateSize(_pAllocator, sizeof(Type), alignof(Type))) Type(std::forward<Args>(_vData)...);
     }
 
     template <typename Type>
@@ -27,7 +27,7 @@ namespace Duckvil { namespace Memory {
     {
         if constexpr (std::is_trivially_copy_constructible<Type>::value)
         {
-            return static_cast<Type*>(_pMemory->m_fnFixedQueueAllocate_(_pAllocator, &_data, sizeof(Type), alignof(Type)));
+            return static_cast<Type*>(_pMemory->m_fixedQueueContainer.m_fnAllocate(_pAllocator, &_data, sizeof(Type), alignof(Type)));
         }
         else if constexpr (std::is_copy_constructible<Type>::value)
         {
@@ -47,7 +47,7 @@ namespace Duckvil { namespace Memory {
 
     static inline void* fixed_queue_begin(const ftable* _pMemory, fixed_queue_allocator* _pAllocator)
     {
-        return _pMemory->m_fnFixedQueueBegin_(_pAllocator);
+        return _pMemory->m_fixedQueueContainer.m_fnBegin(_pAllocator);
     }
 
     template <typename Type>
@@ -58,7 +58,7 @@ namespace Duckvil { namespace Memory {
 
     static inline void fixed_queue_pop(const ftable* _pMemory, fixed_queue_allocator* _pAllocator)
     {
-        _pMemory->m_fnFixedQueuePop_(_pAllocator);
+        _pMemory->m_fixedQueueContainer.m_fnPop(_pAllocator);
     }
 
     template <typename Type>
@@ -73,27 +73,27 @@ namespace Duckvil { namespace Memory {
 
     static inline bool fixed_queue_empty(const ftable* _pMemory, fixed_queue_allocator* _pAllocator)
     {
-        return _pMemory->m_fnFixedQueueEmpty_(_pAllocator);
+        return _pMemory->m_fixedQueueContainer.m_fnEmpty(_pAllocator);
     }
 
     static inline bool fixed_queue_full(const ftable* _pMemory, fixed_queue_allocator* _pAllocator)
     {
-        return _pMemory->m_fnFixedQueueFull_(_pAllocator);
+        return _pMemory->m_fixedQueueContainer.m_fnFull(_pAllocator);
     }
 
     static inline void fixed_queue_resize(const ftable* _pMemory, free_list_allocator* m_pParentAllocator, fixed_queue_allocator** _pAllocator, std::size_t _ullNewSize)
     {
-        _pMemory->m_fnFixedQueueResize_(_pMemory, m_pParentAllocator, _pAllocator, _ullNewSize);
+        _pMemory->m_fixedQueueContainer.m_fnResize(_pMemory, m_pParentAllocator, _pAllocator, _ullNewSize);
     }
 
     static inline std::size_t fixed_queue_size(const ftable* _pMemory, fixed_queue_allocator* _pAllocator)
     {
-        return _pMemory->m_fnFixedQueueSize_(_pAllocator);
+        return _pMemory->m_fixedQueueContainer.m_fnSize(_pAllocator);
     }
 
     static inline std::size_t fixed_queue_capacity(const ftable* _pMemory, fixed_queue_allocator* _pAllocator)
     {
-        return _pMemory->m_fnFixedQueueCapacity_(_pAllocator);
+        return _pMemory->m_fixedQueueContainer.m_fnCapacity(_pAllocator);
     }
 
 }}

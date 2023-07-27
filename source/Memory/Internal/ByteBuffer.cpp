@@ -15,7 +15,7 @@ namespace Duckvil { namespace Memory {
         _pAllocator->m_ullUsed = 0;
     }
 
-    void impl_byte_buffer_resize(const ftable* _pInterface, free_list_allocator* _pParentAllocator, byte_buffer_allocator** _pAllocator, std::size_t _ullNewSize)
+    void impl_byte_buffer_resize(const void* _pInterface, free_list_allocator* _pParentAllocator, byte_buffer_allocator** _pAllocator, std::size_t _ullNewSize)
     {
         if(_pParentAllocator->m_ullCapacity < _ullNewSize + _pParentAllocator->m_ullUsed)
         {
@@ -31,7 +31,9 @@ namespace Duckvil { namespace Memory {
 
         // memcpy(_allocator->m_pMemory, (*_pAllocator)->m_pMemory, (*_pAllocator)->m_ullUsed);
 
-        byte_buffer_allocator* _allocator = _pInterface->m_fnFreeListAllocateByteBufferAllocator(_pInterface, _pParentAllocator, _ullNewSize);
+        auto _interface = static_cast<const ftable*>(_pInterface);
+
+        byte_buffer_allocator* _allocator = _interface->m_fnFreeListAllocateByteBufferAllocator(_interface, _pParentAllocator, _ullNewSize);
 
         _allocator->m_ullUsed = (*_pAllocator)->m_ullUsed;
         _allocator->m_ullPosition = (*_pAllocator)->m_ullPosition;
@@ -56,7 +58,7 @@ namespace Duckvil { namespace Memory {
 // TODO:
         // free_list_free(_pInterface, _pParentAllocator, _ptr);
 
-        _pInterface->m_fnFreeListFree_(_pParentAllocator, _ptr);
+        _interface->m_fnFreeListFree_(_pParentAllocator, _ptr);
     }
 
     void impl_byte_buffer_seek_to_begin(byte_buffer_allocator* _pAllocator)
