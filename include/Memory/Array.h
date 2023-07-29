@@ -33,7 +33,7 @@ namespace Duckvil { namespace Memory {
 
             for(uint32_t _i = 0; _i < _array.Size(); ++_i)
             {
-                fixed_array_allocate<Type>(_pThis->m_pMemoryInterface, _pThis->m_pContainer, _array[_i]);
+                fixed_array_allocate<Type>(&_pThis->m_pMemoryInterface->m_fixedArrayContainer, _pThis->m_pContainer, _array[_i]);
             }
 
             _pThis->m_fnCopy = _array.m_fnCopy;
@@ -43,11 +43,11 @@ namespace Duckvil { namespace Memory {
 
         static void free_list_destruct(allocator* _pAllocator, SContainer* _pThis)
         {
-            uint32_t _size = fixed_array_size(_pThis->m_pMemoryInterface, _pThis->m_pContainer) / sizeof(Type);
+            uint32_t _size = fixed_array_size(&_pThis->m_pMemoryInterface->m_fixedArrayContainer, _pThis->m_pContainer) / sizeof(Type);
 
             for(uint32_t _i = 0; _i < _size; ++_i)
             {
-                Type* _data = fixed_array_at<Type>(_pThis->m_pMemoryInterface, _pThis->m_pContainer, _i);
+                Type* _data = fixed_array_at<Type>(&_pThis->m_pMemoryInterface->m_fixedArrayContainer, _pThis->m_pContainer, _i);
 
                 _data->~Type();
             }
@@ -146,22 +146,22 @@ namespace Duckvil { namespace Memory {
 
         void* Allocate(const Type& _value)
         {
-            return fixed_array_allocate(this->m_pMemoryInterface, this->m_pContainer, _value);
+            return fixed_array_allocate(&this->m_pMemoryInterface->m_fixedArrayContainer, this->m_pContainer, _value);
         }
 
         inline Type* Allocate(Type&& _data)
         {
-            return fixed_array_allocate(this->m_pMemoryInterface, this->m_pContainer, std::move(_data));
+            return fixed_array_allocate(&this->m_pMemoryInterface->m_fixedArrayContainer, this->m_pContainer, std::move(_data));
         }
 
         const Type& At(std::size_t _ullIndex) const
         {
-            return *(Type*)fixed_array_at(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _ullIndex);
+            return *(Type*)fixed_array_at(&SContainer::m_pMemoryInterface->m_fixedArrayContainer, SContainer::m_pContainer, _ullIndex);
         }
 
         Type& At(std::size_t _ullIndex)
         {
-            return *(Type*)fixed_array_at(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _ullIndex);
+            return *(Type*)fixed_array_at(&SContainer::m_pMemoryInterface->m_fixedArrayContainer, SContainer::m_pContainer, _ullIndex);
         }
 
         const Type& operator[](std::size_t _ullIndex) const
@@ -176,42 +176,42 @@ namespace Duckvil { namespace Memory {
 
         const Type& Begin() const
         {
-            return *(Type*)fixed_array_begin(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
+            return *(Type*)fixed_array_begin(&SContainer::m_pMemoryInterface->m_fixedArrayContainer, SContainer::m_pContainer);
         }
 
         Type& Begin()
         {
-            return *(Type*)fixed_array_begin(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
+            return *(Type*)fixed_array_begin(&SContainer::m_pMemoryInterface->m_fixedArrayContainer, SContainer::m_pContainer);
         }
 
         const Type& Back() const
         {
-            return *(Type*)fixed_array_back(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
+            return *(Type*)fixed_array_back(&SContainer::m_pMemoryInterface->m_fixedArrayContainer, SContainer::m_pContainer);
         }
 
         Type& Back()
         {
-            return *(Type*)fixed_array_back(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
+            return *(Type*)fixed_array_back(&SContainer::m_pMemoryInterface->m_fixedArrayContainer, SContainer::m_pContainer);
         }
 
         bool Empty() const
         {
-            return fixed_array_empty(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
+            return fixed_array_empty(&SContainer::m_pMemoryInterface->m_fixedArrayContainer, SContainer::m_pContainer);
         }
 
         bool Full() const
         {
-            return fixed_array_full(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
+            return fixed_array_full(&SContainer::m_pMemoryInterface->m_fixedArrayContainer, SContainer::m_pContainer);
         }
 
         std::size_t Size() const
         {
-            return fixed_array_size(SContainer::m_pMemoryInterface, SContainer::m_pContainer) / sizeof(Type);
+            return fixed_array_size(&SContainer::m_pMemoryInterface->m_fixedArrayContainer, SContainer::m_pContainer) / sizeof(Type);
         }
 
         void Clear() const
         {
-            fixed_array_clear(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
+            fixed_array_clear(&SContainer::m_pMemoryInterface->m_fixedArrayContainer, SContainer::m_pContainer);
         }
 
         Iterator begin()

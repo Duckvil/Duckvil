@@ -277,11 +277,11 @@ namespace Duckvil { namespace Editor {
                     if(strcmp(a.m_sTypeName, "ScriptComponent") == 0)
                     {
                         const auto& _scriptComponent = m_selectedEntity.Get<ScriptComponent>();
-                        auto _size = Memory::fixed_vector_size(m_heap.GetMemoryInterface(), _scriptComponent.m_pScripts) / 8;
+                        auto _size = Memory::fixed_vector_size(&m_heap.GetMemoryInterface()->m_fixedVectorContainer, _scriptComponent.m_pScripts) / 8;
 
                         for(uint32_t _i = 0; _i < _size; ++_i)
                         {
-                            const auto& _scriptKeeper = *static_cast<HotReloader::ITrackKeeper**>(Memory::fixed_vector_at(m_heap.GetMemoryInterface(), _scriptComponent.m_pScripts, _i));
+                            const auto& _scriptKeeper = *static_cast<HotReloader::ITrackKeeper**>(Memory::fixed_vector_at(&m_heap.GetMemoryInterface()->m_fixedVectorContainer, _scriptComponent.m_pScripts, _i));
                             const auto& _script = static_cast<NativeScriptBase*>(_scriptKeeper->GetObject());
                         	auto _type = RuntimeReflection::ReflectedType(_script->m_typeHandle);
                             Utils::string _name = _type.GetFullName();
@@ -324,12 +324,12 @@ namespace Duckvil { namespace Editor {
                                 {
                                     ImGui::CloseCurrentPopup();
 
-                                    HotReloader::ITrackKeeper* _tScript = *Memory::fixed_vector_at<HotReloader::ITrackKeeper*>(m_heap.GetMemoryInterface(), _scriptComponent.m_pScripts, _i);
+                                    HotReloader::ITrackKeeper* _tScript = *Memory::fixed_vector_at<HotReloader::ITrackKeeper*>(&m_heap.GetMemoryInterface()->m_fixedVectorContainer, _scriptComponent.m_pScripts, _i);
 
                                     reinterpret_cast<NativeScriptBase*>(_tScript->GetObject())->~NativeScriptBase();
                                     _tScript->~ITrackKeeper();
 
-                                    Memory::fixed_vector_erase(m_heap.GetMemoryInterface(), _scriptComponent.m_pScripts, _i);
+                                    Memory::fixed_vector_erase(&m_heap.GetMemoryInterface()->m_fixedVectorContainer, _scriptComponent.m_pScripts, _i);
                                 }
 
                                 ImGui::EndPopup();

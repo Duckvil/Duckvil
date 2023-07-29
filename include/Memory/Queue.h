@@ -44,7 +44,7 @@ namespace Duckvil { namespace Memory {
             {
                 Type* _v = reinterpret_cast<Type*>(reinterpret_cast<uint8_t*>(_queue.m_pContainer) + sizeof(fixed_queue_allocator) + (_i * sizeof(Type)));
 
-                fixed_queue_allocate<Type>(_pThis->m_pMemoryInterface, _pThis->m_pContainer, *_v);
+                fixed_queue_allocate<Type>(&_pThis->m_pMemoryInterface->m_fixedQueueContainer, _pThis->m_pContainer, *_v);
             }
 
             _pThis->m_fnCopy = _queue.m_fnCopy;
@@ -55,9 +55,9 @@ namespace Duckvil { namespace Memory {
 
         static void free_list_destruct(allocator* _pAllocator, SpecifiedContainer<Type, fixed_queue_allocator>* _pThis)
         {
-            while(!fixed_queue_empty(_pThis->m_pMemoryInterface, _pThis->m_pContainer))
+            while(!fixed_queue_empty(&_pThis->m_pMemoryInterface->m_fixedQueueContainer, _pThis->m_pContainer))
             {
-                fixed_queue_pop<Type>(_pThis->m_pMemoryInterface, _pThis->m_pContainer);
+                fixed_queue_pop<Type>(&_pThis->m_pMemoryInterface->m_fixedQueueContainer, _pThis->m_pContainer);
             }
 
             free_list_free(_pThis->m_pMemoryInterface, (free_list_allocator*)_pAllocator, _pThis->m_pContainer);
@@ -184,37 +184,37 @@ namespace Duckvil { namespace Memory {
 
         inline Type* Allocate(const Type& _data)
         {
-            return fixed_queue_allocate(this->m_pMemoryInterface, this->m_pContainer, _data);
+            return fixed_queue_allocate(&this->m_pMemoryInterface->m_fixedQueueContainer, this->m_pContainer, _data);
         }
 
         inline Type* Allocate(Type&& _data)
         {
-            return fixed_queue_allocate(this->m_pMemoryInterface, this->m_pContainer, std::move(_data));
+            return fixed_queue_allocate(&this->m_pMemoryInterface->m_fixedQueueContainer, this->m_pContainer, std::move(_data));
         }
 
         inline const Type& Begin() const
         {
-            return *(Type*)fixed_queue_begin(this->m_pMemoryInterface, this->m_pContainer);
+            return *(Type*)fixed_queue_begin(&this->m_pMemoryInterface->m_fixedQueueContainer, this->m_pContainer);
         }
 
         inline Type& Begin()
         {
-            return *(Type*)fixed_queue_begin(this->m_pMemoryInterface, this->m_pContainer);
+            return *(Type*)fixed_queue_begin(&this->m_pMemoryInterface->m_fixedQueueContainer, this->m_pContainer);
         }
 
         inline bool Empty() const
         {
-            return fixed_queue_empty(this->m_pMemoryInterface, this->m_pContainer);
+            return fixed_queue_empty(&this->m_pMemoryInterface->m_fixedQueueContainer, this->m_pContainer);
         }
 
         inline bool Full() const
         {
-            return fixed_queue_full(this->m_pMemoryInterface, this->m_pContainer);
+            return fixed_queue_full(&this->m_pMemoryInterface->m_fixedQueueContainer, this->m_pContainer);
         }
 
         inline void Pop()
         {
-            fixed_queue_pop(this->m_pMemoryInterface, this->m_pContainer);
+            fixed_queue_pop(&this->m_pMemoryInterface->m_fixedQueueContainer, this->m_pContainer);
         }
 
         void Resize(std::size_t _ullNewSize)
@@ -229,12 +229,12 @@ namespace Duckvil { namespace Memory {
 
         inline std::size_t GetSize() const
         {
-            return fixed_queue_size(this->m_pMemoryInterface, this->m_pContainer) / sizeof(Type);
+            return fixed_queue_size(&this->m_pMemoryInterface->m_fixedQueueContainer, this->m_pContainer) / sizeof(Type);
         }
 
         inline std::size_t GetCapacity() const
         {
-            return fixed_queue_capacity(this->m_pMemoryInterface, this->m_pContainer) / sizeof(Type);
+            return fixed_queue_capacity(&this->m_pMemoryInterface->m_fixedQueueContainer, this->m_pContainer) / sizeof(Type);
         }
     };
 

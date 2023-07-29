@@ -35,7 +35,7 @@ namespace Duckvil { namespace Memory {
 
             _pThis->m_pContainer = static_cast<fixed_vector_allocator*>(free_list_allocate(_pThis->m_pMemoryInterface, static_cast<free_list_allocator*>(_vec.m_pAllocator), sizeof(fixed_vector_allocator) + (sizeof(Type) * _vec.Size()), alignof(fixed_vector_allocator)));
 
-            Memory::fixed_vector_copy<Type>(_pThis->m_pMemoryInterface, _vec.m_pContainer, _pThis->m_pContainer);
+            Memory::fixed_vector_copy<Type>(&_pThis->m_pMemoryInterface->m_fixedVectorContainer, _vec.m_pContainer, _pThis->m_pContainer);
 
             // DUCKVIL_DEBUG_MEMORY(_pThis->m_pContainer, "Copied Vector");
 
@@ -48,9 +48,9 @@ namespace Duckvil { namespace Memory {
 
         static void free_list_destruct(allocator* _pAllocator, SpecifiedContainer<Type, fixed_vector_allocator>* _pThis)
         {
-            while(!fixed_vector_empty(_pThis->m_pMemoryInterface, _pThis->m_pContainer))
+            while(!fixed_vector_empty(&_pThis->m_pMemoryInterface->m_fixedVectorContainer, _pThis->m_pContainer))
             {
-                fixed_vector_pop_back<Type>(_pThis->m_pMemoryInterface, _pThis->m_pContainer);
+                fixed_vector_pop_back<Type>(&_pThis->m_pMemoryInterface->m_fixedVectorContainer, _pThis->m_pContainer);
             }
 
             free_list_free(_pThis->m_pMemoryInterface, static_cast<free_list_allocator*>(_pAllocator), _pThis->m_pContainer);
@@ -63,7 +63,7 @@ namespace Duckvil { namespace Memory {
 
         static void free_list_erase(const ftable* _pMemoryInterface, SContainer* _pThis, uint32_t _uiIndex)
         {
-            fixed_vector_erase<Type>(_pMemoryInterface, _pThis->m_pContainer, _uiIndex);
+            fixed_vector_erase<Type>(&_pMemoryInterface->m_fixedVectorContainer, _pThis->m_pContainer, _uiIndex);
         }
 
     public:
@@ -169,32 +169,32 @@ namespace Duckvil { namespace Memory {
 
         Type* Allocate(const Type& _value)
         {
-            return fixed_vector_allocate<Type>(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _value);
+            return fixed_vector_allocate<Type>(&SContainer::m_pMemoryInterface->m_fixedVectorContainer, SContainer::m_pContainer, _value);
         }
 
         Type* Allocate(Type&& _value)
         {
-            return fixed_vector_allocate<Type>(SContainer::m_pMemoryInterface, SContainer::m_pContainer, std::move(_value));
+            return fixed_vector_allocate<Type>(&SContainer::m_pMemoryInterface->m_fixedVectorContainer, SContainer::m_pContainer, std::move(_value));
         }
 
         const Type& At(std::size_t _ullIndex) const
         {
-            return *static_cast<Type*>(fixed_vector_at(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _ullIndex));
+            return *static_cast<Type*>(fixed_vector_at(&SContainer::m_pMemoryInterface->m_fixedVectorContainer, SContainer::m_pContainer, _ullIndex));
         }
 
         Type& At(std::size_t _ullIndex)
         {
-            return *static_cast<Type*>(fixed_vector_at(SContainer::m_pMemoryInterface, SContainer::m_pContainer, _ullIndex));
+            return *static_cast<Type*>(fixed_vector_at(&SContainer::m_pMemoryInterface->m_fixedVectorContainer, SContainer::m_pContainer, _ullIndex));
         }
 
         std::size_t Size() const
         {
-            return fixed_vector_size(SContainer::m_pMemoryInterface, SContainer::m_pContainer) / sizeof(Type);
+            return fixed_vector_size(&SContainer::m_pMemoryInterface->m_fixedVectorContainer, SContainer::m_pContainer) / sizeof(Type);
         }
 
         std::size_t Capacity() const
         {
-            return fixed_vector_capacity(SContainer::m_pMemoryInterface, SContainer::m_pContainer) / sizeof(Type);
+            return fixed_vector_capacity(&SContainer::m_pMemoryInterface->m_fixedVectorContainer, SContainer::m_pContainer) / sizeof(Type);
         }
 
         const Type& operator[](std::size_t _ullIndex) const
@@ -209,37 +209,37 @@ namespace Duckvil { namespace Memory {
 
         const Type& Begin() const
         {
-            return *(Type*)fixed_vector_begin(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
+            return *(Type*)fixed_vector_begin(&SContainer::m_pMemoryInterface->m_fixedVectorContainer, SContainer::m_pContainer);
         }
 
         Type& Begin()
         {
-            return *(Type*)fixed_vector_begin(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
+            return *(Type*)fixed_vector_begin(&SContainer::m_pMemoryInterface->m_fixedVectorContainer, SContainer::m_pContainer);
         }
 
         const Type& Back() const
         {
-            return *(Type*)fixed_vector_back(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
+            return *(Type*)fixed_vector_back(&SContainer::m_pMemoryInterface->m_fixedVectorContainer, SContainer::m_pContainer);
         }
 
         Type& Back()
         {
-            return *(Type*)fixed_vector_back(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
+            return *(Type*)fixed_vector_back(&SContainer::m_pMemoryInterface->m_fixedVectorContainer, SContainer::m_pContainer);
         }
 
         void Clear()
         {
-            fixed_vector_clear(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
+            fixed_vector_clear(&SContainer::m_pMemoryInterface->m_fixedVectorContainer, SContainer::m_pContainer);
         }
 
         bool Empty() const
         {
-            return fixed_vector_empty(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
+            return fixed_vector_empty(&SContainer::m_pMemoryInterface->m_fixedVectorContainer, SContainer::m_pContainer);
         }
 
         bool Full() const
         {
-            return fixed_vector_full(SContainer::m_pMemoryInterface, SContainer::m_pContainer);
+            return fixed_vector_full(&SContainer::m_pMemoryInterface->m_fixedVectorContainer, SContainer::m_pContainer);
         }
 
         void Resize(std::size_t _ullNewSize)
@@ -262,13 +262,13 @@ namespace Duckvil { namespace Memory {
         Iterator begin() const
         {
             // return Iterator((Type*)SContainer::m_pContainer->m_pMemory);
-            return Iterator(static_cast<Type*>(fixed_vector_begin(SContainer::m_pMemoryInterface, SContainer::m_pContainer)));
+            return Iterator(static_cast<Type*>(fixed_vector_begin(&SContainer::m_pMemoryInterface->m_fixedVectorContainer, SContainer::m_pContainer)));
         }
 
         Iterator end() const
         {
             // return Iterator((Type*)(SContainer::m_pContainer->m_pMemory + SContainer::m_pContainer->m_ullUsed));
-            return Iterator(static_cast<Type*>(fixed_vector_end(SContainer::m_pMemoryInterface, SContainer::m_pContainer)));
+            return Iterator(static_cast<Type*>(fixed_vector_end(&SContainer::m_pMemoryInterface->m_fixedVectorContainer, SContainer::m_pContainer)));
         }
 
         ConstIterator cbegin() const

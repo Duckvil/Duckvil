@@ -967,11 +967,11 @@ namespace Duckvil {
 
             _pData->m_scriptsQuery.each([_delta, _pData](flecs::entity _entity, const ScriptComponent& _c)
             {
-            	const uint32_t _size = Memory::fixed_vector_size(_pData->m_pMemory, _c.m_pScripts) / 8;
+            	const uint32_t _size = Memory::fixed_vector_size(&_pData->m_pMemory->m_fixedVectorContainer, _c.m_pScripts) / 8;
 
                 for(uint32_t _i = 0; _i < _size; ++_i)
                 {
-                    const auto _trackKeeper = *static_cast<HotReloader::ITrackKeeper**>(Memory::fixed_vector_at(_pData->m_pMemory, _c.m_pScripts, _i));
+                    const auto _trackKeeper = *static_cast<HotReloader::ITrackKeeper**>(Memory::fixed_vector_at(&_pData->m_pMemory->m_fixedVectorContainer, _c.m_pScripts, _i));
                     const auto _object = static_cast<NativeScriptBase*>(DUCKVIL_TRACK_KEEPER_GET_OBJECT(_trackKeeper));
                     const auto _start = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 

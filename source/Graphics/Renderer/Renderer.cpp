@@ -342,7 +342,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
 
     void impl_renderer_submit_command_buffer(const Memory::ftable* _pMemoryInterface, renderer_data* _pData)
     {
-        Memory::byte_buffer_seek_to_begin(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands);
+        Memory::byte_buffer_seek_to_begin(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands);
 
         auto& _count = _pData->m_pCommandBuffer.m_uiCommandCount;
         
@@ -352,7 +352,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
 
             renderer_op_code _command = renderer_op_code_none;
 
-            Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_command);
+            Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_command);
 
             switch(_command)
             {
@@ -360,7 +360,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
             {
                 uint32_t _shaderID = -1;
 
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_shaderID);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_shaderID);
 
                 uint32_t _shader = DUCKVIL_SLOT_ARRAY_GET(_pData->m_shader, _shaderID);
 
@@ -372,8 +372,8 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 uint32_t _textureID = -1;
                 uint32_t _unit = -1;
 
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_textureID);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_unit);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_textureID);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_unit);
 
                 uint32_t _texture = DUCKVIL_SLOT_ARRAY_GET(_pData->m_texture, _textureID);
 
@@ -386,8 +386,8 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 uint32_t _textureObjectID = -1;
                 uint32_t _textureID = -1;
 
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_textureObjectID);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_textureID);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_textureObjectID);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_textureID);
 
                 texture_object _texture = DUCKVIL_SLOT_ARRAY_GET(_pData->m_textureObject, _textureObjectID);
 
@@ -398,7 +398,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
             {
                 uint32_t _framebufferID = -1;
 
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_framebufferID);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_framebufferID);
 
                 framebuffer _fbo = DUCKVIL_SLOT_ARRAY_GET(_pData->m_fbo, _framebufferID);
 
@@ -413,11 +413,11 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 void (*_fnCallback)(uint32_t);
                 uint32_t _value = 0;
 
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_attachmentIndex);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_x);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_y);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_attachmentIndex);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_x);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_y);
                 
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_fnCallback);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_fnCallback);
 
                 glReadBuffer(GL_COLOR_ATTACHMENT0 + _attachmentIndex);
                 glReadPixels(_x, _y, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &_value);
@@ -434,11 +434,11 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 uint32_t _value = 0;
                 uint32_t _fboHandle = 0;
 
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_attachmentIndex);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_x);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_y);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_fboHandle);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_fnCallback);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_attachmentIndex);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_x);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_y);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_fboHandle);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_fnCallback);
 
                 framebuffer _fbo = DUCKVIL_SLOT_ARRAY_GET(_pData->m_fbo, _fboHandle);
 
@@ -458,11 +458,11 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 uint32_t _sourceHeight;
                 uint8_t _attachment;
 
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_handle);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_fboHandle);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_sourceWidth);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_sourceHeight);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_attachment);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_handle);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_fboHandle);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_sourceWidth);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_sourceHeight);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_attachment);
 
                 frame_buffer_reader& _reader = DUCKVIL_SLOT_ARRAY_GET(_pData->m_frameBufferReader, _handle);
                 framebuffer _fbo = DUCKVIL_SLOT_ARRAY_GET(_pData->m_fbo, _fboHandle);
@@ -475,8 +475,8 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 uint32_t _handle;
                 void (*_fnCallback)(void* _pTextureData, uint32_t _uiWidth, uint32_t _uiHeight, uint32_t _uiOffset);
 
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_handle);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_fnCallback);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_handle);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_fnCallback);
 
                 frame_buffer_reader& _reader = DUCKVIL_SLOT_ARRAY_GET(_pData->m_frameBufferReader, _handle);
 
@@ -487,7 +487,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
             {
                 uint32_t _vaoID = -1;
 
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_vaoID);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_vaoID);
 
                 vertex_array_object _vao = DUCKVIL_SLOT_ARRAY_GET(_pData->m_vao, _vaoID);
 
@@ -500,7 +500,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
             {
                 glm::vec4 _color;
 
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_color);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_color);
 
                 glClearColor(_color.x, _color.y, _color.z, _color.w);
             }
@@ -509,7 +509,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
             {
                 uint32_t _mask = -1;
 
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_mask);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_mask);
 
                 glClear(_mask);
             }
@@ -521,10 +521,10 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 GLenum _type;
                 void* _value;
 
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_textureID);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_format);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_type);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_value);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_textureID);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_format);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_type);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_value);
 
                 glClearTexImage(_textureID, 0, _format, _type, _value);
             }
@@ -534,8 +534,8 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 uint32_t _width = -1;
                 uint32_t _height = -1;
 
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_width);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_height);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_width);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_height);
 
                 glViewport(0, 0, _width, _height);
             }
@@ -545,8 +545,8 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                 uint32_t _id = -1;
                 uniform_type _type;
 
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_id);
-                Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_type);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_id);
+                Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_type);
 
                 GLuint _location = DUCKVIL_SLOT_ARRAY_GET(_pData->m_uniform, _id);
 
@@ -556,7 +556,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                     {
                         int _value;
 
-                        Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_value);
+                        Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_value);
 
                         glUniform1i(_location, _value);
                     }
@@ -565,7 +565,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                     {
                         float _value;
 
-                        Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_value);
+                        Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_value);
 
                         glUniform1f(_location, _value);
                     }
@@ -574,7 +574,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                     {
                         glm::vec2 _value;
 
-                        Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_value);
+                        Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_value);
 
                         glUniform2f(_location, _value.x, _value.y);
                     }
@@ -583,7 +583,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                     {
                         glm::vec3 _value;
 
-                        Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_value);
+                        Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_value);
 
                         glUniform3f(_location, _value.x, _value.y, _value.z);
                     }
@@ -592,7 +592,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                     {
                         glm::vec4 _value;
 
-                        Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_value);
+                        Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_value);
 
                         glUniform4f(_location, _value.x, _value.y, _value.z, _value.w);
                     }
@@ -601,7 +601,7 @@ namespace Duckvil { namespace Graphics { namespace Renderer {
                     {
                         glm::mat4 _value;
 
-                        Memory::byte_buffer_read(_pMemoryInterface, _pData->m_pCommandBuffer.m_pCommands, &_value);
+                        Memory::byte_buffer_read(&_pMemoryInterface->m_byteBufferContainer, _pData->m_pCommandBuffer.m_pCommands, &_value);
 
                         glUniformMatrix4fv(_location, 1, GL_FALSE, &_value[0][0]);
                     }
